@@ -5,33 +5,44 @@
 #   -s <seconds>   - Sleep for given number of seconds between each printing
 #   options & text - As for the built in echo, except text defaults to 'yes'
 #
-# $Id: yes,v 1.1 2001/06/14 16:17:15 mebourne Exp $
+# $Id: yes,v 1.2 2001/07/31 11:22:37 mebourne Exp $
 
-integer count=-1 delay=0
+local -a args
+args=($argv[*])
+local -A opts
 
-# Process our options
-while [[ $argv[1] == -[ls] ]]
-do
-  case $argv[1] in
-    -l) count=$argv[2]
-        shift 2;;
-    -s) delay=$argv[2]
-        shift 2;;
-  esac
-done
+opts[lines]=-1
+
+local -a echoopt
+
+parse_opts args opts - <<'EOF' || return 1
+yes [options] [<text> ...]
+  -e, --escape			Interpret escape characters as for echo (default unless
+				the BSD_ECHO option is set)
+				# [echoopt] = escape | e = constant=-e
+  -E, --no-escape		Prevent interpretation of escape characters
+				# [echoopt] = no-escape | E = constant=-E
+  -h, --help			Provide this help
+				# help | h
+  -l <count>, --lines=<count>	Output only count times
+				# lines | l = integer
+  -n, --no-newline		Suppress output of automatic newline
+				# [echoopt] = no-newline | n = constant=-n
+  -s <seconds>, --sleep=<seconds>
+				As for builtin emulate -R (reset more options to defaults)
+				# sleep | s = integer
+EOF
 
 # Default text to 'yes' if no parameters passed
-local -a args
-args=($argv)
 if (( ! $#args ))
 then
   args=('yes')
 fi
 
 # Output as required
-while (( count ))
+while (( opts[lines] ))
 do
-  echo "$args[@]"
-  (( delay )) && sleep $delay
-  (( count > 0 && count-- ))
+  echo $echoopt "$args[@]"
+  [[ -n $opts[sleep] ]] && sleep $opts[sleep]
+  (( opts[lines] > 0 && opts[lines]-- ))
 done
