@@ -14,7 +14,7 @@ Description:
 Display type information using the sourceinfo database.
 
 Usage:
-sitype [options] <type-name>
+typeInfo.pl [options] <definitions-file> <type-name>
 
 Options:
   -a, --all			List all available types (for debugging)
