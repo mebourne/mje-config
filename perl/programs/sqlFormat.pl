@@ -15,6 +15,8 @@ use vars qw(%styles);
   simple  => "Simple formatting keeping the default output style",
   squash  => "As simple but reduces column widths to save on screen space",
   bcp     => "BCP compatible output, tab separated columns with no header",
+  tsv     => "Tab separated value output with header",
+  csv     => "Comma separated value output with header",
   record  => "Record style output, row by row",
   emacs   => "Output directly to Emacs in forms mode"
 );
@@ -37,6 +39,8 @@ Arguments:
 				simple   Simple formatting keeping the default output style
 				squash   As simple but reduces column widths to save on screen space
 				bcp      BCP compatible output, tab separated columns with no header
+				tsv      Tab separated value output with header
+				csv      Comma separated value output with header
 				record   Record style output, row by row
 				emacs    Output directly to Emacs in forms mode
 	   			# style : values=%styles
@@ -67,7 +71,14 @@ sub main {
       my @columns;
       my @rows;
       &readHeader(\@columns,$thisLine,$nextLine);
-      &readData(\@columns, \@rows, length($thisLine), \$nextLine);
+
+      # Regular expression for detecting any special characters which may need quoting
+      my $quoteRegexp;
+      if($opts->{style} eq "csv") {
+	$quoteRegexp="[ \t,\"\']";
+      }
+      
+      &readData(\@columns, \@rows, length($thisLine), \$nextLine, $quoteRegexp);
       
       # Processing
       if($opts->{style} eq "squash") {
@@ -85,6 +96,18 @@ sub main {
 	if(@rows) {
 	  my $format=&bcp_generateFormat(\@columns);
 	  &bcp_printData($format,\@rows);
+	}
+      } elsif ($opts->{style} eq "tsv") {
+	&delimited_printHeader(\@columns,"\t");
+	if(@rows) {
+	  my $format=&delimited_generateFormat(\@columns,"\t");
+	  &delimited_printData($format,\@rows);
+	}
+      } elsif ($opts->{style} eq "csv") {
+	&delimited_printHeader(\@columns,",");
+	if(@rows) {
+	  my $format=&delimited_generateFormat(\@columns,",");
+	  &delimited_printData($format,\@rows,"\"");
 	}
       } elsif ($opts->{style} eq "record") {
 	if(@rows) {
@@ -164,7 +187,12 @@ sub readHeader {
     my $name=&trim(substr($header,$start, $length));
 
     # Create a hash for this column, in the column list
-    push @$columns, { name => $name, start => $index+$start, length => $length, datalength => 0 };
+    push @$columns, { name        => $name,
+		      start       => $index+$start,
+		      length      => $length,
+		      datalength  => 0,
+		      needsquote  => 0
+		    };
 
     if(length($name)>$maxFieldNameLen) {
       $maxFieldNameLen=length($name);
@@ -179,7 +207,7 @@ sub readHeader {
 
 # Read all of the data lines
 sub readData {
-  my ($columns, $rows, $lineLength, $nextLine)=@_;
+  my ($columns, $rows, $lineLength, $nextLine, $quoteRegexp)=@_;
 
   # Loop for each line until the length doesn't match, or we run out
   my $line;
@@ -221,6 +249,11 @@ sub readData {
 		  || $value=~/[0-9]{2}:[0-9]{2}/) {
 	    $$column{type}="datetime";
 	  }
+	}
+
+	# Check if special characters are present
+	if(defined($quoteRegexp) && !$$column{needsquote}) {
+	  $$column{needsquote}=$value=~/$quoteRegexp/;
 	}
 
 	# Store the value
@@ -371,6 +404,101 @@ sub bcp_printData {
   # Print each row with the precalculated format
   for my $row (@$rows) {
     printf $format, @$row;
+    print "\n";
+  }
+}
+
+# Generate a printf format string for printing a row
+sub delimited_generateFormat {
+  my ($columns, $separator)=@_;
+
+  # Process each column
+  my $format="";
+  my $x;
+  for($x=0;$x<@$columns;$x++) {
+    if($x) {
+      if($opts->{colour}) {
+	$format.="\e[38;5;4m";
+      }
+      $format.=$separator;
+    }
+
+    # Write a '%s' entry as appropriate
+    my $column=$$columns[$x];
+
+    if($opts->{colour}) {
+      my $type=$$column{type};
+      $type="string" if !defined($type);
+      if($type eq "string") {
+	$format.="\e[38;5;11m";
+      } elsif($type eq "number") {
+	$format.="\e[38;5;214m";
+      } elsif($type eq "datetime") {
+	$format.="\e[38;5;14m";
+      }
+    }
+
+    if($$column{needsquote}) {
+      $format.="\"%s\"";
+    } else {
+      $format.="%s";
+    }
+  }
+  $format.="\e[38;5;15m" if $opts->{colour};
+
+  return $format;
+}
+
+# Print the header
+sub delimited_printHeader {
+  my ($columns,$separator)=@_;
+
+  my $header;
+
+  # Process each column
+  my $x;
+  for($x=0;$x<@$columns;$x++) {
+    my $column=$$columns[$x];
+
+    # Get column name
+    my $value=sprintf("%s", $$column{name});
+
+    if($x) {
+      $header.=$separator;
+    }
+
+    # Add to header line and convert to '---' before adding to underline line
+    $header.=$value;
+  }
+
+  # Output header in green
+  $opts->{colour} && print "\e[38;5;10m";
+  print "$header\n";
+  $opts->{colour} && print "\e[38;5;15m";
+}
+
+# Print the data
+sub delimited_printData {
+  my ($format, $rows, $escapeRegexp)=@_;
+
+  # Print each row with the precalculated format
+  my $background=0;
+  for my $row (@$rows) {
+    if($opts->{colour}) {
+      if($background) {
+	print "\e[48;5;233m";
+      }
+      $background=!$background;
+    }
+
+    if(defined($escapeRegexp)) {
+      my @newRow=@$row;
+      map { s/($escapeRegexp)/$1$1/g } @newRow;
+      $row=\@newRow;
+    }
+    printf $format, @$row;
+
+    print "\e[48;5;0m" if $opts->{colour};
     print "\n";
   }
 }
