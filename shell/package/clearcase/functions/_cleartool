@@ -5,7 +5,7 @@
 # Completion code for cleartool command
 # Usage: These functions are used by the completion code
 #
-# $Id: _cleartool,v 1.6 2001/03/15 18:09:34 mebourne Exp $
+# $Id: _cleartool,v 1.7 2001/03/29 17:43:09 mebourne Exp $
 
 _cleartool_decode_pname () {
   case $command in
@@ -64,18 +64,20 @@ _cleartool_decode_pname () {
     unreserve)		result="file:_cleartool_files_checkedout";;
     *)			result="file:_files";;
   esac
-  #echo $result;
+  echo $result;
 }
 
 _cleartool_decode_type () {
   local type=$1
 
   case $type in
+    ...)				result="";; # Ignore this here for now (findmerge)
     \'network-region-pattern\')		result="pattern: ";;
     \'pattern\')			result="pattern: ";;
     \'region-tag-pattern\')		result="pattern: ";;
     \'view-tag-pattern\')		result="pattern: ";;
     \'vob-tag-pattern\')		result="pattern: ";;
+    activity-selector)			result="activity: ";; # activity?
     activity_selector)			result="";; # let pname catch this later (checkin)
     attribute-type-selector)		result="type: ";; # types list
     branch-pname)			result="branch: ";; # branch list
@@ -88,6 +90,7 @@ _cleartool_decode_type () {
     comment)				result="comment: ";;
     contrib-and-result-pname)		result="file:_cleartool_files_controlled";;
     contrib-pname)			result="file:_files";;
+    contrib-version-selector)		result="version: ";; # version list
     date-time)				result="date: ";;
     default-value)			result="value: ";;
     dest-pname)				result="file:_files";;
@@ -101,12 +104,18 @@ _cleartool_decode_type () {
     elem-type-selector)			result="type: ";; # types list
     element-pname)			result="file:_files";;
     element-type-selector)		result="type: ";; # types list
+    existing-type-selector)		result="type: ";; # types list
     format)				result="format: ";;
+    from-obj-selector)			result="file:_cleartool_files_controlled";;
+    from-pname)				result="file:_cleartool_files_controlled";;
     from-text)				result="comment: ";;
+    global-stg-pname)			result="file:_files";;
     group-name)				result="group:_groups";;
+    high-version)			result="version: ";; # version list
     hlink-selector)			result="hyperlink: ";; # hyperlinks list
     hlink-type-selector)		result="type: ";; # types list
     hltype-selector)			result="type: ";; # types list
+    host-stg-pname)			result="file:_files";;
     hostname)				result="host:_hosts";;
     hours)				result="number: ";;
     label-type-selector)		result="type: ";; # types list
@@ -115,10 +124,14 @@ _cleartool_decode_type () {
     log-name)				result="log:_cleartool_log_names";;
     log-pname)				result="file:_files";;
     login-name)				result="user:_users";;
+    low-version)			result="version: ";; # version list
+    max-kbytes)				result="number: ";;
     mgr-name)				result="manager:_cleartool_type_managers";;
-    mount-options)			result="option: ";; # embeded in _mount
+    mount-options)			result="option: ";; # embedded in _mount
     n)					result="number: ";;
     network-region)			result="region:_cleartool_region_tags";;
+    new-object-selector)		result="file:_cleartool_files_controlled";;
+    new-type-selector)			result="type: ";; # types list
     object-selector)			result="file:_cleartool_files_controlled";;
     object_selector)			result="file:_cleartool_files_controlled";;
     old-object-selector)		result="file:_cleartool_files_controlled";;
@@ -131,6 +144,7 @@ _cleartool_decode_type () {
     pool-dir-pname)			result="directory:_dirs";;
     pool-selector)			result="pool:_cleartool_pool_names";;
     query)				result="query: ";;
+    reclaim-kbytes)			result="number: ";;
     region-tag)				result="region:_cleartool_region_tags";;
     registry-password)			result="password: ";;
     replica-selector)			result="replica:_cleartool_replica_names";;
@@ -142,13 +156,17 @@ _cleartool_decode_type () {
     tag-registry-password)		result="password: ";;
     tail-pattern)			result="pattern: ";;
     target-dir-pname)			result="directory:_cleartool_dirs_controlled";;
+    target-pname)			result="file:_files";;
     text-mode)				result="mode:_cleartool_text_mode";;
     to-obj-selector)			result="file:_cleartool_files_controlled";;
+    to-pname)				result="file:_cleartool_files_controlled";;
     to-text)				result="comment: ";;
     topic)				result="topic: ";;
     topic-args)				result="topic: ";;
+    trigger-type-selector)		result="trigger: ";; # triggers list
     type-selector)			result="type: ";; # types list
     uuid)				result="uuid: ";; # uuid list
+    value)				result="value: ";;
     version-selector)			result="version: ";; # version list
     view-storage-dir-pname)		result="directory: ";; # view store dir list
     view-storage-pname)			result="directory:_dirs";;
@@ -163,15 +181,16 @@ _cleartool_decode_type () {
     vob-uuid)				result="uuid: ";; # vobuuid list
     *)			echo "Unhandled type for command $command >>>$type<<<" 1>&2;;
   esac
-  #echo $result
+  echo $result
 }
 
 _cleartool_add_option () {
+  # If this is a ... option then only add if there isn't one already
   if [[ $1 != \** || $_cleartool_opts[$command] != *\'\** ]]
   then
     _cleartool_opts[$command]="$_cleartool_opts[$command] '$1'"
   else
-    #echo "Skipping '$1' from command $command ($_cleartool_opts[$command])" 1>&2
+#    echo "Skipping '$1' from command $command ($_cleartool_opts[$command])" 1>&2
   fi
 }
 
@@ -181,45 +200,64 @@ _cleartool_process_option () {
   buffer=${buffer/#(#b) #[\[\{<] #(*[^ ]) #[\]\}>]/$match[1]}
 
   local brackets=${buffer//[^\[\{<]}
-#  if (( !$#brackets && ${(w)#buffer}==1 )); then
-#    case $buffer in
-#      -*)			option=$buffer;;
-#      ...)			option="";;
-#      *)			option=$(_cleartool_decode_type $buffer)
-#				 [[ -n $option ]] && option=":$option";;
-#    esac
-#      if [[ $buffer == -[^\ ]#\ [^-][^\ ]# ]]; then
-#	 option=$(_cleartool_decode_type $buffer[(w)2])
-#	 if [[ -n $option ]]; then
-#	   option="$buffer[(w)1]:$option"
-#	 fi
-#      else
   if (( !$#brackets ))
   then
-    local alternative option
-    for alternative in ${(s:|:)buffer}; do
-      alternative=${${alternative## #}%% #}
-      case $alternative in
-	log-name...) # Work round a bug in the output
-		option=$(_cleartool_decode_type log-name)
-		[[ -n $option ]] && _cleartool_add_option "*:$option";;
-        ...) ;; # FIXME: handle this
-        -[^\ ]#)
-		_cleartool_add_option $alternative;;
-        [^\ ]#)
-		option=$(_cleartool_decode_type $alternative)
-		[[ -n $option ]] && _cleartool_add_option ":$option";;
-	-[^\ ]#\ [^-][^\ ]#)
-		option=$(_cleartool_decode_type $alternative[(w)2])
-		[[ -n $option ]] && _cleartool_add_option "$alternative[(w)1]:$option";;
-        [^\ ]#\ ...)
-		option=$(_cleartool_decode_type $alternative[(w)1])
-		[[ -n $option ]] && _cleartool_add_option "*:$option";;
-	*) #echo "Unhandled alternative for command $command >$alternative<";;
-      esac
+    local alternative nextalternative option
+    for nextalternative in ${(s:|:)buffer}; do
+      while [[ -n "$nextalternative" ]]
+      do
+      	alternative=${${nextalternative## #}%% #}
+	nextalternative=""
+      	case $alternative in
+	  log-name...) # Work round a bug in the output
+		  option=$(_cleartool_decode_type log-name)
+		  [[ -n $option ]] && _cleartool_add_option "*:$option";;
+	  general\ options) # Ignore this (findmerge)
+		  ;;
+      	  ...)    # FIXME: handle this
+		  ;;
+
+	  # -option argument
+	  -[^\ ]#\ [^-][^\ ]#)
+		  option=$(_cleartool_decode_type $alternative[(w)2])
+		  [[ -n $option ]] && _cleartool_add_option "$alternative[(w)1]:$option";;
+	  # -option argument *
+	  -[^\ ]#\ [^-][^\ ]#\ *)
+		  option=$(_cleartool_decode_type $alternative[(w)2])
+		  [[ -n $option ]] && _cleartool_add_option "$alternative[(w)1]:$option"
+		  nextalternative="$alternative[(w)3,-1]";;
+
+	  # -option
+      	  -[^\ ]#)
+		  _cleartool_add_option $alternative;;
+
+	  # -option *
+      	  -[^\ ]#\ *)
+		  _cleartool_add_option $alternative[(w)1]
+		  nextalternative="$alternative[(w)2,-1]";;
+
+	  # argument
+      	  [^-][^\ ]#)
+		  option=$(_cleartool_decode_type $alternative)
+		  [[ -n $option ]] && _cleartool_add_option ":$option";;
+
+	  # argument ...
+      	  [^-][^\ ]#\ ...)
+		  option=$(_cleartool_decode_type $alternative[(w)1])
+		  [[ -n $option ]] && _cleartool_add_option "*:$option";;
+
+	  # argument *
+	  [^-][^\ ]#\ *)
+		  option=$(_cleartool_decode_type $alternative[(w)1])
+		  [[ -n $option ]] && _cleartool_add_option ":$option"
+		  nextalternative="$alternative[(w)2,-1]";;
+
+	  *)	  echo "Unhandled alternative for command $command >$alternative<";;
+      	esac
+      done
     done
   else
-#echo "Unhandled expression for command $command >$buffer<"
+#    echo "Unhandled expression for command $command >$buffer<"
   fi
 
   buffer=""
