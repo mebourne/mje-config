@@ -1,0 +1,25 @@
+# ZSH function file
+# Update the SQL package settings from Arcordia environment/component
+# Usage: sqluse [<environment> <component>]
+#
+# $Id: sqluse,v 1.1 2001/02/26 18:53:38 mebourne Exp $
+
+local env=$1 com=$2
+
+if [[ -z $env || -z $com ]]
+then
+  echo "Current settings:"
+else
+  db_attribute $env $com server >/dev/null || return 1
+
+  sqlset environment=$env \
+	 component=$com \
+	 vendor=sybase \
+	 server=$(db_attribute $env $com server) \
+	 user=$(db_attribute $env $com username) \
+	 password=$(db_attribute $env $com password)
+  echo "New settings:"
+fi
+
+echo "environment $_sql_parameters[environment]"
+echo "component   $_sql_parameters[component]"
