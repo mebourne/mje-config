@@ -3,14 +3,15 @@
 # cpemacs - Copy emacs files into site-lisp directory and recompile them
 # Written by Martin Ebourne, Started 24/08/99
 #
-# $Id: cpemacs,v 1.1 1999/08/24 16:22:06 martine Exp $
+# $Id: cpemacs,v 1.2 2000/01/27 18:15:57 martine Exp $
 
 cd /usr/users/martine/config/emacs
 
 for i in *.el
 do
-  echo cp -fp $i /opt/emacs/share/emacs/site-lisp/$i
+  echo Installing /opt/emacs/share/emacs/site-lisp/$i
   cp -fp $i /opt/emacs/share/emacs/site-lisp/$i
+  chmod 444 /opt/emacs/share/emacs/site-lisp/$i
 done
 
 emacs --batch --eval '(byte-recompile-directory "/opt/emacs/share/emacs/site-lisp/")'
