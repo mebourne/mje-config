@@ -1,5 +1,5 @@
 -*- Outline -*-
-$Id: programs.txt 792 2003-09-22 11:47:18Z martin $
+$Id$
 
 
 Installed programs
@@ -155,9 +155,9 @@ mv fvwm_icons $HOME/local/share/fvwm-icons
 ** Subversion
 
 Name:		 subversion
-Version:	 0.26
+Version:	 1.0.0
 Home page:	 http://subversion.tigris.org/
-Package name:	 subversion-0.26.0.tar.gz
+Package name:	 subversion-1.0.0.tar.gz
 Build:
 ./configure --prefix=$HOME/local --bindir=$HOME/local/bin/$(uname -m) --with-ssl --with-libs=$HOME/local
 gmake
@@ -172,7 +172,7 @@ Home page:	 http://www.openssl.org/
 Package name:	 openssl-0.9.7b.tar.gz
 Source location: http://www.openssl.org/source/
 Build:
-./config --prefix=$HOME/local
+./config --prefix=$HOME/local shared
 gmake
 gmake install
 Notes:		 If using on system without /dev/{,u}random, will need prngd. Apply patch
