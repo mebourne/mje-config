@@ -2,7 +2,7 @@
 # Provide options parsing and help output
 # (C) 2001 Martin Ebourne
 #
-# $Id: parse_opts,v 1.26 2001/08/29 16:35:41 mebourne Exp $
+# $Id: parse_opts,v 1.27 2002/05/17 17:15:01 mebourne Exp $
 
 
 ### Documentation
@@ -578,6 +578,7 @@ _parse_opts_setupdefinitions() {
 #type function      values=${(k)functions}           "shell function"           _functions
 #type option        exec=_parse_opts_validate_option "zsh option"               _options
 #type parameter     values=${(k)parameters}          parameter                  _parameters
+#type signal        values=signals                   signal                     _signals
 
 ## Complex type for sub commands - ie. where a real command is passed as an
 ## argument. Note that this type may currently only be used for argument
