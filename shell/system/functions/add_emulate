@@ -1,0 +1,30 @@
+# ZSH function file
+# Add emulate command to start of function. Allows use of scripts to load functions for other
+# shells unchanged, and later can edit the function to force zsh to emulate the correct shell.
+# NB. emulate is always passed -L for local changes
+# Usage: add_emulate [-R] <shell> <function-name>
+#	 -R	As for emulate builtin (reset more options to defaults)
+#
+# $Id: add_emulate,v 1.1 2001/03/14 15:49:34 mebourne Exp $
+
+local reset
+if [[ $argv[1] == -R ]]
+then
+  reset=-R
+  shift
+fi
+
+if (( ARGC != 2 ))
+then
+  echo "Syntax add_emulate [-R] <shell> <function-name>" 1>&2
+  return 1
+fi
+
+local shell=$argv[1] funcname=$argv[2]
+
+if [[ -n $functions[$funcname] ]]
+then
+  functions[$funcname]="emulate -L $reset $shell
+$functions[$funcname]
+"
+fi
