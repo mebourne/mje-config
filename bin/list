@@ -3,7 +3,7 @@
 # list - List locked, snapped, and new files in directories
 # Written by Martin Ebourne, Started 20/08/99
 #
-# $Id: list,v 1.8 1999/09/09 13:44:09 martine Exp $
+# $Id: list,v 1.9 1999/09/09 13:54:05 martine Exp $
 
 # Make sure we are in a version controlled directory
 if [ ! -f ".VCS" ]
@@ -22,12 +22,14 @@ $1=="[START]", $1=="[END]" { if(substr($1,1,1)=="[" || substr($1,1,5)=="link=") 
 # Search for .VCS files of unusual size, and any other files that are out of place. Remove
 # /.VCS off the end so we have a list of directories with checked out files and a list of
 # potentially new files
-list=`find . \( -name '.VCS' ! -size ${size}c \
-		-o -type f ! \( -name '.VCS' -o -name '*~' -o -name '*.bak' -o -name '*.log' \
-				-o -name '*.out' -o -name '*.vcsbak' -o -name '.newbld' \
-				-o -name 'TAGS' \
-			     \) \
-	     \) -print \
+list=`find . \( -name '.VCS' ! -size ${size}c -print \
+		-o -type f ! \( -name '.VCS' -o -name '*~' -o -name '*.bak' -o -name '*%' \
+				-o -name '*.out' -o -name '*.log' -o -name '*.vcsbak' \
+				-o -name '*.tmp' -o -name 'versionFile.cxx' \
+				-o -name '.newbld' -o -name 'core' -o -name 'TAGS' \
+			     \) -print \
+		-o -type d \( -name 'sunos' -o -name 'osf1' -o -name 'Templates.DB' \) -prune \
+	     \) \
       | sed 's:/\.VCS$::'`
 
 # Iterate over the list building a list of files to report
@@ -46,15 +48,18 @@ BEGIN { FS="=" }
 $1=="lock" { print "L", dir $2 }
 $1=="snap" { print "S", dir $2 }
 ' dir=$item/ $item/.VCS`
+
   else
 
     # Might be a new file. Output just in case - will be filtered out later if not. Use 'Z' to
     # ensure it is sorted last and removed if it duplicates a checked out file
     foundfiles="Z $item"
+
   fi
 
   # Append files we've just found onto list, newline separated
   files="$files$foundfiles\n"
+
 done
 
 # Sort files by filename then state. uniq ignoring state to remove files listed as new which
