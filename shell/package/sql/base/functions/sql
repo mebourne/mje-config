@@ -3,21 +3,32 @@
 # Execute an SQL command
 # Usage: sql <sql-command> ...
 #
-# $Id: sql,v 1.7 2001/10/12 16:19:09 mebourne Exp $
+# $Id: sql,v 1.8 2002/05/28 13:27:28 mebourne Exp $
 
 eval $_sql_intro
 
 if (( ARGC ))
 then
-  local format_v colour_v formatcmd
+  local format_v colour_v formatopts formatcmd interface_v
+
   _sql_getparam format_v format none
+  formatopts="--style=$format_v"
   if [[ $format_v != none ]]
   then
     _sql_getparam colour_v colour off
 
-    formatcmd="| $_sql_formatprogram --colour=$colour_v --width=$COLUMNS --width-auto $format_v"
+    formatopts="$formatopts --colour=$colour_v --width=$COLUMNS --width-auto"
+
+    formatcmd="| $_sql_formatprogram $formatopts"
   fi
-  eval _sql_call execute "\$argv[@]" $formatcmd
+
+  _sql_getparam interface_v interface native
+  if [[ $interface_v == dbi ]]
+  then
+    _sql_call execute_dbi $=formatopts -- "$argv[@]"
+  else
+    eval _sql_call execute_native "\$argv[@]" $formatcmd
+  fi
 else
   _sql_call interactive
 fi

@@ -4,7 +4,7 @@
 # Written by Martin Ebourne
 # NB. This file should only be included by the SQL base package
 #
-# $Id: setup,v 1.5 2001/06/01 17:18:55 mebourne Exp $
+# $Id: setup,v 1.6 2002/05/28 13:28:38 mebourne Exp $
 
 add_functions_directory package/sql/sybase/functions
 
@@ -16,5 +16,6 @@ _sql_functions[sybase:fetch_tables]=_sybase_fetchtables
 _sql_functions[sybase:fetch_types]=_sybase_fetchtypes
 _sql_functions[sybase:init]=true
 _sql_functions[sybase:interactive]=_sybase_interactive
-_sql_functions[sybase:execute]=_sybase_execute
 _sql_functions[sybase:bcp]=_sybase_bcp
+_sql_functions[sybase:execute_dbi]=_sybase_execute_dbi
+_sql_functions[sybase:execute_native]=_sybase_execute

@@ -3,7 +3,7 @@
 # Set up connection to Oracle database
 # Usage: ora <connection-info>
 #
-# $Id: ora,v 1.1 2002/04/10 08:42:42 mebourne Exp $
+# $Id: ora,v 1.2 2002/05/28 13:28:34 mebourne Exp $
 
 local user="$argv[1]"
 
@@ -21,5 +21,5 @@ then
   user=${user%/*}
 fi
 
-sqlset vendor=oracle user="$user" password="$password" server="$server"
+sqlset vendor=oracle interface=dbi user="$user" password="$password" server="$server"
 _sql_prompt="$user${server:+@$server}"

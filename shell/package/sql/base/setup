@@ -3,7 +3,7 @@
 # Setup for SQL base package
 # Written by Martin Ebourne
 #
-# $Id: setup,v 1.17 2002/05/24 16:13:11 mebourne Exp $
+# $Id: setup,v 1.18 2002/05/28 13:27:02 mebourne Exp $
 
 add_functions_directory package/sql/base/functions
 
@@ -18,6 +18,10 @@ emulate -L zsh
 # Setup for SQL output formatting Perl script
 typeset -g _sql_formatprogram=sqlFormat.pl
 compdef -n _parse_opts ${_sql_formatprogram:t}
+
+# Setup for SQL DBI interface Perl script
+typeset -g _sql_dbiprogram=sqlExecute.pl
+compdef -n _parse_opts ${_sql_dbiprogram:t}
 
 # Styles for completion
 zstyle ':completion:*:match:sql:*' tag-order '! table-aliases'
