@@ -87,6 +87,12 @@ my %styles=(
     formatFn     => \&record_generateFormat,
     dataFn       => \&record_printData,
   },
+  rows => {
+    extend       => "record",
+    description  => "Record style output with multiple rows to a record line",
+    separator    => "  ",
+    controlFn    => \&rows_control,
+  },
   emacs => {
     extend       => "default",
     description  => "Output directly to Emacs in forms mode",
@@ -137,6 +143,11 @@ Options:
 				on	Always colour (if applicable)
   -h, --help			Provide this help
 				# --help | -h
+  -w <columns>, --width=<columns>
+				Specify the terminal width in characters
+				# --width | -w : posinteger
+  --width-auto			With --width, only apply if output to tty
+				# --width-auto
 
 Arguments:
   <style>			The style of formatting to perform. One of:
@@ -169,6 +180,12 @@ if($style->{colour}) {
      || $opts->{colour} eq "auto" && $tty) {
     $colour=1;
   }
+}
+
+# Determine screen width to use
+my $screenWidth=$opts->{width};
+if($opts->{"width-auto"} && !$tty) {
+  $screenWidth=undef;
 }
 
 # These used by emacs style
@@ -568,6 +585,70 @@ sub record_printData {
   }
 }
 
+# Control function for rows style
+sub rows_control {
+  my ($columns, $rows)=@_;
+
+  my $rowWidth=1;
+  for my $column (@$columns) {
+    if($rowWidth<$column->{datalength}) {
+      $rowWidth=$column->{datalength};
+    }
+  }
+
+  my $separator=$style->{separator};
+
+  my $rowsPerLine=int(($screenWidth-$maxFieldNameLen-2+length($separator))
+		      /($rowWidth+length($separator)));
+  $rowsPerLine=1 if $rowsPerLine<1;
+
+  my $nl=0;
+  # Process each block of rows
+  for(my $rowBlock=0;$rowBlock<@$rows;$rowBlock+=$rowsPerLine) {
+    print "\n" if $nl;
+    $nl=1;
+
+    # Process each column
+    my $x;
+    for(my $colNum=0;$colNum<@$columns;$colNum++) {
+      my $column=$$columns[$colNum];
+
+      my $format="";
+      $format.="\e[38;5;10m" if $colour;
+      $format.="%-*s";
+      $format.="\e[38;5;15m" if $colour;
+      $format.=": ";
+      printf "$format", $maxFieldNameLen, $$column{name};
+
+      # Process this column for each row in this block
+      for(my $rowNum=$rowBlock;$rowNum<$rowBlock+$rowsPerLine && $rowNum<@$rows;$rowNum++) {
+	$format="";
+	if($rowNum!=$rowBlock) {
+	  $format.=$separator;
+	}
+	if($colour) {
+	  my $type=$$column{type};
+	  $type="string" if !defined($type);
+	  if($type eq "string") {
+	    $format.="\e[38;5;11m";
+	  } elsif($type eq "number") {
+	    $format.="\e[38;5;214m";
+	  } elsif($type eq "datetime") {
+	    $format.="\e[38;5;14m";
+	  }
+	  $format.="\e[48;5;233m";
+	}
+	$format.="%-*s";
+	$format.="\e[00m" if $colour;
+	$format.=" " x ($rowWidth - $column->{datalength});
+	printf "$format", $column->{datalength}, $rows->[$rowNum]->[$colNum];
+      }
+      print "\n";
+    }
+  }
+}
+
+# Control function for emacs style
 sub emacs_control {
   my ($columns, $rows)=@_;
 
