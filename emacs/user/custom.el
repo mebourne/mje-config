@@ -1,7 +1,7 @@
 ;; Emacs configuration file
 ;; Custom definitions
 ;; Written by Martin Ebourne
-;; $Id: custom.el 792 2003-09-22 11:47:18Z martin $
+;; $Id$
 
 (custom-set-variables
 
@@ -23,10 +23,10 @@
 
  ;; Set up mail addresses
  '(mail-user-agent 'message-user-agent)
- '(mail-host-address "csfb.com")
- '(user-mail-address "Martin.Ebourne@csfb.com")
+ '(mail-host-address "zepler.org")
+ '(user-mail-address "martin@zepler.org")
  '(message-signature
    "Martin Ebourne
-Martin.Ebourne@csfb.com
+martin@zepler.org
 ")
  )
