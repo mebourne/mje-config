@@ -17,19 +17,21 @@ if(@ARGV && $ARGV[0] eq "-c") {
 
 my $style=$ARGV[0];
 
-if(@ARGV!=1 || $style!~/^(simple|squash)$/) {
+if(@ARGV!=1 || $style!~/^(simple|squash|record)$/) {
     print STDERR
 "Syntax: sqlformat.pl [-c] <style>
   -c	Colour output
   style One of:
 	simple - Simple formatting keeping the default output style
 	squash - As simple but reduces column widths to save on screen space
-	record - Record style output, row by row [UNIMPLEMENTED]
+	record - Record style output, row by row
 	emacs  - Emacs style output [UNIMPLEMENTED]
 ";
     exit 1;
 }
 
+
+my $maxFieldNameLen=0;
 
 # Read the input two lines at a time (but looping once per line), looking for a table header
 my $thisLine=<STDIN>;
@@ -53,10 +55,17 @@ while(defined($thisLine)) {
     }
     
     # Write the output
-    &printHeader(\@columns);
-    if(@rows) {
-      my $format=&generateFormat(\@columns);
-      &printData($format,\@rows);
+    if($style eq "simple" || $style eq "squash") {
+      &simple_printHeader(\@columns);
+      if(@rows) {
+	my $format=&simple_generateFormat(\@columns);
+	&simple_printData($format,\@rows);
+      }
+    } elsif ($style eq "record") {
+      if(@rows) {
+	my $format=&record_generateFormat(\@columns);
+	&record_printData($format,\@rows);
+      }
     }
 
     # Ensure a newline is present. Helps make desc output easier to read
@@ -101,6 +110,10 @@ sub readHeader {
 
     # Create a hash for this column, in the column list
     push @$columns, { name => $name, start => $index+$start, length => $length, datalength => 0 };
+
+    if(length($name)>$maxFieldNameLen) {
+      $maxFieldNameLen=length($name);
+    }
 
     # Modify header & format lines for next column
     $format=substr($format,$end);
@@ -184,7 +197,7 @@ sub trimLength {
 }
 
 # Generate a printf format string for printing a row
-sub generateFormat {
+sub simple_generateFormat {
   my ($columns)=@_;
 
   # Process each column
@@ -223,7 +236,7 @@ sub generateFormat {
 }
 
 # Print the header
-sub printHeader {
+sub simple_printHeader {
   my ($columns)=@_;
 
   my $header;
@@ -255,7 +268,7 @@ sub printHeader {
 }
 
 # Print the data
-sub printData {
+sub simple_printData {
   my ($format, $rows)=@_;
 
   # Print each row with the precalculated format
@@ -271,5 +284,52 @@ sub printData {
 
     print "\e[48;5;0m" if $colour;
     print "\n";
+  }
+}
+
+# Generate a printf format string for printing a row
+sub record_generateFormat {
+  my ($columns)=@_;
+
+  # Process each column
+  my $format="";
+  my $x;
+  for($x=0;$x<@$columns;$x++) {
+    # Write a '%<num>s' entry as appropriate
+    my $column=$$columns[$x];
+    $format.="\e[38;5;10m" if $colour;
+    $format.=sprintf("%-*s",$maxFieldNameLen,$$column{name});
+    $format.="\e[38;5;15m" if $colour;
+    $format.=": ";
+    if($colour) {
+      my $type=$$column{type};
+      $type="string" if !defined($type);
+      if($type eq "string") {
+	$format.="\e[38;5;11m";
+      } elsif($type eq "number") {
+	$format.="\e[38;5;214m";
+      } elsif($type eq "datetime") {
+	$format.="\e[38;5;14m";
+      }
+      $format.="\e[48;5;233m";
+    }
+    $format.="%-" . $$column{datalength} . "s";
+    $format.="\e[00m" if $colour;
+    $format.="\n";
+  }
+
+  return $format;
+}
+
+# Print the data
+sub record_printData {
+  my ($format, $rows)=@_;
+
+  # Print each row with the precalculated format
+  my $nl=0;
+  for my $row (@$rows) {
+    print "\n" if $nl;
+    $nl=1;
+    printf "$format", @$row;
   }
 }
