@@ -3,17 +3,11 @@
 # Execute the given SQL command
 # For use only by the SQL packages
 #
-# $Id: _sybase_sql,v 1.3 2001/03/14 09:57:59 mebourne Exp $
+# $Id: _sybase_sql,v 1.4 2001/03/19 15:00:09 mebourne Exp $
 
 if [[ -n $1 ]]
 then
   {
-    if [[ -n $_sql_parameters[database] ]]
-    then
-      echo "use $_sql_parameters[database]"
-      echo "go"
-    fi
-
     if [[ -n $rows ]]
     then
       echo "set rowcount $rows"
