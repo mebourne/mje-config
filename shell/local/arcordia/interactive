@@ -4,7 +4,7 @@
 # done, but immediately before the user specific files
 # Written by Martin Ebourne
 #
-# $Id: interactive,v 1.8 2001/03/14 15:49:03 mebourne Exp $
+# $Id: interactive,v 1.9 2001/03/19 09:38:44 mebourne Exp $
 
 # Arcordia settings
 
@@ -32,7 +32,17 @@ package sourceinfo
 package sql
 
 # Setup for SourceInfo package
-sourceinfo_sourcecode_dirs=(/vobs/odyssey)
+sourceinfo_sourcecode_dirs=(
+  /vobs/odyssey/ac
+  /vobs/odyssey/busutils
+  /vobs/odyssey/cashsec
+  /vobs/odyssey/qm
+  /vobs/odyssey/refdata
+  /vobs/odyssey/services
+  /vobs/odyssey/shared
+  /vobs/odyssey/system
+  /vobs/odyssey/xdg
+)
 
 # Setup SQL db environment
 if [[ -r $HOME/.zshdb ]]
