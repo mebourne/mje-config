@@ -1,7 +1,7 @@
 ;; Emacs configuration file
 ;; Syntax colouring regular expressions for cc-mode
 ;; Written by Martin Ebourne
-;; $Id: cc-mode.el 792 2003-09-22 11:47:18Z martin $
+;; $Id$
 
 ;; C/C++/Java
 (defvar c-font-lock-keywords-local nil)
@@ -24,7 +24,7 @@
 			     "bool" "break" "case" "catch" "char" "class"
 			     "compl" "const" "const_cast" "continue" "default"
 			     "delete" "do" "double" "dynamic_cast" "else"
-			     "enum" "explicit" "extern" "false" "false" "float"
+			     "enum" "explicit" "export" "extern" "false" "false" "float"
 			     "for" "friend" "goto" "if" "inline" "int" "long"
 			     "mutable" "namespace" "new" "not" "not_eq"
 			     "operator" "or" "or_eq" "private" "protected"
