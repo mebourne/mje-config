@@ -4,7 +4,7 @@
 # Update the SourceInfo databases
 # Usage: siupdate
 #
-# $Id: siupdate,v 1.5 2001/04/10 10:59:44 mebourne Exp $
+# $Id: siupdate,v 1.6 2001/04/11 11:14:30 mebourne Exp $
 
 if [[ -z $sourceinfo_sourcecode_dirs ]]
 then
@@ -17,7 +17,9 @@ local dir
 for dir in $sourceinfo_sourcecode_dirs
 do
   find $dir -type f \! \( -name '*.[ao]' -o -name '*.so' -o -name '*[mM]akefile' \
-			  -o -name sol2.d -o -name '.*' -o -name '*~' -o -name '*#' \) \
+			  -o -name sol2.d -o -name '.*' -o -name '*~' -o -name '*#' \
+			  -o -name core \
+		       \) \
 		    -print \
 	    -o -name lost+found -prune
 done |
