@@ -3,6 +3,12 @@
 # Print text files after converting to postscript
 # Usage: lpp [<file> ...]
 #
-# $Id: lpp 792 2003-09-22 11:47:18Z martin $
+# $Id$
 
-a2ps -F8 -ns -p -nP -t8 "$argv[@]" | lp -onobanner
+if [[ $(a2ps --version 2>/dev/null) == *GNU* ]]
+then
+  #a2ps --columns=1 --font-size=8 --portrait "$argv[@]" | lp -onobanner
+  a2ps "$argv[@]" | lpr -o job-sheets=none
+else
+  a2ps -F8 -ns -p -nP -t8 "$argv[@]" | lp -onobanner
+fi
