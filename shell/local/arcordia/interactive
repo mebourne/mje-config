@@ -4,7 +4,7 @@
 # done, but immediately before the user specific files
 # Written by Martin Ebourne
 #
-# $Id: interactive,v 1.16 2001/05/23 12:27:09 mebourne Exp $
+# $Id: interactive,v 1.17 2001/05/23 12:41:58 mebourne Exp $
 
 # Arcordia settings
 
@@ -65,10 +65,10 @@ sourceinfo_preferred_dirs=(
 )
 
 # Setup SQL db environment
-if [[ -r $HOME/.zshdb ]]
+if [[ -r ${ZDOTDIR:-$HOME}/.zshdb ]]
 then
   [[ -n $ZCONFIGDEBUG ]] && echo "Loading config file .zshdb"
-  . $HOME/.zshdb
+  . ${ZDOTDIR:-$HOME}/.zshdb
 fi
 
 # Show SQL settings in prompt
@@ -77,8 +77,8 @@ _sql_prompt_update
 prompt_above=${prompt_above/_sql_prompt\}/_sql_prompt\}\${\${_sql_prompt#\$DB_ENV \$DB_COM}:+ \[\$DB_ENV \$DB_COM]}}
 
 # Check quota once per day (takes too long to do each time)
-if [[ ! -f $HOME/.quota || -n $(find $HOME/.quota -ctime +1) ]]
+if [[ ! -f ${ZDOTDIR:-$HOME}/.quota || -n $(find ${ZDOTDIR:-$HOME}/.quota -ctime +1) ]]
 then
-  touch $HOME/.quota
+  touch ${ZDOTDIR:-$HOME}/.quota
   quota -v
 fi
