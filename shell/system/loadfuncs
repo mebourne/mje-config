@@ -3,7 +3,7 @@
 # Set up all the autoloaded functions. This is executed for all shells very early on
 # Written by Martin Ebourne
 #
-# $Id: loadfuncs,v 1.6 2001/05/18 14:34:25 mebourne Exp $
+# $Id: loadfuncs,v 1.7 2001/07/30 13:41:07 mebourne Exp $
 
 # This file can be included more than once. Only execute it once though
 if ! functions add_functions_directory >/dev/null
@@ -19,7 +19,11 @@ then
   # or not directory was already present.
   # Note that directory given is relative to $ZCONFIGDIR
   add_functions_directory() {
-    local newdir=$ZCONFIGDIR/$1
+    local newdir="$argv[1]"
+    if [[ $newdir != /* ]]
+    then
+      newdir="$ZCONFIGDIR/$newdir"
+    fi
 
     if [[ -d $newdir ]]
     then
@@ -44,7 +48,7 @@ then
   
 	if [[ -n $ZCONFIGDEBUG ]]
 	then
-	  echo "Autoloading functions from $1:"
+	  echo "Autoloading functions from $argv[1]:"
 	  print -c - $files
 	fi
 
@@ -52,6 +56,12 @@ then
       fi
     fi
   }
+
+  # Should have a Zsh 'Misc' directory on fpath. If so, autoload them
+  if [[ -n $fpath[(r)*/Misc] ]]
+  then
+    add_functions_directory $fpath[(r)*/Misc]
+  fi
 
   add_functions_directory system/functions
   add_functions_directory local/current/functions
