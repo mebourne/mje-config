@@ -1,4 +1,4 @@
-#!/home/odyssey1/mebourne/local/bin/sun4u/zsh
+#!/home/mebourne/local/bin/sun4u/zsh
 # Fancy input pipe script for use with less
 # Written by Martin Ebourne, 05/04/2001
 #
