@@ -29,6 +29,7 @@ Build:
 ./configure --prefix=$HOME/local --bindir=$HOME/local/bin/`uname -m`
 gmake
 gmake install
+gmake install-info
 Notes:		 If image libraries (JPEG & XPM) compiled, use also:
 		     --with-xpm --with-jpeg --x-includes=$HOME/local/include
 		     --x-libraries=$HOME/local/lib
@@ -104,6 +105,7 @@ Build:
 ./configure --prefix=$HOME/local --bindir=$HOME/local/bin/`uname -m`
 gmake
 gmake install
+gmake install-info
 Notes:		 If XPM compiled, use also:
 		     --x-includes=$HOME/local/include --x-libraries=$HOME/local/lib
 		 CSFB: Use CC=cc ./configure ...
@@ -129,6 +131,7 @@ Build:
 ./configure --prefix=$HOME/local --bindir=$HOME/local/bin/`uname -m`
 gmake
 gmake install
+gmake install-info
 Notes:		 CSFB: Use CC=cc ./configure ...
 
 ** ls
