@@ -3,7 +3,7 @@
 # Execute an SQL command
 # Usage: sql <sql-command> ...
 #
-# $Id: sql,v 1.6 2001/10/03 11:06:51 mebourne Exp $
+# $Id: sql,v 1.7 2001/10/12 16:19:09 mebourne Exp $
 
 eval $_sql_intro
 
@@ -15,7 +15,7 @@ then
   then
     _sql_getparam colour_v colour off
 
-    formatcmd="| $_sql_formatprogram --colour=$colour_v $format_v"
+    formatcmd="| $_sql_formatprogram --colour=$colour_v --width=$COLUMNS --width-auto $format_v"
   fi
   eval _sql_call execute "\$argv[@]" $formatcmd
 else
