@@ -3,7 +3,7 @@
 # Setup for completion package
 # Written by Martin Ebourne
 #
-# $Id: setup,v 1.10 2001/08/14 09:39:54 mebourne Exp $
+# $Id: setup,v 1.11 2001/08/14 16:56:16 mebourne Exp $
 
 add_functions_directory package/completion/functions
 
@@ -154,14 +154,15 @@ zstyle ':completion:all-matches:*' old-matches only
 # Need a completion widget as a helper to determine if we are completing or
 # not. Return value isn't propogated by zle so use var
 _completion_is_completing() {
-  [[ $compstate[old_list] == shown ]] && _completing=1
+  _completing=$compstate[old_list]
+  compstate[old_list]=keep
 }
 
 # Need a normal widget to be able to call the down function
 _completion_menu_or_down() {
-  integer _completing=0
+  local _completing=""
   zle completion-is-completing
-  if (( _completing ))
+  if [[ $_completing == (yes|shown) ]]
   then
     zle menu-complete
   else
