@@ -1,7 +1,7 @@
 ;; Emacs configuration file
 ;; Customised variables
 ;; Written by Martin Ebourne
-;; $Id: custom.el,v 1.6 2002/03/18 19:39:07 mebourne Exp $
+;; $Id: custom.el,v 1.7 2002/03/18 20:04:24 mebourne Exp $
 
 (setq custom-file (concat install-user-base-dir "/custom.el"))
 
@@ -41,6 +41,9 @@
 
  ;; Mark lines past buffer in margin
  '(indicate-empty-lines t)
+
+ ;; Display trailing white space
+ '(show-trailing-whitespace t)
 
  ;; Display image files as pictures
  '(auto-image-file-mode t)
@@ -140,13 +143,8 @@
 
  ;; Setup syntax colouring
  '(global-font-lock-mode t nil (font-lock))
- '(font-lock-support-mode (quote lazy-lock-mode))
- '(lazy-lock-stealth-nice 0.25)
- '(lazy-lock-stealth-lines 50)
- '(lazy-lock-stealth-time 1)
- '(lazy-lock-minimum-size 5120)
- '(lazy-lock-defer-time 0)
- '(lazy-lock-stealth-load 75)
+ '(font-lock-support-mode (quote jit-lock-mode))
+ '(jit-lock-stealth-time 1)
 
  ;; More descriptive title bar
  '(frame-title-format '("" invocation-name "   " user-login-name "@" system-name
@@ -185,5 +183,5 @@
 				  (((class color) (background dark)) (:foreground "light pink"))))
  '(font-lock-rose-comment-face ((((class color) (background light)) (:foreground "gray"))
 				 (((class color) (background dark)) (:foreground "dark green"))))
- )
+ '(trailing-whitespace ((t (:background "grey40")))))
 ; orchid, indian red, dark khaki
