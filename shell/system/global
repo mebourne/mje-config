@@ -3,7 +3,7 @@
 # Generic system-wide setup for ALL shells. This is executed before anything else
 # Written by Martin Ebourne
 #
-# $Id: global,v 1.1 2001/02/12 18:13:23 mebourne Exp $
+# $Id: global,v 1.2 2001/04/20 11:27:58 mebourne Exp $
 
 # Make various path like variables keep unique values only. Need to create any that aren't built
 # into the shell. Most of them are also exported
@@ -16,6 +16,28 @@ typeset -Ugx  MANPATH
 typeset -U    MODULE_PATH
 typeset -Ugx  PATH
 typeset -Ugx  WATCH
+
+# Check for properties of our term type. XTerm & colour are the interesting ones
+COLOUR=0
+XTERM=0
+case $TERM in
+  *xterm*colo(u|)r* | *colo(u|)r*xterm*)
+    COLOUR=1
+    XTERM=1
+    ;;
+
+  *xterm*)
+    # Generic XTerm may not support colour, but should ignore unrecognised codes.
+    # Difficult to tell otherwise if colour will work. Disable here if required
+    COLOUR=1
+    XTERM=1
+    ;;
+
+  rxvt|dtterm|vs100)
+    COLOUR=0
+    XTERM=1
+    ;;
+esac
 
 # Enable functions early & for everyone. Ha! Should be here but zsh later goes and
 # resets the stupid path. Doh! Have to do it at the start of login AND interactive
