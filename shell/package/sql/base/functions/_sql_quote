@@ -3,25 +3,28 @@
 # ZLE widget to escape quotes while being entered in an SQL command
 # For use only as a widget with ZLE
 #
-# $Id: _sql_quote,v 1.1 2001/03/20 18:29:03 mebourne Exp $
+# $Id: _sql_quote,v 1.2 2001/03/21 11:27:58 mebourne Exp $
 
 # Don't quote if already quoted
 if [[ $CURSOR -ne 0 && $BUFFER[CURSOR] != \\ ]]
 then
+
   # Expand all aliases of the command word. Catch loops
-  local cmd count
+  local cmd count=0
   cmd=$BUFFER[(w)1]
-  for (( count = 0 ; $#aliases[$cmd] && count < 20 ; count++ ))
+  while [[ $#aliases[$cmd] -gt 0 && $cmd != quoted && count -lt 20 ]]
   do
     cmd=${aliases[$cmd][(w)1]}
+    (( count++ ))
   done
 
   # If command is dummy command 'quoted' then insert quote character
   if [[ $cmd == quoted ]]
   then
     BUFFER[CURSOR+1,CURSOR]=\\
-    (( CURSOR += 1 ))
+    (( CURSOR++ ))
   fi
+
 fi
 
 # Insert original character

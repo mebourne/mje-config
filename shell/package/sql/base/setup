@@ -3,13 +3,16 @@
 # Setup for SQL base package
 # Written by Martin Ebourne
 #
-# $Id: setup,v 1.3 2001/03/20 18:30:00 mebourne Exp $
+# $Id: setup,v 1.4 2001/03/21 11:28:18 mebourne Exp $
 
 add_functions_directory package/sql/base/functions
 
 typeset -gA _sql_parameters _sql_functions
 
-# Quoted must come first since it is a hint to the SQL widget functions
+# This is an ignored command, just used as a hint to the SQL widget functions
+alias quoted=""
+
+# Quoted must come first
 alias sql="quoted nocorrect noglob sql"
 alias desc="quoted nocorrect noglob desc"
 
