@@ -1,11 +1,11 @@
-compdef sql
+#compdef sql
 # ZSH function file
 # Written by Martin Ebourne
 # Part of the SQL base package
 # Completion code for sql command
 # Usage: These functions are used by the completion code
 #
-# $Id: _sql,v 1.20 2002/04/26 14:36:33 mebourne Exp $
+# $Id: _sql,v 1.21 2002/05/10 11:25:32 mebourne Exp $
 
 #_sql_trace=1
 
