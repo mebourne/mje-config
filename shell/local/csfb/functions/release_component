@@ -2,7 +2,7 @@
 # ZSH function file
 # Release component in SCM
 #
-# $Id: release_component,v 1.7 2002/09/04 16:45:13 mebourne Exp $
+# $Id: release_component,v 1.8 2002/10/18 09:24:04 mebourne Exp $
 
 local vob="/vobs/bpta"
 
@@ -145,13 +145,13 @@ local starttime="`date`"
 
 local label="$opts[component]_$opts[version]"
 
+local description=""
 if [[ -z $opts[re-release] ]]
 then
   if [[ -z $opts[update-labels] ]]
   then
     echo
     echo "Enter one line description for release:"
-    local description
     read description
     echo
     echo "Creating label..."
@@ -177,9 +177,13 @@ echo "Finished"
 if [[ -n $opts[mail] ]]
 then
   {
-    echo "Subject: $opts[component] version $opts[version] released"
+    echo "Subject: RELEASE NOTE: $opts[component] version $opts[version]"
     echo
-    echo "Started at:  $starttime"
-    echo "Finished at: $endtime"
+    echo "Component name: $opts[component]"
+    echo "Version: $opts[version]"
+    echo "Dependencies: ?"
+    echo "Delta/Full release: Full"
+    echo "CQs fixed/new functionality added: $description"
+    echo "Initial target test env: ?"
   } | mail $=opts[mail]
 fi
