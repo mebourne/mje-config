@@ -3,7 +3,7 @@
 # Shell option settings
 # Written by Martin Ebourne
 #
-# $Id: options,v 1.1 2001/02/12 18:13:24 mebourne Exp $
+# $Id: options,v 1.2 2001/03/06 11:57:55 mebourne Exp $
 
 setopt append_history
 setopt auto_cd
@@ -23,6 +23,7 @@ setopt hist_ignore_space
 setopt hist_no_store
 setopt hist_reduce_blanks
 setopt interactive_comments
+setopt ksh_option_print
 setopt list_packed
 setopt list_types
 setopt long_list_jobs
