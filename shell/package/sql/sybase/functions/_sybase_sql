@@ -3,7 +3,7 @@
 # Execute the given SQL command
 # For use only by the SQL packages
 #
-# $Id: _sybase_sql,v 1.4 2001/03/19 15:00:09 mebourne Exp $
+# $Id: _sybase_sql,v 1.5 2001/04/19 14:48:21 mebourne Exp $
 
 if [[ -n $1 ]]
 then
@@ -32,5 +32,5 @@ then
     echo "go"
   } | _sybase_rawsql -w 10000
 else
-  _sybase_rawsql
+  _sybase_rawsql -w ${COLUMNS:-10000}
 fi
