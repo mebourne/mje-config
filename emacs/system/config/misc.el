@@ -1,14 +1,13 @@
 ;; Emacs configuration file
 ;; Miscellaneous stuff
 ;; Written by Martin Ebourne
-;; $Id: misc.el,v 1.2 2001/05/16 14:22:22 mebourne Exp $
+;; $Id: misc.el,v 1.3 2001/08/10 15:46:43 mebourne Exp $
 
 (setq message-log-max 1000)
 
 ;; Load site-lisp files
 (load "vc-hooks")
 (load "vc")
-(load "simple")
 
 ;; Load filecache
 (load "filecache")
