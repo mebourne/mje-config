@@ -1,9 +1,11 @@
+-*- Outline -*-
+	
 Installed programs
 ========= ========
 
-Zsh
-===
+* Zsh related
 
+** Zsh
 Name:		 Zsh
 Version:	 4.0.4
 Home page:	 http://www.zsh.org/
@@ -15,9 +17,9 @@ Notes:		 CSFB: Use CC=cc ./configure ...
 
 
 
-Emacs
-=====
+* Emacs related
 
+** Emacs
 Name:		 Emacs
 Version:	 21.2.2
 Home page:	 http://www.gnu.org/
@@ -32,12 +34,14 @@ Notes:		 If image libraries (JPEG & XPM) compiled, use also:
 		     --x-libraries=$HOME/local/lib
 		 CSFB: Use --without-gcc to ./configure
 
+** Emacs lisp help
 Name:		 Emacs lisp help
 Version:	 21.2.8
 Home page:	 http://www.gnu.org/
 Package name:	 elisp-manual-21-2.8.tar.gz
 Source location: ftp://ftp.warwick.ac.uk/pub/gnu/emacs/
 
+** Speedbar
 Name:		 speedbar
 Version:	 0.14 beta 4
 Home page:	 http://cedet.sourceforge.net/speedbar.shtml
@@ -48,6 +52,7 @@ mv speedbar ~/local/share/emacs/site-lisp/speedbar
 gmake
 mv speedbar.info* ~/local/info
 
+** Eieio
 Name:		 eieio
 Version:	 0.17 beta 4
 Home page:	 http://cedet.sourceforge.net/eieio.shtml
@@ -59,6 +64,7 @@ gmake LOADPATH=$HOME/local/share/emacs/site-lisp/speedbar
 mv eieio.info* ~/local/info
 Notes:	         Required for semantic
 
+** Semantic
 Name:		 semantic
 Version:	 1.4 beta 14
 Home page:	 http://cedet.sourceforge.net/semantic.shtml
@@ -72,9 +78,9 @@ Notes:		 Requires eieio
 
 
 
-Xwindows
-========
+* X-Windows related
 
+** Colour xterm
 Name:		 xterm (colour)
 Version:	 165
 Home page:	 http://dickey.his.com/xterm/xterm.html
@@ -88,6 +94,7 @@ gmake install
 ( cd $HOME/local/bin; mv resize uxterm xterm `uname -m` )
 Notes:		 CSFB: Use CC=cc ./configure ...
 
+** Fvwm
 Name:		 fvwm2
 Version:	 2.4.6
 Home page:	 http://www.fvwm.org/
@@ -101,6 +108,7 @@ Notes:		 If XPM compiled, use also:
 		     --x-includes=$HOME/local/include --x-libraries=$HOME/local/lib
 		 CSFB: Use CC=cc ./configure ...
 
+** Fvwm icons
 Name:		 fvwm icons
 Home page:	 http://www.fvwm.org/
 Package name:	 fvwm_icons.tgz
@@ -109,9 +117,9 @@ mv fvwm_icons $HOME/local/share/fvwm-icons
 
 
 
-General unix
-============
+* General unix
 
+** Less
 Name:		 less
 Version:	 374
 Home page:	 http://www.gnu.org/
@@ -123,6 +131,7 @@ gmake
 gmake install
 Notes:		 CSFB: Use CC=cc ./configure ...
 
+** ls
 Name:		 ls (GNU file-utils)
 Version:	 4.1
 Home page:	 http://www.gnu.org/
