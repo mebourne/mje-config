@@ -1,7 +1,7 @@
 ;; Emacs configuration file
 ;; Miscellaneous stuff
 ;; Written by Martin Ebourne
-;; $Id: misc.el,v 1.8 2002/03/25 17:42:10 mebourne Exp $
+;; $Id: misc.el,v 1.9 2002/03/26 14:02:02 mebourne Exp $
 
 (setq message-log-max 1000)
 
@@ -10,6 +10,10 @@
 
 ;; Load filecache
 (load "filecache")
+
+;; Load semantic
+(setq semantic-load-turn-everything-on t)
+(load "semantic-load")
 
 ;; Display european characters
 (standard-display-european t)
