@@ -3,7 +3,7 @@
 # Execute a raw SQL command
 # For use only by the SQL packages
 #
-# $Id: _sybase_rawsql,v 1.1 2001/02/26 18:38:53 mebourne Exp $
+# $Id: _sybase_rawsql,v 1.2 2001/03/19 14:59:50 mebourne Exp $
 
 if [[ -z $_sql_parameters[server] || -z $_sql_parameters[user] || -z $_sql_parameters[password] ]]
 then
@@ -11,4 +11,8 @@ then
   return 1
 fi
 
-isql -S$_sql_parameters[server] -U$_sql_parameters[user] -P$_sql_parameters[password] $*
+isql -S$_sql_parameters[server] \
+     -U$_sql_parameters[user] \
+     -P$_sql_parameters[password] \
+     ${_sql_parameters[database]:+-D$_sql_parameters[database]} \
+     $*
