@@ -3,7 +3,7 @@
 # Setup for completion package
 # Written by Martin Ebourne
 #
-# $Id: setup,v 1.4 2001/05/09 15:59:13 mebourne Exp $
+# $Id: setup,v 1.5 2001/05/09 16:45:08 mebourne Exp $
 
 add_functions_directory package/completion/functions
 
@@ -73,38 +73,28 @@ zstyle ':completion:*:*:-subscript-:*' tag-order indexes parameters
 zstyle ':completion:*:*:*:functions' ignored-patterns '_*'
 
 
-# These give the description format strings. If the prompt package is loaded then use it to
-# get colour versions
-if package -e prompt
-then
-  local temp
-  
-  # Describe the group of completions
-  set_prompt temp {black} {bg_cyan} '%d:' {normal}
-  zstyle -e ':completion:*:*:*:descriptions' format reply=\"$temp\"
-  
-  # Give info on errors when corrected
-  set_prompt temp {black} {bg_cyan} '%d (errors: %e):' {normal}
-  zstyle -e ':completion:*:*:*:corrections' format reply=\"$temp\"
-  
-  # Notify if no matches
-  set_prompt temp {black} {bg_red} 'No matches for: %d' {normal}
-  zstyle -e ':completion:*:*:*:warnings' format reply=\"$temp\"
-  
-  # Displaying miscellaneous messages
-  set_prompt temp {black} {bg_magenta} '%d' {normal}
-  zstyle -e ':completion:*:*:*:messages' format reply=\"$temp\"
+# These give the description format strings. Need the colour package to do this
+package -i colour
+local temp
 
-  # More-style prompt when scrolling completions
-  zstyle ':completion:*:default' list-prompt '%S<completions> line %l match %m (%p)%s'
-else
-  # These are the non-colour versions
-  zstyle ':completion:*:*:*:descriptions' format '%d:'
-  zstyle ':completion:*:*:*:corrections' format '%d (errors: %e):'
-  zstyle ':completion:*:*:*:warnings' format 'No matches for: %d'
-  zstyle ':completion:*:*:*:messages' format '%d'
-  zstyle ':completion:*:default' list-prompt '%S<completions> line %l match %m (%p)%s'
-fi
+# Describe the group of completions
+colour_setvar temp '{black,bg_cyan}' '%d:' '{normal}'
+zstyle -e ':completion:*:*:*:descriptions' format reply=\"$temp\"
+
+# Give info on errors when corrected
+colour_setvar temp '{black,bg_cyan}' '%d (errors: %e):' '{normal}'
+zstyle -e ':completion:*:*:*:corrections' format reply=\"$temp\"
+
+# Notify if no matches
+colour_setvar temp '{black,bg_red}' 'No matches for: %d' '{normal}'
+zstyle -e ':completion:*:*:*:warnings' format reply=\"$temp\"
+
+# Displaying miscellaneous messages
+colour_setvar temp '{black,bg_magenta}' '%d' '{normal}'
+zstyle -e ':completion:*:*:*:messages' format reply=\"$temp\"
+
+# More-style prompt when scrolling completions
+zstyle ':completion:*:default' list-prompt '%S<completions> line %l match %m (%p)%s'
 
 
 # Set up so future added function directories are processed for completions, and ensure all
