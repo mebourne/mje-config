@@ -1,0 +1,34 @@
+# ZSH function file
+# Tidy account up generally
+# Usage: tidyaccount [-s <time>]
+#	 -s Re-schedule job with 'at'
+# Example: tidyaccount -s "3:00 tomorrow"
+#
+# $Id: tidyaccount,v 1.1 2001/02/13 10:20:11 mebourne Exp $
+
+local this=$ZCONFIGDIR/system/functions/$0
+
+local schedtime
+if [[ $1 = -s ]]
+then
+  schedtime=$2
+fi
+
+# First keep the history store file in trim
+cp $HOME/.zsh_history.in $HOME/.zsh_history.store
+chmod 600 $HOME/.zsh_history.store
+
+# Delete any core/backup/etc files not accessed in the last week
+find $HOME -type f \( -name core -o -name '*~' -o -name '#*#' \) -atime +7 -print |
+  xargs rm -f
+
+# Delete any Emacs saves files older than 3 days
+find $HOME -depth \( -type f -name '.saves-*' -mtime +3 -print \) \
+	       -o \( -type d -prune \) |
+  xargs rm -f
+
+# Re-schedule job if requested
+if [[ -n $schedtime ]]
+then
+  at -f $this ${(Q)schedtime} 2>/dev/null
+fi
