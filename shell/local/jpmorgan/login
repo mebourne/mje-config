@@ -4,14 +4,41 @@
 # done, but immediately before the user specific files
 # Written by Martin Ebourne
 #
-# $Id: login 792 2003-09-22 11:47:18Z martin $
+# $Id$
 
 # JPMorgan settings
 
 unset EMACSLOADPATH
 
-export WU_HOME=/vobs/odyssey/cashsec/script/workunitctrl
-
-export PRINTER=pr_gdac0
-
 umask 022
+
+if [[ $HOST = gdd-ody23* ]]
+then
+  GCC_ROOT=/3rdparty/fsf/gcc/3.3.3
+  FLEX_ROOT=/3rdparty/fsf/flex/2.5.4
+  BISON_ROOT=/3rdparty/fsf/bison/1.875
+  M4_ROOT=/3rdparty/fsf/m4/1.4
+
+  export ACE_ROOT=/vobs/odyssey/system/ace5.4.1
+  export TAO_ROOT=$ACE_ROOT/TAO
+
+  path=(
+    $GCC_ROOT/bin
+    $FLEX_ROOT/bin
+    $BISON_ROOT/bin
+    $M4_ROOT/bin
+    $TAO_ROOT/TAO_IDL
+    $TAO_ROOT/utils/nslist
+    $TAO_ROOT/utils/catior
+    $TAO_ROOT/orbsvcs/Naming_Service
+    $TAO_ROOT/orbsvcs/LoadBalancer
+    $path
+  )
+
+  ld_library_path=(
+    $GCC_ROOT/lib
+    $ACE_ROOT/ace
+    $ld_library_path
+    /vobs/odyssey/system/vbroker3.3/lib
+  )
+fi
