@@ -1,0 +1,15 @@
+#compdef mdiff
+# ZSH function file
+# Completion code for mdiff command
+# Usage: These functions are used by the completion code
+#
+# $Id: _mdiff,v 1.1 2001/06/15 16:06:17 mebourne Exp $
+
+integer ret=1
+
+# Complete .gold files
+local -a files
+files=(*.gold(N))
+_wanted gold-files expl 'gold files' compadd - ${files%.gold} && ret=0
+
+return ret
