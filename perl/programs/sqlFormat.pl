@@ -186,7 +186,13 @@ sub generateFormat {
   my $format="";
   my $x;
   for($x=0;$x<@$columns;$x++) {
-    $format.=" " if $x;
+    if($x) {
+      if($colour) {
+	$format.="\e[38;5;4m\xb7";
+      } else {
+	$format.=" ";
+      }
+    }
 
     # Write a '%<num>s' entry as appropriate
     my $column=$$columns[$x];
@@ -205,8 +211,8 @@ sub generateFormat {
       }
     }
     $format.="%" . $align*$$column{length} . "s";
-    $format.="\e[38;5;15m" if $colour;
   }
+  $format.="\e[38;5;15m" if $colour;
 
   return $format;
 }
