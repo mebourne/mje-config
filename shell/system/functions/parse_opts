@@ -2,7 +2,7 @@
 # Provide options parsing and help output
 # Usage: parse_opts <argv> <results> [<help>]
 #
-# $Id: parse_opts,v 1.8 2001/08/01 19:43:42 mebourne Exp $
+# $Id: parse_opts,v 1.9 2001/08/02 09:10:15 mebourne Exp $
 
 ### Documentation
 
@@ -29,12 +29,12 @@
 # ...more text here...
 #
 # The option descriptions are of the form:
-#   '#' [ <tag> '=' ] <option> [ '|' <option> ] ... [ '=' <type> ]
+#   `# ' [ <tag> ` = ' ] <option> [ ` | ' <option> ] ... [ ` = ' <type> ]
 #
 # tag is of the form:
 #   <key-name>
 # or
-#   '[' <variable-name> ']'
+#   `[' <variable-name> `]'
 #
 # Where key-name is the name of the hash key the value will be stored in. The
 # alternative of variable-name stores the value directly in the given
@@ -42,21 +42,37 @@
 # the exact behaviour depends on its type:
 #   undefined/scalar  - value stored directly
 #   array             - value appended to array
-#   associative array - value stored against a key of the option name (without leading '-'s)
+#   associative array - value stored against a key of the option name (without leading `-'s)
 #
 # If tag is not supplied, then the first <option> value will be re-used as key-name.
 #
 # option is of the form:
 #   <option-name>
+# or
+#   `[' <argument-spec> `]'
 #
 # Where option-name is the name the option will be passed as when invoked by
-# the user, without any leading '-'s. Single letter options are taken to be
-# short options introduced by '-', and may be grouped. Other options are taken
-# to be long options introduced by '--'. It is not possible to have a one
+# the user, without any leading `-'s. Single letter options are taken to be
+# short options introduced by `-', and may be grouped. Other options are taken
+# to be long options introduced by `--'. It is not possible to have a one
 # character long option (eg. --a is not possible)
 #
+# argument-spec is of the form:
+#   <count>
+# or
+#   <min-count> `,' <max-count>
+#
+# count, min-count, max-count are of the form:
+#   <integer>
+# or
+#   `*'
+# or
+#   `*-' <integer>
+#
+# Where integer is a positive integer.
+#
 # type is of the form:
-#   <type-name> [ '=' <value> ]
+#   <type-name> [ `=' <value> ]
 #
 # Where type-name is one of:
 #   switch   - Simple switch. Result will be 1. NB. This is the default if not supplied
@@ -467,7 +483,7 @@ _parse_opts_handletype() {
 # the options from being processed, else 0
 #
 # NB. Locals in this function must begin _po_
-_parse_opts_do_options() {
+_parse_opts_dooptions() {
 
   # Process each argument while it is an option
   while [[ $_po_argv[1] == -* ]]
@@ -543,6 +559,35 @@ _parse_opts_do_options() {
   return 0
 }
 
+# This helper function decodes the numeric expression within an argument
+# specification to return an integer value. It uses local variables in
+# _parse_opts_doarguments and so should not be called from elsewhere
+_parse_opts_getuse() {
+  integer number="$argv[1]"
+  local expression="$argv[2]"
+
+  case $expression in
+    \*) # Use default number
+      _po_use=$number
+      ;;
+
+    <->) # Use fixed number
+      _po_use=$expression
+      ;;
+
+    \*-<->) # Use default number minus fixed number
+      (( _po_use = number - ${_po_argument#\*-} ))
+      ;;
+
+    *) # This is a configuration error
+      echo "Unrecognised argument specification for option $_po_name: '$_po_argument'" 1>&2
+      return 1
+      ;;
+  esac
+
+  return 0
+}
+
 # This helper function decodes any arguments present in the command line after
 # the options have been removed, using the pre-generated option arrays from
 # _parse_opts_parsehelp. Arguments are provided in _po_argv and are removed as
@@ -550,7 +595,7 @@ _parse_opts_do_options() {
 # an error prevented the arguments from being processed, else 0
 #
 # NB. Locals in this function must begin _po_
-_parse_opts_do_arguments() {
+_parse_opts_doarguments() {
 
   # Process each argument specification
   local _po_name
@@ -560,32 +605,23 @@ _parse_opts_do_arguments() {
 
     integer _po_use=0
     case $_po_argument in
-      \[<->\]) # Fixed number of arguments. eg. [1]
-        _po_use=${${_po_argument#\[}%\]}
-	;;
+      \[*,*]) # All the remaining arguments with both minimum and maximum
 
-      \[\*\]) # All remaining arguments
-        _po_use=$#_po_argv
-	;;
-
-      \[<->,\*\]) # All remaining arguments with minimum
-        _po_use=${${_po_argument#\[}%,*\]}
+        # First check the lower bound, then the upper. If both number of args
+        # is within both then use that instead
+        _parse_opts_getuse $#_po_argv ${${_po_argument#\[}%,*\]} || return 1
 	if (( _po_use < $#_po_argv ))
 	then
-          _po_use=$#_po_argv
-	fi
-	;;
-
-      \[<->,<->]) # All remaining arguments with minimum and maximum
-        _po_use=${${_po_argument#\[}%,*\]}
-	if (( _po_use < $#_po_argv ))
-	then
-          _po_use=${${_po_argument#\[*,}%\]}
+          _parse_opts_getuse $#_po_argv ${${_po_argument#\[*,}%\]} || return 1
 	  if (( _po_use > $#_po_argv ))
 	  then
             _po_use=$#_po_argv
 	  fi
 	fi
+	;;
+
+      \[*\]) # Fixed number of arguments. eg. [1]
+        _parse_opts_getuse $#_po_argv ${${_po_argument#\[}%\]} || return 1
 	;;
 
       *) # This is a configuration error      
@@ -646,7 +682,7 @@ _parse_opts_process() {
   _po_aliases[zsh-completion]=""
 
   # Perform the option recognition
-  if _parse_opts_do_options
+  if _parse_opts_dooptions
   then
 
     # If success and help was requested then give it. Note that it is up to
@@ -667,7 +703,7 @@ _parse_opts_process() {
     fi
 
     # Perform the argument recognition
-    if ! _parse_opts_do_arguments
+    if ! _parse_opts_doarguments
     then
 
       # There was an error in processing. Mention the --help option. Assumes the
