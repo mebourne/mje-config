@@ -4,7 +4,7 @@
 # done, but immediately before the user specific files
 # Written by Martin Ebourne
 #
-# $Id: interactive,v 1.17 2001/05/23 12:41:58 mebourne Exp $
+# $Id: interactive,v 1.18 2001/05/23 18:40:45 mebourne Exp $
 
 # Arcordia settings
 
@@ -65,10 +65,15 @@ sourceinfo_preferred_dirs=(
 )
 
 # Setup SQL db environment
-if [[ -r ${ZDOTDIR:-$HOME}/.zshdb ]]
+local dbfile="${ZDOTDIR:-$HOME}/.zshdb"
+if [[ ${ZDOTDIR:-$HOME} != $HOME ]]
 then
-  [[ -n $ZCONFIGDEBUG ]] && echo "Loading config file .zshdb"
-  . ${ZDOTDIR:-$HOME}/.zshdb
+  dbfile=$ZDOTDIR/.db
+fi
+if [[ -r $dbfile ]]
+then
+  [[ -n $ZCONFIGDEBUG ]] && echo "Loading config file ${dbfile:t}"
+  . $dbfile
 fi
 
 # Show SQL settings in prompt
