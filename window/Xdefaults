@@ -1,7 +1,7 @@
 ! .Xdefaults - X resources configuration
 ! Written by Martin Ebourne
 !
-! $Id: Xdefaults 792 2003-09-22 11:47:18Z martin $
+! $Id$
 
 *background:        LightSkyBlue
 *shapeStyle:        Rectangle
@@ -24,6 +24,7 @@ XTerm*foreground:		white
 XTerm*highlightColor:		blue
 
 ! Options
+XTerm*backarrowKey:		true
 XTerm*boldMode:			true
 XTerm*colorBDMode:		false
 XTerm*cursorBlink:		true
