@@ -3,7 +3,7 @@
 # Setup for SQL base package
 # Written by Martin Ebourne
 #
-# $Id: setup,v 1.10 2001/08/09 13:25:05 mebourne Exp $
+# $Id: setup,v 1.11 2001/08/13 21:22:49 mebourne Exp $
 
 add_functions_directory package/sql/base/functions
 
@@ -18,6 +18,9 @@ emulate -L zsh
 # Setup for SQL output formatting Perl script
 typeset -g _sql_formatprogram=sqlFormat.pl
 compdef -n _parse_opts ${_sql_formatprogram:t}
+
+# Styles for completion
+zstyle ':completion:*:match:sql:*' tag-order '! table-aliases'
 
 # Bind special keys for SQL quoting
 zle -N sql_quote _sql_quote
