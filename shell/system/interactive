@@ -3,7 +3,7 @@
 # Generic system-wide setup for interactive use
 # Written by Martin Ebourne
 #
-# $Id: interactive,v 1.20 2001/08/15 16:15:35 mebourne Exp $
+# $Id: interactive,v 1.21 2001/08/17 15:25:38 mebourne Exp $
 
 # Initial config files
 config_if_present system/options
@@ -28,6 +28,9 @@ WORDCHARS='*?_-.[]~#'
 
 # Ignore these filename extensions in completion
 fignore=(\~ % \# .o .d .elc .zwc)
+
+# Basic CDPATH. Need . on it because it is export to ksh etc.
+cdpath=(. $HOME)
 
 # Automatically report time for commands taking longer than a minute
 REPORTTIME=60
