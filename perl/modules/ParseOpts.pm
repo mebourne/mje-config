@@ -97,8 +97,8 @@ sub setupDefinitions() {
   $self->parseHelp('
 ## These are extensions of the basic built in types
 #type switchoff     constant=0                       ""                         ""
-#type integer       regexp=([-+]|)\d+                "signed integer number"    " "
-#type posinteger    regexp=\d+                       "positive integer number"  " "
+#type integer       regexp=([-+]|)\\\\d+             "signed integer number"    " "
+#type posinteger    regexp=\\\\d+                    "positive integer number"  " "
 #type text          string                           text                       " "
 
 ## These are file-like things validated with test
