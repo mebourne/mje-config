@@ -1,7 +1,7 @@
 ;; Emacs configuration file
 ;; Customised variables
 ;; Written by Martin Ebourne
-;; $Id: custom.el,v 1.18 2002/10/28 10:31:24 mebourne Exp $
+;; $Id: custom.el,v 1.19 2002/10/28 10:43:54 mebourne Exp $
 
 (setq custom-file (concat install-user-base-dir "/custom.el"))
 
@@ -133,8 +133,18 @@
  '(speedbar-tag-hierarchy-method '(speedbar-trim-words-tag-hierarchy
 				   speedbar-prefix-group-tag-hierarchy
 				   speedbar-sort-tag-hierarchy))
- '(speedbar-supported-extension-expressions (append speedbar-supported-extension-expressions
-						    (list ".sh" ".xml" ".xsd" ".xslt" ".[CH]")))
+ '(speedbar-supported-extension-expressions
+   (append '(".[ch]\\(\\+\\+\\|pp\\|c\\|h\\|xx\\)?" ".[CH]" ".tex\\(i\\(nfo\\)?\\)?"
+	     ".el" ".emacs" ".l" ".lsp" ".p" ".java" ".f\\(90\\|77\\|or\\)?")
+	   (if speedbar-use-imenu-flag
+	       '(".ada" ".p[lm]" ".tcl" ".m" ".scm" ".pm" ".py" ".g"
+		 ;; html is not supported by default, but an imenu tags package
+		 ;; is available.  Also, html files are nice to be able to see.
+		 ".s?html"
+		 "[Mm]akefile\\(\\.in\\)?" ".mk"
+		 ".sh"
+		 ".xml" ".xsd" ".xslt"
+		 ".sql"))))
 
  ;; JDE
  '(jde-use-font-lock nil)
