@@ -1,0 +1,19 @@
+This is 6nome a theme for GTK 2.x.
+
+The GTK theme...
+
+  ...has rounded corners, thin borders and light and few colors. It
+  is loosely based on the background of the GNOME logo.
+
+The most recent version on 6nome can be found at themes.freshmeat.net.
+
+INSTALLATION
+------------
+
+Just unpack into your ~/.themes directory and use gconf-editor to switch
+theme. 
+
+AUTHOR(s)
+---------
+This theme was brought to you by:
+	Marcus Petzoldt <m.petzoldt@gmx.de>
