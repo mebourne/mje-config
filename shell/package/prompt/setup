@@ -3,7 +3,7 @@
 # Setup for prompt package
 # Written by Martin Ebourne
 #
-# $Id: setup,v 1.3 2001/03/05 19:01:47 mebourne Exp $
+# $Id: setup,v 1.4 2001/03/08 17:52:07 mebourne Exp $
 
 add_functions_directory package/prompt/functions
 
@@ -53,6 +53,9 @@ add_to_hook TRAPWINCH _prompt_winch
 
 # Fake resize event to force setup
 _prompt_winch
+
+# Remap ZLE clear-screen widget (Ctrl-L) to a modified version
+zle -N clear-screen _prompt_clear_screen
 
 
 ## Now we configure the default prompts
