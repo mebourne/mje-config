@@ -4,12 +4,12 @@
 # done, but immediately before the user specific files
 # Written by Martin Ebourne
 #
-# $Id: login,v 1.3 2002/03/19 15:28:27 mebourne Exp $
+# $Id: login,v 1.4 2002/04/10 16:23:55 mebourne Exp $
 
 # CSFB settings
 
 # Default printer
-export PRINTER=p_ln1527
+export PRINTER=p_ln1506
 
 # Clearcase
 path=($path /usr/atria/bin /sw/clearcase4/pilot_batch_scripts)
