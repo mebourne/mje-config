@@ -3,12 +3,12 @@
 # Part of the clearcase package
 # Checkin checked out files
 #
-# $Id: cico,v 1.6 2001/08/02 12:12:25 mebourne Exp $
+# $Id: cico,v 1.7 2001/08/09 17:48:01 mebourne Exp $
 
 local -A opts
 parse_opts - opts -- "$argv[@]" <<'EOF' || return 1
 Description:
-Checkin checked out Clearcase files
+Checkin checked out Clearcase files.
 
 Usage:
 cico [options]
