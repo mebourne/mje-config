@@ -2,7 +2,7 @@
 # ZSH function file
 # Repeatedly print a string
 #
-# $Id: yes,v 1.6 2001/08/01 19:37:48 mebourne Exp $
+# $Id: yes,v 1.7 2001/08/01 19:43:21 mebourne Exp $
 
 local -a args
 args=($argv[*])
@@ -50,6 +50,6 @@ fi
 while (( opts[lines] ))
 do
   echo $echoopt "$text[@]"
-  [[ -n $opts[sleep] ]] && sleep $opts[sleep]
+  (( opts[sleep] )) && sleep $opts[sleep]
   (( opts[lines] > 0 && opts[lines]-- ))
 done
