@@ -4385,8 +4385,9 @@ an optional list of FLAGS."
 
 (defun clearcase-viewtag-try-to-start-view (viewtag)
   "If VIEW is not apparently already visible under viewroot, start it."
-  (if (not (member viewtag (clearcase-viewtag-started-viewtags)))
-      (clearcase-viewtag-start-view viewtag)))
+  )
+;  (if (not (member viewtag (clearcase-viewtag-started-viewtags)))
+;      (clearcase-viewtag-start-view viewtag)))
 
 (defun clearcase-viewtag-started-viewtags-alist ()
   "Return an alist of views that are currently visible under the viewroot."
