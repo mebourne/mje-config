@@ -251,12 +251,20 @@ sub getNextLine {
   my ($feedback)=@_;
 
   my $line=<STDIN>;
+
+  # Report number of lines received if we have a lot of results
   $inputLineNum++;
   if(($inputLineNum%100)==0 && $feedback && $tty) {
     my $old=$|;
     $|=1;
     print "Received $inputLineNum lines...\r";
     $|=$old;
+  }
+
+  # This changes hard spaces to normal ones. Hard space is used as column
+  # separator to perform some magic Oracle trickery
+  if(defined($line)) {
+    $line=~y/\xa0/ /;
   }
 
   return $line;
@@ -279,8 +287,8 @@ sub isHeader {
   # Second line must consist only of spaces and dashes
   if($second=~/^ *-[- ]*$/) {
 
-    # Trim the last group of dashes down to one to get minimum length
-    $second=~s/-*$/-/;
+    # Remove the last group of dashes to get minimum length
+    $second=~s/-*$//;
 
     # Check first line is within acceptable length range
     if(length($first)>=length($second) && length($first)<=$secondLen) {
