@@ -10,7 +10,7 @@
 ;; 18-02-97 - Fix to check in current buffer, SJL
 ;; 10-06-99 - Fixed to work properly with the mouse, MJE
 ;;
-;; $Id: constrain.el,v 1.1 2001/05/11 17:31:38 mebourne Exp $
+;; $Id: constrain.el,v 1.2 2002/03/26 13:16:04 mebourne Exp $
 
 ;;; Commentary:
 
@@ -35,6 +35,9 @@ allowed in.")
 
 (defvar constrain-period 0.25
   "*Time in seconds between constrains of the cursor.")
+
+(defvar constrain-except-modes '(speedbar-mode)
+  "*Modes which constrain should not operate in.")
 
 
 ;; User interface functions
@@ -99,33 +102,36 @@ Top line is 0.  Counts each text line only once, even if it wraps."
 
   ;; Only ever constrain current buffer
   (if (eq (current-buffer) (window-buffer))
-      (let ((wasmouse nil)
-	    (type (car-safe last-input-event))
-	    (basic-type (event-basic-type last-input-event)))
+      (if (not (memq major-mode constrain-except-modes))
+	  (let ((wasmouse nil)
+		(type (car-safe last-input-event))
+		(basic-type (event-basic-type last-input-event)))
 
-	;; Don't constrain if last event involved one of the mouse buttons or mouse dragging.
-	;; The only exception to this is a single press of button 1 which is to place cursor
-	;; and therefore should constrain. However, delay this case until the next time to
-	;; ensure we haven't caught the start of a double-click
-	(if (or (and (eq basic-type 'mouse-1)
-		     (not (and (eq type 'mouse-1)
-			       (eq type constrain-last-event-type))))
-		(eq basic-type 'mouse-2)
-		(eq basic-type 'mouse-3)
-		(mouse-movement-p last-input-event))
-	      (setq wasmouse t)
-	  )
 
-	;; Remember type for button 1 single click checks
-	(setq constrain-last-event-type type)
+	    ;; Don't constrain if last event involved one of the mouse buttons or mouse dragging.
+	    ;; The only exception to this is a single press of button 1 which is to place cursor
+	    ;; and therefore should constrain. However, delay this case until the next time to
+	    ;; ensure we haven't caught the start of a double-click
+	    (if (or (and (eq basic-type 'mouse-1)
+			 (not (and (eq type 'mouse-1)
+				   (eq type constrain-last-event-type))))
+		    (eq basic-type 'mouse-2)
+		    (eq basic-type 'mouse-3)
+		    (mouse-movement-p last-input-event))
+		(setq wasmouse t)
+	      )
 
-	;; Only constrain if not mouse operation from above and cursor is out of bounds
-	(if (not wasmouse)
-	    (cond ((>= (constrain-current-line) (constrain-lowest-line))
-		   (recenter (constrain-lowest-line)))
-		  ((< (constrain-current-line) (constrain-highest-line))
-		   (recenter (constrain-highest-line))))
-	  )
+	    ;; Remember type for button 1 single click checks
+	    (setq constrain-last-event-type type)
+
+	    ;; Only constrain if not mouse operation from above and cursor is out of bounds
+	    (if (not wasmouse)
+		(cond ((>= (constrain-current-line) (constrain-lowest-line))
+		       (recenter (constrain-lowest-line)))
+		      ((< (constrain-current-line) (constrain-highest-line))
+		       (recenter (constrain-highest-line))))
+	      )
+	    )
 	)
     )
   )
