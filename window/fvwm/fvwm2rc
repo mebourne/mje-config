@@ -299,7 +299,7 @@ Key F8		A	MC	Prev [*] focus
 *FvwmButtonsFont	5x8
 
 # Geometry
-*FvwmButtonsButtonGeometry 53x38-2+0
+*FvwmButtonsButtonGeometry 53x38-1+0
 
 # Layout: specify rows or columns, not both
 *FvwmButtonsColumns 1
@@ -324,7 +324,7 @@ Key F8		A	MC	Prev [*] focus
 *FvwmPagerBack gray20
 *FvwmPagerHilight #707045
 *FvwmPagerFont none
-*FvwmPagerGeometry 45-2+0
+*FvwmPagerGeometry 45-1+0
 *FvwmPagerSmallFont 5x8
 
 ############################################################################
