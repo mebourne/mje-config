@@ -2,7 +2,7 @@
 # ZSH function file
 # View the latest of a set of files, given part of the filename
 #
-# $Id: latest,v 1.4 2001/08/29 16:35:11 mebourne Exp $
+# $Id: latest,v 1.5 2002/11/20 16:16:45 mebourne Exp $
 
 local -A opts
 parse_opts - opts -- "$argv[@]" <<'EOF' || return 1
@@ -24,7 +24,7 @@ EOF
 
 # Get list of files sorted from latest to earliest modification time
 local -a files
-files=($opts[filename-stem]*(Nom))
+files=($~opts[filename-stem]*(Nom))
 
 if (( $#files ))
 then
