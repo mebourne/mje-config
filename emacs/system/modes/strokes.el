@@ -1,7 +1,7 @@
 ;; Emacs configuration file
 ;; Setup for cc-mode
 ;; Written by Martin Ebourne
-;; $Id: strokes.el 792 2003-09-22 11:47:18Z martin $
+;; $Id$
 
 (setq strokes-global-map '((((0 . 5)
 			     (1 . 5)
@@ -102,3 +102,5 @@ work with the emacs config system."
   (add-hook 'kill-emacs-query-functions
 	    'strokes-prompt-user-save-strokes-if-present
 	    ))
+
+(strokes-mode t)
