@@ -1,0 +1,67 @@
+! .Xdefaults - X resources configuration
+! Written by Martin Ebourne
+!
+! $Id: Xdefaults,v 1.1 2000/02/07 12:14:44 martine Exp $
+
+Mwm*keyboardFocusPolicy:		Pointer
+Mwm*clientAutoPlace: 			True
+Mwm*focusAutoRaise: 			false
+Mwm*IconPlacement: 				left bottom
+!Mwm*UseIconBox: 				True
+!Mwm*iconbox*ClientDecoration: 	-title
+Mwm*shadowThickness: 			3
+Mwm*ButtonWidth: 				20
+Mwm*FrameBorderWidth:			6
+Mwm*background:  				#7c8498
+Mwm*foreground: 				#fce089
+Mwm*activeForeground: 			white
+Mwm*activeBackground: 			blueviolet
+Mwm*info*ClientDecoration:	 	-menu
+Mwm*xload*ClientDecoration: 	-menu
+Mwm*xclock*ClientDecoration: 	-title
+
+! xterm configurations
+! xterm*geometry:       82x32
+! xterm*font:           Rom10
+! xterm*boldFont:       Bld10
+! xterm*font:			  7x14
+xterm*foreground:     white
+xterm*background:     black
+xterm*scrollBar:      true
+xterm*saveLines:      5000
+XTerm*cursorColor:	green
+XTerm*scrollBar:	true
+xterm*fullCursor:	true
+xterm*reverseWrap:	true
+xterm*titleBar:		false
+xterm*eightBitInput:	false
+xterm*ttyModes:		erase ^h
+xterm*VT100.Translations: #override\n\
+	<KeyPress>Prior : scroll-back(1,page)\n\
+	<KeyPress>Next : scroll-forw(1,page)
+
+*visualBell:		true
+*scrollTtyOutput:	False
+*scrollKey:		True
+Scrollbar.JumpCursor:	True
+
+dxdiff.geometry: 1100x500+80+20
+dxdiff.background: blue
+
+! dxmail
+DXMail*background:			LightGrey
+DXMail*font:				6x13
+
+! dxclock
+! Clock*foreground:              Turquoise
+! Clock*background:              DarkSlateGrey
+
+! Emacs settings:
+Emacs*foreground:		White
+Emacs*background:		Black
+! Emacs*geometry:			98x69
+Emacs*geometry:			98x58
+! Emacs*geometry:			98x50
+Emacs*bitmapIcon:		on
+Emacs*cursorColor:		Green
+
