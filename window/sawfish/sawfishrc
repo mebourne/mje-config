@@ -63,3 +63,6 @@
 
 ;; Centre Evolution splash etc windows
 (add-window-matcher 'WM_CLASS "xterm" '(place-mode . best-fit))
+
+;; Stop lotus notes from auto-raising
+(add-window-matcher 'WM_CLASS "wine" '(focus-mode . click))
