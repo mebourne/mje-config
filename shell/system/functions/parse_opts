@@ -2,7 +2,7 @@
 # Provide options parsing and help output
 # Usage: parse_opts <argv> <results> [<help>]
 #
-# $Id: parse_opts,v 1.13 2001/08/03 11:46:29 mebourne Exp $
+# $Id: parse_opts,v 1.14 2001/08/03 16:33:05 mebourne Exp $
 
 ### Documentation
 
@@ -64,8 +64,6 @@
 #   <integer>
 # or
 #   `*'
-# or
-#   `*-' <integer>
 #
 # Where integer is a positive integer.
 #
@@ -94,6 +92,7 @@ _parse_opts_setupdefinitions() {
 #type directory     test=-d                      directory            _directories
 #type file          test=-f                      file                 _files
 #type function      values=${(k)functions}       "shell function"     _functions
+#type parameter     values=${(k)parameters}      parameter            _parameters
 # --help
 # --zsh-completion
 '
@@ -173,7 +172,7 @@ _parse_opts_parseoption() {
 
       # Excludes. Only if the max frequency of this option is 1, same as aliases
       integer min_frequency=0 max_frequency=0
-      _parse_opts_minmaxfrequency min_frequency max_frequency -1 $frequency || return
+      _parse_opts_minmaxfrequency min_frequency max_frequency $frequency || return
       if (( max_frequency == 1 ))
       then
         excludes=$aliases
@@ -182,6 +181,13 @@ _parse_opts_parseoption() {
     else
       [[ -z $frequency ]] && frequency="1"
       [[ -z $type ]] && type="string"
+
+      # Calculate the minimum number of arguments we need for the command to
+      # be able to run. We need this later to know how many arguments are
+      # spare when we have a choice on how many to use
+      integer min_frequency=0 max_frequency=0
+      _parse_opts_minmaxfrequency min_frequency max_frequency $frequency || return
+      (( _po_minargs += min_frequency ))
     fi
 
     # Report info on option if debugging enabled
@@ -192,6 +198,8 @@ _parse_opts_parseoption() {
       echo "  frequency = '$frequency'"
       echo "  type      = '$type'"
       echo "  help      = '$helpline'"
+      echo "  excludes  = '$excludes'"
+      echo "  aliases   = '$aliases'"
       echo "}"
     fi
 
@@ -331,10 +339,6 @@ _parse_opts_frequencyvalue() {
       result=$expression
       ;;
 
-    \*-<->) # Use default number minus fixed number
-      (( result = number - ${expression#\*-} ))
-      ;;
-
     *) # This is a configuration error
       echo "Unrecognised frequency: '$expression'" 1>&2
       return 1
@@ -348,21 +352,24 @@ _parse_opts_frequencyvalue() {
 
 # This function decodes a frequency expression into min and max values. The
 # variables given to minvar & maxvar will be updated with the results of
-# processing the given expression substituting number for `*'
+# processing the given expression substituting -1 for `*'
 _parse_opts_minmaxfrequency() {
-  local minvar="$argv[1]" maxvar="$argv[2]"
-  integer number="$argv[3]"
-  local expression="$argv[4]"
+  local minvar="$argv[1]" maxvar="$argv[2]" expression="$argv[3]"
 
   case $expression in
-    *,*) # Separate min & max values
-      _parse_opts_frequencyvalue $minvar $number ${expression%,*} || return
-      _parse_opts_frequencyvalue $maxvar $number ${expression#*,} || return
+    <->,*) # Separate min & max values
+      _parse_opts_frequencyvalue $minvar 0 ${expression%,*} || return
+      _parse_opts_frequencyvalue $maxvar -1 ${expression#*,} || return
+      ;;
+
+    *,*) # Must be a number in the first field, this is invalid
+      echo "Unrecognised frequency expression: '$expression'" 1>&2
+      return 1
       ;;
 
     *) # Min & max values the same
-      _parse_opts_frequencyvalue $minvar $number $expression || return
-      _parse_opts_frequencyvalue $maxvar $number $expression || return
+      _parse_opts_frequencyvalue $minvar 0 $expression || return
+      _parse_opts_frequencyvalue $maxvar -1 $expression || return
       ;;
   esac
 
@@ -370,16 +377,18 @@ _parse_opts_minmaxfrequency() {
 }
 
 # This function expands the parameter given after the 'values=' type into a
-# full list of valid values, which are then placed in the array named by list
+# full list of valid values, which are then placed in the array named by
+# listname. If the hashname value is also given then a hash with values as
+# keys and descriptions as values is also updated if available
 #
 # NB. Locals in this function must begin _po_
 _parse_opts_expandvalues() {
-  local _po_list="$argv[1]" _po_param="$argv[2]"
+  local _po_param="$argv[1]" _po_list_name="$argv[2]" _po_hash_name="$argv[3]"
 
-  local -a _po_values_list
+  local -a _po_local_list _po_local_hash
   case $_po_param in
     \(*\)) # Literal list
-      _po_values_list=(${(z)${${_po_param#\(}%\)}})
+      _po_local_list=(${(z)${${_po_param#\(}%\)}})
       ;;
 
     \$*) # Variable substitution
@@ -387,12 +396,12 @@ _parse_opts_expandvalues() {
       # We don't know if there's an @ flag late in the substitution - in which
       # case it would need to be done in quotes to work properly. So try both
       # with and without and pick which way gave us the most results
-      local -a _po_values_list_q
-      eval _po_values_list="($_po_param)"
-      eval _po_values_list_q="(\"$_po_param\")"
-      if (( $#_po_values_list_q > $#_po_values_list ))
+      local -a _po_local_list_q
+      eval _po_local_list="($_po_param)"
+      eval _po_local_list_q="(\"$_po_param\")"
+      if (( $#_po_local_list_q > $#_po_local_list ))
       then
-        _po_values_list=("$_po_values_list_q[@]")
+        _po_local_list=("$_po_local_list_q[@]")
       fi
       ;;
 
@@ -401,22 +410,28 @@ _parse_opts_expandvalues() {
       # Behave according to the type of the external variable
       case ${(Pt)_po_param} in
         array*) # An array
-          _po_values_list=("${(@P)_po_param}")
+          _po_local_list=("${(@P)_po_param}")
           ;;
 
-        association*) # An associative array. Just collect keys
-          _po_values_list=("${(@kP)_po_param}")
+        association*) # An associative array
+
+	  # Collect the keys for the values
+          _po_local_list=("${(@kP)_po_param}")
+
+	  # The values will have descriptions, so we can update the hash as well
+          _po_local_hash=("${(@kvP)_po_param}")
           ;;
 
         *) # Some kind of scalar. Split according to shell rules, remove quotes on each value
-          _po_values_list=("${(@Q)${(P)=_po_param}}")
+          _po_local_list=("${(@Q)${(z)_po_param}}")
           ;;
       esac
       ;;
   esac
 
   # Return results
-  eval $_po_list='("$_po_values_list[@]")'
+  eval $_po_list_name='("$_po_local_list[@]")'
+  [[ -n $_po_hash_name ]] && eval $_po_hash_name='("${(@kv)_po_local_hash}")'
   return 0
 }
 
@@ -468,9 +483,23 @@ _parse_opts_generatecompletiontype() {
         # Takes a parameter, validated by list of values
         _po_description="value"
 	local -a _po_values
-        _parse_opts_expandvalues _po_values $_po_param || return
-	_po_values=(${(q)_po_values})
-        _po_action="($_po_values)"
+	local -A _po_hash
+        _parse_opts_expandvalues $_po_param _po_values _po_hash || return
+	if (( ! $#_po_hash ))
+	then
+	  _po_values=(${(q)_po_values})
+          _po_action="($_po_values)"
+	else
+
+	  _po_hash=("${(@qkv)_po_hash}")
+          _po_action="(("
+	  local _po_key
+	  for _po_key in ${(k)_po_hash}
+	  do
+	    _po_action="$_po_action$_po_key\:$_po_hash[$_po_key] "
+	  done
+	  _po_action="$_po_action))"
+	fi
         ;;
 
       test=*)
@@ -528,7 +557,7 @@ _parse_opts_generatecompletion() {
   do
     local _po_frequency="$_po_frequencies[$_po_option]"
     integer _po_min_frequency=0 _po_max_frequency=0
-    _parse_opts_minmaxfrequency _po_min_frequency _po_max_frequency -1 $_po_frequency || return
+    _parse_opts_minmaxfrequency _po_min_frequency _po_max_frequency $_po_frequency || return
 
     # Try to determine a description/completer from the type of this option
     local _po_description="" _po_action=""
@@ -563,7 +592,7 @@ _parse_opts_generatecompletion() {
       # Add the description of the option if one was successfully extracted from the help text
       if [[ -n $_po_helplines[$_po_option] ]]
       then
-        _po_spec="${_po_spec}[$_po_helplines[$_po_option]]"
+        _po_spec="${_po_spec}[${_po_helplines[$_po_option]%%. *}]"
       fi
 
       # Now add the description and completer for the parameter, if we have one
@@ -577,7 +606,7 @@ _parse_opts_generatecompletion() {
 
     else
 
-      if (( _po_min_frequency < 0 || _po_max_frequency < 0 ))
+      if (( _po_max_frequency < 0 ))
       then
         _po_spec="$_po_spec*"
       fi
@@ -587,7 +616,7 @@ _parse_opts_generatecompletion() {
       # Add the description of the argument if one was successfully extracted from the help text
       if [[ -n $_po_helplines[$_po_option] ]]
       then
-        _po_spec="$_po_spec - $_po_helplines[$_po_option]"
+        _po_spec="$_po_spec - ${${_po_helplines[$_po_option]%%. *}//:/\\:}"
       fi
 
       _po_spec="$_po_spec:$_po_action"
@@ -781,7 +810,7 @@ _parse_opts_handletype() {
       if (( $_po_validate ))
       then
         local -a _po_values
-        _parse_opts_expandvalues _po_values $_po_param || return
+        _parse_opts_expandvalues $_po_param _po_values || return
 
         if (( ! $_po_values[(I)$_po_value] ))
         then
@@ -899,6 +928,15 @@ _parse_opts_dooptions() {
 # NB. Locals in this function must begin _po_
 _parse_opts_doarguments() {
 
+  integer _po_spareargs
+  (( _po_spareargs = $#_po_argv - _po_minargs ))
+
+  if (( _po_spareargs < 0 ))
+  then
+    echo "Insufficient arguments" 1>&2
+    return 1
+  fi
+
   # Process each argument specification
   local _po_argument
   for _po_argument in $_po_arguments
@@ -906,30 +944,35 @@ _parse_opts_doarguments() {
     local _po_frequency="$_po_frequencies[$_po_argument]"
 
     # Ensure number of args to use is within required range
-    integer _po_use=$#_po_argv _po_min=0 _po_max=0
-    _parse_opts_minmaxfrequency _po_min _po_max $_po_use $_po_frequency || return
-    if (( _po_use > _po_max ))
+    integer _po_min=0 _po_max=0
+    _parse_opts_minmaxfrequency _po_min _po_max $_po_frequency || return
+
+    # Try to grab all the spare arguments
+    integer _po_use
+    (( _po_use = _po_min + _po_spareargs ))
+
+    # Restrict this if that's too many
+    if (( _po_max >= 0 && _po_use > _po_max ))
     then
       _po_use=$_po_max
-    elif (( _po_use < _po_min ))
-    then
-      _po_use=$_po_min
     fi
 
-    # Check there are a sufficient number of arguments left
-    if (( $#_po_argv >= _po_use ))
-    then
+    # Recalculate how many arguments are spare for the next option
+    (( _po_spareargs -= _po_use - _po_min ))
 
-      # Process each of them according to the type
-      repeat $_po_use
-      do
-        _parse_opts_handletype $_po_argument 1 $_po_argv[1] || return
-        shift _po_argv
-      done
-    else
-      echo "Insufficient arguments" 1>&2
+    # This shouldn't happen due to being checked above
+    if (( _po_use < _po_min || $#_po_argv >= _po_use ))
+    then
+      echo "Argument processing error" 1>&2
       return 1
     fi
+
+    # Process each of them according to the type
+    repeat $_po_use
+    do
+      _parse_opts_handletype $_po_argument 1 $_po_argv[1] || return
+      shift _po_argv
+    done
   done
 
   # If there's any surplus arguments that's an error
@@ -950,6 +993,7 @@ _parse_opts_process() {
   local -A _po_tags _po_frequencies _po_types _po_aliases _po_excludes _po_helplines
   local -A _po_types_base _po_types_description _po_types_action
   local _po_helptext
+  integer _po_minargs=0
 
   # Check for arguments. If we have one and it is not '-' then it is the help
   # string. Otherwise need to to get that from stdin
@@ -977,6 +1021,7 @@ _parse_opts_process() {
     echo "_po_excludes=(${(qqkv)_po_excludes[@]})"
     echo "_po_helplines=(${(qqkv)_po_helplines[@]})"
     echo "_po_arguments=($_po_arguments)"
+    echo "_po_minargs=$_po_minargs"
     echo "_po_types_base=(${(qqkv)_po_types_base[@]})"
     echo "_po_types_description=(${(qqkv)_po_types_description[@]})"
     echo "_po_types_action=(${(qqkv)_po_types_action[@]})"
