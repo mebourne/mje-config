@@ -9,27 +9,41 @@ use strict;
 
 die "Usage: sqlcompress.pl" if @ARGV>0;
 
-my @columns;
-my @rows;
+# Read the input two lines at a time (but looping once per line), looking for a table header
+my $thisLine=<STDIN>;
+while(defined($thisLine)) {
+  my $nextLine=<STDIN>;
 
-# Read the input
-&readHeader(\@columns);
-&readData(\@columns, \@rows);
+  # If both lines are the same length and the second one consists only of
+  # spaces and dashes then assume we've found the start of a select output
+  if(defined($nextLine) && length($thisLine)==length($nextLine)
+     && $nextLine=~/^ *-[- ]*$/) {
 
-# Processing
-&trimLength(\@columns);
+    # Read the table in
+    my @columns;
+    my @rows;
+    &readHeader(\@columns,$thisLine,$nextLine);
+    &readData(\@columns, \@rows, length($thisLine), \$nextLine);
+    
+    # Processing
+    &trimLength(\@columns);
+    
+    # Write the output
+    &printHeader(\@columns);
+    if(@rows) {
+      my $format=&generateFormat(\@columns);
+      &printData($format,\@rows);
+    }
 
-# Write the output
-&printHeader(\@columns);
-if(@rows) {
-  my $format=&generateFormat(\@columns);
-  &printData($format,\@rows);
-}
-
-# Write any trailing output (eg. count results)
-print "\n";
-while(<STDIN>) {
-  print;
+    # Ensure a newline is present. Helps make desc output easier to read
+    if($nextLine ne "\n") {
+      print "\n";
+    }
+  } else {
+    # Not a table header, so just print the line
+    print "$thisLine";
+  }
+  $thisLine=$nextLine;
 }
 
 exit;
@@ -43,13 +57,10 @@ sub trim {
 
 # Read the first two lines of the input to get the column information
 sub readHeader {
-  my ($columns)=@_;
+  my ($columns,$header,$format)=@_;
 
   # First line is like  'columnname1 columnname2'
-  my $header=<STDIN>;
-
   # Second line is like '----------- -----------'
-  my $format=<STDIN>;
 
   # Iterate over the blocks of '---' in the format line
   my $index=0;
@@ -76,19 +87,17 @@ sub readHeader {
 
 # Read all of the data lines
 sub readData {
-  my ($columns, $rows)=@_;
+  my ($columns, $rows, $lineLength, $nextLine)=@_;
 
-  # Start with 'x' for while check to pass first time through. ie. Loop for
-  # each line until empty line or no more
-  my $line="x";
-  while($line ne '' && defined($line=<STDIN>)) {
+  # Loop for each line until the length doesn't match, or we run out
+  my $line;
+  while(defined($line=<STDIN>) && length($line)==$lineLength) {
     chomp $line;
-    if($line ne '') {
-      my $row=[];
+    my $row=[];
 
-      # Iterate over each column
-      my $x;
-      for($x=0;$x<@$columns;$x++) {
+    # Iterate over each column
+    my $x;
+    for($x=0;$x<@$columns;$x++) {
 	my $column=$$columns[$x];
 
 	# Extract the value
@@ -112,12 +121,14 @@ sub readData {
 
 	# Store the value
 	push @$row, $value;
-      }
-
-      # Store the row
-      push @$rows, $row;
     }
+
+    # Store the row
+    push @$rows, $row;
   }
+
+  # Pass the unmatched line back for possible reuse as a header
+  $$nextLine=$line;
 }
 
 # For each column shrink length such that it will still fit all data and
