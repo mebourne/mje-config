@@ -2,7 +2,7 @@
 # Provide options parsing and help output
 # (C) 2001 Martin Ebourne
 #
-# $Id: parse_opts,v 1.25 2001/08/24 16:30:25 mebourne Exp $
+# $Id: parse_opts,v 1.26 2001/08/29 16:35:41 mebourne Exp $
 
 
 ### Documentation
@@ -166,7 +166,7 @@
 #   # tag-part += option-part : type-part * settings-part
 #
 # eg.
-#   # --help | -h
+#   # --help | -h * excludes=*
 #   # --delimiter | -d : text
 #   # columns += [1,*] column-number : integer
 #
@@ -527,7 +527,7 @@
 #     -E, --no-escape		Prevent interpretation of escape characters
 # 				# [echoopt] += --no-escape | -E : constant=-E
 #     -h, --help		Provide this help
-# 				# --help | -h
+# 				# --help | -h * excludes=*
 #     -l <count>, --lines=<count>
 #				Output only count times
 # 				# --lines | -l : integer
