@@ -1,7 +1,7 @@
 ! .Xdefaults - X resources configuration
 ! Written by Martin Ebourne
 !
-! $Id: Xdefaults,v 1.7 2001/02/28 17:04:53 mebourne Exp $
+! $Id: Xdefaults,v 1.8 2001/03/06 18:20:43 mebourne Exp $
 
 
 !!! XTerm configuration
@@ -19,7 +19,7 @@ XTerm*foreground:		white
 XTerm*eightBitInput:		false
 XTerm*fullCursor:		true
 XTerm*reverseWrap:		true
-XTerm*saveLines:		5000
+XTerm*saveLines:		10000
 XTerm*scrollBar:		true
 XTerm*scrollKey:		true
 XTerm*scrollTtyOutput:		false
