@@ -3,7 +3,7 @@
 # Set sql variables
 # Usage: sqlset <sql-variable>=<value> ...
 #
-# $Id: sqlset,v 1.4 2001/05/22 16:56:28 mebourne Exp $
+# $Id: sqlset,v 1.5 2001/05/30 08:27:25 mebourne Exp $
 
 if (( ARGC ))
 then
@@ -16,14 +16,17 @@ then
     if [[ $assign == [^=]*=* ]]
     then
       _sql_parameters[${assign%%\=*}]="${assign#*=}"
+    elif [[ $assign != *=* && $+_sql_parameters[$assign] -ne 0 ]]
+    then
+      echo - "$assign=$_sql_parameters[$assign]"
     else
-      echo "Syntax: sqlset <sql-variable>=<value> ..." 1>&2
+      echo "Syntax: sqlset [<sql-variable>=<value> | <sql-variable> ] ..." 1>&2
       return 1
     fi
   done
   
-  local vendor=$_sql_parameters[vendor]
-  local fn=$_sql_functions[$vendor:init]
+  local vendor="$_sql_parameters[vendor]"
+  local fn="$_sql_functions[$vendor:init]"
   if [[ -z $fn ]]
   then
     if package sql/$vendor 2>/dev/null
