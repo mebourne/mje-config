@@ -4,7 +4,7 @@
 # get XPG4 commands when running on a Sun box. Typically changing the path
 # would break scripts
 #
-# $Id: override_commands,v 1.6 2001/08/29 16:35:13 mebourne Exp $
+# $Id: override_commands,v 1.7 2002/05/17 13:34:58 mebourne Exp $
 
 local good
 local -a bad
@@ -43,17 +43,17 @@ do
   # Check that the path of the REAL command is in the evil directories list
   if [[ -n ${(M)bad:#${$(whence -p $cmd):h}} ]]
   then
-    case ${$(whence -w $cmd)[(w)2]} in
-      alias)
+    case ${$(whence -wa $cmd)##*:} in
+      *builtin* | *function* | *reserved* | *none*)
+	# If its a built-in or function or something then don't touch
+	;;
+      *alias*)
 	# Edit already existing aliases so we don't lose them
 	alias $cmd="${$(whence $cmd)//$cmd/$goodcmd}"
 	;;
-      command | hashed)
+      *command* | *hashed*)
 	# If its a command then add a new simple alias
 	alias $cmd=$goodcmd
-	;;
-      builtin | function | reserved | none)
-	# If its a built-in or function or something then don't touch
 	;;
       *)
 	# Shouldn't get here
