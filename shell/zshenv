@@ -2,7 +2,7 @@
 # This is the zshenv file sourced directly by zsh
 # Written by Martin Ebourne
 #
-# $Id: zshenv,v 1.7 2001/05/23 12:34:03 mebourne Exp $
+# $Id: zshenv,v 1.8 2001/05/23 13:22:00 mebourne Exp $
 
 # Enable this (or call the shell with it already set) for progress reports during config
 #ZCONFIGDEBUG=1
@@ -11,6 +11,7 @@
 #ZCONFIGPROF=1
 
 ZFILE=zshenv
+[[ -n $ZCONFIGDEBUG ]] && echo "Executing config file $ZFILE"
 
 ## Function definitions. Can't make these autoload since the paths aren't set up yet
 
@@ -114,4 +115,5 @@ _init_zshenv() {
 _init_zshenv
 unfunction _init_zshenv
 
+[[ -n $ZCONFIGDEBUG ]] && echo "Finished config file $ZFILE"
 unset ZFILE

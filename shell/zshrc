@@ -2,9 +2,10 @@
 # This is the zshrc file sourced directly by zsh
 # Written by Martin Ebourne
 #
-# $Id: zshrc,v 1.4 2001/05/18 14:34:23 mebourne Exp $
+# $Id: zshrc,v 1.5 2001/05/23 13:22:03 mebourne Exp $
 
 ZFILE=zshrc
+[[ -n $ZCONFIGDEBUG ]] && echo "Executing config file $ZFILE"
 
 _init_zshrc() {
   [[ -z $ZCONFIGDIR ]] && { print "ERROR: ZCONFIGDIR unset in $ZFILE" ; exit 1 }
@@ -31,4 +32,5 @@ then
   zprof
 fi
 
+[[ -n $ZCONFIGDEBUG ]] && echo "Finished config file $ZFILE"
 unset ZFILE

@@ -2,9 +2,10 @@
 # This is the zprofile file sourced directly by zsh
 # Written by Martin Ebourne
 #
-# $Id: zprofile,v 1.4 2001/05/18 14:34:15 mebourne Exp $
+# $Id: zprofile,v 1.5 2001/05/23 13:21:50 mebourne Exp $
 
 ZFILE=zprofile
+[[ -n $ZCONFIGDEBUG ]] && echo "Executing config file $ZFILE"
 
 _init_zprofile() {
   [[ -z $ZCONFIGDIR ]] && { print "ERROR: ZCONFIGDIR unset in $ZFILE" ; exit 1 }
@@ -16,4 +17,5 @@ _init_zprofile() {
 _init_zprofile
 unfunction _init_zprofile
 
+[[ -n $ZCONFIGDEBUG ]] && echo "Finished config file $ZFILE"
 unset ZFILE
