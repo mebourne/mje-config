@@ -2,7 +2,7 @@
 # ZSH function file
 # Release component in SCM
 #
-# $Id: release_component,v 1.5 2002/08/29 10:25:36 mebourne Exp $
+# $Id: release_component,v 1.6 2002/08/29 16:55:22 mebourne Exp $
 
 local vob="/vobs/bpta"
 
@@ -21,6 +21,8 @@ release_component [options] <component> <version> <architecture>
 Options:
   -h, --help			Provide this help
 				# --help | -h * excludes=*
+  -m <user>, --mail=<user>	Send email to user on successful completion
+				# [mail] += [*] --mail | -m : user
   -r, --re-release		Re-release a component to a new platform, or
 				for which the abe failed before
 				# --re-release | -r * excludes="--re-release -r --update-labels -u"
@@ -139,6 +141,8 @@ fi
 
 ## Perform the release
 
+local starttime="`date`"
+
 local label="$opts[component]_$opts[version]"
 
 if [[ -z $opts[re-release] ]]
@@ -162,4 +166,16 @@ echo
 echo "Running abe..."
 abe.pl -vob $vob -c $opts[component] -l $label -a $opts[arch] || return
 
+local endtime="`date`"
+
 echo "Finished"
+
+if [[ -n $opts[mail] ]]
+then
+  {
+    echo "Subject: $opts[component] version $opts[version] released"
+    echo
+    echo "Started at:  $starttime"
+    echo "Finished at: $endtime"
+  } | mail $=opts[mail]
+fi
