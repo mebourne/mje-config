@@ -330,8 +330,8 @@ Key F8		A	MC	Prev [*] focus
 #*FvwmPagerGeometry 45-2+0
 *FvwmPagerGeometry 48x301
 *FvwmPagerSmallFont 5x8
-*FvwmPagerLabel 0 bin1
-*FvwmPagerLabel 1 bin2
+*FvwmPagerLabel 0 main
+*FvwmPagerLabel 1 other
 
 ############################################################################
 # FvwmWinList
