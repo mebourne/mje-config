@@ -38,11 +38,18 @@ sub processFile {
 sub findTypedefs {
   my ($file, $text)=@_;
 
-  my @typedefs=$text=~/(?<=[;}]) *typedef (.*?) *;/g;
+  my @typedefs=$text=~/(?<=[;}]) *typedef ([^{]*?) *;/g;
   for my $typedef (@typedefs) {
-    my ($origType,$newType,$arrayType)=$typedef=~/^(.*?) (\w+) *(?:(\[.*\])|)$/;
+    my ($origType,$ptrType,$newType,$arrayType)=$typedef=~/^(.*?) ?([*&]*)(\w+) *(?:(\[.*\])|)$/;
 
     if(defined($origType)) {
+      # Implicit int
+      if($origType eq "") {
+	$origType="int";
+      }
+
+      # Combine ptr & array components onto base type
+      $origType=$origType . $ptrType;
       if(defined($arrayType)) {
 	$origType=$origType . " " . $arrayType;
       }
