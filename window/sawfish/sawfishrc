@@ -66,3 +66,6 @@
 
 ;; Stop lotus notes from auto-raising
 (add-window-matcher 'WM_CLASS "wine" '(focus-mode . click))
+
+;; No window furniture for MythTV
+(add-window-matcher 'WM_CLASS "mythfrontend" '(type . 'unframed))
