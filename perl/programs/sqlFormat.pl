@@ -8,19 +8,27 @@
 use strict;
 use English;
 
-# Decode command line options
-
+my $inputLineNum=0;
+my $maxFieldNameLen=0;
 my $colour=0;
-if(@ARGV && $ARGV[0] eq "-c") {
-  $colour=1;
-  shift @ARGV;
-}
 
-my $style=$ARGV[0];
+&main();
 
-if(@ARGV!=1 || $style!~/^(simple|squash|record|emacs)$/) {
+exit;
+
+sub main {
+  # Decode command line options
+
+  if(@ARGV && $ARGV[0] eq "-c") {
+    $colour=1;
+    shift @ARGV;
+  }
+
+  my $style=$ARGV[0];
+
+  if(@ARGV!=1 || $style!~/^(simple|squash|record|emacs)$/) {
     print STDERR
-"Syntax: sqlformat.pl [-c] <style>
+	"Syntax: sqlformat.pl [-c] <style>
   -c	Colour output
   style One of:
 	simple - Simple formatting keeping the default output style
@@ -29,78 +37,89 @@ if(@ARGV!=1 || $style!~/^(simple|squash|record|emacs)$/) {
 	emacs  - Output directly to Emacs in forms mode
 ";
     exit 1;
-}
-
-my $tempFileBase="/tmp/sqlformat.$PID.";
-my $tempFileCount=1;
-
-my $maxFieldNameLen=0;
-
-# Read the input two lines at a time (but looping once per line), looking for a table header
-my $thisLine=<STDIN>;
-while(defined($thisLine)) {
-  my $nextLine=<STDIN>;
-
-  # If both lines are the same length and the second one consists only of
-  # spaces and dashes then assume we've found the start of a select output
-  if(defined($nextLine) && length($thisLine)==length($nextLine)
-     && $nextLine=~/^ *-[- ]*$/) {
-
-    # Read the table in
-    my @columns;
-    my @rows;
-    &readHeader(\@columns,$thisLine,$nextLine);
-    &readData(\@columns, \@rows, length($thisLine), \$nextLine);
-    
-    # Processing
-    if($style eq "squash") {
-      &trimLength(\@columns);
-    }
-    
-    # Write the output
-    if($style eq "simple" || $style eq "squash") {
-      &simple_printHeader(\@columns);
-      if(@rows) {
-	my $format=&simple_generateFormat(\@columns);
-	&simple_printData($format,\@rows);
-      }
-    } elsif ($style eq "record") {
-      if(@rows) {
-	my $format=&record_generateFormat(\@columns);
-	&record_printData($format,\@rows);
-      }
-    } elsif ($style eq "emacs") {
-      &emacs_writeControl(\@columns,$tempFileBase . $tempFileCount);
-      &emacs_writeData(\@rows,$tempFileBase . $tempFileCount);
-      $tempFileCount++;
-    }
-
-    # Ensure a newline is present. Helps make desc output easier to read
-    if($nextLine ne "\n" && $style ne "emacs") {
-      print "\n";
-    }
-  } else {
-    # Not a table header, so just print the line
-    if($style ne "emacs") {
-      print "$thisLine";
-    }
-  }
-  $thisLine=$nextLine;
-}
-
-if($style eq "emacs") {
-  my ($formFiles, $allFiles);
-  for(my $i=1;$i<$tempFileCount;$i++) {
-    $formFiles.=" $tempFileBase$i.form";
-    $allFiles.=" $tempFileBase$i.form $tempFileBase$i.data";
   }
 
-  system("emacsclient --no-wait $formFiles");
-  system("( sleep 60 ; rm -f $allFiles ) &");
+  my $tempFileBase="/tmp/sqlformat.$PID.";
+  my $tempFileCount=1;
+
+  # Read the input two lines at a time (but looping once per line), looking for a table header
+  my $thisLine=&getNextLine(0);
+  while(defined($thisLine)) {
+    my $nextLine=&getNextLine(0);
+
+    # If both lines are the same length and the second one consists only of
+    # spaces and dashes then assume we've found the start of a select output
+    if(defined($nextLine) && length($thisLine)==length($nextLine)
+       && $nextLine=~/^ *-[- ]*$/) {
+
+      # Read the table in
+      my @columns;
+      my @rows;
+      &readHeader(\@columns,$thisLine,$nextLine);
+      &readData(\@columns, \@rows, length($thisLine), \$nextLine);
+      
+      # Processing
+      if($style eq "squash") {
+	&trimLength(\@columns);
+      }
+      
+      # Write the output
+      if($style eq "simple" || $style eq "squash") {
+	&simple_printHeader(\@columns);
+	if(@rows) {
+	  my $format=&simple_generateFormat(\@columns);
+	  &simple_printData($format,\@rows);
+	}
+      } elsif ($style eq "record") {
+	if(@rows) {
+	  my $format=&record_generateFormat(\@columns);
+	  &record_printData($format,\@rows);
+	}
+      } elsif ($style eq "emacs") {
+	&emacs_writeControl(\@columns,$tempFileBase . $tempFileCount);
+	&emacs_writeData(\@rows,$tempFileBase . $tempFileCount);
+	$tempFileCount++;
+      }
+
+      # Ensure a newline is present. Helps make desc output easier to read
+      if($nextLine ne "\n" && $style ne "emacs") {
+	print "\n";
+      }
+    } else {
+      # Not a table header, so just print the line
+      if($style ne "emacs") {
+	print "$thisLine";
+      }
+    }
+    $thisLine=$nextLine;
+  }
+
+  if($style eq "emacs") {
+    my ($formFiles, $allFiles);
+    for(my $i=1;$i<$tempFileCount;$i++) {
+      $formFiles.=" $tempFileBase$i.form";
+      $allFiles.=" $tempFileBase$i.form $tempFileBase$i.data";
+    }
+
+    system("emacsclient --no-wait $formFiles");
+    system("( sleep 60 ; rm -f $allFiles ) &");
+  }
 }
 
-exit;
+sub getNextLine {
+  my ($feedback)=@_;
 
+  my $line=<STDIN>;
+  $inputLineNum++;
+  if(($inputLineNum%100)==0 && $feedback) {
+    my $old=$|;
+    $|=1;
+    print "Received $inputLineNum lines...\r";
+    $|=$old;
+  }
+
+  return $line;
+}
 
 # Trim the given parameter for leading and trailing spaces, and return it
 sub trim {
@@ -148,7 +167,7 @@ sub readData {
 
   # Loop for each line until the length doesn't match, or we run out
   my $line;
-  while(defined($line=<STDIN>) && length($line)==$lineLength) {
+  while(defined($line=&getNextLine(1)) && length($line)==$lineLength) {
     chomp $line;
     my $row=[];
 
