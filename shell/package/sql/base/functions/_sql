@@ -5,7 +5,7 @@
 # Completion code for sql command
 # Usage: These functions are used by the completion code
 #
-# $Id: _sql,v 1.1 2001/02/26 18:37:50 mebourne Exp $
+# $Id: _sql,v 1.2 2001/03/14 15:52:36 mebourne Exp $
 
 _sql () {
   local -A tables
@@ -79,7 +79,8 @@ _sql () {
   #echo "state=$currentstate"
 
   case $currentstate in
-    900)	_wanted sql expl 'SQL reserved words' compadd select delete insert update create drop;;
+    900)	_wanted sql expl 'SQL reserved words' compadd select delete insert update create drop
+		_sql_complete_proc_names;;
     102)	_sql_complete_table_names;;
     103)	return 1;;
     111)	_wanted sql expl 'SQL reserved words' compadd from
