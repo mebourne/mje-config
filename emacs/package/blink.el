@@ -1,12 +1,9 @@
 ;;; blink.el --- Flash cursor
 
-;; Copyright (C) 1997 Martin Ebourne, martin@galaxy.tcp.co.uk
+;; Copyright (C) 1997 Martin Ebourne
 ;; All rights reserved
-;; 29-01-97 - First version
-;; 30-01-97 - Renamed from cursor to blink
-;; 30-01-97 - Added blink-enable and blink-disable
 ;;
-;; $Id: blink.el,v 1.1 2001/05/11 17:31:38 mebourne Exp $
+;; $Id: blink.el,v 1.2 2002/03/26 18:06:40 mebourne Exp $
 
 ;;; Commentary:
 
@@ -28,13 +25,6 @@ cursor.")
 (defvar blink-hide-time 0.5
   "*Time in seconds to flash the cursor off for.")
 
-(defvar blink-show-colour "green"
-  "*Colour to use when showing the cursor.")
-
-(defvar blink-hide-colour "rgb:05/05/05"
-  "*Colour to use when hiding the cursor. Black will not work because
-Emacs mutates it into white - use a dark grey instead.")
-
 
 ;; User interface functions
 
@@ -43,7 +33,7 @@ Emacs mutates it into white - use a dark grey instead.")
   (interactive)
   (add-hook 'post-command-hook 'blink-reset)
   )
-  
+
 (defun blink-disable ()
   "Disable cursor flashing."
   (interactive)
@@ -62,13 +52,13 @@ Emacs mutates it into white - use a dark grey instead.")
 
 (defun blink-show ()
   "Show the cursor."
-  (set-cursor-color blink-show-colour)
+  (internal-show-cursor nil t)
   )
 
 (defun blink-hide ()
   "Hide the cursor."
-  (set-cursor-color blink-hide-colour)
-  
+  (internal-show-cursor nil nil)
+
   ;; Start up a timeout to show it again
   (setq blink-show-handle (run-with-timer blink-hide-time nil 'blink-show))
   )
