@@ -2,7 +2,7 @@
 # This is the zshenv file sourced directly by zsh
 # Written by Martin Ebourne
 #
-# $Id: zshenv,v 1.6 2001/05/18 14:34:21 mebourne Exp $
+# $Id: zshenv,v 1.7 2001/05/23 12:34:03 mebourne Exp $
 
 # Enable this (or call the shell with it already set) for progress reports during config
 #ZCONFIGDEBUG=1
@@ -92,6 +92,7 @@ _init_zshenv() {
   
   # The user directory defaults to $ZCONFIGDIR/user, but can be overridden with
   # a symbolic link called ~/.zsh_user which must point to the required directory
+  # (note ~/.zsh_user can be a directory itself, which will be used in that case)
   ZUSERCONFIGDIR=$(_expand_symlink ${ZDOTDIR:-$HOME}/.zsh_user)
   [[ ! -d $ZUSERCONFIGDIR ]] && ZUSERCONFIGDIR=$ZCONFIGDIR/user
   
