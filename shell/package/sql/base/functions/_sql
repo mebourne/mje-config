@@ -5,10 +5,18 @@
 # Completion code for sql command
 # Usage: These functions are used by the completion code
 #
-# $Id: _sql,v 1.14 2002/04/19 13:37:57 mebourne Exp $
+# $Id: _sql,v 1.15 2002/04/19 17:31:53 mebourne Exp $
 
 #_sql_trace=1
 
+
+## Parser helper functions
+
+# Completely tokenise the command line
+# Input variables:
+#   inputline, inputindex
+# Output variables:
+#   tokens, tokenids, cursorindex
 _sql_tokenise () {
   integer charindex=1
 
@@ -106,6 +114,14 @@ _sql_tokenise () {
   fi
 }
 
+
+# Get the next token, and record the current state
+# Inputs:
+#   currentstate - The next state to record
+# Input variables:
+#   nextstate, tokens, tokenids, nestedindex
+# Output variables:
+#   token, tokenid, nextstate, states, statenestindices
 _sql_get_token () {
   local currentstate="$1"
 
@@ -128,6 +144,10 @@ _sql_get_token () {
   (( _sql_trace )) && echo "token $tokenid >$token<"
 }
 
+
+## Nested context handling functions
+
+# Save the state for the current nested context
 _sql_save_nest () {
   nestedlist[nestedindex]="
 parentindex=$parentindex
@@ -138,6 +158,7 @@ tables=(${(kv)tables})
 "
 }
 
+# Increase nesting level
 _sql_nest () {
   _sql_save_nest
   (( parentindex = nestedindex ))
@@ -146,15 +167,20 @@ _sql_nest () {
   parenlevel=0
 }
 
+# Remove a nesting level
 _sql_unnest () {
   _sql_save_nest
   eval $nestedlist[parentindex]
 }
 
+# Create a new nesting context at the same level
 _sql_new_nest () {
   _sql_unnest
   _sql_nest
 }
+
+
+## Generic productions
 
 _sql_gpn_column_name () {
   local stateprefix="$1" followingstate="$2" endexpr="$3"
@@ -211,6 +237,9 @@ _sql_gpn_where () {
     esac
   done
 }
+
+
+## Specific productions
 
 _sql_pn_start () {
   _sql_get_token start
@@ -631,6 +660,10 @@ _sql_pn_update_set () {
 _sql_pn_exec () {
 }
 
+
+## Completion functions
+
+# Generate the completion for a column, maybe using table aliases
 _sql_generate_column_completion () {
   local tablealias="$1"
 
@@ -658,13 +691,14 @@ _sql_generate_column_completion () {
   fi
 }
 
+# Create the completions based on the parsed state information
 _sql_generate_completions () {
   local -a alts
   alts=()
 
-  local suffix=""
   # Temporary bodge to work around bugs in all-matches
   # expansion when -r includes space
+  local suffix=""
   if [[ $curcontext == *:match:* ]]
     then
     suffix="-S ',' -r ',\t\n\-'"
@@ -819,6 +853,10 @@ _sql_generate_completions () {
   _alternative $alts
 }
 
+
+## Entry point
+
+# This is the sql completion function, and is the entry point for all this code
 _sql () {
 
   (( _sql_trace )) && echo
