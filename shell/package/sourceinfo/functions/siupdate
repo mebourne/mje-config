@@ -4,13 +4,15 @@
 # Update the SourceInfo databases
 # Usage: siupdate
 #
-# $Id: siupdate,v 1.7 2001/05/23 12:16:45 mebourne Exp $
+# $Id: siupdate,v 1.8 2001/05/23 12:21:14 mebourne Exp $
 
 if [[ -z $sourceinfo_sourcecode_dirs ]]
 then
   echo "sourceinfo_sourcecode_dirs not set" 1>&2
   return 1
 fi
+
+local new=".new.$$"
 
 # Create the files database
 local dir
@@ -25,7 +27,8 @@ do
 		    -print \
 	    -o \( -name lost+found -o -name RCS -o -name CVS -o -name sol2.d \) -prune
 done |
-  gzip - > $sourceinfo_filesdb
+  gzip - > $sourceinfo_filesdb$new &&
+  mv -f $sourceinfo_filesdb$new $sourceinfo_filesdb
 
 # Create the types database
 for dir in $sourceinfo_sourcecode_dirs
@@ -33,4 +36,5 @@ do
   find $dir -type f \( -name '*.hpp' -o -name '*.h' \) -print \
 	    -o -name lost+found -prune | xargs typeInfoGenerate.pl
 done |
-  gzip - > $sourceinfo_typesdb
+  gzip - > $sourceinfo_typesdb$new &&
+  mv -f $sourceinfo_typesdb$new $sourceinfo_typesdb
