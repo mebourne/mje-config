@@ -1,0 +1,40 @@
+# ZSH function file
+# Part of the prompt package
+# Hook for preexec function
+# Usage: _prompt_precmd
+#
+# $Id: _prompt_preexec,v 1.1 2001/03/05 18:38:26 mebourne Exp $
+
+local command=$1
+
+local rp='%D{%a %f %b %Y %H:%M:%S}'
+
+local rows justify 
+
+
+(( rows = ( $#command + COLUMNS - 1 ) / COLUMNS ))
+
+repeat $rows
+do
+  echo -n "\e[A"
+done
+
+
+# Get command including left hand prompt and right hand prompt expanded.
+# Just used below to calculate padding
+local combined="${(%%)${PROMPT//[%]\{[^%]#%\}/}}$command${(%%)${prompt_right//[%]\{[^%]#%\}/}}"
+
+
+## Redraw the command line
+
+# First the left prompt
+echo -n "${(%%)PROMPT}"
+
+# Then the command in bold
+echo -n "\e[$prompt_colours[bold]m$command\e[$prompt_colours[normal]m"
+
+# Then the padding to right justify the right prompt
+echo -n "$_prompt_gap[$[ ${#${(%%)combined}} - COLUMNS * rows ],-3]"
+
+# Then the right prompt
+echo -n "${(%%)prompt_right}"
