@@ -1,10 +1,11 @@
 # ZSH function file
-# Search for files from the locate database list
-# Usage: locate <filename-regexp>
+# Written by Martin Ebourne
+# Part of the SourceInfo package
+# Search for files from the source info file list
+# Usage: sifile <filename-regexp>
 #
-# $Id: sifile,v 1.1 2001/02/12 18:13:24 mebourne Exp $
+# $Id: sifile,v 1.2 2001/02/23 18:04:39 mebourne Exp $
 
-[[ -z $LOCATE_DIR ]] && { echo "LOCATE_DIR not set" ; return 1 }
-[[ -z $LOCATE_DB ]] && { echo "LOCATE_DB not set" ; return 1 }
+[[ -z $sourceinfo_filesdb ]] && { echo "sourceinfo_filesdb not set" ; return 1 }
 
-gunzip - < $LOCATE_DB | grep -i "$1"
+gunzip - < $sourceinfo_filesdb | grep -i "$1"

@@ -1,13 +1,19 @@
 # ZSH function file
-# Update the locate database
-# Usage: updatelocate
+# Written by Martin Ebourne
+# Part of the SourceInfo package
+# Update the SourceInfo databases
+# Usage: siupdate
 #
-# $Id: siupdate,v 1.1 2001/02/12 18:13:25 mebourne Exp $
+# $Id: siupdate,v 1.2 2001/02/23 18:04:39 mebourne Exp $
 
-[[ -z $LOCATE_DIR ]] && { echo "LOCATE_DIR not set" ; return 1 }
-[[ -z $LOCATE_DB ]] && { echo "LOCATE_DB not set" ; return 1 }
+[[ -z $sourceinfo_dirs ]] && { echo "sourceinfo_dirs not set" ; return 1 }
+[[ -z $sourceinfo_filesdb ]] && { echo "sourceinfo_filesdb not set" ; return 1 }
 
-find $LOCATE_DIR \! \( -type d -o -name '*.[ao]' -o -name '*.so' -o -name '*[mM]akefile' \
-		       -o -name sol2.d -o -name '.*' \) -print \
-		       -o -name lost+found -prune |
-  gzip - > $LOCATE_DB
+local dir
+for dir in $sourceinfo_dirs
+do
+  find $dir \! \( -type d -o -name '*.[ao]' -o -name '*.so' -o -name '*[mM]akefile' \
+		  -o -name sol2.d -o -name '.*' \) -print \
+		  -o -name lost+found -prune
+done |
+  gzip - > $sourceinfo_filesdb
