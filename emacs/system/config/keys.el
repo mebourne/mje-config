@@ -1,7 +1,7 @@
 ;; Emacs configuration file
 ;; Key bindings
 ;; Written by Martin Ebourne
-;; $Id: keys.el 792 2003-09-22 11:47:18Z martin $
+;; $Id$
 
 ;; Cursor movement
 (global-set-key "\M-\C-z"     'scroll-other-window-down)
@@ -33,6 +33,7 @@
 (global-set-key "\M-o"        'eval-current-buffer)
 (global-set-key "\C-x\C-q"    'toggle-read-only)
 (global-set-key [67108897]    'kill-this-buffer)      ; C-!
+(global-set-key "\C-x\C-r"    'find-file-root)
 
 ;; Rectangle operations
 (global-set-key "\C-xrw"      'copy-rectangle)

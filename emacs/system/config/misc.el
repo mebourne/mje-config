@@ -1,7 +1,7 @@
 ;; Emacs configuration file
 ;; Miscellaneous stuff
 ;; Written by Martin Ebourne
-;; $Id: misc.el 795 2003-09-22 13:40:16Z martin $
+;; $Id$
 
 (setq message-log-max 1000)
 
@@ -38,10 +38,10 @@
 
 ;; My really wonderful cursor flashing - the biz!
 (blink-cursor-mode 0)
-(require 'blink)
+(blink-enable)
 
 ;; My just as wonderful cursor constraining - top!
-(require 'constrain)
+(constrain-enable)
 
  ;; Give buffers sensible unique filenames
 (require 'uniquify)

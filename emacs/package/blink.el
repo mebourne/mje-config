@@ -3,12 +3,12 @@
 ;; Copyright (C) 1997 Martin Ebourne
 ;; All rights reserved
 ;;
-;; $Id: blink.el 792 2003-09-22 11:47:18Z martin $
+;; $Id$
 
 ;;; Commentary:
 
-;; Load this and from then on the cursor will flash in order to help make
-;; it more visible.
+;; (blink-enable) to activate cursor flashing in order to help make it more
+;; visible.
 
 ;;; Code:
 
@@ -28,12 +28,14 @@ cursor.")
 
 ;; User interface functions
 
+;;;###autoload
 (defun blink-enable ()
   "Enable cursor flashing."
   (interactive)
   (add-hook 'post-command-hook 'blink-reset)
   )
 
+;;;###autoload
 (defun blink-disable ()
   "Disable cursor flashing."
   (interactive)
@@ -80,7 +82,5 @@ cursor.")
   (setq blink-hide-handle (run-with-timer blink-wait-time (+ blink-hide-time blink-show-time)
 					    'blink-hide))
   )
-
-(blink-enable)
 
 (provide 'blink)

@@ -1,6 +1,6 @@
 ;;; constrain.el --- Restrict cursor to middle area of window
 
-;; Copyright (C) 1997-1999 Martin Ebourne, martin@zzz.co.uk
+;; Copyright (C) 1997-2004 Martin Ebourne, martin at zepler.org
 ;; All rights reserved
 ;; 30-01-97 - First version
 ;; 31-01-97 - changed from constrain to middle line to constrain
@@ -10,16 +10,15 @@
 ;; 18-02-97 - Fix to check in current buffer, SJL
 ;; 10-06-99 - Fixed to work properly with the mouse, MJE
 ;;
-;; $Id: constrain.el 792 2003-09-22 11:47:18Z martin $
+;; $Id$
 
 ;;; Commentary:
 
-;; Load this and from then on the cursor will be constrained to
-;; stay above a certain percentage of the window height from
-;; the bottom and top of the window. This both makes it easier
-;; to find, and ensures useful amounts of visible source above
-;; and below. Page up and down are also re-defined to be more
-;; sensible.
+;; (constrain-enable) to activate cursor constraining. It will be constrained
+;; to stay above a certain percentage of the window height from the bottom and
+;; top of the window. This both makes it easier to find, and ensures useful
+;; amounts of visible source above and below. Page up and down are also
+;; re-defined to be more sensible.
 
 ;;; Code:
 
@@ -44,6 +43,7 @@ allowed in.")
 
 (defvar constrain-timer nil)
 
+;;;###autoload
 (defun constrain-enable ()
   "Force cursor to stay above a certain percentage of the window height
  from the bottom and top of the window. The percentage is set by the
@@ -60,6 +60,7 @@ allowed in.")
   (global-set-key "\C-v" 'constrain-page-down)
   )
 
+;;;###autoload
 (defun constrain-disable ()
   "Allow the cursor to go where it normally does."
   (interactive)
@@ -153,8 +154,5 @@ Top line is 0.  Counts each text line only once, even if it wraps."
     (setq this-command 'next-line)
     (recenter start-line))
   )
-
-;; Make sure if we scroll to fast we at least don't recenter
-(constrain-enable)
 
 (provide 'constrain)

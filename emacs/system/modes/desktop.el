@@ -1,13 +1,19 @@
 ;; Emacs configuration file
 ;; Setup for desktop session saving
 ;; Written by Martin Ebourne
-;; $Id: desktop.el 792 2003-09-22 11:47:18Z martin $
+;; $Id$
+
+(eval-when-compile
+  (require 'desktop))
 
 ;; Session saver
 (cond (window-system
-       (load "desktop")
+       (require 'desktop)
 
-       (setq desktop-enable (not secondary))
+       (if (fboundp 'desktop-save-mode)
+	   (desktop-save-mode (not secondary))
+	 (setq desktop-enable (not secondary))
+	 )
 
        (setq desktop-globals-to-save
 	     (append
@@ -20,6 +26,7 @@
 			  extended-command-history
 			  filename-history
 			  file-name-history
+			  find-file-root-history
 			  input-method-history
 			  iswitchb-history
 			  minibuffer-history

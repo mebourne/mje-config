@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2001 Martin Ebourne. All rights reserved
 ;;
-;; $Id: install.el 792 2003-09-22 11:47:18Z martin $
+;; $Id$
 
 ;;; Commentary:
 
@@ -168,7 +168,10 @@ install-directories function."
 	  (unwind-protect
 	      (progn
 		(setq backup-inhibited t)
-		(update-autoloads-from-directories dirname)
+		(funcall (if (fboundp 'update-directory-autoloads)
+			     'update-directory-autoloads
+			   'update-autoloads-from-directories)
+			 dirname)
 		)
 	    (setq backup-inhibited backups)
 	    )
