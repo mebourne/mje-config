@@ -1,0 +1,107 @@
+# ZSH function file
+# Update config directory
+# Usage: configupdate
+#
+# $Id: configupdate,v 1.1 2001/03/16 17:22:52 mebourne Exp $
+
+local -a backup_files non_vc_files changed_files unchanged_files
+
+local -a untouchable_files
+
+
+local dir file leaf name
+for dir in $ZCONFIGDIR/**/RCS(/)
+do
+  dir=${dir:h:h}
+  untouchable_files=()
+
+  for file in $dir/*(.N)
+  do
+    leaf=${file:t}
+
+    case $leaf in
+      *~|\#*\#)
+        backup_files=($backup_files $file)
+	;;
+
+      *)
+        if [[ ! -f $dir/RCS/$leaf,v ]]
+	then
+	  non_vc_files=($non_vc_files $file)
+	fi
+	;;
+    esac
+  done
+
+  for file in $dir/RCS/*,v(.N)
+  do
+    leaf=${${file:t}%,v}
+    file=$dir/$leaf
+    name=${file#$ZCONFIGDIR/}
+
+    if [[ -w $file ]]
+    then
+      if rcsdiff -q $file >/dev/null
+      then
+	echo "LOCKED   $name"
+	unchanged_files=($unchanged_files $file)
+      else
+	echo "MODIFIED $name"
+	changed_files=($changed_files $file)
+      fi
+    else
+      if rlog -rdeleted $file >/dev/null 2>&1
+      then
+        echo "Deleted  ${file#$ZCONFIGDIR/}"
+	rm -f $file
+      else
+        echo "Updated  ${file#$ZCONFIGDIR/}"
+    	co -u $file 2>/dev/null
+      fi
+    fi
+  done
+done
+
+if [[ -n $backup_files ]]
+then
+  echo
+  echo ">>> Delete these backup files?"
+  print -c - ${backup_files#$ZCONFIGDIR/}
+  if read -q
+  then
+    rm -f $backup_files
+  fi
+fi
+
+if [[ -n $non_vc_files ]]
+then
+  echo
+  echo ">>> These files are not version controlled. Add them?"
+  print -c - ${non_vc_files#$ZCONFIGDIR/}
+  if read -q
+  then
+    ci -u -t-"ZSH configuration system" $non_vc_files
+  fi
+fi
+
+if [[ -n $unchanged_files ]]
+then
+  echo
+  echo ">>> These files are checked out but unchanged. Revert?"
+  print -c - ${unchanged_files#$ZCONFIGDIR/}
+  if read -q
+  then
+    ci -u $unchanged_files
+  fi
+fi
+
+if [[ -n $changed_files ]]
+then
+  echo
+  echo ">>> These files are checked out and edited. Check in?"
+  print -c - ${changed_files#$ZCONFIGDIR/}
+  if read -q
+  then
+    ci -u $changed_files
+  fi
+fi
