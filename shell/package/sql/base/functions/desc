@@ -3,12 +3,12 @@
 # Describe the given table
 # Usage: desc <table-name>
 #
-# $Id: desc,v 1.1 2001/02/26 18:37:50 mebourne Exp $
+# $Id: desc,v 1.2 2001/05/29 16:56:11 mebourne Exp $
 
-if [[ -z $1 ]]
+if (( ARGC != 1 ))
 then
-  echo "Syntax: desc <table-name>" 1>&2
+  echo "Syntax: desc <object-name>" 1>&2
   return 1
 fi
 
-_sql_call desc $1
+_sql_call desc "$argv[1]"
