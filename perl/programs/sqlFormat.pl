@@ -1,15 +1,30 @@
 #!/usr/local/bin/perl -w
 #
-# Compress columns in SQL output to take less screen space
+# Format SQL output to make it easier to read
 # Written by Martin Ebourne. Started 22/05/01
 #
-# Usage: sqlcompress.pl
+# Usage: sqlformat.pl [-s] [-c]
 
 use strict;
 
-die "Usage: sqlcompress.pl" if @ARGV>0;
+my $squash=0;
+my $colour=0;
 
-my $colour=1;
+# Decode command line options
+for my $option (@ARGV) {
+  if($option eq "-s") {
+    $squash=1;
+  } elsif($option eq "-c") {
+    $colour=1;
+  } else {
+    print STDERR
+"Syntax: sqlformat.pl [-s] [-c]
+  -c	Colour output
+  -s	Squash output columns
+";
+    exit 1;
+  }
+}
 
 # Read the input two lines at a time (but looping once per line), looking for a table header
 my $thisLine=<STDIN>;
@@ -28,7 +43,9 @@ while(defined($thisLine)) {
     &readData(\@columns, \@rows, length($thisLine), \$nextLine);
     
     # Processing
-    &trimLength(\@columns);
+    if($squash) {
+      &trimLength(\@columns);
+    }
     
     # Write the output
     &printHeader(\@columns);
