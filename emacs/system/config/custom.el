@@ -1,7 +1,7 @@
 ;; Emacs configuration file
 ;; Customised variables
 ;; Written by Martin Ebourne
-;; $Id: custom.el,v 1.12 2002/03/21 15:59:56 mebourne Exp $
+;; $Id: custom.el,v 1.13 2002/03/25 17:42:20 mebourne Exp $
 
 (setq custom-file (concat install-user-base-dir "/custom.el"))
 
@@ -40,9 +40,6 @@
 
  ;; Display trailing white space
  '(show-trailing-whitespace t)
-
- ;; Display image files as pictures
- '(auto-image-file-mode t)
 
  ;; Give buffers sensible unique filenames
  '(uniquify-buffer-name-style (quote reverse))
