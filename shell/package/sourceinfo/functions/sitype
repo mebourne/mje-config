@@ -1,0 +1,15 @@
+# ZSH function file
+# Written by Martin Ebourne
+# Part of the SourceInfo package
+# Display type information
+# Usage: sitype [-r] <type-name>
+#	 -r	Display full type information recursively
+#
+# $Id: sitype,v 1.1 2001/02/23 18:04:39 mebourne Exp $
+
+[[ -z $sourceinfo_typesdb ]] && { echo "sourceinfo_typesdb not set" ; return 1 }
+
+local recurse
+[[ $1 == -r ]] && { recurse=-r; shift }
+
+typeInfo.pl $recurse $sourceinfo_typesdb "$1"

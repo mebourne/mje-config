@@ -1,0 +1,11 @@
+# ZSH function file
+# Written by Martin Ebourne
+# Part of the SourceInfo package
+# Display class hierarchy trees
+# Usage: sitree <type-name>
+#
+# $Id: sitree,v 1.1 2001/02/23 18:04:39 mebourne Exp $
+
+[[ -z $sourceinfo_typesdb ]] && { echo "sourceinfo_typesdb not set" ; return 1 }
+
+typeInfo.pl -s $sourceinfo_typesdb "$1"

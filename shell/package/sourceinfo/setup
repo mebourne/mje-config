@@ -1,0 +1,19 @@
+# ZSH configuration file
+# Executed when the SourceInfo package is included
+# Setup for SourceInfo package
+# Written by Martin Ebourne
+#
+# $Id: setup,v 1.1 2001/02/23 18:03:56 mebourne Exp $
+
+add_functions_directory package/sourceinfo/functions
+
+# Default directory to store SourceInfo files
+typeset -g sourceinfo_dir=$HOME/local/share/sourceinfo
+
+# Default files to store in SourceInfo directory
+typeset -g sourceinfo_filesdb=$sourceinfo_dir/files.gz
+typeset -g sourceinfo_typesdb=$sourceinfo_dir/types.gz
+
+# These are the default directories to find the source code. It should be user set
+# to the correct value
+typeset -ga sourceinfo_sourcecode_dirs
