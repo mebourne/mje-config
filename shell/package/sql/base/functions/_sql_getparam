@@ -1,0 +1,26 @@
+# ZSH function file
+# Part of the SQL base package
+# Return an SQL parameter
+# For use only by the SQL packages
+#
+# $Id: _sql_getparam,v 1.1 2001/05/31 11:46:22 mebourne Exp $
+
+local valuevar="$argv[1]" param="$argv[2]" default="$argv[3]" indicatorvar="$argv[4]"
+
+local value="$default" indicator="default"
+
+if (( ${(P)+param} ))
+then
+  indicator=override
+  value=${(P)param}
+elif (( $+_sql_parameters[$param] ))
+then
+  indicator=param
+  value=$_sql_parameters[$param]
+fi
+
+eval $valuevar="\$value"
+if [[ -n $indicatorvar ]]
+then
+  eval $indicatorvar="\$indicator"
+fi
