@@ -3,25 +3,31 @@
 # Part of the clearcase package
 # Set view to that matching username
 #
-# $Id: myview,v 1.5 2001/08/29 16:34:51 mebourne Exp $
+# $Id: myview,v 1.6 2002/03/19 12:00:32 mebourne Exp $
 
 _clearcase_getviews
 
 local -A opts
 parse_opts - opts -- "$argv[@]" <<'EOF' || return 1
 Description:
-Set view to that matching username.
+Set view to that matching username (defaults to current user).
 
 Usage:
-myview [options]
+myview [options] [<username>]
 
 Options:
   -h, --help			Provide this help
 				# --help | -h * excludes=*
+
+Arguments:
+  [<username>]			The username to match
+				# [username] = [0,1] username : ? users
+##
+#type users string users _users
 EOF
 
 local -a views
-views=(${(M)_clearcase_views:#*$USER*})
+views=(${(M)_clearcase_views:#*${opts[username]:-$USER}*})
 
 if (( $#views != 1 ))
 then
