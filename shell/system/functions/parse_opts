@@ -2,7 +2,7 @@
 # Provide options parsing and help output
 # Usage: parse_opts <argv> <results> [<help>]
 #
-# $Id: parse_opts,v 1.7 2001/08/01 19:38:19 mebourne Exp $
+# $Id: parse_opts,v 1.8 2001/08/01 19:43:42 mebourne Exp $
 
 ### Documentation
 
@@ -488,7 +488,7 @@ _parse_opts_do_options() {
       	local _po_name="${${_po_option#--}%%\=*}"
 
       	# Check to see if the option exists
-      	if [[ -n $_po_aliases[$_po_name] ]]
+      	if (( $+_po_aliases[$_po_name] ))
       	then
 
 	  # Check to see if value was in option, ie. --name=value
@@ -521,7 +521,7 @@ _parse_opts_do_options() {
 	  _po_optiongroup=${_po_optiongroup#?}
 
       	  # Check to see if is a valid short option
-      	  if [[ -n $_po_aliases[$_po_optionletter] ]]
+      	  if (( $+_po_aliases[$_po_optionletter] ))
       	  then
 
 	    # It is so process it as the type determines
@@ -651,7 +651,7 @@ _parse_opts_process() {
 
     # If success and help was requested then give it. Note that it is up to
     # the user to supply the help option before we can use it
-    if [[ -n $_po_results[help] ]]
+    if (( _po_results[help] ))
     then
       echo $_po_helptext
       return 1
@@ -660,7 +660,7 @@ _parse_opts_process() {
     # Entry point for automatic zsh completion. We always return 1 in order to
     # get the calling program to exit. The completion system knows this is not
     # an error
-    if [[ -n $_po_results[zshcompletion] ]]
+    if (( _po_results[zshcompletion] ))
     then
       _parse_opts_generatecompletion
       return 1
