@@ -2,9 +2,9 @@
 # dozsh - Execute zsh from another shell environment
 # Written by Martin Ebourne
 #
-# $Id: dozsh,v 1.2 2001/06/01 09:16:17 mebourne Exp $
+# $Id: dozsh,v 1.3 2002/03/18 16:44:03 mebourne Exp $
 
-MJEHOME=/home/odyssey1/mebourne
+MJEHOME=/home/mebourne
 
 ZDOTDIR=$MJEHOME/.zsh
 export ZDOTDIR
