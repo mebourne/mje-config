@@ -3,7 +3,7 @@
 # Setup for completion package
 # Written by Martin Ebourne
 #
-# $Id: setup,v 1.7 2001/06/29 08:42:14 mebourne Exp $
+# $Id: setup,v 1.8 2001/08/13 09:30:20 mebourne Exp $
 
 add_functions_directory package/completion/functions
 
@@ -40,12 +40,15 @@ zstyle ':completion:*:default' list-packed true
 # List each group of completions under separate headings (works with formatting below)
 zstyle ':completion:*' group-name ''
 
+# Remove duplicates from list (for history completion)
+zstyle ':completion:*:history:*' remove-all-dups true
+
 
 # These are modifications to specific completers
 
 # Set expand to do file wildcards and variable substitutions
-zstyle ':completion:*:expand:*' glob 1
-zstyle ':completion:*:expand:*' substitute 1
+zstyle ':completion:*:expand:*' glob true
+zstyle ':completion:*:expand:*' substitute true
 
 # Force expansion to insert the expected expansion rather than menu-complete
 # on a load of other possibilities
