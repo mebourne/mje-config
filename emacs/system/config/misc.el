@@ -1,7 +1,7 @@
 ;; Emacs configuration file
 ;; Miscellaneous stuff
 ;; Written by Martin Ebourne
-;; $Id: misc.el,v 1.11 2002/03/26 17:21:47 mebourne Exp $
+;; $Id: misc.el,v 1.12 2002/03/26 18:11:52 mebourne Exp $
 
 (setq message-log-max 1000)
 
@@ -31,6 +31,7 @@
 (require 'vcursor)
 
 ;; My really wonderful cursor flashing - the biz!
+(blink-cursor-mode 0)
 (require 'blink)
 
 ;; My just as wonderful cursor constraining - top!
