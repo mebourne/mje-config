@@ -2,40 +2,88 @@
 # This is the zshenv file sourced directly by zsh
 # Written by Martin Ebourne
 #
-# $Id: zshenv,v 1.2 2001/02/13 10:58:06 mebourne Exp $
+# $Id: zshenv,v 1.3 2001/03/21 18:27:54 mebourne Exp $
 
 # Enable this (or call the shell with it already set) for progress reports during config
 #ZCONFIGDEBUG=1
 
 ZFILE=zshenv
 
-# Zsh gives us absolutely no indication of which config file we are running, nor
-# where it is. So lets try and find the real zsh config directory
-ZCONFIGDIR=${ZDOTDIR:-$HOME}
-if [[ -L $ZCONFIGDIR/.$ZFILE ]]
-then
-  [[ -z "$modules[zsh/stat]" ]] && zmodload zsh/stat
-  local realfile=$(stat +link $ZCONFIGDIR/.$ZFILE)
-  if [[ $realfile != /* ]]
-  then
-    realfile=$ZCONFIGDIR/$realfile
-  fi
-  ZCONFIGDIR=${realfile:h}
-  unset realfile
-fi
-ZCONFIGDIR=$(cd $ZCONFIGDIR && echo $PWD)
 
-[[ -z $ZCONFIGDIR ]] && { echo "ERROR: ZCONFIGDIR unset in $ZFILE" ; exit 1 }
+## Function definitions. Can't make these autoload since the paths aren't set up yet
 
-[[ -n $ZCONFIGDEBUG ]] && echo "Using configuration from $ZCONFIGDIR"
+# This function takes a file/directory (possibly symbolic link) with FULL PATHNAME
+# and returns the full pathname of the real file/directory (possibly following
+# multiple symbolic links)
+_expand_symlink() {
+  local file="$argv[1]"
+
+  # While we have a link
+  while [[ -L $file ]]
+  do
+    local dir="${file:h}"
+
+    # Find the file the link points to
+    zmodload -i zsh/stat
+    file=$(stat +link $file)
+
+    # If it's a relative path then need to combine onto current directory value
+    if [[ $file != /* ]]
+    then
+      # First however, process values to eliminate .. components of path
+      while [[ $file == ../* ]]
+      do
+        dir=${dir:h}
+	file=${file#../}
+      done
+
+      file=$dir/$file
+    fi
+  done
+
+  # Return the new value
+  echo - "$file"
+}
 
 # Function to make life easier. Executes a config file if present & readable
 config_if_present() {
-  if [[ -r $ZCONFIGDIR/$1 ]]
+  local file="$argv[1]" realfile
+
+  # Need to look in the right directory depending on whether user config or otherwise
+  if [[ $file == user/* ]]
   then
-    [[ -n $ZCONFIGDEBUG ]] && echo "Loading config file $1"
-    . $ZCONFIGDIR/$1
+    realfile=$ZUSERCONFIGDIR/${file#user/}
+  else
+    realfile=$ZCONFIGDIR/$file
   fi
+
+  # Execute file if it exists
+  if [[ -r $realfile ]]
+  then
+    [[ -n $ZCONFIGDEBUG ]] && echo "Loading config file $file"
+    . $realfile
+  fi
+}
+
+
+## Do the stuff
+
+# Zsh gives us absolutely no indication of which config file we are running, nor
+# where it is. So lets try and find the real zsh config directory
+ZCONFIGDIR=${$(_expand_symlink ${ZDOTDIR:-$HOME}/.$ZFILE):h}
+
+# The user directory defaults to $ZCONFIGDIR/user, but can be overridden with
+# a symbolic link called ~/.zsh_user which must point to the required directory
+ZUSERCONFIGDIR=$(_expand_symlink ${ZDOTDIR:-$HOME}/.zsh_user)
+[[ ! -d $ZUSERCONFIGDIR ]] && ZUSERCONFIGDIR=$ZCONFIGDIR/user
+
+# Check we succeeded
+[[ -z $ZCONFIGDIR ]] && { echo "ERROR: ZCONFIGDIR unset in $ZFILE" ; exit 1 }
+
+# Debugging
+[[ -n $ZCONFIGDEBUG ]] && {
+  echo "Using system configuration from $ZCONFIGDIR"
+  echo "Using user configuration from $ZUSERCONFIGDIR"
 }
 
 # Execute the real configuration files
