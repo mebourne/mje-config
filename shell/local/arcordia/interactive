@@ -4,7 +4,7 @@
 # done, but immediately before the user specific files
 # Written by Martin Ebourne
 #
-# $Id: interactive,v 1.18 2001/05/23 18:40:45 mebourne Exp $
+# $Id: interactive,v 1.19 2001/06/29 08:41:57 mebourne Exp $
 
 # Arcordia settings
 
@@ -82,8 +82,9 @@ _sql_prompt_update
 prompt_above=${prompt_above/_sql_prompt\}/_sql_prompt\}\${\${_sql_prompt#\$DB_ENV \$DB_COM}:+ \[\$DB_ENV \$DB_COM]}}
 
 # Check quota once per day (takes too long to do each time)
-if [[ ! -f ${ZDOTDIR:-$HOME}/.quota || -n $(find ${ZDOTDIR:-$HOME}/.quota -ctime +1) ]]
+if [[ $TERM == xterm && ( ! -f ${ZDOTDIR:-$HOME}/.cache.quota \
+                          || -n $(find ${ZDOTDIR:-$HOME}/.cache.quota -ctime +1) ) ]]
 then
-  touch ${ZDOTDIR:-$HOME}/.quota
+  touch ${ZDOTDIR:-$HOME}/.cache.quota
   quota -v
 fi

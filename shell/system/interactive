@@ -3,7 +3,7 @@
 # Generic system-wide setup for interactive use
 # Written by Martin Ebourne
 #
-# $Id: interactive,v 1.17 2001/06/11 16:39:01 mebourne Exp $
+# $Id: interactive,v 1.18 2001/06/29 08:42:16 mebourne Exp $
 
 # Initial config files
 config_if_present system/loadfuncs
@@ -49,7 +49,7 @@ backup_history
 # machines
 if [[ -n $ZDOTDIR && $ZDOTDIR != $HOME ]]
 then
-  semaphore_base=$ZDOTDIR/.semaphore.
+  semaphore_base=$ZDOTDIR/.tmp.semaphore.
 else
   semaphore_base=${TMPPREFIX:-/tmp/zsh}.semaphore.
 fi

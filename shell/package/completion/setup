@@ -3,7 +3,7 @@
 # Setup for completion package
 # Written by Martin Ebourne
 #
-# $Id: setup,v 1.6 2001/05/23 18:41:28 mebourne Exp $
+# $Id: setup,v 1.7 2001/06/29 08:42:14 mebourne Exp $
 
 add_functions_directory package/completion/functions
 
@@ -11,7 +11,7 @@ add_functions_directory package/completion/functions
 local dumpfile="${ZDOTDIR:-$HOME}/.zcompdump"
 if [[ ${ZDOTDIR:-$HOME} != $HOME ]]
 then
-  dumpfile=$ZDOTDIR/.completion
+  dumpfile=$ZDOTDIR/.cache.completion
 fi
 
 # Load the completion module. -C speeds things up a lot by skipping audit & zcompdump file

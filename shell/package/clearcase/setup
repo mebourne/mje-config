@@ -3,7 +3,7 @@
 # Setup for clearcase package
 # Written by Martin Ebourne
 #
-# $Id: setup,v 1.7 2001/05/23 18:41:06 mebourne Exp $
+# $Id: setup,v 1.8 2001/06/29 08:42:09 mebourne Exp $
 
 if [[ -n "$CLEARCASE_ROOT" ]]
 then
@@ -17,7 +17,7 @@ add_functions_directory package/clearcase/functions
 typeset -g clearcase_dumpfile="$_comp_dumpfile"
 if [[ ${ZDOTDIR:-$HOME} != $HOME ]]
 then
-  clearcase_dumpfile=$ZDOTDIR/.cleartool
+  clearcase_dumpfile=$ZDOTDIR/.cache.cleartool
 fi
 
 alias ct=cleartool
