@@ -5,7 +5,7 @@
 # Completion code for cleartool command
 # Usage: These functions are used by the completion code
 #
-# $Id: _cleartool,v 1.11 2001/05/23 12:47:16 mebourne Exp $
+# $Id: _cleartool,v 1.12 2001/05/23 18:28:09 mebourne Exp $
 
 _cleartool_decode_pname () {
   case $command in
@@ -376,18 +376,20 @@ _cleartool_read_help () {
   fi
 }
 
-_cleartool_write_cache() {
-  # Write cache onto .zcompdump file, unless a ZDOTDIR is set, in which case
-  # create our own file
-  local cache=$_comp_dumpfile
-  if [[ -n $ZDOTDIR ]]
+_cleartool_read_cache() {
+  # Only read it if we've got a file separate from the completion one.
+  # Otherwise it might bugger that up (and in any case, will generally have
+  # been read when we logged in)
+  if [[ $clearcase_dumpfile != $_comp_dumpfile ]]
   then
-    cache=$ZDOTDIR/.zcleartool
+    . $clearcase_dumpfile >/dev/null 2>&1
   fi
+}
 
+_cleartool_write_cache() {
   # Doesn't write cache if already present. Note that it may be out of date - if so user will
   # have to delete it themselves
-  if ! grep '\#\#\#START\#\#\# Added by cleartool package' $cache >/dev/null
+  if ! grep '\#\#\#START\#\#\# Added by cleartool package' $clearcase_dumpfile >/dev/null 2>&1
   then
     {
       echo
@@ -396,16 +398,21 @@ _cleartool_write_cache() {
       echo "_cleartool_cmds=(" ${(qkv)_cleartool_cmds} ")"
       echo "_cleartool_opts=(" ${(qkv)_cleartool_opts} ")"
       echo "###END### Added by cleartool package"
-    } >> $cache
+    } >> $clearcase_dumpfile
   fi
 }
 
 _cleartool () {
-  # If the array isn't setup then we need to calculate it now
+  # If the array isn't setup then we need to calculate it now (or read from cache)
   if (( ! $+_cleartool_cmds ))
   then
-    _cleartool_read_help
-    _cleartool_write_cache
+    _cleartool_read_cache
+
+    if (( ! $+_cleartool_cmds ))
+    then
+      _cleartool_read_help
+      _cleartool_write_cache
+    fi
   fi
 
   # If first argument then commplete sub-command names, else sub-command arguments
