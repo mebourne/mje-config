@@ -3,7 +3,7 @@
 # Trace execution of Zsh function
 # Usage: ztrace <command> ...
 #
-# $Id: ztrace,v 1.1 2001/08/15 16:14:59 mebourne Exp $
+# $Id: ztrace,v 1.2 2001/08/16 15:29:21 mebourne Exp $
 
 local -a command
 parse_opts -- "$argv[@]" <<'EOF' || return 1
@@ -11,15 +11,15 @@ Description:
 Trace execution of Zsh function.
 
 Usage:
-ztrace [options] [<command> ...]
+ztrace [options] <command> ...
 
 Options:
   -h, --help			Provide this help
 				# --help | -h
 
 Arguments:
-  [<command> ...]		The command to be executed
-				# command += [*] command : commandargs
+  <command> ...			The command to be executed
+				# command += [1,*] command : fullcommand
 EOF
 
 setopt x_trace
