@@ -592,14 +592,14 @@ sub xml_generateFormat {
   # Process each column
   my $format;
   $format.=$colours{blue} if $self->{colour};
-  $format.="<ROW>\n";
+  $format.=" <ROW>\n";
 
   my $x;
   for($x=0;$x<@$columns;$x++) {
     my $column=$$columns[$x];
 
     $format.=$colours{green} if $self->{colour};
-    $format.=" <" . $$column{name} . ">";
+    $format.="  <" . $$column{name} . ">";
 
     # Write a '%<num>s' entry as appropriate
     if($self->{colour}) {
@@ -612,7 +612,7 @@ sub xml_generateFormat {
   }
 
   $format.=$colours{blue} if $self->{colour};
-  $format.="</ROW>\n";
+  $format.=" </ROW>\n";
   $format.=$colours{white} if $self->{colour};
 
   return $format;
@@ -631,10 +631,18 @@ sub xml_printHeader {
 sub xml_printData {
   my ($self, $format, $rows)=@_;
 
+  print $colours{blue} if $self->{colour};
+  print "<TABLE>\n";
+  print $colours{white} if $self->{colour};
+
   # Print each row with the precalculated format
   for my $row (@$rows) {
     printf $format, @$row;
   }
+
+  print $colours{blue} if $self->{colour};
+  print "</TABLE>\n";
+  print $colours{white} if $self->{colour};
 }
 
 # Control function for emacs style
