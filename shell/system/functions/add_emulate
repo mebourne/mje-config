@@ -1,9 +1,10 @@
+#eval compdef -n _parse_opts add_emulate
 # ZSH function file
 # Add emulate command to start of function. Allows use of scripts to load functions for other
 # shells unchanged, and later can edit the function to force zsh to emulate the correct shell.
 # NB. emulate is always passed -L for local changes
 #
-# $Id: add_emulate,v 1.4 2001/07/31 11:21:55 mebourne Exp $
+# $Id: add_emulate,v 1.5 2001/07/31 17:17:03 mebourne Exp $
 
 local -a args
 args=($argv[*])

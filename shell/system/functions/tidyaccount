@@ -1,7 +1,8 @@
+#eval compdef -n _parse_opts tidyaccount
 # ZSH function file
 # Tidy account up generally
 #
-# $Id: tidyaccount,v 1.8 2001/07/31 11:22:21 mebourne Exp $
+# $Id: tidyaccount,v 1.9 2001/07/31 17:17:39 mebourne Exp $
 
 local this
 if [[ $0 == /* ]]

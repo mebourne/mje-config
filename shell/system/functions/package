@@ -1,7 +1,8 @@
+#eval compdef -n _parse_opts package
 # ZSH function file
 # Load a package which is part of the configuration system
 #
-# $Id: package,v 1.6 2001/07/30 18:33:01 mebourne Exp $
+# $Id: package,v 1.7 2001/07/31 17:17:20 mebourne Exp $
 
 local -a args
 args=($argv[*])
