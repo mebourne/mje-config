@@ -3,7 +3,7 @@
 # Setup for prompt package
 # Written by Martin Ebourne
 #
-# $Id: setup,v 1.9 2001/04/26 11:14:14 mebourne Exp $
+# $Id: setup,v 1.10 2001/05/09 14:33:49 mebourne Exp $
 
 add_functions_directory package/prompt/functions
 
@@ -42,9 +42,15 @@ prompt_colours=( dark_red	"38;5;214"
 # These are inbetween
 prompt_colours=( dark_red	"38;5;172"
 		 dark_green	"38;5;34"
-		 dark_magenta	"38;5;176"
 		 dark_yellow	"38;5;184"
+		 dark_magenta	"38;5;176"
 		 dark_cyan	"38;5;80"
+		 red		"38;5;1"
+		 green		"38;5;2"
+		 yellow		"38;5;3"
+		 blue		"38;5;4"
+		 magenta	"38;5;5"
+		 cyan		"38;5;6"
 		 grey		"38;5;243"
 		 white		"38;5;15"
 		 normal		"00"
@@ -85,6 +91,7 @@ if (( SHLVL > 2 ))
 then
   add_to_prompt {grey} '  #$[SHLVL-2]'
 fi
+#add_to_prompt {dark_red} '%(?..  [%?${signals[$?-127]:+ $signals[$?-127]}])'
 add_to_prompt {dark_magenta} '${_sql_prompt:+  $_sql_prompt}'
 add_to_prompt {dark_yellow} '${CLEARCASE_VIEW:+  $CLEARCASE_VIEW}'
 add_to_prompt {dark_cyan} '  $_prompt_pwd'
