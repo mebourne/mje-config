@@ -1,0 +1,22 @@
+# ZSH function file
+# Part of the SQL Sybase package
+# Execute a block copy command
+# For use only by the SQL packages
+#
+# $Id: _sybase_bcp,v 1.1 2001/06/01 17:18:52 mebourne Exp $
+
+
+if [[ -z $_sql_parameters[server] || -z $_sql_parameters[user] || -z $_sql_parameters[password] ]]
+then
+  echo "Error: SQL server/user/password variables not set" 1>&2
+  return 1
+fi
+
+bcp ${_sql_parameters[database]:+$_sql_parameters[database]..}$argv[1] \
+    $argv[2] \
+    $argv[3] \
+    -S$_sql_parameters[server] \
+    -U$_sql_parameters[user] \
+    -P$_sql_parameters[password] \
+    -c \
+    "${(@)argv[4,-1]}"

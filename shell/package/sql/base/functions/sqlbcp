@@ -1,0 +1,16 @@
+# ZSH function file
+# Part of the SQL base package
+# Execute a block copy command
+# Usage: sqlbcp <table> in|out <file> [<option> ...]
+#
+# $Id: sqlbcp,v 1.1 2001/06/01 17:18:52 mebourne Exp $
+
+eval $_sql_intro
+
+if [[ $ARGC -lt 3 || $argv[2] != (in|out) ]]
+then
+  echo "Syntax: sqlbcp <table> in|out <file> [<option> ...]" 1>&2
+  return 1
+fi
+
+eval _sql_call bcp "\$argv[@]"
