@@ -3,7 +3,7 @@
 # Setup for SQL base package
 # Written by Martin Ebourne
 #
-# $Id: setup,v 1.18 2002/05/28 13:27:02 mebourne Exp $
+# $Id: setup,v 1.19 2002/05/28 15:37:46 mebourne Exp $
 
 add_functions_directory package/sql/base/functions
 
@@ -55,10 +55,11 @@ alias select="sql select"
 #	     auto   - Only colour if outputting to tty
 #	     on     - Always colour (if applicable)
 #	     NB. This parameter will only have effect if formatting is enabled
+# truncate - Truncate columns to given number of characters. 0 for no maximum
 # access   - Level of information to access for completion
 #            user   - Only list user tables etc.
 #            all    - Include system tables etc. in lists
-sqlset count=1 maxrows=0 format=squash colour=off access=user
+sqlset count=1 maxrows=0 format=squash colour=off truncate=80 access=user
 if (( COLOUR ))
 then
   sqlset colour=auto
