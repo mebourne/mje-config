@@ -1,7 +1,7 @@
 ;; Emacs configuration file
 ;; Setup for cc-mode
 ;; Written by Martin Ebourne
-;; $Id: cc-mode.el,v 1.1 2002/03/21 10:29:57 mebourne Exp $
+;; $Id: cc-mode.el,v 1.2 2002/03/21 13:23:09 mebourne Exp $
 
 ;; Add our styles
 (c-add-style "iqfs"
@@ -31,6 +31,7 @@
 	       (c-hanging-semi&comma-criteria . nil)
 	       ;;(c-cleanup-list . (empty-defun-braces))
 	       (c-electric-pound-behavior . 'alignleft)
+	       (tab-width . 4)
 	       ))
 
 ;; Set up our C style
