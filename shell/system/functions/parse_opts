@@ -2,31 +2,31 @@
 # Provide options parsing and help output
 # Usage: parse_opts <argv> <results> [<help>]
 #
-# $Id: parse_opts,v 1.1 2001/07/30 18:32:41 mebourne Exp $
+# $Id: parse_opts,v 1.2 2001/07/31 11:22:07 mebourne Exp $
 
 # This helper function takes an encoded helpstring as its only parameter and
-# generates the option_types, option_shortnames, and option_longnames
-# associative arrays, and option_helptext string
+# generates the _po_tags and _po_types associative arrays, and
+# _po_helptext string
 # The option descriptions are of the form:
-#   # [ <name> '=' ] <option> [ '|' <option> ] ... [ '=' <type> ]
-# type is currently switch or string, default of switch
+#   # [ <tag> '=' ] <option> [ '|' <option> ] ... [ '=' <type> ]
 _parse_opts_parsehelp() {
-  local -a paraminfo helptext
+  local -a helptext
 
   # Process each line in the helptext
   local line
+  local -a paraminfo options
   for line in ${(f)argv[1]}
   do
     # If it starts with a '#' then its an option description line
     if [[ $line == [$IFS]#\#* ]]
     then
-      # Decode the description line into fields
-      paraminfo=(${=line})
+      # Decode the description line into fields. Use 'z' not '=' to get proper quote handling
+      paraminfo=(${(z)line})
       shift paraminfo
 
-      # Get the true name for this option. If not of the form 'name = option'
+      # Get the tag name for this option. If not of the form 'tag = option ...'
       # then just re-use the first option name for it
-      local name="$paraminfo[1]"
+      local tag="$paraminfo[1]"
       if [[ $paraminfo[2] == '=' ]]
       then
 	shift paraminfo
@@ -34,17 +34,12 @@ _parse_opts_parsehelp() {
       fi
 
       # Read off all of the aliases for the option until an '='
+      options=()
       while [[ $#paraminfo -ne 0 && $paraminfo[1] != '=' ]]
       do
 	if [[ $paraminfo[1] != '|' ]]
 	then
-	  # Store alias in short (single character) or long name map as appropriate
-	  if [[ $paraminfo[1] == ? ]]
-	  then
-	    option_shortnames[$paraminfo[1]]=$name
-	  else
-	    option_longnames[$paraminfo[1]]=$name
-	  fi
+	  options=($options $paraminfo[1])
 	fi
 	shift paraminfo
       done
@@ -55,7 +50,14 @@ _parse_opts_parsehelp() {
       then
 	type=$paraminfo[2]
       fi
-      option_types[$name]=$type
+
+      # Assign the tag and type to all of the option aliases
+      local option=""
+      for option in $options
+      do
+        _po_tags[$option]=$tag
+        _po_types[$option]=$type
+      done
     else
       # Doesn't start with a # so append it to help
       helptext=($helptext $line)
@@ -64,107 +66,172 @@ _parse_opts_parsehelp() {
 
   # Create the help string from the array of lines. In order to get a blank
   # line this far it must have a space on it
-  option_helptext=(${(F)helptext})
+  _po_helptext=(${(F)helptext})
+}
+
+
+_parse_opts_getnextvalue() {
+  if (( _po_hasgivenvalue ))
+  then
+    # Value supplied with option so use that one first
+    _po_value=$_po_givenvalue
+    _po_hasgivenvalue=0
+  else
+    # Get the next argument as the value. Note that if single letter options
+    # taking a parameter are grouped, then the parameters follow straight
+    # afterwards in the respective order
+
+    # Check there's a value to get
+    if (( $#_po_argv > 1 ))
+    then
+      shift _po_argv; _po_value=$_po_argv[1]
+    else
+      echo "Missing parameter to option '$name'" 1>&2
+      return 1
+    fi
+  fi
+}
+
+_parse_opts_handletype() {
+  local _po_name="$argv[1]" _po_hasgivenvalue="$argv[2]" _po_givenvalue="$argv[3]"
+
+  local _po_tag="$_po_tags[$_po_name]" _po_type="$_po_types[$_po_name]" _po_value
+  case $_po_type in
+    switch)
+      # Simple switch. Mark its presence
+      _po_value=1
+      ;;
+
+    noswitch)
+      # Reverse simple switch. Mark its presence
+      _po_value=0
+      ;;
+
+    constant=*)
+      # Constant to be assigned (after quote removal). eg. constant=value or constant="more values"
+      _po_value=${(Q)_po_type#*=}
+      ;;
+
+    string)
+      # Takes a parameter with no validation
+      _parse_opts_getnextvalue || return
+      ;;
+
+    integer)
+      # Takes a parameter, validation for integer with optional sign
+      _parse_opts_getnextvalue || return
+      if [[ $_po_value != ([-+]|)<-> ]]
+      then
+        echo "Invalid value for option $_po_name: '$_po_value'" 1>&2
+	return 1
+      fi
+      ;;
+
+    test=*)
+      # Takes a parameter, validation using test. eg. test=-f
+      _parse_opts_getnextvalue || return
+      if eval "[[ ! ${_po_type#*=} \$_po_value ]]"
+      then
+        echo "Invalid value for option $_po_name: '$_po_value'" 1>&2
+	return 1
+      fi
+      ;;
+
+    *) # This is a configuration error
+      echo "Invalid option type for option $_po_name: '$_po_type'" 1>&2
+      return 1
+      ;;
+  esac
+
+  # If tag is of the form [var] then instead assign to real variable.
+  # Note possibility of clashes with our local variables here
+  if [[ $_po_tag == \[*\] ]]
+  then
+    # If external variable then we behave according to its type
+    local _po_var="${${_po_tag#\[}%\]}"
+    case ${(Pt)_po_var} in
+      array*)
+        # An array. Append value
+	eval $_po_var='(${(P)_po_var} $_po_value)'
+	;;
+
+      association*)
+        # An associative array. Add option/value pair. Note option is missing
+        # leading -/--
+	eval $_po_var\[\$_po_name\]='$_po_value'
+	;;
+
+      *)
+        # Some kind of scalar or undefined. Just assign value
+        eval $_po_var='$_po_value'
+        ;;
+    esac
+  else
+    # Store the value against the real option name
+    _po_results[$_po_tag]=$_po_value
+  fi
 }
 
 # This helper function decodes the command line arguments using the
-# pre-generated option arrays from option_parsehelp. Arguments are provided in
-# option_argv and are removed as and when processed. Decoded options are
-# returned in option_results. Returns 1 if an error prevented the options from
+# pre-generated option arrays from _parse_opts_parsehelp. Arguments are provided in
+# _po_argv and are removed as and when processed. Decoded options are
+# returned in _po_results. Returns 1 if an error prevented the options from
 # being processed, else 0
 _parse_opts_decode() {
   # Process each argument while it is an option
-  while [[ $option_argv[1] == -* ]]
+  while [[ $_po_argv[1] == -* ]]
   do
-    local option="$option_argv[1]"
+    local _po_option="$_po_argv[1]"
 
     # First check if it is a long argument
-    if [[ $option == --* ]]
+    if [[ $_po_option == --* ]]
     then
 
       # Extract the option name from eg. --name=value
-      local name="${${option#--}%%\=*}"
+      local _po_name="${${_po_option#--}%%\=*}"
 
       # Check to see if the option exists
-      if [[ -n $option_longnames[$name] ]]
+      if [[ -n $_po_tags[$_po_name] ]]
       then
-        local realname="$option_longnames[$name]" value=1
 
-	# Behave according to the type of the option
-	case $option_types[$realname] in
-	  switch) # Simple switch. Mark its presence
-	    value=1
-	    ;;
+	# Check to see if value was in option, ie. --name=value
+	if [[ $_po_option == *=* ]]
+	then
 
-	  string) # Takes a parameter
+	  # Extract value in option and pass to type processing
+	  _parse_opts_handletype $_po_name 1 ${_po_option#*=} || return
+	else
 
-	    # Check to see if parameter was in option, ie. --name=value
-	    if [[ $option == *=* ]]
-	    then
-	      value="${option#*=}"
-	    else
-
-	      # Otherwise grab the next argument for it
-	      shift option_argv; value=$option_argv[1]
-	    fi
-	    ;;
-
-	  *) # This is a configuration error
-	    echo "Invalid option type: $option_types[$realname]" 1>&2
-	    return 1
-	    ;;
-	esac
-
-	# Store the value against the real option name
-	option_results[$realname]=$value
+	  # Call type handling without a value
+	  _parse_opts_handletype $_po_name 0 || return
+	fi
       else
-        echo "Invalid option: $name" 1>&2
+        echo "Invalid option: $_po_name" 1>&2
 	return 1
       fi
 
     # Wasn't a long argument, try short one (may be grouped)
-    elif [[ $option == -?* ]]
+    elif [[ $_po_option == -?* ]]
     then
 
       # Extract the list of options from eg. -jkl
-      local optiongroup="${option#-}"
+      local _po_optiongroup="${_po_option#-}"
 
       # Process each letter individually
-      while [[ -n $optiongroup ]]
+      while [[ -n $_po_optiongroup ]]
       do
         # Extract the first letter
-        local optionletter="$optiongroup[1]"
-	optiongroup=${optiongroup#?}
+        local _po_optionletter="$_po_optiongroup[1]"
+	_po_optiongroup=${_po_optiongroup#?}
 
         # Check to see if is a valid short option
-        if [[ -n $option_shortnames[$optionletter] ]]
+        if [[ -n $_po_tags[$_po_optionletter] ]]
         then
-          local realname="$option_shortnames[$optionletter]" value=1
 
-	  # Behave according to the type of the option
-          case $option_types[$realname] in
-	    switch) # Simple switch. Mark its presence
-	      value=1
-	      ;;
-
-	    string) # Takes a parameter
-
-              # Get the next argument as the parameter. Note that if options
-              # taking a parameter are grouped, then the parameters follow
-              # straight afterwards in the respective order
-	      shift option_argv; value=$option_argv[1]
-	      ;;
-
-	    *) # This is a configuration error
-	      echo "Invalid option type: $option_types[$realname]" 1>&2
-	      return 1
-	      ;;
-          esac
-
-          # Store the value against the real option name
-          option_results[$realname]=$value
+	  # It is so process it as the type determines
+	  _parse_opts_handletype $_po_optionletter 0 || return
         else
-          echo "Invalid option: $optionletter" 1>&2
+          echo "Invalid option: $_po_optionletter" 1>&2
           return 1
         fi
       done
@@ -173,27 +240,27 @@ _parse_opts_decode() {
       echo "Missing option after -" 1>&2
       return 1
     fi
-    shift option_argv
+    shift _po_argv
   done
 }
 
 # This helper function controls the overall processing
 _parse_opts_process() {
-  local -A option_longnames option_shortnames option_types
-  local option_helptext
+  local -A _po_tags _po_types
+  local _po_helptext
 
   # Check for arguments. If we have one and it is not '-' then it is the help
   # string. Otherwise need to to get that from stdin
-  local config
+  local _po_config
   if [[ -n $argv[1] && $argv[1] != - ]]
   then
-    config=$argv[1]
+    _po_config=$argv[1]
   else
-    config=$(cat)
+    _po_config=$(cat)
   fi
 
   # Parse the help string we've got to determine the type of options
-  _parse_opts_parsehelp $config
+  _parse_opts_parsehelp $_po_config
 
   # Perform the argument decoding
   if _parse_opts_decode
@@ -201,9 +268,9 @@ _parse_opts_process() {
 
     # If success and help was requested then give it. Note that it is up to
     # the user to supply the help option before we can use it
-    if [[ -n $option_results[help] ]]
+    if [[ -n $_po_results[help] ]]
     then
-      echo "Usage: $option_helptext"
+      echo "Usage: $_po_helptext"
       return 1
     fi
   else
@@ -229,23 +296,29 @@ _parse_opts_process() {
 # Returns 1 if an error occurred or help was given, 0 for success. If 1 is
 # returned then no further action is required - it has already been reported.
 # Also the source arrays will remain unchanged in this case.
+#
+# This function is a wrapper for _parse_opts_process to handle accessing the
+# arrays in the calling function's namespace
 parse_opts() {
 
-  # This function is a wrapper for _parse_opts_process. This is so that when we
-  # access the arrays in the calling function's namespace, we don't have all
-  # our local variables to potentially clash with
+  local _po_ext_argv="$argv[1]" _po_ext_results="$argv[2]" _po_config="$argv[3]"
 
-  local external_argv="$argv[1]" external_results="$argv[2]" parse_opts_config="$argv[3]"
+  # Ensure options are in a known & useful state
+  emulate -L zsh
+  setopt extended_glob
 
-  local -a option_argv
-  local -A option_results
-  option_argv=(${(P)external_argv})
+  # Copy current values of external arrays into our copies. This allows for
+  # default state in the options, etc.
+  local -a _po_argv
+  local -A _po_results
+  _po_argv=(${(P)_po_ext_argv})
+  _po_results=(${(Pkv)_po_ext_results})
 
-  # Do the work. Only update the source arrays if we succeeded
-  if _parse_opts_process $parse_opts_config
+  # Do the work. Only update the external arrays if we succeeded
+  if _parse_opts_process $_po_config
   then
-    eval $external_argv='($option_argv)'
-    eval $external_results='(${(kv)option_results})'
+    eval $_po_ext_argv='($_po_argv)'
+    eval $_po_ext_results='(${(kv)_po_results})'
   else
     return 1
   fi
