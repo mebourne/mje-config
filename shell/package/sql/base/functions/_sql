@@ -5,40 +5,115 @@
 # Completion code for sql command
 # Usage: These functions are used by the completion code
 #
-# $Id: _sql,v 1.10 2002/04/18 13:23:39 mebourne Exp $
+# $Id: _sql,v 1.11 2002/04/18 14:38:20 mebourne Exp $
 
 #_sql_trace=1
+
+_sql_tokenise () {
+  integer charindex=1
+
+  local whitespace="" token="" tokenid=""
+  integer newindex=0 tokenindex=0
+  while [[ $inputline != [[:space:]]# ]]
+  do
+    whitespace="${(M)inputline##[[:space:]]#}"
+    inputline="${inputline#$whitespace}"
+
+    case $inputline in
+      \\\'*)
+        tokenid=string
+	token=""
+	local templine="$inputline"
+
+	# Lump together adjoining quote sections (SQL uses '' to escape ' in strings)
+	while [[ $templine == \\\'* ]]
+	do
+	  if [[ $templine == \\\'*\\\'* ]]
+	  then
+	    token="$token${(M)templine#\\\'*\\\'}"
+	    templine="${inputline#$token}"
+	  else
+	    # Unterminated quote - grab all till end of line
+	    token=$inputline
+	    templine=""
+	  fi
+	done
+	;;
+      \\\(*)
+        tokenid=open-paren
+	token="\\("
+	;;
+      \\\)*)
+        tokenid=close-paren
+	token="\\)"
+	;;
+      .*)
+        tokenid=period
+	token="."
+	;;
+      [[:punct:]]*)
+        tokenid=punctuation
+	token=${(M)inputline#[[:punct:]]}
+	;;
+      [[:digit:]]*)
+        tokenid=number
+	token=${(M)inputline##[[:digit:]]#}
+	;;
+      [[:alpha:]_]*)
+        tokenid=word
+	token=${(M)inputline##[[:alnum:]_]#}
+	;;
+      *)
+        echo "_sql_tokenise: Unrecognised text in sql code: '$inputline'" 1>&2
+	return 1
+	;;
+    esac
+    inputline="${inputline#$token}"
+
+    (( tokenindex++ ))
+
+    (( newindex = charindex + $#whitespace + $#token ))
+    if (( inputindex > charindex && inputindex <= newindex ))
+    then
+    	(( cursorindex = tokenindex ))
+    fi
+    (( charindex = newindex ))
+
+    tokenids[tokenindex]=$tokenid
+    tokens[tokenindex]=$token
+
+    (( _sql_trace )) && echo "$tokenindex:\t$tokenid\t>$token<"
+  done
+
+  (( tokenindex++ ))
+  tokenids[tokenindex]=eof
+  tokens[tokenindex]=-eof
+  (( _sql_trace )) && echo "$tokenindex:\teof\t>-eof<"
+
+  if (( !cursorindex ))
+  then
+    (( cursorindex = tokenindex ))
+  fi
+}
 
 _sql_get_token () {
   local currentstate="$1"
 
   (( _sql_trace )) && echo "state: $currentstate"
 
-  local whitespace="${(M)inputline##[[:space:]]#}"
-  inputline="${inputline#$whitespace}"
-
-  token="${(M)inputline##([[:alnum:]_]##|\\?|[[:punct:]])}"
-  inputline="${inputline#$token}"
-
   if [[ -z $currentstate ]]
   then
     echo "_sql_get_token: Missing state in sql code. Next token: '$token'" 1>&2
   fi
 
-  integer newindex
-  (( newindex = index + $#whitespace + $#token ))
-  if (( inputindex > index && inputindex <= newindex ))
-  then
-    state=$currentstate
-  fi
-  (( index = newindex ))
+  states[nextstate]=$currentstate
 
-  if [[ -z $token ]]
-  then
-    token=-eof
-  fi
+  tokenid=$tokenids[nextstate]
+  token=$tokens[nextstate]
 
-  (( _sql_trace )) && echo "token >$token<"
+  (( nextstate++ ))
+
+  (( _sql_trace )) && echo "token $tokenid >$token<"
 }
 
 _sql_pn_start () {
@@ -549,7 +624,13 @@ _sql_generate_completions () {
     suffix="-S ', ' -r ', \t\n\-'"
   fi
 
-  case $state in
+  if (( ! cursorindex ))
+  then
+    echo "_sql_generate_completions: State not set in sql code" 1>&2
+    return 1
+  fi
+
+  case $states[cursorindex] in
     delete)
       alts=($alts 'sql:SQL reserved words:(from)')
       alts=($alts 'tables:database tables:_sql_complete_table_names')
@@ -673,7 +754,7 @@ _sql_generate_completions () {
       _sql_generate_column_completion
       ;;
     *)
-      echo "_sql_generate_completions: Unrecognised state '$state' in sql code" 1>&2
+      echo "_sql_generate_completions: Unrecognised state '$states[cursorindex]' in sql code" 1>&2
       return 1
       ;;
   esac
@@ -718,15 +799,21 @@ _sql () {
 #echo "$inputline"
 #echo "${(l:inputindex-1:)}^"
 
+  local -a tokens tokenids
+  integer cursorindex=0
+  _sql_tokenise
+
   local -A tables
-  local token state
-  integer index=1
+  local -a states
+  local tokenid="" token=""
+  integer nexttoken=1 nextstate=1
   _sql_pn_start
 
   if (( _sql_trace ))
   then
     echo "tables=${(kv)tables}"
-    echo "state=$state"
+    echo "states=$states"
+    echo "cursorindex=$cursorindex ($states[cursorindex])"
   fi
 
   _sql_generate_completions
