@@ -3,11 +3,12 @@
 # Shell option settings
 # Written by Martin Ebourne
 #
-# $Id: options,v 1.5 2001/05/18 15:40:33 mebourne Exp $
+# $Id: options,v 1.6 2001/08/24 10:26:29 mebourne Exp $
 
 setopt append_history
 setopt auto_cd
 unsetopt auto_menu
+#setopt brace_ccl
 setopt cdable_vars
 setopt complete_in_word
 setopt correct_all
@@ -24,6 +25,7 @@ setopt interactive_comments
 setopt ksh_option_print
 setopt list_packed
 setopt long_list_jobs
+setopt magic_equal_subst
 setopt mail_warning
 setopt numeric_glob_sort
 setopt path_dirs
