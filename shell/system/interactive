@@ -3,7 +3,7 @@
 # Generic system-wide setup for interactive use
 # Written by Martin Ebourne
 #
-# $Id: interactive,v 1.3 2001/03/02 09:40:26 mebourne Exp $
+# $Id: interactive,v 1.4 2001/03/02 15:03:24 mebourne Exp $
 
 # Initial config files
 config_if_present system/loadfuncs
@@ -29,11 +29,7 @@ REPORTTIME=60
 # Update XTerm title bar with useful info after each command if we are in an XTerm
 if [ "$TERM" = "xterm" -o "$TERM" = "xterm-color" -o "$TERM" = "rxvt"  -o "$TERM" = "vs100" ]
 then
-  precmd () {
-    local view
-    [ -z "$CLEARCASE_VIEW" ] || view="   View: $CLEARCASE_VIEW"
-    echo -n "\e]2;$USERNAME@$HOST   Directory: $PWD$view\007\e]1;$USERNAME@$HOST\007"
-  }
+  add_to_hook precmd set_xterm_title
 fi
 
 # Final config files
