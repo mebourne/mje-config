@@ -4,7 +4,7 @@
 # done, but immediately before the user specific files
 # Written by Martin Ebourne
 #
-# $Id: interactive,v 1.15 2001/04/27 11:29:15 mebourne Exp $
+# $Id: interactive,v 1.16 2001/05/23 12:27:09 mebourne Exp $
 
 # Arcordia settings
 
@@ -48,6 +48,8 @@ sourceinfo_sourcecode_dirs=(
   /vobs/odyssey/shared
   /vobs/odyssey/system
   /vobs/odyssey/xdg
+  ~/config/shell
+  ~/config/emacs
 )
 sourceinfo_preferred_dirs=(
   /vobs/odyssey/cashsec
