@@ -4,7 +4,7 @@
 # done, but immediately before the user specific files
 # Written by Martin Ebourne
 #
-# $Id: interactive,v 1.5 2001/02/21 13:28:55 mebourne Exp $
+# $Id: interactive,v 1.6 2001/02/23 18:05:54 mebourne Exp $
 
 # Arcordia settings
 
@@ -17,12 +17,12 @@ cdpath=(. /vobs/odyssey/cashsec /vobs/odyssey)
 # CD vars
 cashsec=/vobs/odyssey/cashsec
 
-# Include clearcase package
+# Include useful packages
 package clearcase
+package sourceinfo
 
-# Setup for locate shell functions
-LOCATE_DIR=/vobs/odyssey
-LOCATE_DB=$HOME/.locatedb.gz
+# Setup for SourceInfo package
+sourceinfo_sourcecode_dirs=(/vobs/odyssey)
 
 # Include Sybase package
 if [[ -z $nodb ]]
