@@ -4,7 +4,7 @@
 #	 -s Re-schedule job with 'at'
 # Example: tidyaccount -s "3:00 tomorrow"
 #
-# $Id: tidyaccount,v 1.5 2001/03/22 10:04:38 mebourne Exp $
+# $Id: tidyaccount,v 1.6 2001/03/22 10:12:51 mebourne Exp $
 
 local this
 if [[ $0 == /* ]]
@@ -32,5 +32,5 @@ find $HOME -depth \( -type f -name '.saves-*' -mtime +3 -print \) \
 # Re-schedule job if requested
 if [[ -n $schedtime ]]
 then
-  SCHEDTIME=$schedtime at -f source $this 2>/dev/null
+  SCHEDTIME=$schedtime at -f $this $schedtime 2>/dev/null
 fi
