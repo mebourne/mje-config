@@ -4,7 +4,7 @@
 # Part of the SourceInfo package
 # Update the SourceInfo databases
 #
-# $Id: siupdate,v 1.12 2002/04/25 10:29:52 mebourne Exp $
+# $Id: siupdate,v 1.13 2002/04/25 10:39:27 mebourne Exp $
 
 parse_opts -- "$argv[@]" <<'EOF' || return 1
 Description:
@@ -33,11 +33,15 @@ do
   find $dir -type f \! \( -name '.*' -o -name '*~' -o -name '*#' \
 			  -o -name '*.[ado]' -o -name '*.so' \
 			  -o -name '*.elc' -o -name '*.zwc' \
-			  -o -name '*[mM]akefile' -o -name '*.mk' \
-			  -o -name core \
+			  -o -name '*[mM]akefile' -o -name '*.mk' -o -name '*.mak' \
+			  -o -name '*.bak' -o -name '*.orig' -o -name '*.keep' -o -name '*.old' \
+			  -o -name 'core' \
 		       \) \
 		    -print \
-	    -o \( -name lost+found -o -name RCS -o -name CVS -o -name sol2.d \) -prune
+	    -o \( -name 'lost+found' -o -name 'RCS' -o -name 'CVS' \
+                  -o -name 'sol2.d' -o -name 'SunWS_cache' \
+	       \) \
+	       -prune
 done |
   gzip - > $sourceinfo_filesdb$new &&
   mv -f $sourceinfo_filesdb$new $sourceinfo_filesdb
@@ -46,7 +50,7 @@ done |
 echo "Creating $sourceinfo_typesdb..."
 for dir in $sourceinfo_sourcecode_dirs
 do
-  find $dir -type f \( -name '*.hpp' -o -name '*.h' \) -print \
+  find $dir -type f \( -name '*.hpp' -o -name '*.hxx' -o -name '*.h' -o -name '*.H' \) -print \
 	    -o -name lost+found -prune | xargs -n50 typeInfoGenerate.pl
 done |
   gzip - > $sourceinfo_typesdb$new &&
