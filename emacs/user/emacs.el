@@ -1,7 +1,7 @@
 ;; Emacs configuration file
 ;; .emacs.el, main user startup file
 ;; Written by Martin Ebourne
-;; $Id: emacs.el,v 1.2 2001/05/17 13:38:21 mebourne Exp $
+;; $Id: emacs.el,v 1.3 2001/05/18 13:19:31 mebourne Exp $
 
 (load "~/config/emacs/startup")
 (load custom-file)
@@ -28,3 +28,5 @@ ebourne_martin_j@arcordia.com
 
 ;; Can't set in X defaults since spacing goes all wrong
 (set-frame-font "7x13")
+(set-frame-height (selected-frame) 51)
+(set-frame-width (selected-frame) 101)
