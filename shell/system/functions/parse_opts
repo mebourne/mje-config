@@ -2,7 +2,7 @@
 # Provide options parsing and help output
 # (C) 2001 Martin Ebourne
 #
-# $Id: parse_opts,v 1.24 2001/08/17 13:32:02 mebourne Exp $
+# $Id: parse_opts,v 1.25 2001/08/24 16:30:25 mebourne Exp $
 
 
 ### Documentation
@@ -99,14 +99,14 @@
 #
 #   Description:
 #   View the latest of a set of files, given part of the filename
-#   
+#
 #   Usage:
 #   latest [options] <filename-stem>
-#   
+#
 #   Options:
 #     -h, --help		Provide this help
 # 				# --help | -h
-#   
+#
 #   Arguments:
 #     <filename-stem>		Start of filename of set of files to view.
 # 				May contain wildcards
@@ -283,15 +283,14 @@
 #
 # Typical frequencies for options are:
 #
-# [0,1]   - The default. Optional - may only occur once or not at all.
-# [*]     - Repeatable. May appear any number of times.
-# [1,1]   - Mandatory. NOT YET CHECKED
-# NOTE: Min/max values are currently not fully checked for options
+# [0,1]   - The default. Optional - may only occur once or not at all
+# [*]     - Repeatable. May appear any number of times
+# [1,1]   - Mandatory. Must appear exactly once
 #
 # Typical frequencies for arguments are:
 #
-# [1]     - The default. Single mandatory argument.
-# [0,1]   - Optional.
+# [1]     - The default. Single mandatory argument
+# [0,1]   - Optional
 # [*]     - Any number of arguments, or none
 # [1,*]   - Any number of arguments, but at least one
 
@@ -393,24 +392,30 @@
 #
 # NOTE: These identifiers subject to change for now
 #
-# tag       - (1) This is as for the tag section described above
-# frequency - (1) This is the frequency from the option section described
-#             above, with the surrounding brackets removed
-# type      - (1) This is as the the type section described above
-# help      - (2) This is the description for this option extracted from the
+# help      - (1) This is the description for this option extracted from the
 #             help
-# aliases   - (2) This is a list of aliases of this option - ie. the other
-#             <option-name>s provided in the same specification. It is empty
-#             for arguments
-# excludes  - (2) This is a list of options which are not allowed if this one
-#             is present. For a non-repeatable option, this is usually the same
-#             as aliases. It is currently unused for arguments
+# excludes  - (1) This is a list of options/arguments which are not allowed if
+#             this one is present. For a non-repeatable option, this is
+#             usually the same as aliases. It is currently unused for
+#             arguments. Patterns may be used here to exclude multiple
+#             options/arguments with ease. The patterns match from ALL
+#             options/arguments, not just those defined at that point
 # complete.hidden - If true then the option is not supplied for completion
 #
-# (1) This should not normally be set, since it just duplicates information
-#     already provided
-# (2) This is generated automatically, but it may on rare occasions be useful
+# (1) This is generated automatically, but it may on rare occasions be useful
 #     to override it manually with a different value
+#
+# Reserved identifiers currently used by the system (and should not be
+# modified) are:
+#
+# tag          - This is as for the tag section described above
+# frequency    - This is the frequency from the option section described
+#           	 above, with the surrounding brackets removed
+# minfrequency - This is the decoded minimum frequency
+# maxfrequency - This is the decoded maximum frequency
+# type         - This is as the the type section described above
+# aliases      - This is a list of aliases of this option. It is empty
+#                for arguments
 
 
 ## Type definition lines
@@ -454,9 +459,6 @@
 #
 # NOTE: These identifiers subject to change for now
 #
-# base                 - (1) This is as for the base-part described above
-# complete.description - (1) This is as for the description described above
-# complete.action      - (1) This is as for the action described above
 # complete.restrict    - This controls the way the `words' array is handled by
 # 			 _arguments when it calls the action. See the
 #                        completion documentation for details. It may have any
@@ -471,8 +473,12 @@
 #                        the form [*] or [<n>,*]
 #                        NOTE: Currently not valid on options
 #
-# (1) This should not normally be set, since it just duplicates information
-#     already provided
+# Reserved identifiers currently used by the system (and should not be
+# modified) are:
+#
+# base                 - This is as for the base-part described above
+# complete.description - This is as for the description described above
+# complete.action      - This is as for the action described above
 
 
 ## Enabling completion with Zsh
@@ -549,8 +555,6 @@
 ### Configuration
 
 # To do:
-# excludes properly - options & arguments
-# frequency checking on options
 # optional values for options - or more fully, frequency for same
 # interface to extend excludes
 # type.complete.restrict for options
@@ -581,8 +585,8 @@ _parse_opts_setupdefinitions() {
 #type fullcommand   string                           ""                         " _normal" \
       * complete.restrict=match
 
-# --help
-# --zsh-completion * complete.hidden
+# --help * excludes=*
+# --zsh-completion * excludes=* complete.hidden
 '
 }
 
@@ -696,7 +700,7 @@ _parse_opts_parseoption() {
   # Check we've got something left
   if (( !$#paraminfo ))
   then
-    echo "Missing option/argument name in definition: '" $=line "'" 1>&2
+    echo "ERROR: Missing option/argument name in definition: '" $=line "'" 1>&2
     return 1
   fi
 
@@ -715,7 +719,7 @@ _parse_opts_parseoption() {
     # Check for invalid characters in option name
     if [[ $option != [-_[:alnum:]]## ]]
     then
-      echo "Invalid name for option/argument: '$option'" 1>&2
+      echo "ERROR: Invalid name for option/argument: '$option'" 1>&2
       return 1
     fi
 
@@ -725,32 +729,22 @@ _parse_opts_parseoption() {
       [[ -z $frequency ]] && frequency="0,1"
       [[ -z $type ]] && type="switch"
 
-      # Aliases, excluding this option
-      aliases=${paraminfo:#$option}
-
-      # Excludes. Only if the max frequency of this option is 1, same as aliases
-      integer min_frequency=0 max_frequency=0
-      _parse_opts_minmaxfrequency min_frequency max_frequency $frequency || return
-      if (( max_frequency == 1 ))
-      then
-        excludes=$aliases
-      fi
-
+      aliases=$paraminfo
+      excludes=$paraminfo
     else
       [[ -z $frequency ]] && frequency="1"
       [[ -z $type ]] && type="string"
-
-      # Calculate the minimum number of arguments we need for the command to
-      # be able to run. We need this later to know how many arguments are
-      # spare when we have a choice on how many to use
-      integer min_frequency=0 max_frequency=0
-      _parse_opts_minmaxfrequency min_frequency max_frequency $frequency || return
-      (( _po_minargs += min_frequency ))
     fi
+
+    # Work out min/max frequency
+    integer min_frequency=0 max_frequency=0
+    _parse_opts_minmaxfrequency min_frequency max_frequency $frequency || return
 
     # Store the main data for this option
     _po_params[$option.tag]=$tag
     _po_params[$option.frequency]=$frequency
+    _po_params[$option.minfrequency]=$min_frequency
+    _po_params[$option.maxfrequency]=$max_frequency
     _po_params[$option.type]=$type
     _po_params[$option.help]=$helpline
     _po_params[$option.aliases]=$aliases
@@ -801,7 +795,7 @@ _parse_opts_parsetype() {
   # Check for invalid characters in type name
   if [[ $type != [-_[:alnum:]]## ]]
   then
-    echo "Invalid name for type: '$type'" 1>&2
+    echo "ERROR: Invalid name for type: '$type'" 1>&2
     return 1
   fi
 
@@ -860,7 +854,7 @@ _parse_opts_parsehelp() {
 	  ;;
 
         *) # This is a configuration error
-          echo "Invalid command: '$command'" 1>&2
+          echo "ERROR: Invalid command: '$command'" 1>&2
           return 1
           ;;
       esac
@@ -923,7 +917,7 @@ _parse_opts_frequencyvalue() {
       ;;
 
     *) # This is a configuration error
-      echo "Unrecognised frequency: '$expression'" 1>&2
+      echo "ERROR: Unrecognised frequency: '$expression'" 1>&2
       return 1
       ;;
   esac
@@ -946,7 +940,7 @@ _parse_opts_minmaxfrequency() {
       ;;
 
     *,*) # Must be a number in the first field, this is invalid
-      echo "Unrecognised frequency expression: '$expression'" 1>&2
+      echo "ERROR: Unrecognised frequency expression: '$expression'" 1>&2
       return 1
       ;;
 
@@ -955,6 +949,70 @@ _parse_opts_minmaxfrequency() {
       _parse_opts_frequencyvalue $maxvar -1 $expression || return
       ;;
   esac
+
+  return 0
+}
+
+# Expand any patterns in excludes definitions on options into full list of
+# matching options/arguments
+_parse_opts_expandexcludes() {
+  local -aU newexcludes
+
+  # Process all options
+  local option=""
+  for option in ${(k)_po_options}
+  do
+    newexcludes=()
+
+    # Build up a new excludes list using each excludes value as a pattern to
+    # match options and arguments
+    local exclude=""
+    for exclude in ${=_po_params[$option.excludes]}
+    do
+      newexcludes=($newexcludes $_po_options[(I)$exclude] ${(M)_po_arguments:#$~exclude})
+    done
+
+    # If the option is repeatable, then remove it and any aliases from its excludes
+    if (( _po_params[$option.maxfrequency] != 1 ))
+    then
+      local aliasname=""
+      for aliasname in ${=_po_params[$option.aliases]}
+      do
+        newexcludes[(r)$aliasname]=()
+      done
+    fi
+
+    # Store the new excludes list
+    _po_params[$option.excludes]=$newexcludes
+  done
+
+  return 0
+}
+
+# Return true if this option/argument is excluded
+_parse_opts_excluded() {
+  local name="$argv[1]"
+
+  [[ -n $_po_excluded[(r)$name] ]]
+}
+
+# Handle option exclusions. If given option already excluded then error, else
+# update state
+_parse_opts_excludes() {
+  local name="$argv[1]"
+
+  if _parse_opts_excluded $name
+  then
+    echo "ERROR: Previous option has excluded given option: '$name'" 1>&2
+    return 1
+  else
+    # Add to the list of excluded options/arguments
+    _po_excluded=($_po_excluded ${=_po_params[$name.excludes]})
+
+    # Count the number of times this option has occurred, using primary alias as
+    # group name
+    (( _po_present[${_po_params[$name.aliases][(w)1]}]++ ))
+  fi
 
   return 0
 }
@@ -1094,7 +1152,7 @@ _parse_opts_generatecompletiontype() {
       ;;
 
     *) # This is a configuration error
-      echo "Invalid option type for option $_po_option: '$_po_type'" 1>&2
+      echo "ERROR: Invalid option type for option $_po_option: '$_po_type'" 1>&2
       return 1
       ;;
   esac
@@ -1120,9 +1178,8 @@ _parse_opts_generatecompletion() {
   do
     if (( ! _po_params[$_po_option.complete.hidden] ))
     then
-      local _po_frequency="$_po_params[$_po_option.frequency]"
-      integer _po_min_frequency=0 _po_max_frequency=0
-      _parse_opts_minmaxfrequency _po_min_frequency _po_max_frequency $_po_frequency || return
+      integer _po_min_frequency=$_po_params[$_po_option.minfrequency]
+      integer _po_max_frequency=$_po_params[$_po_option.maxfrequency]
 
       # Try to determine a description/completer from the type of this option
       local _po_description="" _po_action="" _po_restrict=""
@@ -1323,7 +1380,7 @@ _parse_opts_getnextvalue() {
       _po_value=$_po_argv[1]
       shift _po_argv
     else
-      echo "Missing parameter to option '$name'" 1>&2
+      echo "ERROR: Missing parameter to option '$name'" 1>&2
       return 1
     fi
   fi
@@ -1377,7 +1434,7 @@ _parse_opts_handletype() {
     values=*)
       # Takes a parameter, validated by list of values from external array
       _parse_opts_getnextvalue || return
-      if (( $_po_validate ))
+      if (( _po_validate ))
       then
         local -a _po_values
         _parse_opts_expandvalues $_po_param _po_values || return
@@ -1401,21 +1458,21 @@ _parse_opts_handletype() {
     exec=*)
       # Takes a parameter which is a command for validation
       _parse_opts_getnextvalue || return
-      if (( $_po_validate )) && ! eval $_po_param \$_po_value
+      if (( _po_validate )) && ! eval $_po_param \$_po_value
       then
         _po_isvalid=0
       fi
       ;;
 
     *) # This is a configuration error
-      echo "Invalid option type for option $_po_name: '$_po_type'" 1>&2
+      echo "ERROR: Invalid option type for option $_po_name: '$_po_type'" 1>&2
       return 1
       ;;
   esac
 
   if (( !_po_isvalid ))
   then
-    echo "Invalid value for option $_po_name: '$_po_value'" 1>&2
+    echo "ERROR: Invalid value for option $_po_name: '$_po_value'" 1>&2
     return 1
   fi
 
@@ -1446,23 +1503,29 @@ _parse_opts_dooptions() {
 
       --*) # Long argument
 
+	# Get the option name without any value
+	local _po_optionname="${_po_option%%\=*}"
+
         # Check to see if the option exists
-        if (( $+_po_options[${_po_option%%\=*}] ))
+        if (( $+_po_options[$_po_optionname] ))
         then
+
+	  # Check & handle excludes
+	  _parse_opts_excludes $_po_optionname || return
 
           # Check to see if value was in option, ie. --name=value
           if [[ $_po_option == *=* ]]
           then
 
             # Extract value in option and pass to type processing
-            _parse_opts_handletype ${_po_option%%\=*} 1 ${_po_option#*=} || return
+            _parse_opts_handletype $_po_optionname 1 ${_po_option#*=} || return
           else
 
             # Call type handling without a value
-            _parse_opts_handletype $_po_option 0 || return
+            _parse_opts_handletype $_po_optionname 0 || return
           fi
         else
-          echo "Invalid option: $_po_option" 1>&2
+          echo "ERROR: Invalid option: $_po_optionname" 1>&2
           return 1
         fi
         ;;
@@ -1476,24 +1539,27 @@ _parse_opts_dooptions() {
         while [[ -n $_po_optiongroup ]]
         do
           # Extract the first letter
-          local _po_optionletter="$_po_optiongroup[1]"
+          local _po_optionname="-$_po_optiongroup[1]"
           _po_optiongroup=${_po_optiongroup#?}
 
           # Check to see if is a valid short option
-          if (( $+_po_options[-$_po_optionletter] ))
+          if (( $+_po_options[$_po_optionname] ))
           then
 
-            # It is so process it as the type determines
-            _parse_opts_handletype -$_po_optionletter 0 || return
+	    # Check & handle excludes
+	    _parse_opts_excludes $_po_optionname || return
+
+            # All ok so process it as the type determines
+            _parse_opts_handletype $_po_optionname 0 || return
           else
-            echo "Invalid option: -$_po_optionletter" 1>&2
+            echo "ERROR: Invalid option: -$_po_optionletter" 1>&2
             return 1
           fi
         done
         ;;
 
       *) # Must be a lone -
-        echo "Missing option after -" 1>&2
+        echo "ERROR: Missing option after -" 1>&2
         return 1
         ;;
     esac
@@ -1511,24 +1577,33 @@ _parse_opts_dooptions() {
 # NB. Locals in this function must begin _po_
 _parse_opts_doarguments() {
 
-  integer _po_spareargs
-  (( _po_spareargs = $#_po_argv - _po_minargs ))
-
-  if (( _po_spareargs < 0 ))
-  then
-    echo "Insufficient arguments" 1>&2
-    return 1
-  fi
-
-  # Process each argument specification
+  # Calculate the number of spare arguments available (ie. above the absolute
+  # minimum required) for use when we encounter optional/variable arguments
+  # later. Just use the arguments
+  integer _po_spareargs=$#_po_argv
+  local -a _po_doarguments
   local _po_argument=""
   for _po_argument in $_po_arguments
   do
-    local _po_frequency="$_po_params[$_po_argument.frequency]"
+    if ! _parse_opts_excluded $_po_argument
+    then
+      (( _po_spareargs -= _po_params[$_po_argument.minfrequency] ))
+      _po_doarguments=($_po_doarguments $_po_argument)
+    fi
+  done
 
+  if (( _po_spareargs < 0 ))
+  then
+    echo "ERROR: Insufficient arguments" 1>&2
+    return 1
+  fi
+
+  # Process each argument specification for non-excluded arguments
+  for _po_argument in $_po_doarguments
+  do
     # Ensure number of args to use is within required range
-    integer _po_min=0 _po_max=0
-    _parse_opts_minmaxfrequency _po_min _po_max $_po_frequency || return
+    integer _po_min=$_po_params[$_po_argument.minfrequency]
+    integer _po_max=$_po_params[$_po_argument.maxfrequency]
 
     # Try to grab all the spare arguments
     integer _po_use
@@ -1546,7 +1621,7 @@ _parse_opts_doarguments() {
     # This shouldn't happen due to being checked above
     if (( _po_use < _po_min || $#_po_argv < _po_use ))
     then
-      echo "Argument processing error" 1>&2
+      echo "ERROR: Argument processing error" 1>&2
       return 1
     fi
 
@@ -1561,9 +1636,43 @@ _parse_opts_doarguments() {
   # If there's any surplus arguments that's an error
   if (( $#_po_argv ))
   then
-    echo "Too many arguments" 1>&2
+    echo "ERROR: Too many arguments" 1>&2
     return 1
   fi
+
+  return 0
+}
+
+# Check how many occurrences of each option were present on the command line
+# against their required frequency
+_parse_opts_checkoptionsfrequency() {
+  local option=""
+  for option in ${(k)_po_options}
+  do
+
+    # Only process for primary alias of each option. Also note that if option
+    # is excluded then no checking to be performed (eg. --zsh-completion may
+    # have been given, overriding everthing else)
+    if [[ $option == ${_po_params[$option.aliases][(w)1]} ]] && ! _parse_opts_excluded $option
+    then
+      integer min=$_po_params[$option.minfrequency]
+      integer max=$_po_params[$option.maxfrequency]
+
+      # Check minimum
+      if (( _po_present[$option] < min ))
+      then
+        echo "ERROR: Missing option: '$option'" 1>&2
+	return 1
+      fi
+
+      # If max is -1 then infinite, so no check
+      if (( max >= 0 && _po_present[$option] > max ))
+      then
+        echo "ERROR: Too many occurrences of option: '$option'" 1>&2
+	return 1
+      fi
+    fi
+  done
 
   return 0
 }
@@ -1575,7 +1684,6 @@ _parse_opts_process() {
   local -a _po_arguments
   local -A _po_options _po_params _po_types
   local _po_helptext=""
-  integer _po_minargs=0
 
   # Check for arguments. If we have one and it is not '-' then it is the help
   # string. Otherwise need to to get that from stdin
@@ -1593,6 +1701,9 @@ _parse_opts_process() {
   # Parse the help string we've got to determine the type of options
   _parse_opts_parsehelp $_po_config || return
 
+  # Expand any exclude patterns now we have the full list of options/arguments
+  _parse_opts_expandexcludes || return
+
   # Useful for debugging
   if (( _po_debug ))
   then
@@ -1602,11 +1713,13 @@ _parse_opts_process() {
     echo
     echo "_po_options=(${(ok)_po_options})"
     echo "_po_arguments=($_po_arguments)"
-    echo "_po_minargs=$_po_minargs"
   fi
 
+  local -aU _po_excluded
+  local -A _po_present
+
   # Perform the option recognition
-  if _parse_opts_dooptions
+  if _parse_opts_dooptions && _parse_opts_checkoptionsfrequency
   then
 
     # If success, and help was requested then give it. Note that it is up to
