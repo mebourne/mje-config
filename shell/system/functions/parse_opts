@@ -2,7 +2,7 @@
 # Provide options parsing and help output
 # Usage: parse_opts <argv> <results> [<help>]
 #
-# $Id: parse_opts,v 1.14 2001/08/03 16:33:05 mebourne Exp $
+# $Id: parse_opts,v 1.15 2001/08/03 17:20:33 mebourne Exp $
 
 ### Documentation
 
@@ -89,10 +89,17 @@
 # default definitions
 _parse_opts_setupdefinitions() {
   _parse_opts_parsehelp '
-#type directory     test=-d                      directory            _directories
-#type file          test=-f                      file                 _files
-#type function      values=${(k)functions}       "shell function"     _functions
-#type parameter     values=${(k)parameters}      parameter            _parameters
+#type noswitch      constant=0                   ""                         " "
+#type integer       pattern=([-+]|)<->           "signed integer number"    " "
+#type posinteger    pattern=<->                  "positive integer number"  " "
+#type text          string                       text                       " "
+
+#type directory     test=-d                      directory                  _directories
+#type file          test=-f                      file                       _files
+
+#type function      values=${(k)functions}       "shell function"           _functions
+#type parameter     values=${(k)parameters}      parameter                  _parameters
+
 # --help
 # --zsh-completion
 '
@@ -457,7 +464,7 @@ _parse_opts_generatecompletiontype() {
     # Decode type as a builtin
     local _po_param="${_po_type#*=}"
     case $_po_type in
-      switch|noswitch|constant=*)
+      switch|constant=*)
         # No parameters, leave blank
         ;;
 
@@ -465,18 +472,6 @@ _parse_opts_generatecompletiontype() {
         # Takes a parameter with no validation
         _po_description="string"
         _po_action="_files"
-        ;;
-
-      text)
-        # Takes a parameter with no validation
-        _po_description="text"
-        _po_action=" "
-        ;;
-
-      integer)
-        # Takes a parameter, validation for integer with optional sign
-        _po_description="integer number"
-        _po_action=" "
         ;;
 
       values=*)
@@ -501,6 +496,12 @@ _parse_opts_generatecompletiontype() {
 	  _po_action="$_po_action))"
 	fi
         ;;
+
+      pattern=*)
+        # Takes a parameter which is a pattern for validation
+        _po_description="value"
+        _po_action=" "
+	;;
 
       test=*)
         # Takes a parameter validated by test. Extract the test flag & try to
@@ -773,15 +774,11 @@ _parse_opts_handletype() {
   done
 
   local _po_param="${_po_type#*=}" _po_value
+  integer _po_isvalid=1
   case $_po_type in
     switch)
       # Simple switch. Mark its presence
       _po_value=1
-      ;;
-
-    noswitch)
-      # Reverse simple switch. Mark its presence
-      _po_value=0
       ;;
 
     constant=*)
@@ -789,19 +786,9 @@ _parse_opts_handletype() {
       _po_value=${(Q)_po_param}
       ;;
 
-    string|text)
+    string)
       # Takes a parameter with no validation
       _parse_opts_getnextvalue || return
-      ;;
-
-    integer)
-      # Takes a parameter, validation for integer with optional sign
-      _parse_opts_getnextvalue || return
-      if [[ $_po_validate -ne 0 && $_po_value != ([-+]|)<-> ]]
-      then
-        echo "Invalid value for option $_po_name: '$_po_value'" 1>&2
-        return 1
-      fi
       ;;
 
     values=*)
@@ -814,9 +801,17 @@ _parse_opts_handletype() {
 
         if (( ! $_po_values[(I)$_po_value] ))
         then
-          echo "Invalid value for option $_po_name: '$_po_value'" 1>&2
-          return 1
+          _po_isvalid=0
         fi
+      fi
+      ;;
+
+    pattern=*)
+      # Takes a parameter which is a pattern for validation
+      _parse_opts_getnextvalue || return
+      if [[ $_po_validate -ne 0 && $_po_value != $~_po_param ]]
+      then
+        _po_isvalid=0
       fi
       ;;
 
@@ -825,8 +820,7 @@ _parse_opts_handletype() {
       _parse_opts_getnextvalue || return
       if (( $_po_validate )) && eval "[[ ! $_po_param \$_po_value ]]"
       then
-        echo "Invalid value for option $_po_name: '$_po_value'" 1>&2
-        return 1
+        _po_isvalid=0
       fi
       ;;
 
@@ -835,6 +829,12 @@ _parse_opts_handletype() {
       return 1
       ;;
   esac
+
+  if (( !_po_isvalid ))
+  then
+    echo "Invalid value for option $_po_name: '$_po_value'" 1>&2
+    return 1
+  fi
 
   _parse_opts_store $_po_name $_po_value
 }
@@ -961,7 +961,7 @@ _parse_opts_doarguments() {
     (( _po_spareargs -= _po_use - _po_min ))
 
     # This shouldn't happen due to being checked above
-    if (( _po_use < _po_min || $#_po_argv >= _po_use ))
+    if (( _po_use < _po_min || $#_po_argv < _po_use ))
     then
       echo "Argument processing error" 1>&2
       return 1
