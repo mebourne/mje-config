@@ -1,7 +1,7 @@
 ! .Xdefaults - X resources configuration
 ! Written by Martin Ebourne
 !
-! $Id: Xdefaults,v 1.4 2000/11/22 15:35:55 ebourm Exp $
+! $Id: Xdefaults,v 1.5 2000/12/11 14:42:28 mebourne Exp $
 
 Mwm*keyboardFocusPolicy:		Pointer
 Mwm*clientAutoPlace: 			True
@@ -24,7 +24,7 @@ Mwm*xclock*ClientDecoration: 	-title
 ! xterm*geometry:       82x32
 ! xterm*font:           Rom10
 ! xterm*boldFont:       Bld10
-xterm*font:			  7x14
+! xterm*font:			  7x14
 xterm*foreground:     white
 xterm*background:     black
 xterm*scrollBar:      true
@@ -61,10 +61,10 @@ DXMail*font:				6x13
 ! Emacs*background:		Black
 ! Emacs*geometry:			101x69
 ! Emacs*geometry:			101x58
-Emacs*geometry:			101x54
+Emacs*geometry:			101x50
 Emacs*bitmapIcon:		on
 Emacs*cursorColor:		Green
-Emacs*font:			7x14
+!Emacs*font:			7x13
 
 Emacs*foreground:		Black
 Emacs*background:		White
