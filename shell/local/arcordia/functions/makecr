@@ -1,46 +1,49 @@
+#eval compdef -n _parse_opts makecr
 # ZSH function file
 # Make a new CR directory & contents
-# Usage: makecr <component> <cr-number>
 #
-# $Id: makecr,v 1.1 2001/07/06 15:49:44 mebourne Exp $
+# $Id: makecr,v 1.2 2001/08/03 17:18:45 mebourne Exp $
 
-local component="$argv[1]" crnumber="$argv[2]" crowner="$argv[3]"
+local basedirprefix="/vobs/odyssey/" basedirsuffix="/support/CR"
 
-if [[ -z $crowner ]]
-then
-  crowner="MJE"
-fi
+local -a components
+components=($basedirprefix*$basedirsuffix)
+components=(${${components#$basedirprefix}%$basedirsuffix})
+components=($components fs)
 
-local crname="CR${crnumber}_$crowner"
+local -A opts
+opts[owner]="MJE"
+parse_opts - opts -- "$argv[@]" <<'EOF' || return 1
+Description:
+Make a new CR directory & contents
 
-local basedir="/vobs/odyssey/$component/support/CR"
+Usage:
+makecr [options] <component> <number> [<owner>]
 
-if [[ $component == fs ]]
+Options:
+  -h, --help			Provide this help
+				# --help | -h
+
+Arguments:
+  <component>			The component the CR is for
+				# component : values=components
+  <number>			The number of the CR
+				# number : posinteger
+  <owner>			The initials of the CR owner
+				# [0,1] owner : pattern=[A-Z][A-Z][A-Z]
+EOF
+
+local basedir="$basedirprefix$opts[component]$basedirsuffix"
+local crname="CR$opts[number]_$opts[owner]"
+
+if [[ $opts[component] == fs ]]
 then
   basedir="/vobs/odyssey/ac/farrst/datafixes/CR"
 fi
 
-if [[ ! -d $basedir ]]
-then
-  echo "ERROR: Invalid component $component" 1>&2
-  return 1
-fi
-
-if [[ $crnumber != [0-9]## ]]
-then
-  echo "ERROR: Invalid CR number $crnumber" 1>&2
-  return 1
-fi
-
-if [[ $crowner != [A-Z][A-Z][A-Z] ]]
-then
-  echo "ERROR: Invalid CR owner $crowner" 1>&2
-  return 1
-fi
-
 local crdir="$basedir/$crname"
 
-if [[ -d $basedir/$crdir ]]
+if [[ -d $crdir ]]
 then
   echo "ERROR: CR directory $crdir already exists" 1>&2
   return 1
