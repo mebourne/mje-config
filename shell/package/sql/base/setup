@@ -3,7 +3,7 @@
 # Setup for SQL base package
 # Written by Martin Ebourne
 #
-# $Id: setup,v 1.13 2001/10/03 11:07:11 mebourne Exp $
+# $Id: setup,v 1.14 2002/04/09 15:14:01 mebourne Exp $
 
 add_functions_directory package/sql/base/functions
 
@@ -35,7 +35,7 @@ alias quoted=""
 alias sql="quoted nocorrect noglob sql"
 alias desc="quoted nocorrect noglob desc"
 alias ssf="sql select * from"
-alias scsf="sql select count(*) \'Rows\' from"
+alias scsf="sql select count(*) \"Rows\" from"
 alias select="sql select"
 
 # Options defaults
