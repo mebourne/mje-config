@@ -1,7 +1,7 @@
 ;; Emacs configuration file
 ;; Setup for cc-mode
 ;; Written by Martin Ebourne
-;; $Id: cc-mode.el,v 1.4 2002/03/21 09:45:52 mebourne Exp $
+;; $Id: cc-mode.el,v 1.5 2002/03/21 10:03:21 mebourne Exp $
 
 ;; C and C++ style
 (eval-after-load "cc-mode"
@@ -11,9 +11,6 @@
      (modify-syntax-entry ?_ "w" c-mode-syntax-table)
      (modify-syntax-entry ?_ "w" c++-mode-syntax-table)
      (modify-syntax-entry ?_ "w" java-mode-syntax-table)
-
-     ;; Make style settings buffer local (in case say, have Java and C++ at the same time)
-     (c-make-styles-buffer-local)
 
      ;; Improvements to java decoding for use with speedbar
      (setq cc-imenu-java-generic-expression-DISABLE-TEMPORARILY
