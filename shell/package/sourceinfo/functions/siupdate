@@ -4,7 +4,7 @@
 # Part of the SourceInfo package
 # Update the SourceInfo databases
 #
-# $Id: siupdate,v 1.11 2001/08/29 16:35:03 mebourne Exp $
+# $Id: siupdate,v 1.12 2002/04/25 10:29:52 mebourne Exp $
 
 parse_opts -- "$argv[@]" <<'EOF' || return 1
 Description:
@@ -47,7 +47,7 @@ echo "Creating $sourceinfo_typesdb..."
 for dir in $sourceinfo_sourcecode_dirs
 do
   find $dir -type f \( -name '*.hpp' -o -name '*.h' \) -print \
-	    -o -name lost+found -prune | xargs typeInfoGenerate.pl
+	    -o -name lost+found -prune | xargs -n50 typeInfoGenerate.pl
 done |
   gzip - > $sourceinfo_typesdb$new &&
   mv -f $sourceinfo_typesdb$new $sourceinfo_typesdb
