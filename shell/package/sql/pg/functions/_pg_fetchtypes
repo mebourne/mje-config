@@ -1,0 +1,7 @@
+# ZSH function file
+# Part of the SQL PostgreSQL package
+# Fetch and return the list of types
+# For use only by the SQL packages
+#
+
+_pg_rawsql "select domain_name from information_schema.domains"

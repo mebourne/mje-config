@@ -1,0 +1,19 @@
+#compdef desc
+# ZSH function file
+# Written by Martin Ebourne
+# Part of the SQL PostgreSQL package
+# Completion code for desc command
+# For use only by the SQL packages
+#
+
+local ret=1
+
+if (( CURRENT == 2 ))
+then
+  _sql_complete_table_names && ret=0
+  _sql_complete_proc_names && ret=0
+  _sql_complete_func_names && ret=0
+  _sql_complete_type_names && ret=0
+fi
+
+return $ret

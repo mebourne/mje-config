@@ -3,7 +3,7 @@
 # Describe the given table
 # For use only by the SQL packages
 #
-# $Id: _sybase_desc 792 2003-09-22 11:47:18Z martin $
+# $Id$
 
 local name="$argv[1]"
 
@@ -24,4 +24,4 @@ then
   fi
 fi
 
-sql sp_help "$name"
+autocommit=1 count=0 sql sp_help "$name"

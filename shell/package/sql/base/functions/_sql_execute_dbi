@@ -3,7 +3,7 @@
 # Execute an SQL command via Perl DBI
 # For use only by the SQL packages
 #
-# $Id: _sql_execute_dbi 792 2003-09-22 11:47:18Z martin $
+# $Id$
 
 if [[ -z $_sql_parameters[user] ]]
 then
@@ -11,9 +11,27 @@ then
   return 1
 fi
 
-# Upper case the vendor name and try it as the driver. Use server for connect string
-$_sql_dbiprogram --driver=${(U)_sql_parameters[vendor][1]}${_sql_parameters[vendor][2,-1]} \
-                 ${_sql_parameters[server]:+--connect=$_sql_parameters[server]} \
+# Check the auto-commit option
+local -a opts
+_sql_getparam autocommit_v autocommit 0
+if (( ${autocommit_v:-0} ))
+then
+  opts=($opts "--auto-commit")
+fi
+
+# Take an initial guess at the driver name
+local driver="${(U)_sql_parameters[vendor][1]}${_sql_parameters[vendor][2,-1]}"
+
+# Default to empty connect
+local -a connect
+
+# Get any customised DBI parameters
+_sql_call dbi_params
+
+# Capitalise the vendor name and try it as the driver. Use server for connect string
+$_sql_dbiprogram --driver=$driver \
+                 ${connect:+--connect=${(j:;:)connect}} \
                  --user=$_sql_parameters[user] \
                  ${_sql_parameters[password]:+--password=$_sql_parameters[password]} \
+                 $opts \
                  "$argv[@]"

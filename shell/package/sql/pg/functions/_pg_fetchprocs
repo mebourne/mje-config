@@ -1,0 +1,7 @@
+# ZSH function file
+# Part of the SQL PostgreSQL package
+# Fetch and return the list of stored procedures
+# For use only by the SQL packages
+#
+
+_pg_rawsql "select routine_name from information_schema.routines where routine_type='PROCEDURE'"

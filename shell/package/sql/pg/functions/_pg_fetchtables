@@ -1,0 +1,7 @@
+# ZSH function file
+# Part of the SQL PostgreSQL package
+# Fetch and return the list of tables
+# For use only by the SQL packages
+#
+
+_pg_rawsql "select table_name from information_schema.tables"

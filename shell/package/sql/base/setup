@@ -3,7 +3,7 @@
 # Setup for SQL base package
 # Written by Martin Ebourne
 #
-# $Id: setup 792 2003-09-22 11:47:18Z martin $
+# $Id$
 
 add_functions_directory package/sql/base/functions
 
@@ -45,21 +45,26 @@ alias scsf='sql select count(*) \"Rows\" from'
 alias select="sql select"
 
 # Options defaults
-# count    - Print count of number of rows returned (or affected)
-# maxrows  - Maximum number of rows to return. 0 for no maximum
-# format   - Select output type for SQL formatting. Values are as listed in help
-#            for sqlFormat.pl, with the addition of:
-#	     none   - Formatting completely disabled
-# colour   - Colour displayed data based on context (default based on $COLOUR).
-#	     off    - No colour
-#	     auto   - Only colour if outputting to tty
-#	     on     - Always colour (if applicable)
-#	     NB. This parameter will only have effect if formatting is enabled
-# truncate - Truncate columns to given number of characters. 0 for no maximum
-# access   - Level of information to access for completion
-#            user   - Only list user tables etc.
-#            all    - Include system tables etc. in lists
-sqlset count=1 maxrows=0 format=squash colour=off truncate=80 access=user
+# count      - Print count of number of rows returned (or affected)
+# maxrows    - Maximum number of rows to return. 0 for no maximum
+# format     - Select output type for SQL formatting. Values are as listed in help
+#              for sqlFormat.pl, with the addition of:
+#	       none   - Formatting completely disabled
+# colour     - Colour displayed data based on context (default based on $COLOUR).
+#	       off    - No colour
+#	       auto   - Only colour if outputting to tty
+#	       on     - Always colour (if applicable)
+#	       NB. This parameter will only have effect if formatting is enabled
+# truncate   - Truncate columns to given number of characters. 0 for no maximum
+# access     - Level of information to access for completion
+#              user   - Only list user tables etc.
+#              all    - Include system tables etc. in lists
+# interface  - System for accessing the database
+#              native - Use database's native command line login tool
+#              dbi    - Use Perl script with DBI module
+# autocommit - Enable auto commit for DBI. Otherwise there's a single transaction
+sqlset count=1 maxrows=0 format=squash colour=off truncate=80 access=user \
+       interface=dbi autocommit=0
 if (( COLOUR ))
 then
   sqlset colour=auto

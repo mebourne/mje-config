@@ -1,0 +1,9 @@
+# ZSH function file
+# Part of the SQL PostgreSQL package
+# Fetch and return the list of columns for the current table
+# For use only by the SQL packages
+#
+
+local table="$argv[1]"
+
+_pg_rawsql "select column_name from information_schema.columns where table_name like '$table'"

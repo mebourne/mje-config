@@ -1,0 +1,10 @@
+# ZSH function file
+# Part of the SQL Sybase package
+# Generate parameters for DBI
+# For use only by the SQL packages
+#
+
+connect=(
+  ${_sql_parameters[server]:+server=$_sql_parameters[server]}
+  ${_sql_parameters[database]:+database=$_sql_parameters[database]}
+)

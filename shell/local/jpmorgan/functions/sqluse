@@ -2,7 +2,7 @@
 # Update the SQL package settings from JPMorgan environment/component
 # Usage: sqluse [<environment> <component>]
 #
-# $Id: sqluse 792 2003-09-22 11:47:18Z martin $
+# $Id$
 
 local env=$argv[1] com=$argv[2] db=$argv[3]
 
@@ -22,7 +22,8 @@ else
 	 server=$(db_attribute $env $com server) \
 	 user=$(db_attribute $env $com username) \
 	 password=$(db_attribute $env $com password) \
-	 database=$(db_attribute $env $com database)
+	 database=$(db_attribute $env $com database) \
+	 interface=dbi autocommit=1
 
   if [[ $db == -s ]]
   then

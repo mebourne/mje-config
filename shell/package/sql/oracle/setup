@@ -4,7 +4,7 @@
 # Written by Martin Ebourne
 # NB. This file should only be included by the SQL base package
 #
-# $Id: setup 792 2003-09-22 11:47:18Z martin $
+# $Id$
 
 # Query for owner may be useful:
 # select owner from all_tables
@@ -26,3 +26,4 @@ _sql_functions[oracle:init]=true
 _sql_functions[oracle:interactive]=_oracle_interactive
 _sql_functions[oracle:execute_dbi]=_oracle_execute_dbi
 _sql_functions[oracle:execute_native]=_oracle_execute
+_sql_functions[oracle:dbi_params]=_oracle_dbiparams

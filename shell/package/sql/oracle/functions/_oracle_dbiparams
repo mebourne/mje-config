@@ -1,0 +1,9 @@
+# ZSH function file
+# Part of the SQL Oracle package
+# Generate parameters for DBI
+# For use only by the SQL packages
+#
+
+connect=(
+  $_sql_parameters[server]
+)

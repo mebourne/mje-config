@@ -1,0 +1,9 @@
+# ZSH function file
+# Part of the SQL PostgreSQL package
+# Execute the given SQL command
+# For use only by the SQL packages
+#
+
+{
+  echo - "$argv[*] ;"
+} | _pg_interactive
