@@ -1,7 +1,7 @@
 ;; Emacs configuration file
 ;; Customised variables
 ;; Written by Martin Ebourne
-;; $Id: custom.el,v 1.17 2002/04/19 18:02:41 mebourne Exp $
+;; $Id: custom.el,v 1.18 2002/10/28 10:31:24 mebourne Exp $
 
 (setq custom-file (concat install-user-base-dir "/custom.el"))
 
@@ -133,6 +133,8 @@
  '(speedbar-tag-hierarchy-method '(speedbar-trim-words-tag-hierarchy
 				   speedbar-prefix-group-tag-hierarchy
 				   speedbar-sort-tag-hierarchy))
+ '(speedbar-supported-extension-expressions (append speedbar-supported-extension-expressions
+						    (list ".sh" ".xml" ".xsd" ".xslt" ".[CH]")))
 
  ;; JDE
  '(jde-use-font-lock nil)
