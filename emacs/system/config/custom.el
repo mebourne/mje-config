@@ -8,6 +8,9 @@
 ;; Change customisation defaults
 (custom-set-variables
 
+ ;; Use clipboard for cutting & pasting
+ '(x-select-enable-clipboard t)
+
  ;; Stop Emacs from changing the major mode when you rename a file
  '(change-major-mode-with-file-name nil)
 
