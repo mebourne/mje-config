@@ -4,7 +4,7 @@
 # Part of the Config package
 # Update config directory
 #
-# $Id: cfgupdate,v 1.14 2001/08/09 17:41:44 mebourne Exp $
+# $Id: cfgupdate,v 1.15 2001/08/29 16:34:57 mebourne Exp $
 
 emulate -LR zsh
 
@@ -20,7 +20,7 @@ cfgupdate [options] <directory>
 
 Options:
   -h, --help			Provide this help
-				# --help | -h
+				# --help | -h * excludes=*
   -n, --no-compile		Do not recompile directory
 				# --no-compile | -n
 

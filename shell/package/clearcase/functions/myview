@@ -3,7 +3,7 @@
 # Part of the clearcase package
 # Set view to that matching username
 #
-# $Id: myview,v 1.4 2001/08/09 17:47:34 mebourne Exp $
+# $Id: myview,v 1.5 2001/08/29 16:34:51 mebourne Exp $
 
 _clearcase_getviews
 
@@ -17,7 +17,7 @@ myview [options]
 
 Options:
   -h, --help			Provide this help
-				# --help | -h
+				# --help | -h * excludes=*
 EOF
 
 local -a views

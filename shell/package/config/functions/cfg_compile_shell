@@ -4,7 +4,7 @@
 # Part of the Config package
 # Compile shell directory
 #
-# $Id: cfg_compile_shell,v 1.6 2001/08/09 17:45:57 mebourne Exp $
+# $Id: cfg_compile_shell,v 1.7 2001/08/29 16:34:56 mebourne Exp $
 
 emulate -LR zsh
 setopt extended_glob
@@ -19,7 +19,7 @@ cfg_compile_shell [options] <directory>
 
 Options:
   -h, --help			Provide this help
-				# --help | -h
+				# --help | -h * excludes=*
 
 Arguments:
   <directory>			The directory to compile

@@ -2,7 +2,7 @@
 # ZSH function file
 # Update configspec to current time & rebuild the cashsec system
 #
-# $Id: updatebuild,v 1.9 2001/08/03 16:41:38 mebourne Exp $
+# $Id: updatebuild,v 1.10 2001/08/29 16:34:45 mebourne Exp $
 
 local -A what
 what=(
@@ -21,7 +21,7 @@ updatebuild [options] [clean] <what>
 
 Options:
   -h, --help			Provide this help
-				# --help | -h
+				# --help | -h * excludes=*
 
 Arguments:
   clean				Build from clean

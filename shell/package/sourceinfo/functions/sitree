@@ -4,7 +4,7 @@
 # Part of the SourceInfo package
 # Display class hierarchy trees
 #
-# $Id: sitree,v 1.9 2001/08/13 09:30:45 mebourne Exp $
+# $Id: sitree,v 1.10 2001/08/29 16:35:00 mebourne Exp $
 
 local -A opts
 local -a dirs
@@ -20,7 +20,7 @@ Options:
 				(partial name ok, searched in order given)
 				# dirs += [*] --directory | -d : directory
   -h, --help			Provide this help
-				# --help | -h
+				# --help | -h * excludes=*
 
 Arguments:
   <type-name>			The type to retrieve the information for

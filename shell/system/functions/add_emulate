@@ -4,7 +4,7 @@
 # shells unchanged, and later can edit the function to force zsh to emulate the correct shell.
 # NB. emulate is always passed -L for local changes
 #
-# $Id: add_emulate,v 1.8 2001/08/03 11:49:00 mebourne Exp $
+# $Id: add_emulate,v 1.9 2001/08/29 16:35:04 mebourne Exp $
 
 local -A opts
 local -a funcnames
@@ -20,7 +20,7 @@ add_emulate [options] <shell> <function-name> ...
 
 Options:
   -h, --help			Provide this help
-				# --help | -h
+				# --help | -h * excludes=*
   -R, --full-reset		As for builtin emulate -R (reset more options to defaults)
 				# --full-reset | -R : constant=-R
 

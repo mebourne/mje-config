@@ -3,7 +3,7 @@
 # Part of the clearcase package
 # Checkin checked out files
 #
-# $Id: cico,v 1.7 2001/08/09 17:48:01 mebourne Exp $
+# $Id: cico,v 1.8 2001/08/29 16:34:50 mebourne Exp $
 
 local -A opts
 parse_opts - opts -- "$argv[@]" <<'EOF' || return 1
@@ -15,7 +15,7 @@ cico [options]
 
 Options:
   -h, --help			Provide this help
-				# --help | -h
+				# --help | -h * excludes=*
   -r, --recurse			Recurse through directories looking for files
 				# --recurse | -r : constant=-r
 EOF

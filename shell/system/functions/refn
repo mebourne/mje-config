@@ -2,7 +2,7 @@
 # ZSH function file
 # Register new autoload function. Re-registers if already defined
 #
-# $Id: refn,v 1.6 2001/08/03 12:49:24 mebourne Exp $
+# $Id: refn,v 1.7 2001/08/29 16:35:59 mebourne Exp $
 
 local -a fns
 parse_opts -- "$argv[@]" <<'EOF' || return 1
@@ -14,7 +14,7 @@ refn [options] <function-name> ...
 
 Options:
   -h, --help			Provide this help
-				# --help | -h
+				# --help | -h * excludes=*
 
 Arguments:
   <function-name> ...		List of path variables to update

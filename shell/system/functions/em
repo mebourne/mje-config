@@ -2,7 +2,7 @@
 # ZSH function file
 # Send files to emacs for editing
 #
-# $Id: em,v 1.5 2001/08/17 14:43:21 mebourne Exp $
+# $Id: em,v 1.6 2001/08/29 16:35:08 mebourne Exp $
 
 local -A opts
 local -a files
@@ -15,7 +15,7 @@ em [options] <file> ...
 
 Options:
   -h, --help			Provide this help
-				# --help | -h
+				# --help | -h * excludes=*
 
 Arguments:
   <file> ...			List of files to edit

@@ -2,7 +2,7 @@
 # ZSH function file
 # Build the cashsec system
 #
-# $Id: build,v 1.4 2001/08/03 16:41:25 mebourne Exp $
+# $Id: build,v 1.5 2001/08/29 16:34:40 mebourne Exp $
 
 local -A what
 what=(
@@ -21,7 +21,7 @@ build [options] [<what>]
 
 Options:
   -h, --help			Provide this help
-				# --help | -h
+				# --help | -h * excludes=*
 
 Arguments:
   <what>			What to build (default all). One of:

@@ -4,7 +4,7 @@
 # Part of the Config package
 # Compile emacs directory
 #
-# $Id: cfg_compile_emacs,v 1.4 2001/08/09 17:45:30 mebourne Exp $
+# $Id: cfg_compile_emacs,v 1.5 2001/08/29 16:34:55 mebourne Exp $
 
 emulate -LR zsh
 
@@ -18,7 +18,7 @@ cfg_compile_emacs [options] <directory>
 
 Options:
   -h, --help			Provide this help
-				# --help | -h
+				# --help | -h * excludes=*
 
 Arguments:
   <directory>			The directory to compile

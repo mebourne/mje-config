@@ -2,7 +2,7 @@
 # ZSH function file
 # View the latest of a set of files, given part of the filename
 #
-# $Id: latest,v 1.3 2001/08/17 14:44:32 mebourne Exp $
+# $Id: latest,v 1.4 2001/08/29 16:35:11 mebourne Exp $
 
 local -A opts
 parse_opts - opts -- "$argv[@]" <<'EOF' || return 1
@@ -14,7 +14,7 @@ latest [options] <filename-stem>
 
 Options:
   -h, --help			Provide this help
-				# --help | -h
+				# --help | -h * excludes=*
 
 Arguments:
   <filename-stem>		Start of filename of set of files to view.

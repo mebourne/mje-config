@@ -4,7 +4,7 @@
 # Part of the SourceInfo package
 # Display type information
 #
-# $Id: sitype,v 1.10 2001/08/13 09:31:02 mebourne Exp $
+# $Id: sitype,v 1.11 2001/08/29 16:35:01 mebourne Exp $
 
 local -A opts
 local -a dirs
@@ -20,7 +20,7 @@ Options:
 				(partial name ok, searched in order given)
 				# dirs += [*] --directory | -d : ? directory
   -h, --help			Provide this help
-				# --help | -h
+				# --help | -h * excludes=*
   -r, --recurse			Display full type information recursively
 				# --recurse | -r : constant=-r
 

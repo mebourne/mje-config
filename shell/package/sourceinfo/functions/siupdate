@@ -4,7 +4,7 @@
 # Part of the SourceInfo package
 # Update the SourceInfo databases
 #
-# $Id: siupdate,v 1.10 2001/08/13 09:31:05 mebourne Exp $
+# $Id: siupdate,v 1.11 2001/08/29 16:35:03 mebourne Exp $
 
 parse_opts -- "$argv[@]" <<'EOF' || return 1
 Description:
@@ -15,7 +15,7 @@ siupdate [options]
 
 Options:
   -h, --help			Provide this help
-				# --help | -h
+				# --help | -h * excludes=*
 EOF
 
 if [[ -z $sourceinfo_sourcecode_dirs ]]
