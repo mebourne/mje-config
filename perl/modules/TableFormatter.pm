@@ -121,7 +121,7 @@ my %styles=(
   },
   xml => {
     extend       => "default",
-    description  => "Output directly to Emacs in forms mode",
+    description  => "Output as XML with column names for the element tags",
     headerline   => 1,
     underline    => 0,
     otherline    => 0,
@@ -133,6 +133,16 @@ my %styles=(
     dataFn       => \&xml_printData,
     newline      => 0,
     rowcount     => 0,
+  },
+  html => {
+    extend       => "xml",
+    description  => "Output as a HTML table",
+    otherline    => 1,
+    headerFn     => \&html_printHeader,
+    formatFn     => \&html_generateFormat,
+    dataFn       => \&html_printData,
+    newline      => 0,
+    rowcount     => 1,
   },
   emacs => {
     extend       => "default",
@@ -634,6 +644,83 @@ sub xml_printData {
   print $colours{blue} if $self->{colour};
   print "<TABLE>\n";
   print $colours{white} if $self->{colour};
+
+  # Print each row with the precalculated format
+  for my $row (@$rows) {
+    printf $format, @$row;
+  }
+
+  print $colours{blue} if $self->{colour};
+  print "</TABLE>\n";
+  print $colours{white} if $self->{colour};
+}
+
+# Print the header
+sub html_printHeader {
+  my ($self, $columns)=@_;
+
+  print $colours{blue} if $self->{colour};
+  print "<TABLE border=1>\n";
+  print " <TR align=\"left\">\n";
+
+  # Process each column
+  my $x;
+  for($x=0;$x<@$columns;$x++) {
+    my $column=$$columns[$x];
+
+    print "  <TH>";
+
+    # Write a '%<num>s' entry as appropriate
+    print $colours{green} if $self->{colour};
+    print $$column{name};
+
+    print $colours{blue} if $self->{colour};
+    print "</TH>\n";
+  }
+
+  print " </TR>\n";
+}
+
+# Generate a printf format string for printing a row
+sub html_generateFormat {
+  my ($self, $columns)=@_;
+
+  # Process each column
+  my $format;
+  $format.=$colours{blue} if $self->{colour};
+  $format.=" <TR>\n";
+
+  my $x;
+  for($x=0;$x<@$columns;$x++) {
+    my $column=$$columns[$x];
+
+    $format.=$colours{green} if $self->{colour};
+    $format.="  <TD";
+    if($types{$$column{type}}->{align}==1) {
+      $format.=" align=\"right\"";
+    }
+    $format.=">";
+
+    # Write a '%<num>s' entry as appropriate
+    if($self->{colour}) {
+      $format.=$types{$$column{type}}->{colour};
+    }
+    $format.="%s";
+
+    $format.=$colours{green} if $self->{colour};
+    $format.="</TD>\n";
+  }
+
+  $format.=$colours{blue} if $self->{colour};
+  $format.=" </TR>\n";
+  $format.=$colours{white} if $self->{colour};
+
+  return $format;
+}
+
+# Print the data
+sub html_printData {
+  my ($self, $format, $rows)=@_;
 
   # Print each row with the precalculated format
   for my $row (@$rows) {
