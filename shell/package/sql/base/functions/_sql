@@ -5,7 +5,7 @@
 # Completion code for sql command
 # Usage: These functions are used by the completion code
 #
-# $Id: _sql,v 1.12 2002/04/18 15:47:47 mebourne Exp $
+# $Id: _sql,v 1.13 2002/04/18 17:49:07 mebourne Exp $
 
 #_sql_trace=1
 
@@ -109,7 +109,8 @@ _sql_tokenise () {
 _sql_get_token () {
   local currentstate="$1"
 
-  (( _sql_trace )) && echo "state: $currentstate"
+  (( _sql_trace )) &&
+    echo "state: $currentstate nested: $nested nestedindex=$nestedindex parenlevel=$parenlevel"
 
   if [[ -z $currentstate ]]
   then
@@ -117,6 +118,7 @@ _sql_get_token () {
   fi
 
   states[nextstate]=$currentstate
+  statenestindices[nextstate]=$nestedindex
 
   tokenid=$tokenids[nextstate]
   token=$tokens[nextstate]
@@ -176,11 +178,46 @@ _sql_pn_start () {
   esac
 }
 
+_sql_save_nest () {
+  nestedlist[nestedindex]="
+parentindex=$parentindex
+nestedindex=$nestedindex
+nested=$nested
+parenlevel=$parenlevel
+tables=(${(kv)tables})
+"
+}
+
+_sql_nest () {
+  _sql_save_nest
+  (( parentindex = nestedindex ))
+  (( nestedindex = $#nestedlist + 1 ))
+  (( nested++ ))
+  parenlevel=0
+}
+
+_sql_unnest () {
+  _sql_save_nest
+  eval $nestedlist[parentindex]
+}
+
+_sql_new_nest () {
+  _sql_unnest
+  _sql_nest
+}
+
+_sql_pn_sub_select () {
+  _sql_nest
+  _sql_pn_select
+  _sql_unnest
+}
+
 _sql_pn_select () {
   _sql_pn_select_statement
 
   while [[ $token == union ]]
   do
+    _sql_new_nest
     _sql_get_token select.union
 
     if [[ $token == select ]]
@@ -297,6 +334,24 @@ _sql_pn_select_where () {
 	;;
       order|group|having|union)
 	return
+	;;
+      \\\()
+        (( parenlevel++ ))
+        _sql_get_token select.where
+	if [[ $parenlevel -eq 1 && $token == select ]]
+	then
+	  _sql_pn_sub_select
+	fi
+	;;
+      \\\))
+        if (( parenlevel > 0 ))
+	then
+	  (( parenlevel-- ))
+	elif (( $nested ))
+	then
+	  return
+	fi
+	_sql_get_token select.where
 	;;
       *)
         _sql_get_column_name select.where 'order|group|having|union'
@@ -659,6 +714,8 @@ _sql_generate_completions () {
     return 1
   fi
 
+  eval $nestedlist[statenestindices[cursorindex]]
+
   case $states[cursorindex] in
     column.for.*)
       _sql_generate_column_completion ${states[cursorindex]##*.}
@@ -796,11 +853,7 @@ _sql_generate_completions () {
 
 _sql () {
 
-#echo
-#echo "wd:$words:"
-#echo "cw:$words[CURRENT]:"
-#echo "pr:$PREFIX:"
-#echo "ip:$IPREFIX:"
+  (( _sql_trace )) && echo
 
   local prefix="$PREFIX" current="$words[CURRENT]"
   integer prefixI=1 currentI=1
@@ -821,31 +874,30 @@ _sql () {
     fi
   done
 
-#echo "np:$prefix:"
-
   local inputline="$words[2,-1]"
   integer inputindex
   (( inputindex = ${#${words[2,CURRENT]}} - $#current + $#prefix + 1 ))
-
-#echo
-#echo "$inputline"
-#echo "${(l:inputindex-1:)}^"
 
   local -a tokens tokenids
   integer cursorindex=0
   _sql_tokenise
 
   local -A tables
-  local -a states
+  local -a states nestedlist statenestindices
   local tokenid="" token=""
   integer nextstate=1
+  integer nested=0 nestedindex=1 parentindex=0 parenlevel=0
+  _sql_nest
   _sql_pn_start
+  _sql_unnest
 
   if (( _sql_trace ))
   then
     echo "tables=${(kv)tables}"
     echo "states=$states"
-    echo "cursorindex=$cursorindex ($states[cursorindex])"
+    echo "statenestindices=$statenestindices"
+    echo "cursorindex=$cursorindex ($states[cursorindex]) $statenestindices[cursorindex]"
+    echo "nestedlist=$nestedlist"
   fi
 
   _sql_generate_completions
