@@ -4,10 +4,10 @@
 # Compile emacs directory
 # Usage: cfg_compile_emacs <directory>
 #
-# $Id: cfg_compile_emacs,v 1.1 2001/05/21 09:25:13 mebourne Exp $
+# $Id: cfg_compile_emacs,v 1.2 2001/05/22 17:07:54 mebourne Exp $
 
 emulate -LR zsh
 
 local base_dir="$argv[1]"
 
-#emacs 
+emacs --batch --user=$USER --eval "(install \"$base_dir/layout.el\")"
