@@ -1,0 +1,54 @@
+# ZSH function file
+# Part of the SQL base package
+# ZLE widget to escape quotes in an SQL command line
+# For use only as a widget with ZLE
+#
+# $Id: _sql_quote_line,v 1.1 2001/03/20 18:29:03 mebourne Exp $
+
+local index quoted=0 escaped=0
+for (( index = 1 ; index <= $#BUFFER ; index++ ))
+do
+  local escape=0
+  case $BUFFER[index] in
+    \\)
+      (( escaped = !escaped ))
+      ;;
+
+    ' ')
+      if (( !escaped && index > 1 )) && [[ $BUFFER[index-1] == ' ' ]]
+      then
+        escape=$quoted
+      fi
+      escaped=0
+      ;;
+
+    \')
+      if (( !escaped ))
+      then
+        escape=1
+      fi
+      (( quoted = !quoted ))
+      escaped=0
+      ;;
+
+    *)
+      escaped=0
+      ;;
+  esac
+      
+  if (( escape ))
+  then
+    BUFFER[index]="\\$BUFFER[index]"
+
+    if (( index <= CURSOR ))
+    then
+      (( CURSOR++ ))
+    fi
+    if (( index <= MARK ))
+    then
+      (( MARK++ ))
+    fi
+
+    (( index++ ))
+  fi
+done

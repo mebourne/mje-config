@@ -1,0 +1,28 @@
+# ZSH function file
+# Part of the SQL base package
+# ZLE widget to escape quotes while being entered in an SQL command
+# For use only as a widget with ZLE
+#
+# $Id: _sql_quote,v 1.1 2001/03/20 18:29:03 mebourne Exp $
+
+# Don't quote if already quoted
+if [[ $CURSOR -ne 0 && $BUFFER[CURSOR] != \\ ]]
+then
+  # Expand all aliases of the command word. Catch loops
+  local cmd count
+  cmd=$BUFFER[(w)1]
+  for (( count = 0 ; $#aliases[$cmd] && count < 20 ; count++ ))
+  do
+    cmd=${aliases[$cmd][(w)1]}
+  done
+
+  # If command is dummy command 'quoted' then insert quote character
+  if [[ $cmd == quoted ]]
+  then
+    BUFFER[CURSOR+1,CURSOR]=\\
+    (( CURSOR += 1 ))
+  fi
+fi
+
+# Insert original character
+zle .self-insert
