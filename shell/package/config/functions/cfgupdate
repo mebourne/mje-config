@@ -4,7 +4,7 @@
 # Update config directory
 # Usage: cfgupdate <directory>
 #
-# $Id: cfgupdate,v 1.8 2001/05/18 15:45:38 mebourne Exp $
+# $Id: cfgupdate,v 1.9 2001/05/18 16:13:39 mebourne Exp $
 
 local base_dir file_desc remove_pattern ignore_pattern remove_derived compile_command
 
@@ -173,6 +173,6 @@ fi
 if [[ -n $compile_command ]]
 then
   echo
-  echo "Compiling..."
+  echo "Compiling directory $base_dir..."
   eval $compile_command
 fi
