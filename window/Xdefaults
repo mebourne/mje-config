@@ -1,7 +1,7 @@
 ! .Xdefaults - X resources configuration
 ! Written by Martin Ebourne
 !
-! $Id: Xdefaults,v 1.6 2001/02/28 16:15:23 mebourne Exp $
+! $Id: Xdefaults,v 1.7 2001/02/28 17:04:53 mebourne Exp $
 
 
 !!! XTerm configuration
@@ -12,14 +12,6 @@
 
 ! Colours
 XTerm*background:		black
-XTerm*color0:			black
-XTerm*color1:			red
-XTerm*color2:			green
-XTerm*color3:			yellow
-XTerm*color4:			blue
-XTerm*color5:			magenta
-XTerm*color6:			cyan
-XTerm*color7:			white
 XTerm*cursorColor:		green
 XTerm*foreground:		white
 
