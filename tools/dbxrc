@@ -1,3 +1,8 @@
+# DBX configuration file
+# Written by Martin Ebourne
+#
+# $Id: dbxrc,v 1.4 2001/04/04 10:20:00 mebourne Exp $
+
 dbxenv suppress_startup_message 4.0
 
 # This pages the help, preferably with less, otherwise anything we can find
@@ -25,13 +30,17 @@ kalias commands="page commands"
 set -o emacs
 set +o ignoreeof
 
-# Bind tab for complete, and cursor keys for history. Can't do the normal cursor keys since
-# only allows 2 character bindings
+# Bind tab for complete. The cursor keys are bound for VT52 settings - can't do VT100 since dbx
+# only allows binding to 2 character escapes
 bind ^I=complete-list
-bind ^[P=up-history
-bind ^[N=down-history
-#bind ^[[P=up-history
-#bind ^[[N=down-history
+bind ^[A=up-history
+bind ^[B=down-history
+bind ^[D=backward-char
+bind ^[C=forward-char
+
+# If set correctly by the shell configuration, this sets the prompt to switch the XTerm into
+# VT52 mode in order to make the above cursor keys work
+PS1="$DBXSTTY$PS1"
 
 # Short command aliases
 alias l=list
