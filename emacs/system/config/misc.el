@@ -1,7 +1,7 @@
 ;; Emacs configuration file
 ;; Miscellaneous stuff
 ;; Written by Martin Ebourne
-;; $Id: misc.el,v 1.1 2001/05/11 17:31:38 mebourne Exp $
+;; $Id: misc.el,v 1.2 2001/05/16 14:22:22 mebourne Exp $
 
 (setq message-log-max 1000)
 
@@ -49,3 +49,15 @@
 
 ;; Enable lots of little file editing modes
 (require 'generic-x)
+
+;; Enable auto (de-)compression
+(require 'jka-compr)
+
+;; Default all files in the shell configuration directories to be shell script mode
+(if (getenv "ZCONFIGDIR")
+    (setq auto-mode-alist
+	  (append auto-mode-alist
+		  (list (cons (concat "^" (getenv "ZCONFIGDIR") "/") 'sh-mode)
+			(cons (concat "^" (getenv "ZUSERCONFIGDIR") "/") 'sh-mode))
+		  ))
+  )
