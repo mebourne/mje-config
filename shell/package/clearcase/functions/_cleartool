@@ -5,7 +5,7 @@
 # Completion code for cleartool command
 # Usage: These functions are used by the completion code
 #
-# $Id: _cleartool,v 1.7 2001/03/29 17:43:09 mebourne Exp $
+# $Id: _cleartool,v 1.8 2001/04/04 13:25:53 mebourne Exp $
 
 _cleartool_decode_pname () {
   case $command in
@@ -24,6 +24,7 @@ _cleartool_decode_pname () {
     #ls)			result="";;
     lscheckout)		result="file:_cleartool_files_checkedout";;
     #lsdo)		result="";;
+    lshistory)		result="file:_cleartool_files_controlled";;
     #lsvtree)		result="";;
     merge)		result="file:_cleartool_files_controlled";;
     #mkattr)		result="";;
@@ -353,6 +354,16 @@ _cleartool () {
     local curcontext="$curcontext"
 
     cmd="$_cleartool_cmds[$words[2]]"
+    if (( !$#cmd ))
+    then
+      local -a cmds
+      cmds=($_cleartool_cmds[(I)$words[2]*])
+      if (( $#cmds == 1 ))
+      then
+        cmd="$_cleartool_cmds[$cmds]"
+      fi
+    fi
+
     if (( $#cmd ))
     then
       curcontext="${curcontext%:*:*}:cleartool-${cmd}:"
