@@ -1,83 +1,358 @@
 # ZSH function file
 # Provide options parsing and help output
-# Usage: parse_opts <argv> <results> [<help>]
+# (C) 2001 Martin Ebourne
 #
-# $Id: parse_opts,v 1.19 2001/08/16 15:29:06 mebourne Exp $
+# $Id: parse_opts,v 1.20 2001/08/16 20:04:21 mebourne Exp $
+
 
 ### Documentation
 
+## Introduction
+#
+# This module provides a complete option and argument parsing system,
+# configured entirely from a help string supplied by the user. The help string
+# is free-format text and describes options/arguments in the usual way; into
+# this is then embedded special descriptions which this module decodes to
+# allow it to process options and arguments on the command line.
+#
+# Some of the main features of this system are:
+#
+# - Easy to use, and configure
+# - Provides support both for options, and normal command line arguments
+# - Option values and arguments may be type checked
+# - There is an extensible user defined type system, based on inheritence
+# - A range of default types is provided
+# - Completion for Zsh is handled fully automatically from the embedded
+#   descriptions in the help text
+# - Automatic error reporting and handling of help displaying
+# - Both standard Unix single character options (which may be grouped, eg. -a
+#   -l or -al), and GNU style long options (eg. --long-list) are supported
+# - Long options with values are supported with two different formats for the
+#   user's convenience. eg. both --directory=<dir> and --directory <dir> are
+#   valid
+# - There is a compatible equivalent module for Perl
+#
+# Please see the example section at the end of this help text to see what the
+# system is like in use.
 
-# todo
-# optional params
 
-# This module provides a complete option parsing system, configured entirely
-# from a help string supplied by the user. The help string is free-format text
-# and describes options in the usual way; into this is then embedded special
-# option descriptions which this module decodes to allow it to process the
-# command line arguments.
+## Use from a shell script
 #
-# Both standard Unix single character options (which may be grouped, eg. -a -l
-# or -al), and GNU style long options (eg. --long-list) are supported, and
-# parameters provided with an option may be type checked. Parameters are
-# recognised in a variety of formats for the user's convenience.
-# eg.
-#   -d <dir>
-#   --directory=<dir>
-#   --directory <dir>
+# In order to use parse_opts from a shell script, a construct such as the
+# following will generally be used:
 #
-# ...more text here...
+#   local -A opts
+#   parse_opts - opts -- "$argv[@]" <<'EOF' || return 1
+#   <help text goes here>
+#   EOF
 #
-# The option descriptions are of the form:
-#   `# ' [ <tag> ( ` = ' | ` += ' ) ] [ `[' <frequency> `]' ] <option> [ ` | ' <option> ] ... [ ` : ' <type> ]
+# Here the first argument tells parse_opts that the help text will be passed
+# in as stdin (done as a `here' doc in this case), the second argument gives
+# the name of the associative array which the results should be stored in, and
+# the command line arguments are all provided after the `--'.
 #
-# tag is of the form:
+# In the case that parse_opts finishes successfully, the decoded options are
+# in the opts array, otherwise the script will exit. Note that in the case of
+# a non-0 return code it may not necessarily be an error - maybe the user has
+# requested help. In either case an error message or whatever will already
+# have been printed so nothing further needs to be done.
+
+
+## Syntax
+#
+# parse_opts [<config> [<results> [<argv>]]] [--] [<arguments> ...]
+#
+# config    - This is the help text used to configure the system. If missing or
+#             `-' then this will instead be read from stdin to parse_opts (which
+#             is not normally stdin to the caller)
+# results   - If provided then this is the name of the default associative array
+#             to store the results in. This may be overridden later on a per
+#             parameter basis
+# argv      - This is the name of the array to find the command line arguments in.
+#             It will be modified on exit to contain the remaining unprocessed
+#             arguments, which on a successful exit means it will be empty
+# `--'      - This is required if the arguments are to be given directly
+# arguments - As an alternative to providing the argv parameter, the arguments
+#             may be supplied directly on the command line, after the `--'
+#
+# The return code is 0 if the arguments have been successfully decoded and the
+# script should proceed as normal, or non-0 for all other circumstances. In
+# the latter case the script should exit straight away.
+#
+# NB. When specifying the results and argv parameters, these are done by name,
+# and hence should not include the `$'. Note also that argv cannot actually be
+# `argv' since that will clash with the one inside parse_opts.
+
+
+## Configuration help text
+#
+# The idea behind the configuration help text is that you write the free-form
+# help exactly as you wish to see it, and then add in extra lines with
+# embedded specifications in them. These lines are filtered out when the help
+# is displayed so you end up with what you wanted. Meanwhile, in addition to
+# processing the embedded specifications, parse_opts also decodes the help
+# itself to extract descriptions for each of the options. These are used when
+# automatically generating the Zsh completion.
+#
+# Just to get the idea, a very simple help text could look like this:
+#
+#   Description:
+#   View the latest of a set of files, given part of the filename
+#   
+#   Usage:
+#   latest [options] <filename-stem>
+#   
+#   Options:
+#     -h, --help		Provide this help
+# 				# --help | -h
+#   
+#   Arguments:
+#     <filename-stem>		Start of filename of set of files to view.
+# 				May contain wildcards
+# 				# filename-stem : ? file
+#
+# For a slightly more elaborate example, see the `Example' section below.
+#
+# The basic rules for the help text are as follows:
+#
+# 1. All embedded specifications and commands are introduced with a `#' as the
+#    first thing on the line. No non-whitespace characters may proceed it,
+#    else the `#' will be treated as a normal character.
+#
+# 2. All option/argument syntax descriptions (ie. the bit for the user to
+#    see), or other titles/general description, should generally not have, or
+#    be completely before, any tabs on the line. This does not matter in the
+#    case where the text preceeds another option, but otherwise it may end up
+#    becoming part of an option decription as sent to the completion system.
+#
+# 3. All description text relating to an option/argument must have at least
+#    one tab preceeding it.
+#
+# 4. Comments (ie. free text not included in the help output) are introduced
+#    as for the embedded specifications, but with `##' instead.
+#
+# 5. The presence or otherwise of whitespace withing an embedded description
+#    line (as described below) is generally crucial. The amount will however
+#    not matter.
+#
+# 6. Long embedded specifications may be continued on another line by escaping
+#    the newline with a `\'
+
+
+## Embedded specification syntax
+#
+# The currently recognised types of specification line are introduced as
+# follows:
+#
+# `#'      - These are option/argument lines. There are minor differences between
+#            option and argument lines, but they are otherwise the same
+# `#type'  - These are type definition lines
+# `##'     - As already mentioned, this is a comment line
+#
+#
+# Option/argument lines
+# --------------- -----
+#
+# The option/argument description lines have four parts, of which only one is mandatory.
+#
+#   `# ' [ <tag-part> ( ` = ' | ` += ' ) ] <option-part>
+#   [ ` : ' <type-part> ] [ ` * ' <settings-part> ]
+#
+# Or as an abbreviated form:
+#
+#    # tag-part = option-part : type-part * settings-part
+#    # tag-part += option-part : type-part * settings-part
+#
+# The <option-part> is the only mandatory section, and the other sections are
+# only present if their corresponding separator is present. Briefly,
+#
+# tag-part    	- This determines where the decoded result is stored
+# option-part 	- This gives the name of the option or argument, with aliases
+# type-part   	- This gives the type of value with the option or for the
+#             	  argument, used for validation checking and completion
+# settings-part - This gives special settings for the option/argument, and is
+#                 rarely used
+#
+# These are now described in detail.
+
+# Tag part:
+#
+# One of:
 #   `[' <key-name> `]'
 # or
 #   <variable-name>
 #
-# Where key-name is the name of the hash key the value will be stored in. The
-# alternative of variable-name stores the value directly in the given
+# Where key-name is the name of the hash key the value will be stored in -
+# using the default `return values' associative array provided to parse_opts.
+#
+# The alternative of variable-name stores the value directly in the given
 # variable. The variable is expected to be local to the calling program, and
-# the exact behaviour depends on its type:
-#   undefined/scalar  - value stored directly
-#   array             - value appended to array
-#   associative array - value stored against a key of the option name (without leading `-'s)
+# the exact behaviour depends on its type.
 #
-# If tag is not supplied, then the first <option> value will be re-used as key-name.
+# If <tag-part> is not provided, then it will default to using <key-name> of
+# the first option or argument name in the <option-part> list. Option names
+# will have any leading `-' stripped off them for this purpose.
 #
-# option is of the form:
-#   <option-name>
+# The way the tag is accessed also depends on the separator used before the
+# <option-part>. There are two possibilities - either `=' which overwrites any
+# value, or `+=' which appends to any current value. Note that this is
+# completely independent of the option/argument frequency, detailed later.
 #
-# Where option-name is the name the option will be passed as when invoked by
-# the user. Single letter options are introduced by `-', and may be grouped.
-# Other options are long options introduced by `--'. If there is no `-' at the
-# start of the option name then this is taken to be an argument definition
+# The possible options when storing decoded values are:
 #
-# frequency is of the form:
+# Type of storage                            Overwrite      Append
+#
+# undefined (ie. variable doesn't exist)     Type 1         Type 2
+# index into default result array            Type 1         Type 2
+# scalar                                     Type 1         Type 2
+# array               			     Type 3         Type 4
+# associative array   			     Type 1         Type 2
+#
+# Type 1 - The old value is replaced each time a new value is stored
+# Type 2 - Each new value is appended as a string to the previous value, with
+#          a space as separator if required
+# Type 3 - Any old entries are removed, leaving just the new entry
+# Type 4 - The new entry is appended onto the end of the array
+
+# Option part:
+#
+#   [ `[' <frequency> `] ' ] <option-name> [ ` | ' <option-name> ... ]
+#
+# Where <option-name> gives the name of the option, as it will appear on the
+# command line. eg. `-h' or `--help'. Multiple <option-name>s may be given in
+# order to supply aliases of the same option. Single letter options begin with
+# `-', and may be grouped. Other options are long options and begin with `--'.
+#
+# If there is no `-' at the start of the option name then this is taken to be
+# an argument definition. Obviously this doesn't appear on the command line,
+# but it will be used when reporting any errors. For this reason it is
+# recommended that it matches the argument name as specified in the help. Note
+# that aliases for arguments are not allowed (there would be no point).
+#
+# <frequency> is of the form:
 #   <count>
 # or
-#   <min-count> `,' <max-count>
-#
-# count, min-count, max-count are of the form:
-#   <integer>
-# or
 #   `*'
+# or
+#   <min-count> `,' <max-count>
+# or
+#   <min-count> `,*'
+# or
+#   `*,' <max-count>
 #
-# Where integer is a positive integer.
+# Where <count>, <min-count>, and <max-count> are all positive integers. These
+# give the allowable range of the number of occurrences of the option or
+# argument. If only <count> is provided, then <min-count> and <max-count> will
+# both have this value.
 #
-# type is of the form:
-#   [ ` ? ' ] <type-name> [ `=' <value> ]
+# If a `*' is present then it means `any value' for that count. For an option
+# this would mean it could appear any number of times. For an argument it
+# means that any spare arguments on the command line will be used up for this
+# argument. Only one argument will normally have a frequency including `*',
+# otherwise there will be a clash as to what gets the remaining arguments. In
+# the event of such a clash (which may also happen if there is more than one
+# min/max range specified), the early arguments will all use up to their
+# maximum before moving on to processing the next one. Note that enough
+# arguments will always be left to meet the requirements of the minimum count
+# of any following arguments, so it is only `spare' ones which get treated in
+# this way.
+#
+# Typical frequencies for options are:
+#
+# [0,1]   - The default. Optional - may only occur once or not at all.
+# [*]     - Repeatable. May appear any number of times.
+# [1,1]   - Mandatory. NOT YET CHECKED
+# NB. Min/max values are currently not fully checked for options
+#
+# Typical frequencies for arguments are:
+#
+# [1]     - The default. Single mandatory argument.
+# [0,1]   - Optional.
+# [*]     - Any number of arguments, or none
+# [1,*]   - Any number of arguments, but at least one
+
+# Type part:
+#
+#   [ `? ' ] <type-name> [ `=' <value> ]
 #
 # Where type-name is one of:
-#   switch   - Simple switch. Result will be 1. NB. This is the default if not supplied
-#   constant - Constant to be assigned. Result will be value given, with any quotes removed
-#   string   - Takes a parameter with no validation
+#   switch   - (2) Simple switch. Result will be 1. Default for options
+#   constant - (1) (2) Constant to be assigned. Result will be value given,
+#              with any quotes removed
+#   string   - Takes a parameter with no validation. Default for arguments
+#   values   - (1)
+#   pattern  - (1)
+#   exec     - (1)
 #
-# value may only be (and must be) present if the type requires it, and will be
-# used as explained in the type description.
+# (1) These types take a value, which must be supplied. Others do not and one
+#     must not be supplied to those.
+# (2) These are for use with options only. They clearly have no useful meaning
+#     for arguments.
+#
+# `?' indicates that validation should not be performed on the option
+# value/argument. The type is still used for options to determine if they take
+# a value, and for completion with both options and arguments.
+
+
+
+# Settings part:
+#
+#   <setting-name> [ `=' <value> ] [ ` ' ... ]
+
+
+
+## Example:
+#
+# Here is an example of a small Zsh script/function which makes effective use
+# of parse_opts. It implements a command similar to 'yes' available on some
+# Unix systems.
+#
+#   local -A opts
+#   parse_opts - opts -- "$argv[@]" <<'EOF' || return 1
+#   Description:
+#   Repeatedly print a string
+#
+#   Usage:
+#   yes [options] [<text> ...]
+#
+#   Options:
+#     -e, --escape		Interpret escape characters as for echo (default unless
+# 				the BSD_ECHO option is set)
+# 				# [echoopt] += --escape | -e : constant=-e
+#     -E, --no-escape		Prevent interpretation of escape characters
+# 				# [echoopt] += --no-escape | -E : constant=-E
+#     -h, --help		Provide this help
+# 				# --help | -h
+#     -l <count>, --lines=<count>
+#				Output only count times
+# 				# --lines | -l : integer
+#     -n, --no-newline		Suppress output of automatic newline
+# 				# [echoopt] += --no-newline | -n : constant=-n
+#     -s <seconds>, --sleep=<seconds>
+# 				Pause for number of seconds between each echo
+# 				# --sleep | -s : integer
+#
+#   Arguments:
+#     [<text> ...]		Optional text to print. Defaults to 'yes'
+# 				# [text] += [*] text
+#   EOF
+#
+#   # Output as required
+#   while (( ${opts[lines]:-1} ))
+#   do
+#     echo $=opts[echoopt] ${opts[text]:-yes}
+#     (( opts[sleep] )) && sleep $opts[sleep]
+#     (( opts[lines] && opts[lines]-- ))
+#   done
+
 
 
 ### Configuration
+
+# todo
+# optional params
+# extendable excludes
+
 
 # Calls _parse_opts_parsehelp in order to create the built-in types & other
 # default definitions
@@ -110,6 +385,7 @@ _parse_opts_setupdefinitions() {
 }
 
 
+
 ### Helper functions for default user types
 
 # Returns 0 for valid option, 1 for otherwise. Can't use values= due to the
@@ -119,6 +395,7 @@ _parse_opts_validate_option() {
 
   (( $+options[$option] ))
 }
+
 
 
 ### Implementation
