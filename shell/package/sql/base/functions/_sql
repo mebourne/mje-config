@@ -5,7 +5,7 @@
 # Completion code for sql command
 # Usage: These functions are used by the completion code
 #
-# $Id: _sql,v 1.3 2001/03/20 18:32:27 mebourne Exp $
+# $Id: _sql,v 1.4 2001/03/22 14:56:42 mebourne Exp $
 
 _sql () {
   local -A tables
@@ -75,6 +75,13 @@ _sql () {
     fi
 
   done
+
+  if (( state == 103 && $#table ))
+  then
+    tables[$table]=$table;
+    table=""
+  fi
+
 
   #echo "tables=${(kv)tables}"
   #echo "state=$currentstate"
