@@ -3,7 +3,7 @@
 # Set up all the autoloaded functions. This is executed for all shells very early on
 # Written by Martin Ebourne
 #
-# $Id: loadfuncs,v 1.1 2001/02/12 18:13:24 mebourne Exp $
+# $Id: loadfuncs,v 1.2 2001/02/13 10:23:16 mebourne Exp $
 
 # This file can be included more than once. Only execute it once though
 if functions add_functions_directory >/dev/null
@@ -33,6 +33,7 @@ else
       files=($newdir/*(.))
       files=(${files##*/})
       files=(${files:#*~})
+      files=(${files:#\#*\#})
 
       # Autoload the files if there are any left
       if [[ -n $files ]]
