@@ -3,7 +3,7 @@
 # Generic system-wide setup for ALL shells. This is executed before anything else
 # Written by Martin Ebourne
 #
-# $Id: global,v 1.4 2001/05/16 14:23:56 mebourne Exp $
+# $Id: global,v 1.5 2001/05/23 12:53:49 mebourne Exp $
 
 # Make various path like variables keep unique values only. Need to create any that aren't built
 # into the shell. Most of them are also exported
@@ -46,6 +46,14 @@ case $TERM in
     XTERM=1
     ;;
 esac
+
+# If ~/.zsh exists as a directory, and a ZDOTDIR has not been specified, then
+# default it to this
+if [[ -z $ZDOTDIR && -d $HOME/.zsh ]]
+then
+  export ZDOTDIR="$HOME/.zsh"
+  [[ -n $ZCONFIGDEBUG ]] && echo "ZDOTDIR set to $ZDOTDIR"
+fi
 
 # Enable functions early & for everyone. Ha! Should be here but zsh later goes and
 # resets the stupid path. Doh! Have to do it at the start of login AND interactive
