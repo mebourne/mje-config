@@ -4,12 +4,21 @@
 # done, but immediately before the user specific files
 # Written by Martin Ebourne
 #
-# $Id: interactive,v 1.7 2001/03/01 15:28:11 mebourne Exp $
+# $Id: interactive,v 1.8 2001/03/14 15:49:03 mebourne Exp $
 
 # Arcordia settings
 
-# Include various Arcordia special functions
+# Include various Arcordia special functions. Need to make them work in zsh
 . /opt/bin/0ENV.sh
+add_emulate ksh Load
+add_emulate ksh Unload
+add_emulate ksh prepend
+add_emulate ksh append
+add_emulate ksh variable
+
+# Pull in a couple of useful Arcordia 'packages'
+Load rcs
+Load ssh
 
 # Our default CDPATH
 cdpath=(. /vobs/odyssey/cashsec /vobs/odyssey)
