@@ -207,16 +207,15 @@ sub main {
   while(defined($thisLine)) {
     my $nextLine=&getNextLine(0);
 
-    # If both lines are the same length and the second one consists only of
-    # spaces and dashes then assume we've found the start of a select output
-    if(defined($nextLine) && length($thisLine)==length($nextLine)
-       && $nextLine=~/^ *-[- ]*$/) {
+    # Check to see if we've found the start of a select output
+    my ($minLength,$maxLength);
+    if(defined($nextLine) && &isHeader($thisLine, $nextLine, \$minLength, \$maxLength)) {
 
       # Read the table in
       my @columns;
       my @rows;
       &readHeader(\@columns,$thisLine,$nextLine);
-      &readData(\@columns, \@rows, length($thisLine), \$nextLine);
+      &readData(\@columns, \@rows, $minLength, $maxLength, \$nextLine);
 
       # Processing
       if($style->{squash}) {
@@ -269,6 +268,33 @@ sub trim {
   return $result;
 }
 
+# Return true if these two lines constitute a table header. Also return min
+# and max lengths for valid data lines
+sub isHeader {
+  my ($first,$second,$minLength,$maxLength)=@_;
+
+  my $isHeader=0;
+  my $secondLen=length($second);
+
+  # Second line must consist only of spaces and dashes
+  if($second=~/^ *-[- ]*$/) {
+
+    # Trim the last group of dashes down to one to get minimum length
+    $second=~s/-*$/-/;
+
+    # Check first line is within acceptable length range
+    if(length($first)>=length($second) && length($first)<=$secondLen) {
+      $isHeader=1;
+    }
+  }
+
+  # Return the acceptable length range
+  $$minLength=length($second);
+  $$maxLength=$secondLen;
+
+  return $isHeader;
+}
+
 # Read the first two lines of the input to get the column information
 sub readHeader {
   my ($columns,$header,$format)=@_;
@@ -303,18 +329,18 @@ sub readHeader {
 
     # Modify header & format lines for next column
     $format=substr($format,$end);
-    $header=substr($header,$end);
+    $header=substr($header,$end < length($header) ? $end : length($header));
     $index+=$end;
   }
 }
 
 # Read all of the data lines
 sub readData {
-  my ($columns, $rows, $lineLength, $nextLine)=@_;
+  my ($columns, $rows, $minLength, $maxLength, $nextLine)=@_;
 
   # Loop for each line until the length doesn't match, or we run out
   my $line;
-  while(defined($line=&getNextLine(1)) && length($line)==$lineLength) {
+  while(defined($line=&getNextLine(1)) && length($line)>=$minLength && length($line)<=$maxLength) {
     chomp $line;
     my $row=[];
 
