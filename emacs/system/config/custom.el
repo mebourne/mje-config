@@ -1,7 +1,7 @@
 ;; Emacs configuration file
 ;; Customised variables
 ;; Written by Martin Ebourne
-;; $Id: custom.el,v 1.2 2001/05/16 14:22:03 mebourne Exp $
+;; $Id: custom.el,v 1.3 2001/05/16 17:14:26 mebourne Exp $
 
 (setq custom-file (concat install-user-base-dir "/custom.el"))
 
@@ -43,6 +43,10 @@
 
  ;; Stop hide-show hiding the initial comment block
  '(hs-minor-mode-hook nil)
+
+ ;; UK date style (D/M/Y)
+ '(european-calendar-style t)
+ '(calendar-time-display-form '(24-hours ":" minutes))
 
  ;; Desktop
  '(desktop-missing-file-warning t)
