@@ -1,12 +1,12 @@
 # ZSH function file
 # Update configspec to current time & rebuild the cashsec system
-# Usage: updatebuild [clean] [all|lib|none]
+# Usage: updatebuild [clean] all|lib|none
 #	 clean	Build from clean
 #	 all	Build libraries and exectables
 #	 lib	Build only libraries
 #	 none	Don't build. Just update configspec
 #
-# $Id: updatebuild,v 1.5 2001/03/20 09:27:53 mebourne Exp $
+# $Id: updatebuild,v 1.6 2001/03/20 13:30:25 mebourne Exp $
 
 local file=${TMPPREFIX:-/tmp/zsh}.configspec.$$
 local time=$(date '+%d-%b.%H:%M')
@@ -42,7 +42,7 @@ then
       ;;
 
     *)
-      echo "Usage: updatebuild [clean] [all|lib|none]" 1>&2
+      echo "Usage: updatebuild [clean] all|lib|none" 1>&2
       return 1
       ;;
   esac
