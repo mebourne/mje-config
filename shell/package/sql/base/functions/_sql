@@ -5,12 +5,17 @@
 # Completion code for sql command
 # Usage: These functions are used by the completion code
 #
-# $Id: _sql,v 1.11 2002/04/18 14:38:20 mebourne Exp $
+# $Id: _sql,v 1.12 2002/04/18 15:47:47 mebourne Exp $
 
 #_sql_trace=1
 
 _sql_tokenise () {
   integer charindex=1
+
+  local -a keywords
+  keywords=( by create delete distinct drop exec from group having
+             insert into order select set union update values
+	   )
 
   local whitespace="" token="" tokenid=""
   integer newindex=0 tokenindex=0
@@ -60,8 +65,13 @@ _sql_tokenise () {
 	token=${(M)inputline##[[:digit:]]#}
 	;;
       [[:alpha:]_]*)
-        tokenid=word
 	token=${(M)inputline##[[:alnum:]_]#}
+	if (( keywords[(r)$token] ))
+	then
+	  tokenid=keyword
+	else
+	  tokenid=word
+	fi
 	;;
       *)
         echo "_sql_tokenise: Unrecognised text in sql code: '$inputline'" 1>&2
@@ -114,6 +124,22 @@ _sql_get_token () {
   (( nextstate++ ))
 
   (( _sql_trace )) && echo "token $tokenid >$token<"
+}
+
+_sql_get_column_name () {
+  local followingstate="$1" abortexpr="$2"
+  if [[ $tokenids[nextstate] == period ]]
+  then
+    local tablealias="$token"
+    _sql_get_token column.for.$tablealias
+    _sql_get_token column.for.$tablealias
+    if [[ $tokenid == (word|keyword) && $token != $~abortexpr ]]
+    then
+      _sql_get_token $followingstate
+    fi
+  else
+    _sql_get_token $followingstate
+  fi
 }
 
 _sql_pn_start () {
@@ -216,7 +242,7 @@ _sql_pn_select_columns () {
         _sql_get_token select.column
 	;;
       *)
-	_sql_get_token select
+        _sql_get_column_name select 'from|where|order|group|having|union'
 	;;
     esac
   done
@@ -273,7 +299,7 @@ _sql_pn_select_where () {
 	return
 	;;
       *)
-	_sql_get_token select.where
+        _sql_get_column_name select.where 'order|group|having|union'
 	;;
     esac
   done
@@ -298,7 +324,7 @@ _sql_pn_select_order () {
         _sql_get_token select.order.by.column
 	;;
       *)
-	_sql_get_token select.order.by
+        _sql_get_column_name select.order.by 'group|having|union'
 	;;
     esac
   done
@@ -323,7 +349,7 @@ _sql_pn_select_group () {
         _sql_get_token select.group.by.column
 	;;
       *)
-	_sql_get_token select.group.by
+        _sql_get_column_name select.group.by 'having|union'
 	;;
     esac
   done
@@ -340,7 +366,7 @@ _sql_pn_select_having () {
 	return
 	;;
       *)
-	_sql_get_token select.having
+        _sql_get_column_name select.having 'union'
 	;;
     esac
   done
@@ -402,7 +428,7 @@ _sql_pn_delete_where () {
 	return
 	;;
       *)
-	_sql_get_token delete.where
+        _sql_get_column_name delete.where ''
 	;;
     esac
   done
@@ -480,7 +506,7 @@ _sql_pn_insert_columns () {
 	_sql_get_token insert.columns.column
 	;;
       *)
-	_sql_get_token insert.columns
+        _sql_get_column_name insert.columns 'values'
 	;;
     esac
   done
@@ -563,7 +589,7 @@ _sql_pn_update_set () {
 	_sql_get_token update.set.expression
         ;;
       *)
-	_sql_get_token update.set
+        _sql_get_column_name update.set 'where'
 	;;
     esac
   done
@@ -577,7 +603,7 @@ _sql_pn_update_where () {
 	return
 	;;
       *)
-	_sql_get_token update.where
+        _sql_get_column_name update.where ''
 	;;
     esac
   done
@@ -587,18 +613,21 @@ _sql_pn_exec () {
 }
 
 _sql_generate_column_completion () {
-  if [[ $PREFIX == *.* ]]
+  local tablealias="$1"
+
+  if [[ -n $tablealias ]]
+  then
+    local table="$tables[$tablealias]"
+    if [[ -z $table ]]
     then
-    local tablealias="${PREFIX%%.*}"
-    if (( $+tables[$tablealias] ))
-      then
-      local table="$tables[$tablealias]"
-      alts=($alts "columns-$table:database columns for $table:_sql_complete_column_names -p '$tablealias.' $suffix $table")
+      table=$tablealias
     fi
+
+    alts=($alts "columns-$table:database columns for $table:_sql_complete_column_names -p '${PREFIX%%[^.]#}' $suffix $table")
   else
     alts=($alts "table-aliases:table aliases:compadd -S. ${(k)tables}")
     if (( $#tables ))
-      then
+    then
       local table=""
       for table in $tables
       do
@@ -631,6 +660,9 @@ _sql_generate_completions () {
   fi
 
   case $states[cursorindex] in
+    column.for.*)
+      _sql_generate_column_completion ${states[cursorindex]##*.}
+      ;;
     delete)
       alts=($alts 'sql:SQL reserved words:(from)')
       alts=($alts 'tables:database tables:_sql_complete_table_names')
@@ -806,7 +838,7 @@ _sql () {
   local -A tables
   local -a states
   local tokenid="" token=""
-  integer nexttoken=1 nextstate=1
+  integer nextstate=1
   _sql_pn_start
 
   if (( _sql_trace ))
