@@ -1,4 +1,9 @@
 #!/usr/local/bin/perl -w
+#
+# Compress columns in SQL output to take less screen space
+# Written by Martin Ebourne. Started 22/05/01
+#
+# Usage: sqlcompress.pl
 
 use strict;
 
@@ -13,7 +18,11 @@ my @rows;
 &trimLength(\@columns);
 
 &printHeader(\@columns);
-&printData(\@columns,\@rows);
+
+if(@rows) {
+  my $format=&generateFormat(\@columns);
+  &printData($format,\@rows);
+}
 
 print "\n";
 while(<STDIN>) {
@@ -106,6 +115,23 @@ sub trimLength {
   }
 }
 
+sub generateFormat {
+  my ($columns)=@_;
+
+  my $format="";
+  my $x;
+  for($x=0;$x<@$columns;$x++) {
+    $format.=" " if $x;
+
+    my $column=$$columns[$x];
+    $format.="%" . (defined($$column{align})?$$column{align}:-1)*$$column{length} . "s";
+  }
+
+  $format.="\n";
+
+  return $format;
+}
+
 sub printHeader {
   my ($columns)=@_;
 
@@ -131,17 +157,9 @@ sub printHeader {
 }
 
 sub printData {
-  my ($columns, $rows)=@_;
+  my ($format, $rows)=@_;
 
   for my $row (@$rows) {
-    my $x;
-    for($x=0;$x<@$columns;$x++) {
-      print " " if $x;
-
-      my $column=$$columns[$x];
-      printf "%*s", $$column{align}*$$column{length}, $$row[$x];
-    }
-
-    print "\n";
+    printf $format, @$row;
   }
 }
