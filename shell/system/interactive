@@ -3,7 +3,7 @@
 # Generic system-wide setup for interactive use
 # Written by Martin Ebourne
 #
-# $Id: interactive,v 1.12 2001/04/20 11:28:47 mebourne Exp $
+# $Id: interactive,v 1.13 2001/04/20 15:36:23 mebourne Exp $
 
 # Initial config files
 config_if_present system/loadfuncs
@@ -53,3 +53,4 @@ fi
 config_if_present system/aliases
 config_if_present system/keys
 package completion
+package dirstack
