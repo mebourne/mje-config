@@ -1,0 +1,42 @@
+#!/bin/sh
+
+cd $HOME
+
+if [ ! -d .zsh ]
+then
+  mkdir .zsh
+  ln -s .zsh/.zshenv .zshenv
+
+  ln -s /home/odyssey1/mebourne/config/shell/zlogout  .zsh/.zlogout
+  ln -s /home/odyssey1/mebourne/config/shell/zprofile .zsh/.zprofile
+  ln -s /home/odyssey1/mebourne/config/shell/zshrc    .zsh/.zshrc
+  ln -s /home/odyssey1/mebourne/config/shell/zshenv   .zsh/.zshenv
+fi
+
+if [ ! -f .zsh_user -a ! -d .zsh_user ]
+then
+  mkdir .zsh_user
+  mkdir .zsh_user/functions
+
+  cat <<EOF > .zsh_user/login
+# ZSH configuration file
+# Executed for login shells via zprofile
+# User's own setup for login shells. Run after all other login setup has been done
+
+EOF
+
+  cat <<EOF > .zsh_user/interactive
+# ZSH configuration file
+# Executed for interactive shells via zshrc
+# User's own setup for interactive shells. Run after all other setup has been done
+
+ttyctl -f
+
+EOF
+
+fi
+
+PATH=/home/odyssey1/mebourne/local/bin/sun4u:/home/odyssey1/mebourne/local/bin:$PATH
+export PATH
+
+exec zsh -l

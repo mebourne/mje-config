@@ -1,0 +1,86 @@
+Installed programs
+========= ========
+
+Name:		 Zsh
+Version:	 4.0.4
+Home page:	 http://www.zsh.org/
+Package name:	 zsh-4.0.4.tar.gz
+Source location: ftp://ftp.net.lut.ac.uk/zsh/
+Build:
+See zsh-cfg
+Notes:		 CSFB: Use CC=cc ./configure ...
+
+Name:		 Emacs
+Version:	 21.2.2
+Home page:	 http://www.gnu.org/
+Package name:	 emacs-21.2.tar.gz
+Source location: ftp://ftp.warwick.ac.uk/pub/gnu/emacs/
+Build:
+./configure --prefix=$HOME/local --bindir=$HOME/local/bin/`uname -m`
+gmake
+gmake install
+Notes:		 If image libraries (JPEG & XPM) compiled, use also:
+		     --with-xpm --with-jpeg --x-includes=$HOME/local/include
+		     --x-libraries=$HOME/local/lib
+		 CSFB: Use --without-gcc to ./configure
+
+Name:		 Emacs lisp help
+Version:	 21.2.8
+Home page:	 http://www.gnu.org/
+Package name:	 elisp-manual-21-2.8.tar.gz
+Source location: ftp://ftp.warwick.ac.uk/pub/gnu/emacs/
+
+Name:		 xterm (colour)
+Version:	 165
+Home page:	 http://dickey.his.com/xterm/xterm.html
+Package name:	 xterm.tar.gz
+Source location: http://invisible-island.net/xterm/
+		 ftp://dickey.his.com/xterm/
+Build:
+./configure --prefix=$HOME/local --bindir=$HOME/local/bin/`uname -m` --enable-256-color --enable-wide-chars
+gmake
+gmake install
+( cd $HOME/local/bin; mv resize uxterm xterm `uname -m` )
+Notes:		 CSFB: Use CC=cc ./configure ...
+
+Name:		 fvwm2
+Version:	 2.4.6
+Home page:	 http://www.fvwm.org/
+Package name:	 fvwm-2.4.6.tar.gz
+Source location: ftp://ftp.fvwm.org/pub/fvwm/version-2/
+Build:
+./configure --prefix=$HOME/local --bindir=$HOME/local/bin/`uname -m`
+gmake
+gmake install
+Notes:		 If XPM compiled, use also:
+		     --x-includes=$HOME/local/include --x-libraries=$HOME/local/lib
+		 CSFB: Use CC=cc ./configure ...
+
+Name:		 fvwm icons
+Home page:	 http://www.fvwm.org/
+Package name:	 fvwm_icons.tgz
+Build:
+mv fvwm_icons $HOME/local/share/fvwm-icons
+
+Name:		 less
+Version:	 374
+Home page:	 http://www.gnu.org/
+Package name:	 less-374.tar.gz
+Source location: ftp://ftp.warwick.ac.uk/pub/gnu/less/
+Build:
+./configure --prefix=$HOME/local --bindir=$HOME/local/bin/`uname -m`
+gmake
+gmake install
+Notes:		 CSFB: Use CC=cc ./configure ...
+
+Name:		 ls (GNU file-utils)
+Version:	 4.1
+Home page:	 http://www.gnu.org/
+Package name:	 fileutils-4.1.tar.gz
+Source location: ftp://ftp.warwick.ac.uk/pub/gnu/fileutils/
+Build:
+./configure --prefix=$HOME/local --bindir=$HOME/local/bin/`uname -m`
+gmake
+gmake check
+gmake install
+Notes:		 CSFB: Use CC=cc ./configure ...
