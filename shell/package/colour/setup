@@ -3,9 +3,55 @@
 # Setup for colour package
 # Written by Martin Ebourne
 #
-# $Id: setup 792 2003-09-22 11:47:18Z martin $
+# $Id$
 
 add_functions_directory package/colour/functions
+
+if [[ -z $COLOUR ]]
+then
+
+  case $TERM in
+    *xterm*colo(u|)r* | *colo(u|)r*xterm*)
+    COLOUR=1
+    ;;
+
+    *xterm*)
+      # Burn up any typeahead
+      local typeahead="" char="" response=""
+      while read -k -t char
+      do
+        typeahead=="$typeahead$char"
+      done
+
+      # Query XTerm for value of colour 255. If present should return something like:
+      # '\e]4;255;rgb:eeee/eeee/eeee\x07', otherwise nothing
+      stty -echo
+      echo -n '\e]4;255;?\x07'
+      while read -k -t 0.2 char
+      do
+        response="$response$char"
+      done
+      stty echo
+
+      # Watch out for typeahead intermingled with response
+      if [[ $response == *4*\;*2*5*5*\;* ]]
+      then
+        COLOUR=1
+      else
+        COLOUR=0
+      fi
+
+      if (( $#typeahead || $#response > 27 || !COLOUR && $#response ))
+      then
+        echo "WARNING: Lost typeahead characters"
+      fi
+      ;;
+
+    *)
+      COLOUR=0
+      ;;
+  esac
+fi
 
 # Set up the global data
 typeset -gA colours

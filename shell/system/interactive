@@ -3,7 +3,7 @@
 # Generic system-wide setup for interactive use
 # Written by Martin Ebourne
 #
-# $Id: interactive 809 2003-10-06 15:21:04Z martin $
+# $Id$
 
 # Initial config files
 config_if_present system/options
@@ -46,10 +46,7 @@ fi
 backup_history
 
 # Update XTerm title bar with useful info after each command
-if (( XTERM ))
-then
-  package xterm
-fi
+package xterm
 
 # Really fancy multi-line coloured prompt. Will work in non-colour xterm, but too
 # obtrusive in that case, so not enabled

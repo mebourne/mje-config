@@ -3,7 +3,7 @@
 # Generic system-wide setup for ALL shells. This is executed before anything else
 # Written by Martin Ebourne
 #
-# $Id: global 792 2003-09-22 11:47:18Z martin $
+# $Id$
 
 # Make various path like variables keep unique values only. Need to create any that aren't built
 # into the shell. Most of them are also exported
@@ -27,33 +27,6 @@ export ZCONFIGDIR ZUSERCONFIGDIR
 # profiling. Set here because it is of use in scripts, and in profiling the shell
 # configuration
 PROMPT4=': %N:%i %D{%H:%M:%S} {$SECONDS} ; '
-
-# Check for properties of our term type. XTerm & colour are the interesting ones
-case $TERM in
-  *xterm*colo(u|)r* | *colo(u|)r*xterm*)
-    COLOUR=1
-    XTERM=1
-    ;;
-
-  *xterm*)
-    # Generic XTerm may not support colour, but should ignore unrecognised
-    # codes. Difficult to tell otherwise if colour will work. Can override
-    # with environment if required
-    #[[ -z $COLOUR ]] && COLOUR=0
-    [[ -z $COLOUR ]] && COLOUR=1
-    XTERM=1
-    ;;
-
-  rxvt|dtterm|vs100)
-    COLOUR=0
-    XTERM=1
-    ;;
-
-  *)
-    COLOUR=0
-    XTERM=0
-    ;;
-esac
 
 # If ~/.zsh exists as a directory, and a ZDOTDIR has not been specified, then
 # default it to this

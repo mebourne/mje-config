@@ -3,24 +3,39 @@
 # Setup for xterm package
 # Written by Martin Ebourne
 #
-# $Id: setup 792 2003-09-22 11:47:18Z martin $
+# $Id$
 
 add_functions_directory package/xterm/functions
 
-# Register our hooks
-add_to_hook precmd _xterm_precmd
-add_to_hook preexec '_xterm_preexec "$1"'
+if [[ -z $XTERM ]]
+then
+  if [[ $TERM == (*xterm*|rxvt|dtterm|vs100) ]]
+  then
+    XTERM=1
+  else
+    XTERM=0
+  fi
+fi
+
+if (( XTERM ))
+then
+
+  # Register our hooks
+  add_to_hook precmd _xterm_precmd
+  add_to_hook preexec '_xterm_preexec "$1"'
 
 
-## Set up default text values
+  ## Set up default text values
 
-typeset -g xterm_name xterm_title xterm_icon
+  typeset -g xterm_name xterm_title xterm_icon
 
-# This is the default 'name' of the xterm, used for icon text etc.
-xterm_name='xterm'
+  # This is the default 'name' of the xterm, used for icon text etc.
+  xterm_name='xterm'
 
-# This is the default title text, updated after each command
-xterm_title='${xterm_name:+$xterm_name   }%n@%m   Directory: %d ${CLEARCASE_VIEW:+   View: $CLEARCASE_VIEW}'
+  # This is the default title text, updated after each command
+  xterm_title='${xterm_name:+$xterm_name   }%n@%m   Directory: %d ${CLEARCASE_VIEW:+   View: $CLEARCASE_VIEW}'
 
-# This is the default icon text, updated before and after each command
-xterm_icon='${_xterm_command:+%% }${_xterm_command:-$xterm_name $USERNAME[1] %1~}'
+  # This is the default icon text, updated before and after each command
+  xterm_icon='${_xterm_command:+%% }${_xterm_command:-$xterm_name $USERNAME[1] %1~}'
+
+fi
