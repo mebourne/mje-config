@@ -2,14 +2,30 @@
 # Written by Martin Ebourne
 # Part of the Config package
 # Compile shell directory
-# Usage: cfg_compile_shell <directory>
 #
-# $Id: cfg_compile_shell,v 1.4 2001/06/04 18:21:45 mebourne Exp $
+# $Id: cfg_compile_shell,v 1.5 2001/08/09 17:44:30 mebourne Exp $
 
 emulate -LR zsh
 setopt extended_glob
 
-local base_dir="$argv[1]"
+local -A opts
+parse_opts - opts -- "$argv[@]" <<'EOF' || return 1
+Description:
+Compile shell directory.
+
+Usage:
+cfg_compile_shell [options] <directory>
+
+Options:
+  -h, --help			Provide this help
+				# --help | -h
+
+Arguments:
+  <directory>			The directory to compile
+				# directory : directory
+EOF
+
+local base_dir="$opts[directory]"
 
 # Compile all the individual shell files - ie. excluding all in functions directories
 local file

@@ -1,24 +1,43 @@
+#eval compdef -n _parse_opts cfgupdate
 # ZSH function file
 # Written by Martin Ebourne
 # Part of the Config package
 # Update config directory
-# Usage: cfgupdate <directory>
 #
-# $Id: cfgupdate,v 1.13 2001/08/09 09:48:57 mebourne Exp $
+# $Id: cfgupdate,v 1.14 2001/08/09 17:41:44 mebourne Exp $
 
 emulate -LR zsh
 
 local base_dir file_desc remove_pattern ignore_pattern remove_derived compile_command
 
+local -A opts
+parse_opts - opts -- "$argv[@]" <<'EOF' || return 1
+Description:
+Update config directory.
+
+Usage:
+cfgupdate [options] <directory>
+
+Options:
+  -h, --help			Provide this help
+				# --help | -h
+  -n, --no-compile		Do not recompile directory
+				# --no-compile | -n
+
+Arguments:
+  <directory>			The directory to update
+				# directory : ? directory
+EOF
+
 # If path given then use it, else use default base dir
-if [[ $argv[1] == */* ]]
+if [[ $opts[directory] == */* ]]
 then
-  base_dir=$argv[1]
+  base_dir=$opts[directory]
 else
-  base_dir=$config_dir/$argv[1]
+  base_dir=$config_dir/$opts[directory]
 fi
 
-case $argv[1] in
+case $opts[directory] in
   *shell) # This is the default
     file_desc="ZSH configuration system"
     remove_pattern='*~|\#*\#'
@@ -181,7 +200,7 @@ then
 fi
 
 # Execute a compile command if supplied
-if [[ -n $compile_command ]]
+if (( ! opts[no-compile] && $#compile_command ))
 then
   echo
   echo "Compiling directory $base_dir..."
