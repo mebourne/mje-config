@@ -3,30 +3,22 @@
 # Setup for prompt package
 # Written by Martin Ebourne
 #
-# $Id: setup,v 1.12 2001/08/15 16:15:03 mebourne Exp $
+# $Id: setup,v 1.13 2001/08/17 16:45:33 mebourne Exp $
 
 add_functions_directory package/prompt/functions
 
 # Declare work variables
-typeset -g _prompt_pwd _prompt_gap _prompt_justify
-typeset -g _prompt_wrapmode=0 _prompt_clearline _prompt_columns=$COLUMNS
+typeset -g _prompt_pwd _prompt_justify _prompt_wrapmode=0
 
 # Cache terminal handling of line wrapping
-if [[ $(echotc am 2>/dev/null) != yes || $(echotc xn 2>/dev/null) == yes ]]
+if [[ $termcap[am] != yes || $termcap[xn] == yes ]]
 then
   _prompt_wrapmode=1
 fi
 
-# Cache termcap code for clearing line
-_prompt_clearline=$(echotc ce)
-
 # Register our hooks
 add_to_hook precmd _prompt_precmd
-add_to_hook preexec '_prompt_preexec "$1"'
-add_to_hook TRAPWINCH _prompt_winch
-
-# Fake resize event to force setup
-_prompt_winch
+add_to_hook preexec '_prompt_preexec "$argv[1]"'
 
 # Remap ZLE clear-screen widget (Ctrl-L) to a modified version
 zle -N clear-screen _prompt_clear_screen
@@ -34,7 +26,7 @@ zle -N clear-screen _prompt_clear_screen
 
 ## Now we configure the default prompts
 
-typeset -g prompt_above prompt_right
+typeset -g prompt_above prompt_right prompt_eol
 
 # Configure the above line prompt
 colour_setvar prompt_above
@@ -67,3 +59,6 @@ colour_setvar PROMPT2 {bold} '%_> ' {normal}
 colour_setvar PROMPT4
 colour_addvar {grey} ': ' {dark_green} '%N' {grey} ':' {dark_yellow} '%i'
 colour_addvar {grey} ' %D{%H:%M:%S} {$SECONDS} ; ' {white}
+
+# Configure our end of line marker string
+colour_setvar prompt_eol {red} '$' {white}
