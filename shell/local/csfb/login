@@ -4,12 +4,16 @@
 # done, but immediately before the user specific files
 # Written by Martin Ebourne
 #
-# $Id: login,v 1.4 2002/04/10 16:23:55 mebourne Exp $
+# $Id: login,v 1.5 2002/04/25 09:28:51 mebourne Exp $
 
 # CSFB settings
 
 # Default printer
 export PRINTER=p_ln1506
+
+# Perl. Add to start to override /usr/local/bin
+path=(/app/perl5005/bin $path)
+manpath=(/app/perl5005/man $manpath)
 
 # Clearcase
 path=($path /usr/atria/bin /sw/clearcase4/pilot_batch_scripts)
