@@ -6,7 +6,7 @@
 #
 #   use MJE::ParseOpts;
 #
-#   my $opts=new ACE::ParseOpts (<<EOF);
+#   my $opts=new MJE::ParseOpts (<<EOF);
 #   <help text>
 #   EOF
 
@@ -17,7 +17,7 @@ use strict;
 use Data::Dumper;
 
 
-# Create a new ACE::Config object
+# Create a new MJE::Config object
 sub new {
   my ($proto, $helpText, $argv)=@_;
   my $class=ref($proto) || $proto;
