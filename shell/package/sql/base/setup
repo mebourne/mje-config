@@ -3,7 +3,7 @@
 # Setup for SQL base package
 # Written by Martin Ebourne
 #
-# $Id: setup,v 1.7 2001/05/31 11:47:21 mebourne Exp $
+# $Id: setup,v 1.8 2001/05/31 18:41:38 mebourne Exp $
 
 add_functions_directory package/sql/base/functions
 
@@ -38,8 +38,8 @@ alias select="sql select"
 #	     none   - Formatting completely disabled
 #	     simple - Simple formatting keeping the default output style
 #            squash - As simple but reduces column widths to save on screen space
-#	     record - Record style output, row by row [UNIMPLEMENTED]
-#	     emacs  - Emacs style output [UNIMPLEMENTED]
+#	     record - Record style output, row by row
+#	     emacs  - Emacs style output
 # colour   - Colour displayed data based on context (default based on $COLOUR).
 #	     NB. This parameter will only have effect if formatting is enabled
 sqlset count=1 maxrows=0 format=squash colour="${COLOUR:-0}"
