@@ -5,50 +5,33 @@
 # Usage: sitree [-d <dir-name>] <type-name>
 #	 -d	Prefer files within directory if duplicates found (partial name ok)
 #
-# $Id: sitree,v 1.3 2001/04/24 12:48:47 mebourne Exp $
+# $Id: sitree,v 1.4 2001/07/13 17:49:08 mebourne Exp $
 
 [[ -z $sourceinfo_typesdb ]] && { echo "sourceinfo_typesdb not set" ; return 1 }
 
-# Pass through any valid options
-integer invalid=0 default_preferred=1
 local -a options
-while [[ $argv[1] == -* ]]
-do
-  case $argv[1] in
-    -d)
-      if [[ $argv[2] == - ]]
-      then
-        default_preferred=0
-      else
-    	options[$#options+1]=$argv[1]
-    	options[$#options+1]=$argv[2]
-      fi
-      shift 2
-      ;;
 
-    *)
-      invalid=1
-      ;;
-  esac
-done
+# Extract the -d <dir-name> options
+zparseopts -D -E d:=options
 
-# Give help if error with parameters
-if (( ARGC != 1 || invalid ))
-then
-  {
-    echo "Syntax: sitree [-d <dir-name>] <type-name>"
-    echo "  -d    Prefer files within directory if duplicates found (partial name ok)"
-  } 1>&2
-  return 1
-fi
-
-if (( default_preferred ))
+# If no -d options then add all the default ones instead
+if (( !$#options ))
 then
   local dir
   for dir in $sourceinfo_preferred_dirs
   do
     options=($options -d $dir)
   done
+fi
+
+# Give help if error with parameters
+if [[ $ARGC -ne 1 || $argv[1] == -* ]]
+then
+  {
+    echo "Syntax: sitree [-d <dir-name>] <type-name>"
+    echo "  -d    Prefer files within directory if duplicates found (partial name ok)"
+  } 1>&2
+  return 1
 fi
 
 typeInfo.pl -s $options $sourceinfo_typesdb $argv[1]

@@ -3,59 +3,40 @@
 # Part of the SourceInfo package
 # Display type information
 # Usage: sitype [-r] [-d <dir-name>] <type-name>
-#	 -r	Display full type information recursively
 #	 -d	Prefer files within directory if duplicates found (partial name ok)
+#	 -r	Display full type information recursively
 #
-# $Id: sitype,v 1.3 2001/04/24 12:48:36 mebourne Exp $
+# $Id: sitype,v 1.4 2001/07/13 17:49:12 mebourne Exp $
 
 [[ -z $sourceinfo_typesdb ]] && { echo "sourceinfo_typesdb not set" ; return 1 }
 
-# Pass through any valid options
-integer invalid=0 default_preferred=1
 local -a options
-while [[ $argv[1] == -* ]]
-do
-  case $argv[1] in
-    -r)
-      options[$#options+1]=$argv[1]
-      shift
-      ;;
 
-    -d)
-      if [[ $argv[2] == - ]]
-      then
-        default_preferred=0
-      else
-    	options[$#options+1]=$argv[1]
-    	options[$#options+1]=$argv[2]
-      fi
-      shift 2
-      ;;
+# Extract the -d <dir-name> options
+zparseopts -D -E d:=options
 
-    *)
-      invalid=1
-      ;;
-  esac
-done
-
-# Give help if error with parameters
-if (( ARGC != 1 || invalid ))
-then
-  {
-    echo "Syntax: sitype [-r] [-d <dir-name>] <type-name>"
-    echo "  -r    Display full type information recursively"
-    echo "  -d    Prefer files within directory if duplicates found (partial name ok)"
-  } 1>&2
-  return 1
-fi
-
-if (( default_preferred ))
+# If no -d options then add all the default ones instead
+if (( !$#options ))
 then
   local dir
   for dir in $sourceinfo_preferred_dirs
   do
     options=($options -d $dir)
   done
+fi
+
+# Extract remaining options
+zparseopts -D -a options r
+
+# Give help if error with parameters
+if [[ $ARGC -ne 1 || $argv[1] == -* ]]
+then
+  {
+    echo "Syntax: sitype [-r] [-d <dir-name>] <type-name>"
+    echo "  -d    Prefer files within directory if duplicates found (partial name ok)"
+    echo "  -r    Display full type information recursively"
+  } 1>&2
+  return 1
 fi
 
 typeInfo.pl $options $sourceinfo_typesdb $argv[1]
