@@ -2,15 +2,33 @@
 #
 # Parse C++ header files for typedef & class definitions
 # Written by Martin Ebourne. Started 23/02/01
-#
-# Usage: typeInfoGenerate.pl <header-file> ...
 
 use strict;
 use IO::File;
+use MJE::ParseOpts;
+
+use vars qw(@files);
+
+my $opts=new MJE::ParseOpts (<<'EOF') || exit 1;
+Description:
+Parse C++ header files for typedef & class definitions to generate a
+sourceinfo database.
+
+Usage:
+typeInfoGenerate.pl [options] <header-file> ...
+
+Options:
+  -h, --help			Provide this help
+				# --help | -h
+
+Arguments:
+  <header-file> ...		A list of C++ header files to be parsed
+	   			# @files += [1,*] header-file : file
+EOF
 
 my $result=0;
 
-for my $file (@ARGV) {
+for my $file (@files) {
   &processFile($file);
 }
 
