@@ -2,14 +2,14 @@
 # Provide options parsing and help output
 # Usage: parse_opts <argv> <results> [<help>]
 #
-# $Id: parse_opts,v 1.6 2001/08/01 10:37:53 mebourne Exp $
+# $Id: parse_opts,v 1.7 2001/08/01 19:38:19 mebourne Exp $
 
 ### Documentation
 
 
 # todo
 # optional params
-
+# doc ^-$
 
 # This module provides a complete option parsing system, configured entirely
 # from a help string supplied by the user. The help string is free-format text
@@ -82,13 +82,15 @@
 _parse_opts_parsehelp() {
   local -a helptext
 
-  # Process each line in the helptext
+  # Process each line in the helptext. Note double newline (ie. empty line) is
+  # converted to have a space so it doesn't get lost in the splitting
   local line helpline
   local -a paraminfo options
-  for line in ${(f)argv[1]}
+  for line in ${(@f)argv[1]//$'\n\n'/$'\n \n'}
   do
+
     # If it starts with a '#' then its an option description line
-    if [[ $line == [$IFS]#\#* ]]
+    if [[ $line == [[:blank:]]#\#* ]]
     then
       # Decode the description line into fields. Use 'z' not '=' to get proper quote handling
       paraminfo=(${(z)line})
@@ -103,16 +105,42 @@ _parse_opts_parsehelp() {
 	shift paraminfo
       fi
 
-      # Read off all of the aliases for the option until an '='
       options=()
-      while [[ $#paraminfo -ne 0 && $paraminfo[1] != '=' ]]
-      do
-	if [[ $paraminfo[1] != '|' ]]
-	then
-	  options=($options $paraminfo[1])
-	fi
+      local argument=""
+      if [[ $paraminfo[1] == \[*\] ]]
+      then
+
+        # This is taken to be an argument definition
+
+	# Argument specification comes next
+        argument=$paraminfo[1]
 	shift paraminfo
-      done
+
+	# Generate internal option name of tagN
+	options=("arg"$(( $#_po_arguments + 1 )))
+
+	# If the specification is the same as the tag then 'tag =' was
+	# missing, so for arguments we default to the internal option name
+	if [[ $argument == $tag ]]
+	then
+	  tag=$options
+	fi
+
+      else
+
+        # This is taken to be an option name
+
+      	# Read off all of the aliases for the option until an '='
+      	while [[ $#paraminfo -ne 0 && $paraminfo[1] != '=' ]]
+      	do
+	  if [[ $paraminfo[1] != '|' ]]
+	  then
+	    options=($options $paraminfo[1])
+	  fi
+	  shift paraminfo
+      	done
+
+      fi
 
       # Decode the type if provided '= type'. Default to switch
       local type="switch"
@@ -121,22 +149,32 @@ _parse_opts_parsehelp() {
 	type=$paraminfo[2]
       fi
 
-      # Assign all the details for the current options
+      # Assign all the details for the current options/argument
       local option=""
       for option in $options
       do
         _po_tags[$option]=$tag
         _po_types[$option]=$type
-	_po_aliases[$option]=${options:#$option}
 	_po_helplines[$option]=$helpline
+
+	# If its an option then store its aliases in _po_aliases, else store
+	# its argument specification in _po_arguments. Thus this is how then
+	# can be distinguished from each other
+	if [[ -z $argument ]]
+	then
+  	  _po_aliases[$option]=${options:#$option}
+	else
+  	  _po_arguments[$option]=$argument
+	fi
       done
     else
       # Doesn't start with a # so append it to help
       helptext=($helptext $line)
 
-      # If we have a line starting with a '-' then it's an option. So we reset
-      # our current helpline because the description will come after it
-      if [[ $line == [$IFS]#-* ]]
+      # If we have a line which has non-whitespace before any tabs it's an
+      # option or argument or something similar. So we reset our current
+      # helpline because the description will come after it
+      if [[ $line == \ #[[:graph:]]*$'\t'* ]]
       then
         helpline=""
       fi
@@ -145,7 +183,7 @@ _parse_opts_parsehelp() {
       if [[ $line == *$'\t'* ]]
       then
         # Extract the text after any tabs, and trim it of whitespace
-        line=${${line##*$'\t'[$IFS]#}%%[$IFS]}
+        line=${${line##*$'\t'[[:blank:]]#}%%[[:blank:]]}
 	if [[ -n $line ]]
 	then
 	  # Add to current helpline
@@ -163,6 +201,18 @@ _parse_opts_parsehelp() {
   # Create the help string from the array of lines. In order to get a blank
   # line this far it must have a space on it
   _po_helptext=(${(F)helptext})
+
+  # Useful for debugging
+  if (( _po_debug ))
+  then
+    echo "_po_tags=(${(kv)_po_tags})"
+    echo "_po_types=(${(kv)_po_types})"
+    echo "_po_aliases=(${(kv)_po_aliases})"
+    echo "_po_arguments=(${(kv)_po_arguments})"
+    echo "_po_helplines=(${(qqkv)_po_helplines[@]})"
+  fi
+
+  return 0
 }
 
 # This function generates the _arguments call used by the completion system.
@@ -179,7 +229,7 @@ _parse_opts_generatecompletion() {
   # Careful to skip our magic --zsh-completion option
   local -a aliases excludes
   local option
-  for option in ${${(k)_po_types}:#zsh-completion}
+  for option in ${${(k)_po_aliases}:#zsh-completion}
   do
     local spec=""
 
@@ -280,6 +330,46 @@ _parse_opts_generatecompletion() {
   # -S - Handle -- to terminate options
   # -A - No more options after first non-option argument
   echo "_arguments -s -w -S -A '-*' $specs '*:file:_files'"
+
+  return 0
+}
+
+# This helper function stores the given value against the given option name,
+# as defined by its related tag
+_parse_opts_store() {
+  local _po_name="$argv[1]" _po_value="$argv[2]"
+
+  # If tag is of the form [var] then instead assign to real variable.
+  # Note possibility of clashes with our local variables here
+  local _po_tag="$_po_tags[$_po_name]" 
+  if [[ $_po_tag == \[*\] ]]
+  then
+
+    # If external variable then we behave according to its type
+    local _po_var="${${_po_tag#\[}%\]}"
+    case ${(Pt)_po_var} in
+      array*)
+        # An array. Append value
+	eval $_po_var='(${(P)_po_var} $_po_value)'
+	;;
+
+      association*)
+        # An associative array. Add option/value pair. Note option is missing
+        # leading -/--
+	eval $_po_var\[\$_po_name\]='$_po_value'
+	;;
+
+      *)
+        # Some kind of scalar or undefined. Just assign value
+        eval $_po_var='$_po_value'
+        ;;
+    esac
+  else
+    # Store the value against the real option name
+    _po_results[$_po_tag]=$_po_value
+  fi
+
+  return 0
 }
 
 # This helper function for _parse_opts_handletype gets the next value for an
@@ -306,6 +396,8 @@ _parse_opts_getnextvalue() {
       return 1
     fi
   fi
+
+  return 0
 }
 
 # This helper function handles processing of the option type. Any values it
@@ -317,7 +409,7 @@ _parse_opts_getnextvalue() {
 _parse_opts_handletype() {
   local _po_name="$argv[1]" _po_hasgivenvalue="$argv[2]" _po_givenvalue="$argv[3]"
 
-  local _po_tag="$_po_tags[$_po_name]" _po_type="$_po_types[$_po_name]" _po_value
+  local _po_type="$_po_types[$_po_name]" _po_value
   case $_po_type in
     switch)
       # Simple switch. Mark its presence
@@ -365,43 +457,18 @@ _parse_opts_handletype() {
       ;;
   esac
 
-  # If tag is of the form [var] then instead assign to real variable.
-  # Note possibility of clashes with our local variables here
-  if [[ $_po_tag == \[*\] ]]
-  then
-    # If external variable then we behave according to its type
-    local _po_var="${${_po_tag#\[}%\]}"
-    case ${(Pt)_po_var} in
-      array*)
-        # An array. Append value
-	eval $_po_var='(${(P)_po_var} $_po_value)'
-	;;
-
-      association*)
-        # An associative array. Add option/value pair. Note option is missing
-        # leading -/--
-	eval $_po_var\[\$_po_name\]='$_po_value'
-	;;
-
-      *)
-        # Some kind of scalar or undefined. Just assign value
-        eval $_po_var='$_po_value'
-        ;;
-    esac
-  else
-    # Store the value against the real option name
-    _po_results[$_po_tag]=$_po_value
-  fi
+  _parse_opts_store $_po_name $_po_value
 }
 
-# This helper function decodes the command line arguments using the
-# pre-generated option arrays from _parse_opts_parsehelp. Arguments are provided in
-# _po_argv and are removed as and when processed. Decoded options are
-# returned in _po_results. Returns 1 if an error prevented the options from
-# being processed, else 0
+# This helper function decodes any options present in the command line
+# arguments, using the pre-generated option arrays from _parse_opts_parsehelp.
+# Arguments are provided in _po_argv and are removed as and when processed.
+# Decoded options are returned in _po_results. Returns 1 if an error prevented
+# the options from being processed, else 0
 #
 # NB. Locals in this function must begin _po_
-_parse_opts_decode() {
+_parse_opts_do_options() {
+
   # Process each argument while it is an option
   while [[ $_po_argv[1] == -* ]]
   do
@@ -421,7 +488,7 @@ _parse_opts_decode() {
       	local _po_name="${${_po_option#--}%%\=*}"
 
       	# Check to see if the option exists
-      	if [[ -n $_po_tags[$_po_name] ]]
+      	if [[ -n $_po_aliases[$_po_name] ]]
       	then
 
 	  # Check to see if value was in option, ie. --name=value
@@ -454,7 +521,7 @@ _parse_opts_decode() {
 	  _po_optiongroup=${_po_optiongroup#?}
 
       	  # Check to see if is a valid short option
-      	  if [[ -n $_po_tags[$_po_optionletter] ]]
+      	  if [[ -n $_po_aliases[$_po_optionletter] ]]
       	  then
 
 	    # It is so process it as the type determines
@@ -472,13 +539,92 @@ _parse_opts_decode() {
 	;;
     esac
   done
+
+  return 0
+}
+
+# This helper function decodes any arguments present in the command line after
+# the options have been removed, using the pre-generated option arrays from
+# _parse_opts_parsehelp. Arguments are provided in _po_argv and are removed as
+# and when processed. Decoded values are returned in _po_results. Returns 1 if
+# an error prevented the arguments from being processed, else 0
+#
+# NB. Locals in this function must begin _po_
+_parse_opts_do_arguments() {
+
+  # Process each argument specification
+  local _po_name
+  for _po_name in ${(ok)_po_arguments}
+  do
+    local _po_argument="$_po_arguments[$_po_name]"
+
+    integer _po_use=0
+    case $_po_argument in
+      \[<->\]) # Fixed number of arguments. eg. [1]
+        _po_use=${${_po_argument#\[}%\]}
+	;;
+
+      \[\*\]) # All remaining arguments
+        _po_use=$#_po_argv
+	;;
+
+      \[<->,\*\]) # All remaining arguments with minimum
+        _po_use=${${_po_argument#\[}%,*\]}
+	if (( _po_use < $#_po_argv ))
+	then
+          _po_use=$#_po_argv
+	fi
+	;;
+
+      \[<->,<->]) # All remaining arguments with minimum and maximum
+        _po_use=${${_po_argument#\[}%,*\]}
+	if (( _po_use < $#_po_argv ))
+	then
+          _po_use=${${_po_argument#\[*,}%\]}
+	  if (( _po_use > $#_po_argv ))
+	  then
+            _po_use=$#_po_argv
+	  fi
+	fi
+	;;
+
+      *) # This is a configuration error      
+        echo "Unrecognised argument specification for option $_po_name: '$_po_argument'" 1>&2
+        return 1
+	;;
+    esac
+
+    # Check there are a sufficient number of arguments left
+    if (( $#_po_argv >= _po_use ))
+    then
+
+      # Process each of them according to the type
+      repeat $_po_use
+      do
+        _parse_opts_handletype $_po_name 1 $_po_argv[1] || return
+	shift _po_argv
+      done
+    else
+      echo "Insufficient arguments" 1>&2
+      return 1
+    fi
+  done
+
+  # If there's any surplus arguments that's an error
+  if (( $#_po_argv ))
+  then
+    echo "Too many arguments" 1>&2
+    return 1
+  fi
+
+  return 0
 }
 
 # This helper function controls the overall processing
 #
 # NB. Locals in this function must begin _po_
 _parse_opts_process() {
-  local -A _po_tags _po_types _po_aliases _po_helplines
+  local -A _po_tags _po_types _po_aliases _po_arguments _po_helplines
   local _po_helptext
 
   # Check for arguments. If we have one and it is not '-' then it is the help
@@ -497,16 +643,17 @@ _parse_opts_process() {
   # Add hooks for zsh completion system
   _po_tags[zsh-completion]="zshcompletion"
   _po_types[zsh-completion]="switch"
+  _po_aliases[zsh-completion]=""
 
-  # Perform the argument decoding
-  if _parse_opts_decode
+  # Perform the option recognition
+  if _parse_opts_do_options
   then
 
     # If success and help was requested then give it. Note that it is up to
     # the user to supply the help option before we can use it
     if [[ -n $_po_results[help] ]]
     then
-      echo "Usage: $_po_helptext"
+      echo $_po_helptext
       return 1
     fi
 
@@ -519,13 +666,16 @@ _parse_opts_process() {
       return 1
     fi
 
-    # Check number of arguments remaining, if appropriate parameters supplied
-    if (( ARGC >= 2 && $#_po_argv < argv[2] || ARGC >=3 && $#_po_argv > argv[3] ))
+    # Perform the argument recognition
+    if ! _parse_opts_do_arguments
     then
-      echo "Incorrect number of arguments" 1>&2
+
+      # There was an error in processing. Mention the --help option. Assumes the
+      # function supplied one!
       echo "Use --help for more information" 1>&2
       return 1
     fi
+
   else
 
     # There was an error in processing. Mention the --help option. Assumes the
@@ -557,7 +707,6 @@ _parse_opts_process() {
 parse_opts() {
 
   local _po_ext_argv="$argv[1]" _po_ext_results="$argv[2]" _po_config="$argv[3]"
-  local _po_min_args="$argv[4]" _po_max_args="$argv[5]"
 
   # Ensure options are in a known & useful state
   emulate -L zsh
@@ -571,13 +720,15 @@ parse_opts() {
   _po_results=("${(@Pkv)_po_ext_results}")
 
   # Do the work. Only update the external arrays if we succeeded
-  if _parse_opts_process $_po_config $_po_min_args $_po_max_args
+  if _parse_opts_process $_po_config
   then
     eval $_po_ext_argv='($_po_argv)'
     eval $_po_ext_results='("${(@kv)_po_results}")'
   else
     return 1
   fi
+
+  return 0
 }
 
 parse_opts "$argv[@]"
