@@ -3,7 +3,7 @@
 # Generic system-wide setup for interactive use
 # Written by Martin Ebourne
 #
-# $Id: interactive,v 1.7 2001/03/06 17:47:25 mebourne Exp $
+# $Id: interactive,v 1.8 2001/03/06 17:51:11 mebourne Exp $
 
 # Initial config files
 config_if_present system/loadfuncs
@@ -32,8 +32,8 @@ fignore=(\~ % \# .o .d .elc .zwc)
 REPORTTIME=60
 
 # Set up history saving
-HISTSIZE=2000
-SAVEHIST=1000
+HISTSIZE=3000
+SAVEHIST=2000
 HISTFILE=~/.zsh_history
 
 # Check for being in a window (xterm etc). Frilly bits
