@@ -20,8 +20,9 @@ use Data::Dumper;
 #   headerline 	 - True to write out header lines
 #   underline  	 - True to underline header lines (if header line output)
 #   otherline  	 - True to write out non-table lines
-#   newline    	 - True to write newline after table output for readability
 #   align      	 - True to line up columns by padding with spaces
+#   truncate   	 - True to truncate wide columns if requested
+#   printable  	 - True to convert control characters in strings to printable escapes
 #   squash     	 - True to squash column widths to minimum for title/data
 #   compress     - True to compress column widths to minimum for data (truncate title)
 #   separator  	 - Separator character/string used between columns
@@ -37,13 +38,17 @@ use Data::Dumper;
 #   escapeRegexp - Regexp to match data characters which need to be escaped (by doubling up)
 #   quoteRegexp  - Regexp to match data which needs to be quoted (surrounded in double quotes)
 #   exitFn       - Function to be called when all processing is complete
+# External: (These not used directly by TableFormatter.)
+#   newline    	 - True to write newline after table output for readability
+#   rowcount     - True to write count of rows after table output
 my %styles=(
   default => {
     headerline   => 1,
     underline    => 1,
     otherline    => 1,
-    newline      => 1,
     align        => 1,
+    truncate     => 1,
+    printable    => 1,
     squash       => 0,
     compress     => 0,
     separator    => " ",
@@ -52,6 +57,15 @@ my %styles=(
     headerFn     => \&default_printHeader,
     formatFn     => \&default_generateFormat,
     dataFn       => \&default_printData,
+    newline      => 1,
+    rowcount     => 1,
+  },
+  none => {
+    extend       => "default",
+    description  => "No special formatting or colour",
+    truncate     => 0,
+    printable    => 0,
+    colour       => 0,
   },
   simple => {
     extend       => "default",
@@ -73,7 +87,9 @@ my %styles=(
     otherline    => 0,
     underline    => 0,
     align        => 0,
+    truncate     => 0,
     separator    => "\t",
+    rowcount     => 0,
   },
   csv => {
     extend       => "tsv",
@@ -86,12 +102,14 @@ my %styles=(
     extend       => "tsv",
     description  => "BCP compatible output, tab separated columns with no header",
     headerline   => 0,
+    printable    => 0,
     colour       => 0,
   },
   record => {
     extend       => "default",
     description  => "Record style output, row by row",
     headerline   => 0,
+    printable    => 0,
     formatFn     => \&record_generateFormat,
     dataFn       => \&record_printData,
   },
@@ -106,10 +124,32 @@ my %styles=(
     description  => "Output directly to Emacs in forms mode",
     headerline   => 0,
     otherline    => 0,
-    newline      => 0,
     colour       => 0,
     controlFn    => \&emacs_control,
     exitFn       => \&emacs_exit,
+    newline      => 0,
+    rowcount     => 0,
+  },
+);
+
+my %types=(
+  string => {
+    align     => -1,
+    colour    => "\e[38;5;11m",
+    displayFn => \&displayString,
+  },
+  number => {
+    align     => 1,
+    colour    => "\e[38;5;214m",
+  },
+  datetime => {
+    align     => -1,
+    colour    => "\e[38;5;14m",
+  },
+  binary => {
+    align     => -1,
+    colour    => "\e[38;5;214m",
+    displayFn => \&displayBinary,
   },
 );
 
@@ -134,6 +174,7 @@ sub new {
   # User settable
   $self->{colour}=1;
   $self->{screenWidth}=undef;
+  $self->{maxColumnWidth}=undef;
 
   return $self;
 }
@@ -176,6 +217,12 @@ sub setStyle {
   }
 }
 
+sub getStyleInfo {
+  my ($self, $attribute)=@_;
+
+  return $self->{style}->{$attribute};
+}
+
 sub addColumn {
   my ($self, $name, $length, $type)=@_;
 
@@ -189,7 +236,6 @@ sub addColumn {
     titlelength => length($name),
     datalength  => 0,
     type        => $type,
-    align       => $type eq "number" ? 1 : -1,
     needsquote  => 0
       };
 
@@ -208,13 +254,26 @@ sub addRow {
     my $column=$self->{_columns}->[$i];
     my $value=$values[$i];
 
+    if(defined($value) && exists($types{$column->{type}}->{displayFn})) {
+      $value=&{$types{$column->{type}}->{displayFn}}($self,$value);
+    }
+
     if(!defined($value)) {
       $value="NULL";
+    }
+
+    if(defined($self->{maxColumnWidth}) && length($value)>$self->{maxColumnWidth}
+       && $self->{style}->{truncate}) {
+      $value=substr($value,0,$self->{maxColumnWidth}-3) . "...";
     }
 
     # Check for the maximum datalength
     if(length($value)>$$column{datalength}) {
       $$column{datalength}=length($value);
+
+      if($$column{datalength}>$$column{length}) {
+	$$column{length}=$$column{datalength};
+      }
     }
 
     # Check if any special characters which may need quoting are present
@@ -243,11 +302,6 @@ sub display {
 
   # Write the output
   &{$self->{style}->{controlFn}}($self,$self->{_columns},$self->{_rows});
-
-  # Ensure a newline is present. Helps make desc output easier to read
-  if($self->{style}->{newline}) {
-    print "\n";
-  }
 
   # Call any exit function
   if(exists($self->{style}->{exitFn})) {
@@ -324,19 +378,9 @@ sub default_generateFormat {
 
     # Write a '%<num>s' entry as appropriate
     my $column=$$columns[$x];
-    my $align=$$column{align};
-    $align=-1 if !defined($align);
 
     if($self->{colour}) {
-      my $type=$$column{type};
-      $type="string" if !defined($type);
-      if($type eq "string") {
-	$format.="\e[38;5;11m";
-      } elsif($type eq "number") {
-	$format.="\e[38;5;214m";
-      } elsif($type eq "datetime") {
-	$format.="\e[38;5;14m";
-      }
+      $format.=$types{$$column{type}}->{colour};
     }
 
     if($$column{needsquote}) {
@@ -344,7 +388,7 @@ sub default_generateFormat {
     }
     $format.="%";
     if($self->{style}->{align}) {
-      $format.=$align*$$column{length};
+      $format.=$types{$$column{type}}->{align}*$$column{length};
     }
     $format.="s";
     if($$column{needsquote}) {
@@ -432,15 +476,7 @@ sub record_generateFormat {
     $format.="\e[38;5;15m" if $self->{colour};
     $format.=": ";
     if($self->{colour}) {
-      my $type=$$column{type};
-      $type="string" if !defined($type);
-      if($type eq "string") {
-	$format.="\e[38;5;11m";
-      } elsif($type eq "number") {
-	$format.="\e[38;5;214m";
-      } elsif($type eq "datetime") {
-	$format.="\e[38;5;14m";
-      }
+      $format.=$types{$$column{type}}->{colour};
       $format.="\e[48;5;233m";
     }
     $format.="%-" . $$column{datalength} . "s";
@@ -506,15 +542,7 @@ sub rows_control {
 	  $format.=$separator;
 	}
 	if($self->{colour}) {
-	  my $type=$$column{type};
-	  $type="string" if !defined($type);
-	  if($type eq "string") {
-	    $format.="\e[38;5;11m";
-	  } elsif($type eq "number") {
-	    $format.="\e[38;5;214m";
-	  } elsif($type eq "datetime") {
-	    $format.="\e[38;5;14m";
-	  }
+	  $format.=$types{$$column{type}}->{colour};
 	  $format.="\e[48;5;233m";
 	}
 	$format.="%-*s";
@@ -596,6 +624,29 @@ sub emacs_exit {
   for my $file (@allFiles) {
     unlink $file;
   }
+}
+
+
+## Private utility methods
+
+sub displayString {
+  my ($self, $value)=@_;
+
+  if($self->{style}->{printable}) {
+    $value=~s/([\x00-\x1f])/^$1/g;
+    $value=~y/[\x00-\x1f]/[@A-Z]/;
+  }
+  return $value;
+}
+
+sub displayBinary {
+  my ($self, $value)=@_;
+
+  my $text="0x";
+  for(my $i=0;$i<length($value);$i++) {
+    $text.=sprintf("%02x",ord(substr($value,$i,1)));
+  }
+  return $text;
 }
 
 return 1;
