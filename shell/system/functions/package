@@ -2,7 +2,7 @@
 # ZSH function file
 # Load a package which is part of the configuration system
 #
-# $Id: package,v 1.10 2001/08/03 11:49:06 mebourne Exp $
+# $Id: package,v 1.11 2001/10/08 13:34:58 mebourne Exp $
 
 local basedir=$ZCONFIGDIR/package
 
@@ -33,6 +33,8 @@ Arguments:
   [<package-name>]		Optional name of package to load. If not provided then
 				list currently loaded packages instead
 				# package = [0,1] package-name : values=packages
+##excludes mutual -*
+##excludes both -h -L : package-name
 EOF
 
 if [[ -n $package ]]
