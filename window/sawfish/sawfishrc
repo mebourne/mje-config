@@ -1,0 +1,69 @@
+;; -*- emacs-lisp -*-
+
+;;; Load packages
+
+;; Load regular defaults
+(require 'sawmill-defaults)
+
+;; For specific window matching
+(require 'sawfish.wm.ext.match-window)
+
+;; For window snooper on window-ops menu
+(require 'sawfish.wm.ext.window-snooper)
+
+;; Allow click to focus in addition to point to focus
+(require 'click-focus)
+
+
+;;; Menu changes
+
+;; Add entries to window-ops menu
+(rplacd (nthcdr 2 window-ops-menu)
+	`(("Kill program" kill-client)
+	  ("Snoop" window-snooper)
+          ,@(nthcdr 3 window-ops-menu)))
+
+;; Replace restart on root menu (taken off when running Gnome)
+(let ((restart (rassoc '(restart) root-menu)))
+  (when (null restart)
+    (nconc root-menu `(()
+		       (,(_ "_Restart Sawfish") restart)))
+    ))
+
+
+;;; Binding changes
+
+;; Map back button to lower window
+(def-frame-class back-button '()
+  (bind-keys back-button-keymap
+	     "Button1-Off" 'lower-window))
+
+
+;;; Appearance
+
+;; Set font
+(custom-set-typed-variable (quote default-font)
+			   (quote ("Xft" . "NewsGoth Dm BT:size=9.5"))
+			   (quote font))
+
+;; Decorate transients
+(setq decorate-transients t)
+
+
+;;; Enable direct window selection & window numbering
+(load "wid")
+(add-hook 'wid-widability-hook
+	  (lambda (win)
+	    (and (not (equal (aref (get-x-text-property win 'WM_CLASS) 1)
+			     "Panel"))
+		 (not (equal (aref (get-x-text-property win 'WM_CLASS) 1)
+			     "Xrus")))))
+
+
+;;; Special window behaviours
+
+;; Force gnome panel to be on top (including 'drawer')
+(add-window-matcher 'WM_CLASS "Panel" '(depth . 1))
+
+;; Centre Evolution splash etc windows
+(add-window-matcher 'WM_CLASS "xterm" '(place-mode . best-fit))
