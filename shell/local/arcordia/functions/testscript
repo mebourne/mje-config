@@ -2,7 +2,7 @@
 # Pre-filter to testscript to ensure the APPNAME env is set up correctly
 # Usage: testscript <options>
 #
-# $Id: testscript,v 1.4 2001/08/28 15:21:47 mebourne Exp $
+# $Id: testscript,v 1.5 2001/08/29 16:34:44 mebourne Exp $
 
 # Handle special environments where component is eg. deu4
 local prefix
@@ -37,6 +37,9 @@ if [[ -n $prefix && -n $instance ]]
 then
   instance="$prefix$instance"
 fi
+
+# temporary don't set this
+instance=""
 
 # Warn if the user has set this explicitly & it is different
 if [[ -n $AINF_DB_APPNAME && $AINF_DB_APPNAME != $appname ]]
