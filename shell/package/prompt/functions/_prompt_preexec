@@ -3,13 +3,19 @@
 # Hook for preexec function
 # Usage: _prompt_precmd
 #
-# $Id: _prompt_preexec,v 1.5 2001/03/08 17:52:20 mebourne Exp $
+# $Id: _prompt_preexec,v 1.6 2001/03/08 18:36:37 mebourne Exp $
 
 local command="$1"
 
-# Calculate the number of rows used by the command line (including left prompt)
-local rows
-(( rows = 1 + ( ${#${(%%)${PROMPT//[%]\{[^%]#%\}/}}} + $#command ) / COLUMNS ))
+# Calculate the number of rows used by the command line (including left prompt).
+# Note that the combined line is split into logical rows according to any
+# incorporated newlines, and these are summed up individually
+local lastrow lastrows=0 rows=0
+for lastrow in ${(f)${(%%)${PROMPT//[%]\{[^%]#%\}/}}}${(f)command}
+do
+  (( lastrows = 1 + $#lastrow / COLUMNS ))
+  (( rows += lastrows ))
+done
 
 # Move up the required number of rows to get to the start of the command line
 repeat $rows
@@ -17,20 +23,26 @@ do
   echotc up
 done
 
+# Modify command to put a clear to end of line before each newline incorporated.
+# This is in case there were any secondary prompts midway, helps remove the
+# clutter, though not guaranteed to be perfect
+command=${command//$'\n'/$(echotc ce)$'\n'}
+
 
 ## Redraw the command line
 
 # First the left prompt
 echo -n "${(%%)PROMPT}"
 
-# Then the command in bold
+# Then the command in bold. Don't let echo parse any escape sequences in command
 echo -n "\e[$prompt_colours[bold]m"
 echo -nE "$command"
 echo -n "\e[$prompt_colours[normal]m"
 
-# Then the padding to right justify the right prompt
-echo -n "$_prompt_gap[$[ ${#${(%%)${PROMPT//[%]\{[^%]#%\}/}}} + $#command
-                         + ${#${(%%)${prompt_right//[%]\{[^%]#%\}/}}} - COLUMNS * rows ],-1]"
+# Then the padding to right justify the right prompt. Only use last logical row of
+# command for this calculation
+echo -n "$_prompt_gap[$[ $#lastrow
+                         + ${#${(%%)${prompt_right//[%]\{[^%]#%\}/}}} - COLUMNS * lastrows ],-1]"
 
 # Then the right prompt
 echo "${(%%)prompt_right}"
