@@ -3,7 +3,7 @@
 # Set up all the autoloaded functions. This is executed for all shells very early on
 # Written by Martin Ebourne
 #
-# $Id: loadfuncs,v 1.2 2001/02/13 10:23:16 mebourne Exp $
+# $Id: loadfuncs,v 1.3 2001/02/13 10:55:34 mebourne Exp $
 
 # This file can be included more than once. Only execute it once though
 if functions add_functions_directory >/dev/null
@@ -31,7 +31,7 @@ else
       setopt null_glob
       local files
       files=($newdir/*(.))
-      files=(${files##*/})
+      files=(${files:t})
       files=(${files:#*~})
       files=(${files:#\#*\#})
 
