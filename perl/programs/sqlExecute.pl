@@ -231,6 +231,14 @@ sub main {
 
 	$formatter->addRow(@data);
 	$rows++;
+
+	# Report number of rows received if we have a lot of results
+	if(($rows%100)==0 && $tty) {
+	  my $old=$|;
+	  $|=1;
+	  print "Received $rows rows...\r";
+	  $|=$old;
+	}
       }
       if(defined($sth->err))
       {
