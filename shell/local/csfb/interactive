@@ -1,0 +1,70 @@
+# ZSH configuration file
+# Executed for interactive shells via zshrc
+# Local site-specific setup for interactive shells. Run after all system setup has been
+# done, but immediately before the user specific files
+# Written by Martin Ebourne
+#
+# $Id: interactive,v 1.1 2002/03/18 15:42:58 mebourne Exp $
+
+# CSFB settings
+
+# Add to default CDPATH
+#cdpath=($cdpath /vobs/odyssey/cashsec)
+
+# CD vars. Pull in all the vobs available. Add them straight to the hash table
+# to reduce environment variable clutter
+#local dir
+#for dir in /vobs/odyssey/* /home/odyssey/nahmed/Cronjob/prodquery
+#do
+#  dir=${dir%/}
+#  hash -d ${dir:t}=$dir
+#done
+
+# Include useful packages
+package clearcase
+package sourceinfo
+package sql
+
+# Setup for SourceInfo package
+#sourceinfo_sourcecode_dirs=(
+#  /vobs/odyssey/ac
+#  /vobs/odyssey/busutils
+#  /vobs/odyssey/cashsec
+#  /vobs/odyssey/qm
+#  /vobs/odyssey/refdata
+#  /vobs/odyssey/services
+#  /vobs/odyssey/shared
+#  /vobs/odyssey/system
+#  /vobs/odyssey/xdg
+#  ~/config/shell
+#  ~/config/emacs
+#)
+#sourceinfo_preferred_dirs=(
+#  /vobs/odyssey/cashsec
+#  /vobs/odyssey/ac
+#  /vobs/odyssey/refdata
+#  /vobs/odyssey/services
+#  /vobs/odyssey/xdg
+#  /vobs/odyssey/shared
+#  /vobs/odyssey/busutils
+#  /vobs/odyssey/system/rogue7.0.3
+#  /vobs/odyssey/system
+#  /vobs/odyssey/qm
+#)
+
+# Setup SQL db environment
+local dbfile="${ZDOTDIR:-$HOME}/.zshdb"
+if [[ ${ZDOTDIR:-$HOME} != $HOME ]]
+then
+  dbfile=$ZDOTDIR/.db
+fi
+if [[ -r $dbfile ]]
+then
+  [[ -n $ZCONFIGDEBUG ]] && echo "Loading config file ${dbfile:t}"
+  . $dbfile
+fi
+
+# Show SQL settings in prompt
+#add_to_hook sqlset _sql_prompt_update
+#_sql_prompt_update
+#prompt_above=${prompt_above/_sql_prompt\}/_sql_prompt\}\${\${_sql_prompt#\$DB_ENV \$DB_COM}:+ \[\$DB_ENV \$DB_COM]}}
