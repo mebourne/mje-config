@@ -1,0 +1,25 @@
+# ZSH function file
+# Part of the SQL Sybase package
+# Enter an SQL command via Perl DBI
+# For use only by the SQL packages
+#
+# $Id: _sybase_execute_dbi,v 1.1 2002/05/28 13:26:46 mebourne Exp $
+
+if [[ -z $_sql_parameters[user] ]]
+then
+  echo "Error: SQL user variable not set" 1>&2
+  return 1
+fi
+
+# Build the connect string
+local -a connect
+connect=(
+  ${_sql_parameters[server]:+server=$_sql_parameters[server]}
+  ${_sql_parameters[database]:+database=$_sql_parameters[server]}
+)
+
+$_sql_dbiprogram --driver=Sybase \
+                 ${connect:+--connect=${(j:;:)connect}} \
+                 --user=$_sql_parameters[user] \
+                 ${_sql_parameters[password]:+--password=$_sql_parameters[password]} \
+                 "$argv[@]"

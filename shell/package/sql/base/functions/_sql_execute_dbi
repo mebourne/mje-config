@@ -1,0 +1,19 @@
+# ZSH function file
+# Part of the SQL base package
+# Enter an SQL command via Perl DBI
+# For use only by the SQL packages
+#
+# $Id: _sql_execute_dbi,v 1.1 2002/05/28 13:26:46 mebourne Exp $
+
+if [[ -z $_sql_parameters[user] ]]
+then
+  echo "Error: SQL user variable not set" 1>&2
+  return 1
+fi
+
+# Upper case the vendor name and try it as the driver. Use server for connect string
+$_sql_dbiprogram --driver=${(U)_sql_parameters[vendor][1]}${_sql_parameters[vendor][2,-1]} \
+                 ${_sql_parameters[server]:+--connect=$_sql_parameters[server]} \
+                 --user=$_sql_parameters[user] \
+                 ${_sql_parameters[password]:+--password=$_sql_parameters[password]} \
+                 "$argv[@]"
