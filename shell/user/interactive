@@ -3,10 +3,13 @@
 # User's own setup for interactive shells. Run after all other setup has been done
 # Written by Martin Ebourne
 #
-# $Id: interactive,v 1.9 2001/08/29 16:39:01 mebourne Exp $
+# $Id: interactive,v 1.10 2002/04/12 08:53:55 mebourne Exp $
 
 # Get the normal XPG4 standards commands rather than the strange sun ones
 override_commands /usr/xpg4/bin /bin /usr/bin /usr/ucb /usr/ccs/bin
+
+# For CSFB remove make alias to xpg4 since it crashes
+unalias make
 
 # Version control etc. for config system
 package config
