@@ -10,9 +10,9 @@ then
   return 1
 fi
 
-psql -q -U $_sql_parameters[user] \
-     ${_sql_parameters[password]:+-W $_sql_parameters[password]} \
-     ${_sql_parameters[host]:+-h $_sql_parameters[host]} \
-     ${_sql_parameters[port]:+-p $_sql_parameters[port]} \
-     ${_sql_parameters[database]:+-d $_sql_parameters[database]} \
+psql -q -U$_sql_parameters[user] \
+     ${_sql_parameters[password]:+-W$_sql_parameters[password]} \
+     ${_sql_parameters[host]:+-h$_sql_parameters[host]} \
+     ${_sql_parameters[port]:+-p$_sql_parameters[port]} \
+     ${_sql_parameters[database]:+-d$_sql_parameters[database]} \
      "$argv[@]"

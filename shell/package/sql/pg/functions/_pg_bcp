@@ -1,0 +1,21 @@
+# ZSH function file
+# Part of the SQL PostgreSQL package
+# Execute a block copy command
+# For use only by the SQL packages
+#
+# $Id$
+
+if [[ -z $_sql_parameters[user] ]]
+then
+  echo "Error: SQL user variable not set" 1>&2
+  return 1
+fi
+
+local table="$argv[1]" inout="$argv[2]" file="$argv[3]"
+
+if [[ $inout == "out" ]]
+then
+  echo "\\\\copy $table to $file" | _pg_interactive
+else
+  echo "\\\\copy $table from $file" | _pg_interactive
+fi

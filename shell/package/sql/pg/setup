@@ -8,6 +8,7 @@
 add_functions_directory package/sql/pg/functions
 
 _sql_functions[pg:_desc]=_pg__desc
+_sql_functions[pg:bcp]=_pg_bcp
 _sql_functions[pg:desc]=_pg_desc
 _sql_functions[pg:fetch_columns]=_pg_fetchcolumns
 _sql_functions[pg:fetch_funcs]=_pg_fetchfuncs
@@ -18,6 +19,6 @@ _sql_functions[pg:fetch_types]=_pg_fetchtypes
 _sql_functions[pg:fetch_synonyms]=_pg_fetchsynonyms
 _sql_functions[pg:init]=true
 _sql_functions[pg:interactive]=_pg_interactive
-_sql_functions[pg:execute_dbi]=_pg_execute_dbi
+_sql_functions[pg:execute_dbi]=_sql_execute_dbi
 _sql_functions[pg:execute_native]=_pg_execute
 _sql_functions[pg:dbi_params]=_pg_dbiparams
