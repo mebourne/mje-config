@@ -1,11 +1,21 @@
 ;; Emacs configuration file
 ;; Custom definitions
 ;; Written by Martin Ebourne
-;; $Id: custom.el,v 1.1 2001/05/11 17:31:38 mebourne Exp $
+;; $Id: custom.el,v 1.2 2002/03/26 17:13:15 mebourne Exp $
 
 (custom-set-variables
- '(browse-url-browser-function (quote browse-url-w3))
  '(initial-scratch-message nil)
+ '(visible-bell t)
+
+ '(speedbar-frame-parameters (quote ((minibuffer . nil)
+				     (unsplittable . t)
+				     (menu-bar-lines . 0)
+				     (border-width . 0)
+				     (top . 20)
+				     (left . 762)
+				     (width . 55)
+				     (user-position . t))))
+
  '(jde-auto-parse-buffer-interval 30)
  '(jde-bug-jdk-directory "/opt/jdk-1.2.2")
  '(jde-bug-jpda-directory "/home/ebourm/local/sun4u/jpda")
@@ -37,16 +47,13 @@
  '(jde-run-working-directory "/home/ebourm/cruise/java/com/gs/fw/reg/cruise")
  '(jde-use-font-lock nil)
  '(jde-wiz-import-excluded-packages (quote ("bsh.*" "java.lang.*")))
- '(speedbar-frame-parameters (quote ((minibuffer) (width . 60) (border-width . 0) (menu-bar-lines . 0) (unsplittable . t) (top . 0) (left . 734) (user-position . t))))
- '(speedbar-obj-do-check nil)
- '(speedbar-tag-hierarchy-method (quote (speedbar-trim-words-tag-hierarchy speedbar-prefix-group-tag-hierarchy speedbar-sort-tag-hierarchy)))
- '(speedbar-vc-do-check nil)
+
+ '(browse-url-browser-function (quote browse-url-w3))
  '(url-automatic-caching t)
  '(url-be-asynchronous t)
  '(url-honor-refresh-requests (quote (quote ask)))
  '(url-keep-history t)
  '(url-privacy-level (quote (email lastloc)))
  '(url-proxy-services (quote (("http" . "proxyext.web.gs.com:82"))))
- '(visible-bell t)
  '(w3-user-colors-take-precedence nil)
  )
