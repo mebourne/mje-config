@@ -3,7 +3,7 @@
 # Created April 1996
 #
 # Settings by Martin Ebourne
-# $Id: fvwm2rc 792 2003-09-22 11:47:18Z martin $
+# $Id$
 
 ##########################################################################
 # PATH Setup
@@ -309,7 +309,7 @@ Key F8		A	MC	Prev [*] focus
 
 # Define the buttons to use.....
 *FvwmButtons (1x8 Swallow "FvwmPager" 'Module FvwmPager 0 1')
-*FvwmButtons (1x2 Title "bin1" Swallow "xload_bin1" 'Exec rsh gdd-odybin1 exec xload -bg gray70 -nolabel -update 15 -t xload_bin1 -jumpscroll 1 -display $DISPLAY &')
+#*FvwmButtons (1x2 Title "bin1" Swallow "xload_bin1" 'Exec rsh gdd-odybin1 exec xload -bg gray70 -nolabel -update 15 -t xload_bin1 -jumpscroll 1 -display $DISPLAY &')
 *FvwmButtons (1x2 Title "bin2" Swallow "xload_bin2" 'Exec rsh gdd-odybin2 exec xload -bg gray70 -nolabel -update 15 -t xload_bin2 -jumpscroll 1 -display $DISPLAY &')
 
 ############################################################################
