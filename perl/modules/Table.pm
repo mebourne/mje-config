@@ -53,7 +53,11 @@ sub formatTable {
     for(my $x=0;$x<@$line;$x++) {
       my $value=$line->[$x];
 
-      $result.=sprintf("%-*s",$widths[$x]+3,defined($value) ? $value : "");
+      if($x+1<@$line) {
+	$result.=sprintf("%-*s",$widths[$x]+3,defined($value) ? $value : "");
+      } elsif(defined($value)) {
+	$result.=$value;
+      }
     }
     $result.="\n";
   }
