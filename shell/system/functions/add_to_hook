@@ -1,0 +1,18 @@
+# ZSH function file
+# Add command to function if not already present. Makes a function
+# usable as a hook a al emacs
+# Usage: add_to_hook <function-name> <command> ...
+#
+# $Id: add_to_hook,v 1.1 2001/03/02 15:06:30 mebourne Exp $
+
+if (( ARGC < 2 ))
+then
+  echo "Syntax add_to_hook <function-name> <command> ..." 1>&2
+  return 1
+fi
+
+local funcname=$argv[1] command="$argv[2,-1]"
+
+functions[$funcname]="${functions[$funcname]//$command}
+$command
+"
