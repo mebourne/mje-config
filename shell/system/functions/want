@@ -2,12 +2,13 @@
 # ZSH function file
 # Halt a shell, waiting for a trigger (supplied by 'go')
 #
-# $Id: want,v 1.4 2002/04/23 10:20:55 mebourne Exp $
+# $Id: want,v 1.5 2002/04/24 17:03:58 mebourne Exp $
 
 local -A opts
 parse_opts - opts -- "$argv[@]" <<'EOF' || return 1
 Description:
-Halt a shell, waiting for a trigger (supplied by 'go')
+Halt a shell, waiting for a trigger (supplied by 'go'). The semaphore will
+normally be removed after it is found.
 
 Usage:
 want [options] <semaphore>
@@ -15,6 +16,11 @@ want [options] <semaphore>
 Options:
   -h, --help			Provide this help
 				# --help | -h * excludes=*
+  -m, --missing			Succeed only when the semaphore is missing
+				# --missing | -m
+  -t, --test			Test only - sets return code instead of
+				waiting, doesn't delete semaphore
+				# --test | -t
 
 Arguments:
   <semaphore>			Name of semaphore to wait for
@@ -29,15 +35,29 @@ fi
 
 local file="$semaphore_base$opts[semaphore]"
 
-print -P "Waiting on semaphore '$opts[semaphore]' at %D{%a %f %b %Y %H:%M:%S}"
+# Invert operation if missing is requested
+local invert="" missing=""
+if (( opts[missing] ))
+then
+  invert="!"
+  missing="missing "
+fi
 
-# 'go' will write the file we are watching for
-while [[ ! -e $file ]]
-do
-  sleep 5
-done
+if (( opts[test] ))
+then
+  # Return 0 if semaphore is there (or missing if requested)
+  return $(eval "[[ $invert -e \$file ]]")
+else
+  print -P "Waiting on ${missing}semaphore '$opts[semaphore]' at %D{%a %f %b %Y %H:%M:%S}"
 
-# Tidy up
-rm -f $file
+  # 'go' will write the file we are watching for
+  while eval "[[ $invert ! -e \$file ]]"
+  do
+   sleep 5
+  done
 
-print -P "Received semaphore '$opts[semaphore]' at %D{%a %f %b %Y %H:%M:%S}"
+  # Tidy up
+  rm -f $file
+
+  print -P "Received ${missing}semaphore '$opts[semaphore]' at %D{%a %f %b %Y %H:%M:%S}"
+fi
