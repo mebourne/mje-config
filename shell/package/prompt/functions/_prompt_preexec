@@ -3,18 +3,14 @@
 # Hook for preexec function
 # Usage: _prompt_precmd
 #
-# $Id: _prompt_preexec,v 1.13 2001/05/09 16:45:20 mebourne Exp $
+# $Id: _prompt_preexec,v 1.14 2001/08/17 16:47:55 mebourne Exp $
 
 local command="$1"
 
-if (( COLUMNS != _prompt_columns ))
-then
-  _prompt_winch
-fi
-
 # Calculate the number of rows used by the command line (including left prompt).
 # Note that the combined line is split into logical rows according to any
-# incorporated newlines, and these are summed up individually
+# incorporated newlines, and these are summed up individually. lastrows is the
+# number of physical rows used by the last logical row
 local lastrow lastrows=0 rows=0
 for lastrow in "${(f)${(%%)${PROMPT//[%]\{[^%]#%\}/}}}${(f)command}"
 do
@@ -22,23 +18,20 @@ do
   (( rows += lastrows ))
 done
 
-# Move up the required number of rows to get to the start of the command line
-repeat $rows
-do
-  echotc up
-done
-
 # Modify command to put a clear to end of line before each newline incorporated.
 # This is in case there were any secondary prompts midway, helps remove the
 # clutter, though not guaranteed to be perfect
-command=${command//$'\n'/$_prompt_clearline$'\n'}
+command=${command//$'\n'/$termcap[ce]$'\n'}
 
 
 ## Redraw the command line
 
+# Move up the required number of rows to get to the start of the command line
+echo -n - "${${(l:rows:::::)}// /$termcap[up]}"
+
 # First the left prompt
 echotc cr
-echo -n - "${(%%)PROMPT}"
+print -nP - $PROMPT
 
 # Then the command in bold. Don't let echo parse any escape sequences in command
 echo -n - "$colour_start$colours[bold]$colour_end"
@@ -47,11 +40,11 @@ echo -n - "$colour_start$colours[normal]$colour_end"
 
 # Then the padding to right justify the right prompt. Only use last logical row of
 # command for this calculation
-echo -n - "$_prompt_gap[$[ $#lastrow
-                         + ${#${(%%)${prompt_right//[%]\{[^%]#%\}/}}} - COLUMNS * lastrows ],-1]"
+echo -n - "${(l:COLUMNS * lastrows - $#lastrow
+              - ${#${(%%)${prompt_right//[%]\{[^%]#%\}/}}}:::::)}"
 
 # Then the right prompt
-echo -n - "${(%%)prompt_right}"
+print -nP - $prompt_right
 
 # May need a newline depending on terminal
 if (( _prompt_wrapmode ))
