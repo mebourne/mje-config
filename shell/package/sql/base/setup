@@ -3,7 +3,7 @@
 # Setup for SQL base package
 # Written by Martin Ebourne
 #
-# $Id: setup,v 1.15 2002/04/11 11:47:38 mebourne Exp $
+# $Id: setup,v 1.16 2002/04/19 16:44:25 mebourne Exp $
 
 add_functions_directory package/sql/base/functions
 
@@ -23,9 +23,11 @@ compdef -n _parse_opts ${_sql_formatprogram:t}
 zstyle ':completion:*:match:sql:*' tag-order '! table-aliases'
 
 # Bind special keys for SQL quoting
-zle -N sql_quote _sql_quote
+zle -N sql_self_insert_quoted _sql_self_insert_quoted
 zle -N sql_quote_line _sql_quote_line
-bindkey "\'" sql_quote
+bindkey "\'" sql_self_insert_quoted
+bindkey "(" sql_self_insert_quoted
+bindkey ")" sql_self_insert_quoted
 bindkey "^Xq" sql_quote_line
 
 # This is an ignored command, just used as a hint to the SQL widget functions
