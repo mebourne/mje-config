@@ -5,13 +5,18 @@
 # Completion code for desc command
 # Usage: These functions are used by the completion code
 #
-# $Id: _desc,v 1.1 2001/02/26 18:37:50 mebourne Exp $
+# $Id: _desc,v 1.2 2001/03/23 12:30:32 mebourne Exp $
 
-_desc () {
+local ret=1
+
+if _sql_call -t _desc
+then
+  _sql_call _desc && ret=0
+else
   if (( CURRENT == 2 ))
   then
-    _sql_complete_table_names
+    _sql_complete_table_names && ret=0
   fi
-}
+fi
 
-_desc "$@"
+return $ret
