@@ -26,13 +26,14 @@ sub main {
 
   my $style=$ARGV[0];
 
-  if(@ARGV!=1 || $style!~/^(simple|squash|record|emacs)$/) {
+  if(@ARGV!=1 || $style!~/^(simple|squash|bcp|record|emacs)$/) {
     print STDERR
 	"Syntax: sqlformat.pl [-c] <style>
-  -c	Colour output
+  -c	Colour output (ignored for bcp and emacs)
   style One of:
 	simple - Simple formatting keeping the default output style
 	squash - As simple but reduces column widths to save on screen space
+        bcp    - BCP compatible output, tab separated columns with no header
 	record - Record style output, row by row
 	emacs  - Output directly to Emacs in forms mode
 ";
@@ -70,6 +71,11 @@ sub main {
 	  my $format=&simple_generateFormat(\@columns);
 	  &simple_printData($format,\@rows);
 	}
+      } elsif ($style eq "bcp") {
+	if(@rows) {
+	  my $format=&bcp_generateFormat(\@columns);
+	  &bcp_printData($format,\@rows);
+	}
       } elsif ($style eq "record") {
 	if(@rows) {
 	  my $format=&record_generateFormat(\@columns);
@@ -87,7 +93,7 @@ sub main {
       }
     } else {
       # Not a table header, so just print the line
-      if($style ne "emacs") {
+      if($style ne "bcp" && $style ne "emacs") {
 	print "$thisLine";
       }
     }
@@ -322,6 +328,34 @@ sub simple_printData {
     printf $format, @$row;
 
     print "\e[48;5;0m" if $colour;
+    print "\n";
+  }
+}
+
+# Generate a printf format string for printing a row
+sub bcp_generateFormat {
+  my ($columns)=@_;
+
+  # Process each column
+  my $format="";
+  my $x;
+  for($x=0;$x<@$columns;$x++) {
+    if($x) {
+      $format.="\t";
+    }
+    $format.="%s";
+  }
+
+  return $format;
+}
+
+# Print the data
+sub bcp_printData {
+  my ($format, $rows)=@_;
+
+  # Print each row with the precalculated format
+  for my $row (@$rows) {
+    printf $format, @$row;
     print "\n";
   }
 }
