@@ -3,7 +3,7 @@
 # Setup for clearcase package
 # Written by Martin Ebourne
 #
-# $Id: setup,v 1.4 2001/03/05 18:40:39 mebourne Exp $
+# $Id: setup,v 1.5 2001/03/16 12:44:03 mebourne Exp $
 
 if [[ -n "$CLEARCASE_ROOT" ]]
 then
@@ -13,5 +13,3 @@ fi
 add_functions_directory package/clearcase/functions
 
 alias ct=cleartool
-
-compdef -a _cleartool cleartool
