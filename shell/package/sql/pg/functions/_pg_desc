@@ -4,4 +4,4 @@
 # For use only by the SQL packages
 #
 
-interface=native sql "\\d $argv[1]"
+echo "\\d $argv[1]" | _pg_interactive
