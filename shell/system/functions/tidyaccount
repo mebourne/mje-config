@@ -4,7 +4,7 @@
 #	 -s Re-schedule job with 'at'
 # Example: tidyaccount -s "3:00 tomorrow"
 #
-# $Id: tidyaccount,v 1.1 2001/02/13 10:20:11 mebourne Exp $
+# $Id: tidyaccount,v 1.2 2001/02/13 10:25:32 mebourne Exp $
 
 local this=$ZCONFIGDIR/system/functions/$0
 
@@ -30,5 +30,5 @@ find $HOME -depth \( -type f -name '.saves-*' -mtime +3 -print \) \
 # Re-schedule job if requested
 if [[ -n $schedtime ]]
 then
-  at -f $this ${(Q)schedtime} 2>/dev/null
+  at -f $this $schedtime 2>/dev/null
 fi
