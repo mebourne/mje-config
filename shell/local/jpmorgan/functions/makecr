@@ -49,6 +49,13 @@ then
   return 1
 fi
 
+local componentname="$opts[component]"
+
+if [[ $opts[component] == shared ]]
+then
+  componentname="inf"
+fi
+
 echo "Checking out $basedir..."
 cleartool checkout -nc $basedir
 
@@ -86,7 +93,7 @@ EOF
 
 echo "Create file $crdir/installList..."
 cat <<EOF > $crdir/installList
-component       $opts[component]
+component       $componentname
 
 srcDir $crdir
 install install
