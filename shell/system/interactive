@@ -3,19 +3,24 @@
 # Generic system-wide setup for interactive use
 # Written by Martin Ebourne
 #
-# $Id: interactive,v 1.6 2001/03/06 12:16:52 mebourne Exp $
+# $Id: interactive,v 1.7 2001/03/06 17:47:25 mebourne Exp $
 
 # Initial config files
 config_if_present system/loadfuncs
 config_if_present system/options
 config_if_present system/aliases
 
-# Prompts
+# Prompts. These will be overridden if the prompt package is included
 PROMPT='$USERNAME@%m:%3c%# '
 RPROMPT='%T'
 
 # Pager to use for stand-alone redirections - ie. < file
-READNULLCMD=less
+if which less | grep / >/dev/null
+then
+  READNULLCMD=less
+else
+  READNULLCMD=more
+fi
 
 # Treat these characters as part of a word
 WORDCHARS='*?_-.[]~#'
@@ -25,6 +30,11 @@ fignore=(\~ % \# .o .d .elc .zwc)
 
 # Automatically report time for commands taking longer than a minute
 REPORTTIME=60
+
+# Set up history saving
+HISTSIZE=2000
+SAVEHIST=1000
+HISTFILE=~/.zsh_history
 
 # Check for being in a window (xterm etc). Frilly bits
 if [ "$TERM" = "xterm" -o "$TERM" = "xterm-color" -o "$TERM" = "rxvt"  -o "$TERM" = "vs100" ]
