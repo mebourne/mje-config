@@ -3,12 +3,12 @@
 # Execute the given SQL command
 # For use only by the SQL packages
 #
-# $Id: _oracle_execute,v 1.2 2002/04/09 15:14:57 mebourne Exp $
+# $Id: _oracle_execute,v 1.3 2002/04/10 16:00:25 mebourne Exp $
 
 {
   # Handle count & maxrows options here
 
   echo "alter session set nls_date_format='YYYY/MM/DD HH24:MI:SS';"
-  echo "set lin 1000;"
+  echo "set linesize 10000 pagesize 10000 tab off colsep '\xa0' feedback on;"
   echo - "$argv[*] ;"
 } | _oracle_rawsql
