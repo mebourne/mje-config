@@ -2,15 +2,11 @@
 # dozsh - Execute zsh from another shell environment
 # Written by Martin Ebourne
 #
-# $Id: dozsh,v 1.1 2000/02/04 17:42:22 martine Exp $
+# $Id: dozsh,v 1.2 2001/06/01 09:16:17 mebourne Exp $
 
-ZDOTDIR=/usr/users/martine
+MJEHOME=/home/odyssey1/mebourne
+
+ZDOTDIR=$MJEHOME/.zsh
 export ZDOTDIR
 
-PATH=$ZDOTDIR/bin/`uname -m`:$ZDOTDIR/bin:$PATH
-export PATH
-
-NOOSF2ALIAS=T
-export NOOSF2ALIAS
-
-exec zsh -l
+exec $MJEHOME/local/bin/`uname -m`/zsh -l
