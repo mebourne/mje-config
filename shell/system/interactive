@@ -3,7 +3,7 @@
 # Generic system-wide setup for interactive use
 # Written by Martin Ebourne
 #
-# $Id: interactive,v 1.19 2001/08/01 10:28:43 mebourne Exp $
+# $Id: interactive,v 1.20 2001/08/15 16:15:35 mebourne Exp $
 
 # Initial config files
 config_if_present system/options
@@ -56,7 +56,7 @@ fi
 # Update XTerm title bar with useful info after each command
 if (( XTERM ))
 then
-  add_to_hook precmd set_xterm_title
+  package xterm
 fi
 
 # Really fancy multi-line coloured prompt. Will work in non-colour xterm, but too
