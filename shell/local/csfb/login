@@ -4,7 +4,7 @@
 # done, but immediately before the user specific files
 # Written by Martin Ebourne
 #
-# $Id: login,v 1.2 2002/03/19 11:39:52 mebourne Exp $
+# $Id: login,v 1.3 2002/03/19 15:28:27 mebourne Exp $
 
 # CSFB settings
 
@@ -18,6 +18,7 @@ manpath=($manpath /usr/atria/doc/man)
 # FOD
 export FOD=/fod
 export FOD_INSTALL=$FOD
+export SHARE=$FOD/share/sol27-sunpro5
 path=($path $FOD/share/bin)
 manpath=($manpath $FOD/develop/man)
 
@@ -37,3 +38,6 @@ ld_library_path=($ld_library_path ${ORACLE_HOME}/lib)
 
 # Other comands
 path=($path /usr/ccs/bin)
+
+# Development environment
+export RELEASE_ROOT=/vobs/release/solaris2.7-sunpro5
