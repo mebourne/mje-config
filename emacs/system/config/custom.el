@@ -1,7 +1,7 @@
 ;; Emacs configuration file
 ;; Customised variables
 ;; Written by Martin Ebourne
-;; $Id: custom.el,v 1.8 2002/03/19 19:18:11 mebourne Exp $
+;; $Id: custom.el,v 1.9 2002/03/19 19:21:37 mebourne Exp $
 
 (setq custom-file (concat install-user-base-dir "/custom.el"))
 
@@ -93,6 +93,12 @@
  '(dired-guess-shell-gnutar "tar")
  '(dired-omit-files "^#\\|^\\.\\|^\\(CVS\\|TAGS\\)$")
  '(dired-omit-files-p t)
+
+ ;; Settings for clearcase version control
+ '(clearcase-diff-on-checkin t)
+ '(clearcase-make-backup-files t)
+ '(clearcase-suppress-checkout-comments t)
+ '(clearcase-use-normal-diff t)
 
  ;; Ange-ftp default to anonymous ftp and binary xfer
  '(ange-ftp-default-user "ftp")
