@@ -3,11 +3,11 @@
 # Usage: ok
 # Example: ok && <some-command>		- To follow on from the previously typed command
 #
-# $Id: ok,v 1.1 2001/02/13 15:27:10 mebourne Exp $
+# $Id: ok,v 1.2 2001/03/16 12:39:06 mebourne Exp $
 
 local ok=$?
 
-if [[ $ok -eq 0 ]]
+if (( ok == 0 ))
 then
   echo ok
 else

@@ -4,12 +4,12 @@
 #	 -s Re-schedule job with 'at'
 # Example: tidyaccount -s "3:00 tomorrow"
 #
-# $Id: tidyaccount,v 1.3 2001/02/21 13:05:58 mebourne Exp $
+# $Id: tidyaccount,v 1.4 2001/03/16 12:42:46 mebourne Exp $
 
 local this=$ZCONFIGDIR/system/functions/$0
 
 local schedtime=$SCHEDTIME
-if [[ $1 = -s ]]
+if [[ $1 == -s ]]
 then
   schedtime=$2
 fi

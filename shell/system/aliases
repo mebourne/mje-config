@@ -3,28 +3,28 @@
 # Command alias setup
 # Written by Martin Ebourne
 #
-# $Id: aliases,v 1.4 2001/03/06 12:10:29 mebourne Exp $
+# $Id: aliases,v 1.5 2001/03/16 12:45:23 mebourne Exp $
 
-alias rm="rm -i"
+alias rm='rm -i'
 alias which-command=which
-alias mv="nocorrect mv"
-alias cp="nocorrect cp"
-alias mkdir="nocorrect mkdir"
-alias jobs="jobs -l"
+alias mv='nocorrect mv'
+alias cp='nocorrect cp'
+alias mkdir='nocorrect mkdir'
+alias jobs='jobs -l'
 
 # Only alias more to less if less is present on the system
-which less | grep / >/dev/null && alias more=less
+[[ $(which less) == /* ]] && alias more=less
 
 # If we've got the GNU ls then enable automatic colour and a few more options, else don't
 if [[ $(ls --version 2>&1) == *GNU* ]]
 then
   alias l='command ls -F --color=always ${fignore/#/--ignore=\*} ${fignore/#/--ignore=.\*}'
-  alias ls="command ls -F --color=always"
+  alias ls='command ls -F --color=always'
   alias ll='command ls -lFhb --color=always ${fignore/#/--ignore=\*} ${fignore/#/--ignore=.\*}'
-  alias dir="command ls -alFhb --color=always"
+  alias dir='command ls -alFhb --color=always'
 else
-  alias l="command ls -F"
-  alias ls="command ls -F"
-  alias ll="command ls -lFb"
-  alias dir="command ls -alFb"
+  alias l='command ls -F'
+  alias ls='command ls -F'
+  alias ll='command ls -lFb'
+  alias dir='command ls -alFb'
 fi

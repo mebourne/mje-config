@@ -2,8 +2,8 @@
 # Update title bar on XTerm
 # Usage: set_xterm_title
 #
-# $Id: set_xterm_title,v 1.1 2001/03/02 15:06:30 mebourne Exp $
+# $Id: set_xterm_title,v 1.2 2001/03/16 12:42:17 mebourne Exp $
 
 local view
-[ -z "$CLEARCASE_VIEW" ] || view="   View: $CLEARCASE_VIEW"
+[[ -z "$CLEARCASE_VIEW" ]] || view="   View: $CLEARCASE_VIEW"
 echo -n "\e]2;$USERNAME@$HOST   Directory: $PWD$view\007\e]1;$USERNAME@$HOST\007"
