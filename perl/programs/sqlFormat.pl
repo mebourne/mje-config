@@ -19,7 +19,7 @@ use vars qw(%styles);
   emacs   => "Output directly to Emacs in forms mode"
 );
 
-my $opts=new MJE::ParseOpts (<<EOF) || exit 1;
+my $opts=new MJE::ParseOpts (<<'EOF') || exit 1;
 Description:
 Format SQL output to make it easier to read.
 
