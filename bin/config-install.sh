@@ -13,7 +13,7 @@ backup() {
   file="$1"
   suffix=".save"
 
-  if [ -e "$file" -o -h "$file" ]
+  if [ -e "$file" ]
   then
     echo "WARNING: Renaming old $file file to $file$suffix"
     rm -rf "$file$suffix"
