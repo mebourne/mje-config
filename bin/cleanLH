@@ -3,14 +3,22 @@
 # cleanLH - Remove unwanted files from LH development directory
 # Written by Martin Ebourne, Started 20/08/99
 #
-# $Id: cleanLH,v 1.5 1999/10/12 16:57:50 martine Exp $
+# $Id: cleanLH,v 1.6 1999/11/04 17:28:04 martine Exp $
+
+if [ -z "$LH_HOME" ]
+then
+  echo "Error: LH_HOME not set" 1>&2
+  exit 1
+fi
 
 cd $LH_HOME
 
 echo "Deleting all temporary files..."
 echo
 
-find . -type d \( -name 'sunos' -o -name 'osf1' -o -name 'Templates.DB' \) \
+# Need the -print on here due to a new special bug in SunOS 5.6 which means find returns more
+# than it should!
+find . -type d \( -name 'sunos' -o -name 'osf1' -o -name 'Templates.DB' \) -print \
     | xargs rm -rf
 find . -type f \( -name '*~' -o -name '*.bak' -o -name '*.module' \
 		  -o -name 'Dependency.state' -o -name '.gen*.typemap' \
@@ -18,6 +26,9 @@ find . -type f \( -name '*~' -o -name '*.bak' -o -name '*.module' \
 		  -o -name 'core' -o -name '*.tmp' -o -name '.nfs*' \
 	       \) -print \
     | xargs rm -f
+
+# Recreate lib & syslib dirs or fixbld will break
+mkdir -p lib/sunos lib/osf1 syslib/sunos syslib/osf1
 
 echo "Looking for vunget saves..."
 echo
