@@ -1,0 +1,8 @@
+# ZSH function file
+# Part of the SQL Sybase package
+# Enter interactive SQL command line
+# For use only by the SQL packages
+#
+# $Id: _sybase_interactive,v 1.1 2001/05/29 16:56:05 mebourne Exp $
+
+_sybase_rawsql -w ${COLUMNS:-10000}

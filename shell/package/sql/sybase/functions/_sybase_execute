@@ -1,0 +1,28 @@
+# ZSH function file
+# Part of the SQL Sybase package
+# Execute the given SQL command
+# For use only by the SQL packages
+#
+# $Id: _sybase_execute,v 1.1 2001/05/29 16:56:05 mebourne Exp $
+
+{
+  if (( $+maxrows ))
+  then
+    echo "set rowcount $maxrows"
+    echo "go"
+  elif (( $+_sql_parameters[maxrows] ))
+  then
+    echo "set rowcount $_sql_parameters[maxrows]"
+    echo "go"
+  fi
+
+  if (( $+count && !count
+        || !$+count && $+_sql_parameters[count] && !_sql_parameters[count] ))
+  then
+    echo "set nocount on"
+    echo "go"
+  fi
+
+  echo - "$argv[*]"
+  echo "go"
+} | _sybase_rawsql -w 10000
