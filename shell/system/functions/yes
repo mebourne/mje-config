@@ -2,11 +2,9 @@
 # ZSH function file
 # Repeatedly print a string
 #
-# $Id: yes,v 1.9 2001/08/03 11:49:14 mebourne Exp $
+# $Id: yes,v 1.10 2001/08/17 13:37:45 mebourne Exp $
 
 local -A opts
-opts[lines]=-1
-
 parse_opts - opts -- "$argv[@]" <<'EOF' || return 1
 Description:
 Repeatedly print a string
@@ -23,28 +21,22 @@ Options:
   -h, --help			Provide this help
 				# --help | -h
   -l <count>, --lines=<count>	Output only count times
-				# --lines | -l : integer
+				# --lines | -l : posinteger
   -n, --no-newline		Suppress output of automatic newline
 				# [echoopt] += --no-newline | -n : constant=-n
   -s <seconds>, --sleep=<seconds>
 				Pause for number of seconds between each echo
-				# --sleep | -s : integer
+				# --sleep | -s : posinteger
 
 Arguments:
   [<text> ...]			Optional text to print. Defaults to 'yes'
 				# [text] += [*] text
 EOF
 
-# Default text to 'yes' if no parameters passed
-if (( ! $+opts[text] ))
-then
-  opts[text]="yes"
-fi
-
 # Output as required
-while (( opts[lines] ))
+while (( ${opts[lines]:-1} ))
 do
-  echo $=opts[echoopt] $opts[text]
+  echo $=opts[echoopt] ${opts[text]:-yes}
   (( opts[sleep] )) && sleep $opts[sleep]
-  (( opts[lines] > 0 && opts[lines]-- ))
+  (( opts[lines] && opts[lines]-- ))
 done
