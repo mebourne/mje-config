@@ -3,14 +3,31 @@
 # Execute a block copy command
 # Usage: sqlbcp <table> in|out <file> [<option> ...]
 #
-# $Id: sqlbcp,v 1.1 2001/06/01 17:18:52 mebourne Exp $
+# $Id: sqlbcp,v 1.2 2001/06/04 10:04:54 mebourne Exp $
 
 eval $_sql_intro
 
-if [[ $ARGC -lt 3 || $argv[2] != (in|out) ]]
+# Check for correct arguments
+if [[ $ARGC -lt 2 || $argv[2] != (in|out) ]]
 then
-  echo "Syntax: sqlbcp <table> in|out <file> [<option> ...]" 1>&2
+  echo "Syntax: sqlbcp <table> in|out [<file> [<option> ...]]" 1>&2
   return 1
 fi
 
-eval _sql_call bcp "\$argv[@]"
+# Get first two arguments
+local table="$argv[1]" inout="$argv[2]"
+shift 2
+
+# Get optional third argument, default TABLE.dat if not supplied
+local file
+if (( ARGC ))
+then
+  file=$argv[1]
+  shift
+else
+  file="$table.dat"
+  echo "Using default data file '$file'"
+fi
+
+# Call the implementation function with any other arguments
+eval _sql_call bcp $table $inout $file "\$argv[@]"
