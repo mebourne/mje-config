@@ -119,6 +119,21 @@ my %styles=(
     separator    => "  ",
     controlFn    => \&rows_control,
   },
+  xml => {
+    extend       => "default",
+    description  => "Output directly to Emacs in forms mode",
+    headerline   => 1,
+    underline    => 0,
+    otherline    => 0,
+    align        => 0,
+    truncate     => 0,
+    printable    => 0,
+    headerFn     => \&xml_printHeader,
+    formatFn     => \&xml_generateFormat,
+    dataFn       => \&xml_printData,
+    newline      => 0,
+    rowcount     => 0,
+  },
   emacs => {
     extend       => "default",
     description  => "Output directly to Emacs in forms mode",
@@ -511,7 +526,7 @@ sub record_printData {
   for my $row (@$rows) {
     print "\n" if $nl;
     $nl=1;
-    printf "$format", @$row;
+    printf $format, @$row;
   }
 }
 
@@ -567,6 +582,58 @@ sub rows_control {
       }
       print "\n";
     }
+  }
+}
+
+# Generate a printf format string for printing a row
+sub xml_generateFormat {
+  my ($self, $columns)=@_;
+
+  # Process each column
+  my $format;
+  $format.=$colours{blue} if $self->{colour};
+  $format.="<ROW>\n";
+
+  my $x;
+  for($x=0;$x<@$columns;$x++) {
+    my $column=$$columns[$x];
+
+    $format.=$colours{green} if $self->{colour};
+    $format.=" <" . $$column{name} . ">";
+
+    # Write a '%<num>s' entry as appropriate
+    if($self->{colour}) {
+      $format.=$types{$$column{type}}->{colour};
+    }
+    $format.="%s";
+
+    $format.=$colours{green} if $self->{colour};
+    $format.="</" . $$column{name} . ">\n";
+  }
+
+  $format.=$colours{blue} if $self->{colour};
+  $format.="</ROW>\n";
+  $format.=$colours{white} if $self->{colour};
+
+  return $format;
+}
+
+# Print the header
+sub xml_printHeader {
+  my ($self, $columns)=@_;
+
+  print $colours{blue} if $self->{colour};
+  print "<?xml version=\"1.0\"?>\n";
+  print $colours{white} if $self->{colour};
+}
+
+# Print the data
+sub xml_printData {
+  my ($self, $format, $rows)=@_;
+
+  # Print each row with the precalculated format
+  for my $row (@$rows) {
+    printf $format, @$row;
   }
 }
 
