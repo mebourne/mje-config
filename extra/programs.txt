@@ -1,6 +1,9 @@
 Installed programs
 ========= ========
 
+Zsh
+===
+
 Name:		 Zsh
 Version:	 4.0.4
 Home page:	 http://www.zsh.org/
@@ -9,6 +12,11 @@ Source location: ftp://ftp.net.lut.ac.uk/zsh/
 Build:
 See zsh-cfg
 Notes:		 CSFB: Use CC=cc ./configure ...
+
+
+
+Emacs
+=====
 
 Name:		 Emacs
 Version:	 21.2.2
@@ -29,6 +37,43 @@ Version:	 21.2.8
 Home page:	 http://www.gnu.org/
 Package name:	 elisp-manual-21-2.8.tar.gz
 Source location: ftp://ftp.warwick.ac.uk/pub/gnu/emacs/
+
+Name:		 speedbar
+Version:	 0.14 beta 4
+Home page:	 http://cedet.sourceforge.net/speedbar.shtml
+Package name:	 speedbar-0.14beta4.tar.gz
+Source location: http://sourceforge.net/project/showfiles.php?group_id=17886
+Build:
+mv speedbar ~/local/share/emacs/site-lisp/speedbar
+gmake
+mv speedbar.info* ~/local/info
+
+Name:		 eieio
+Version:	 0.17 beta 4
+Home page:	 http://cedet.sourceforge.net/eieio.shtml
+Package name:	 eieio-0.17beta4.tar.gz
+Source location: http://sourceforge.net/project/showfiles.php?group_id=17886
+Build:
+mv eieio ~/local/share/emacs/site-lisp/eieio
+gmake LOADPATH=$HOME/local/share/emacs/site-lisp/speedbar
+mv eieio.info* ~/local/info
+Notes:	         Required for semantic
+
+Name:		 semantic
+Version:	 1.4 beta 14
+Home page:	 http://cedet.sourceforge.net/semantic.shtml
+Package name:	 semantic-1.4beta14.tar.gz
+Source location: http://sourceforge.net/project/showfiles.php?group_id=17886
+Build:
+mv semantic ~/local/share/emacs/site-lisp/semantic
+gmake "LOADPATH=$HOME/local/share/emacs/site-lisp/eieio $HOME/local/share/emacs/site-lisp/speedbar"
+mv semantic.info* ~/local/info
+Notes:		 Requires eieio
+
+
+
+Xwindows
+========
 
 Name:		 xterm (colour)
 Version:	 165
@@ -61,6 +106,11 @@ Home page:	 http://www.fvwm.org/
 Package name:	 fvwm_icons.tgz
 Build:
 mv fvwm_icons $HOME/local/share/fvwm-icons
+
+
+
+General unix
+============
 
 Name:		 less
 Version:	 374
