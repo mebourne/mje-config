@@ -155,8 +155,10 @@ if(%upgradeable_new || %installed_new || %installable_new) {
   }
 
   if(exists($opts->{mail})) {
-    my $fh = new IO::File "|mail -s 'Package report for " . qx{hostname -s}
-			  . ": " . strftime("%A %e %B %Y", localtime)
+    my $host = qx{hostname -s};
+    chomp $host;
+    my $fh = new IO::File "|mail -s 'Package report for $host: "
+			  . strftime("%A %e %B %Y", localtime)
 	                  . "' '" . $opts->{mail} . "'";
     print $fh $output;
   }
