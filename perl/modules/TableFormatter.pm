@@ -23,6 +23,8 @@ use Data::Dumper;
 #   align      	 - True to line up columns by padding with spaces
 #   truncate   	 - True to truncate wide columns if requested
 #   printable  	 - True to convert control characters in strings to printable escapes
+#   printspace   - True to modify printspace to preserve whitespace characters (nl/tab)
+#   printhtml    - True to convert strings to HTML text
 #   squash     	 - True to squash column widths to minimum for title/data
 #   compress     - True to compress column widths to minimum for data (truncate title)
 #   separator  	 - Separator character/string used between columns
@@ -49,6 +51,8 @@ my %styles=(
     align        => 1,
     truncate     => 1,
     printable    => 1,
+    printspace   => 0,
+    printhtml    => 0,
     squash       => 0,
     compress     => 0,
     separator    => " ",
@@ -94,6 +98,7 @@ my %styles=(
   csv => {
     extend       => "tsv",
     description  => "Comma separated value output with header",
+    printspace   => 1,
     escapeRegexp => "\"",
     quoteRegexp  => "[ \t,\"\']",
     separator    => ",",
@@ -141,6 +146,7 @@ my %styles=(
     extend       => "xml",
     description  => "Output as a HTML table",
     otherline    => 1,
+    printhtml    => 1,
     headerFn     => \&html_printHeader,
     formatFn     => \&html_generateFormat,
     dataFn       => \&html_printData,
@@ -774,8 +780,17 @@ sub displayString {
   my ($self, $value)=@_;
 
   if($self->{style}->{printable}) {
-    $value=~s/([\x00-\x1f])/^$1/g;
-    $value=~y/[\x00-\x1f]/[@A-Z]/;
+    if($self->{style}->{printspace}) {
+      $value=~s/([\x00-\x08\x0b\x0c\x0e-\x1f])/^$1/g;
+      $value=~y/[\x00-\x08\x0b\x0c\x0e-\x1f]/[@A-Z]/;
+    } else {
+      $value=~s/([\x00-\x1f])/^$1/g;
+      $value=~y/[\x00-\x1f]/[@A-Z]/;
+    }
+  } elsif($self->{style}->{printhtml}) {
+    $value=~s/</&lt;/g;
+    $value=~s/>/&gt;/g;
+    $value=~s/\n/<BR>\n/g;
   }
   return $value;
 }
