@@ -15,6 +15,7 @@ use MJE::ParseOpts;
 #   newline    	 - True to write newline after table output for readability
 #   align      	 - True to line up columns by padding with spaces
 #   squash     	 - True to squash column widths to minimum for title/data
+#   compress     - True to compress column widths to minimum for data (truncate title)
 #   separator  	 - Separator character/string used between columns
 #   colour     	 - True if colour allowed
 #   controlFn  	 - Control function
@@ -27,6 +28,7 @@ use MJE::ParseOpts;
 #                  intermediate styles which the user is not allowed to select
 #   escapeRegexp - Regexp to match data characters which need to be escaped (by doubling up)
 #   quoteRegexp  - Regexp to match data which needs to be quoted (surrounded in double quotes)
+#   exitFn       - Function to be called when all processing is complete
 my %styles=(
   default => {
     headerline   => 1,
@@ -35,6 +37,7 @@ my %styles=(
     newline      => 1,
     align        => 1,
     squash       => 0,
+    compress     => 0,
     separator    => " ",
     colour       => 1,
     controlFn    => \&default_control,
@@ -51,11 +54,10 @@ my %styles=(
     description  => "As simple but reduces column widths to save on screen space",
     squash       => 1,
   },
-  bcp => {
-    extend       => "tsv",
-    description  => "BCP compatible output, tab separated columns with no header",
-    headerline   => 0,
-    colour       => 0,
+  compress => {
+    extend       => "simple",
+    description  => "As squash but also truncates long titles",
+    compress     => 1,
   },
   tsv => {
     extend       => "default",
@@ -72,6 +74,12 @@ my %styles=(
     quoteRegexp  => "[ \t,\"\']",
     separator    => ",",
   },
+  bcp => {
+    extend       => "tsv",
+    description  => "BCP compatible output, tab separated columns with no header",
+    headerline   => 0,
+    colour       => 0,
+  },
   record => {
     extend       => "default",
     description  => "Record style output, row by row",
@@ -87,6 +95,7 @@ my %styles=(
     newline      => 0,
     colour       => 0,
     controlFn    => \&emacs_control,
+    exitFn       => \&emacs_exit,
   },
 );
 
@@ -104,17 +113,28 @@ for my $styleName (keys(%styles)) {
   }
 }
 
+# Options for control of colour
+use vars qw(%colourHelp);
+%colourHelp=(
+  off  => "No colour",
+  auto => "Only colour if outputting to tty",
+  on   => "Always colour"# (if applicable)"
+);
+
 # Parse the command line options & give help
-my $opts=new MJE::ParseOpts ('
-Description:
+my $opts=new MJE::ParseOpts (
+'Description:
 Format SQL output to make it easier to read.
 
 Usage:
 sqlformat.pl [options] <style>
 
 Options:
-  -c, --colour			Colour output (ignored for bcp and emacs)
-				# --colour | -c
+  -c <when>, --colour=<when>	Colour output. One of:
+				# --colour | -c : values=%colourHelp
+				off	No colour
+				auto	Only colour if outputting to tty
+				on	Always colour (if applicable)
   -h, --help			Provide this help
 				# --help | -h
 
@@ -138,11 +158,18 @@ for(my $extends=exists($style->{extend}) ? $styles{$style->{extend}} : undef;
   }
 }
 
-# Determine if we should use colour (requested by user & appropriate for style)
-my $colour=$opts->{colour} && $style->{colour};
-
 # Note if we are outputting to a tty or a file
 my $tty=-t STDOUT;
+
+# Determine if we should use colour. Must be allowed by style, and requested
+# by user (possibly dependant on if tty)
+my $colour=0;
+if($style->{colour}) {
+  if($opts->{colour} eq "on"
+     || $opts->{colour} eq "auto" && $tty) {
+    $colour=1;
+  }
+}
 
 # These used by emacs style
 my $tempFileBase="/tmp/sqlformat.$PID.";
@@ -172,12 +199,14 @@ sub main {
       my @columns;
       my @rows;
       &readHeader(\@columns,$thisLine,$nextLine);
-
       &readData(\@columns, \@rows, length($thisLine), \$nextLine);
 
       # Processing
       if($style->{squash}) {
 	&trimLength(\@columns);
+      }
+      if($style->{compress}) {
+	&compressLength(\@columns);
       }
 
       # Write the output
@@ -196,15 +225,9 @@ sub main {
     $thisLine=$nextLine;
   }
 
-  if($opts->{style} eq "emacs") {
-    my ($formFiles, $allFiles);
-    for(my $i=1;$i<$tempFileCount;$i++) {
-      $formFiles.=" $tempFileBase$i.form";
-      $allFiles.=" $tempFileBase$i.form $tempFileBase$i.data";
-    }
-
-    system("emacsclient --no-wait $formFiles");
-    system("( sleep 60 ; rm -f $allFiles ) &");
+  # Call any exit function
+  if(exists($style->{exitFn})) {
+    &{$style->{exitFn}}();
   }
 }
 
@@ -308,7 +331,7 @@ sub readData {
 	    $$column{type}="string";
 	  } elsif($value=~/^[0-9.Ee+-]+$/) {
 	    $$column{type}="number";
-	  } elsif($value=~/[A-Z][a-z]{2} [0-9]{2} [0-9]{4}/
+	  } elsif($value=~/[A-Z][a-z]{2} [ 0-9]?[0-9] [0-9]{4}/
 		  || $value=~/[0-9]{2}:[0-9]{2}/) {
 	    $$column{type}="datetime";
 	  }
@@ -349,6 +372,23 @@ sub trimLength {
     } else {
       $$column{length}=$$column{datalength};
     }
+  }
+}
+
+# For each column shrink length such that it will still fit all data, reducing
+# title if required
+sub compressLength {
+  my ($columns)=@_;
+
+  my $x;
+  for($x=0;$x<@$columns;$x++) {
+    my $column=$$columns[$x];
+
+    $$column{length}=$$column{datalength};
+    if($$column{length}<1) {
+      $$column{length}=1;
+    }
+    $$column{name}=substr($$column{name},0,$$column{length});
   }
 }
 
@@ -578,4 +618,16 @@ sub emacs_writeData {
   }
 
   close FILE;
+}
+
+# Send the generated files to Emacs via emacsclient when we have finished
+sub emacs_exit {
+  my ($formFiles, $allFiles);
+  for(my $i=1;$i<$tempFileCount;$i++) {
+    $formFiles.=" $tempFileBase$i.form";
+    $allFiles.=" $tempFileBase$i.form $tempFileBase$i.data";
+  }
+
+  system("emacsclient --no-wait $formFiles");
+  system("( sleep 60 ; rm -f $allFiles ) &");
 }
