@@ -3,7 +3,13 @@
 # Make part of the cashsec system
 # Usage: make [<options>]
 #
-# $Id: mk 792 2003-09-22 11:47:18Z martin $
+# $Id$
 
-clearmake -f /vobs/odyssey/shared/config/makemakefile &&
-  PATH=$PATH:. clearmake "$@"
+if [[ -n $(whence g++ 2>/dev/null) ]]
+then
+  clearmake -f /vobs/odyssey/shared/config/makemakefile_gcc &&
+    PATH=$PATH:. clearmake "$@"
+else
+  clearmake -f /vobs/odyssey/shared/config/makemakefile &&
+    PATH=$PATH:. clearmake "$@"
+fi

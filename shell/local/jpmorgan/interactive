@@ -10,17 +10,20 @@
 
 # Include various JPMorgan special functions. Need to make them work in zsh
 . /opt/bin/0ENV.sh
-add_emulate ksh Load
-add_emulate ksh Unload
-add_emulate ksh prepend
-add_emulate ksh append
-add_emulate ksh variable
+add_emulate ksh Load Unload prepend append variable
 
 # Pull in useful JPMorgan 'packages'
 Load ssh
 
-# Add to default CDPATH
-cdpath=($cdpath /vobs/odyssey/cashsec)
+if [[ -d /3rdparty/fsf/gcc/3.3.3 ]]
+then
+  Load gcc
+  Load binutils
+  Load make
+  Load flex
+  Load bison
+  Load m4
+fi
 
 # CD vars. Pull in all the vobs available. Add them straight to the hash table
 # to reduce environment variable clutter
