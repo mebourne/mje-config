@@ -4,7 +4,7 @@
 # done, but immediately before the user specific files
 # Written by Martin Ebourne
 #
-# $Id: interactive,v 1.4 2001/02/21 11:21:08 mebourne Exp $
+# $Id: interactive,v 1.5 2001/02/21 13:28:55 mebourne Exp $
 
 # Arcordia settings
 
@@ -21,14 +21,8 @@ cashsec=/vobs/odyssey/cashsec
 package clearcase
 
 # Setup for locate shell functions
-_clearcase_getviews
-local views
-views=(${(M)_clearcase_views:#*$USER*})
-if (( $#views == 1 ))
-then
-  LOCATE_DIR=/vobs/odyssey/cashsec
-  LOCATE_DB=/view/$views/vobs/odyssey/cashsec/locatedb.gz
-fi
+LOCATE_DIR=/vobs/odyssey
+LOCATE_DB=$HOME/.locatedb.gz
 
 # Include Sybase package
 if [[ -z $nodb ]]
