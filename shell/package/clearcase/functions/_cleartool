@@ -5,7 +5,7 @@
 # Completion code for cleartool command
 # Usage: These functions are used by the completion code
 #
-# $Id: _cleartool,v 1.5 2001/03/15 15:53:21 mebourne Exp $
+# $Id: _cleartool,v 1.6 2001/03/15 18:09:34 mebourne Exp $
 
 _cleartool_decode_pname () {
   case $command in
@@ -167,7 +167,8 @@ _cleartool_decode_type () {
 }
 
 _cleartool_add_option () {
-  if [[ $1 != \** || $_cleartool_opts[$command] != *\'\** ]]; then
+  if [[ $1 != \** || $_cleartool_opts[$command] != *\'\** ]]
+  then
     _cleartool_opts[$command]="$_cleartool_opts[$command] '$1'"
   else
     #echo "Skipping '$1' from command $command ($_cleartool_opts[$command])" 1>&2
@@ -193,7 +194,8 @@ _cleartool_process_option () {
 #	   option="$buffer[(w)1]:$option"
 #	 fi
 #      else
-  if (( !$#brackets )); then
+  if (( !$#brackets ))
+  then
     local alternative option
     for alternative in ${(s:|:)buffer}; do
       alternative=${${alternative## #}%% #}
@@ -228,15 +230,19 @@ _cleartool_read_help () {
   local word command state=0 buffer level=0
   for word in $(_call commands cleartool help 2>&1)
   do
-    if [[ $word == 'Usage:' || $word == "$command" ]]; then
-      if (( $#buffer )); then
+    if [[ $word == 'Usage:' || $word == "$command" ]]
+    then
+      if (( $#buffer ))
+      then
 	_cleartool_process_option
       fi
 
-      if [[ $word == 'Usage:' ]]; then
+      if [[ $word == 'Usage:' ]]
+      then
 	state=1
 	command=""
-      elif [[ $word == "$command" ]]; then
+      elif [[ $word == "$command" ]]
+      then
         state=2
       fi
     else
@@ -250,14 +256,16 @@ _cleartool_read_help () {
 	3) _cleartool_cmds[$word]=$command
 	   state=2;;
 	2|4)
-	   if [[ $state -eq 2 && $word == '|' ]]; then
+	   if [[ $state -eq 2 && $word == '|' ]]
+           then
 	     state=3
 	   else
 	     state=4
 	
 	     local brackets=${word//[^\[\{<]}
 	
-	     if (( !level && $#brackets && $#buffer )); then
+	     if (( !level && $#brackets && $#buffer ))
+	     then
 	       _cleartool_process_option
 	     fi
 	
@@ -266,7 +274,8 @@ _cleartool_read_help () {
 	     brackets=${word//[^\]\}>]}
              (( level = level - $#brackets ))
 	
-	     if (( !level && $#brackets )); then
+	     if (( !level && $#brackets ))
+	     then
 	       _cleartool_process_option
 	     fi
 	   fi
@@ -279,9 +288,8 @@ _cleartool_read_help () {
 _cleartool_write_cache() {
   local cache=$_comp_dumpfile
 
-  if grep '\#\#\#START\#\#\# Added by cleartool package' $cache >/dev/null
+  if ! grep '\#\#\#START\#\#\# Added by cleartool package' $cache >/dev/null
   then
-  else
     {
       echo
       echo "###START### Added by cleartool package"
@@ -294,20 +302,24 @@ _cleartool_write_cache() {
 }
 
 _cleartool () {
-  if (( ! $+_cleartool_cmds )); then
+  if (( ! $+_cleartool_cmds ))
+  then
     _cleartool_read_help
     _cleartool_write_cache
   fi
 
-  if (( CURRENT == 2 )); then
+  if (( CURRENT == 2 ))
+  then
     _cleartool_command_names
   else
     local curcontext="$curcontext"
 
     cmd="$_cleartool_cmds[$words[2]]"
-    if (( $#cmd )); then
+    if (( $#cmd ))
+    then
       curcontext="${curcontext%:*:*}:cleartool-${cmd}:"
-      if (( $+functions[_cleartool_$cmd] )); then
+      if (( $+functions[_cleartool_$cmd] ))
+      then
         _cleartool_$cmd
       else
         _arguments ${(Q)${(z)_cleartool_opts[$cmd]}}
