@@ -2,13 +2,15 @@
 # This is the zshenv file sourced directly by zsh
 # Written by Martin Ebourne
 #
-# $Id: zshenv,v 1.3 2001/03/21 18:27:54 mebourne Exp $
+# $Id: zshenv,v 1.4 2001/05/09 10:51:41 mebourne Exp $
 
 # Enable this (or call the shell with it already set) for progress reports during config
 #ZCONFIGDEBUG=1
 
-ZFILE=zshenv
+# Enable this (or call the shell with it already set) for profiling output
+#ZCONFIGPROF=1
 
+ZFILE=zshenv
 
 ## Function definitions. Can't make these autoload since the paths aren't set up yet
 
@@ -61,7 +63,15 @@ config_if_present() {
   if [[ -r $realfile ]]
   then
     [[ -n $ZCONFIGDEBUG ]] && echo "Loading config file $file"
-    . $realfile
+
+    # Define each config file into a function and call that. This gives much more meaningful
+    # output when profiled
+    local fn=_config_${file//\\//_}
+    function $fn {
+      . $realfile
+    }
+    $fn
+    unfunction $fn
   fi
 }
 
@@ -81,14 +91,26 @@ ZUSERCONFIGDIR=$(_expand_symlink ${ZDOTDIR:-$HOME}/.zsh_user)
 [[ -z $ZCONFIGDIR ]] && { echo "ERROR: ZCONFIGDIR unset in $ZFILE" ; exit 1 }
 
 # Debugging
-[[ -n $ZCONFIGDEBUG ]] && {
+if [[ -n $ZCONFIGDEBUG ]]
+then
   echo "Using system configuration from $ZCONFIGDIR"
   echo "Using user configuration from $ZUSERCONFIGDIR"
-}
+fi
+
+# Profiling. Enable it here. Report at end of zshrc
+if [[ -n $ZCONFIGPROF ]]
+then
+  zmodload -i zsh/zprof
+  zprof -c
+fi
 
 # Execute the real configuration files
-config_if_present system/global
-config_if_present local/global
-config_if_present user/global
+_init_zshenv() {
+  config_if_present system/global
+  config_if_present local/global
+  config_if_present user/global
+}
+_init_zshenv
+unfunction _init_zshenv
 
 unset ZFILE
