@@ -39,6 +39,7 @@ sub processFile {
   $text=~s/ RWBehavior//g;
   $text=~s/ RWMemoryPool_OPTION//g;
   $text=~s/ COLON_PS_NEWDELETE//g;
+  $text=~s/ PUBLIC_PS_NEWDELETE//g;
 
 #  print "$text\n";
   &findTypedefs($file,$text);
