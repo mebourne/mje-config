@@ -1,0 +1,24 @@
+# ZSH function file
+# Load a package which is part of the configuration system
+# Usage: package <package-name>
+#
+# $Id: package,v 1.1 2001/02/12 18:13:25 mebourne Exp $
+
+local package=$1
+local setupfile=$ZCONFIGDIR/package/$package/setup
+
+if [[ -z $package_loaded[(r)$package] ]]
+then
+  if [[ -r $setupfile ]]
+  then
+    [[ -n $ZCONFIGDEBUG ]] && echo "Loading package $package"
+    . $setupfile
+    package_loaded=($package_loaded $package)
+  else
+    echo "Package $package does not exist" 1>&2
+    return 1
+  fi
+else
+  echo "Package $package already loaded" 1>&2
+  return 1
+fi

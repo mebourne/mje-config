@@ -1,0 +1,18 @@
+# ZSH function file
+# Part of the clearcase package
+# Un-checkout checked out files
+# Usage: uncoco [-r]
+#	 -r	Recurse
+#
+# $Id: uncoco,v 1.1 2001/02/12 18:13:21 mebourne Exp $
+
+local recurse="$1"
+local files
+
+files=($(cleartool lscheckout -me -cview -short $recurse))
+echo "REVERT all of these files?"
+echo "${(F)files}"
+if read -q
+then
+  cleartool unco -rm $files
+fi

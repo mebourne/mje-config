@@ -1,0 +1,13 @@
+# ZSH function file
+# Update the locate database
+# Usage: updatelocate
+#
+# $Id: siupdate,v 1.1 2001/02/12 18:13:25 mebourne Exp $
+
+[[ -z $LOCATE_DIR ]] && { echo "LOCATE_DIR not set" ; return 1 }
+[[ -z $LOCATE_DB ]] && { echo "LOCATE_DB not set" ; return 1 }
+
+find $LOCATE_DIR \! \( -type d -o -name '*.[ao]' -o -name '*.so' -o -name '*[mM]akefile' \
+		       -o -name sol2.d -o -name '.*' \) -print \
+		       -o -name lost+found -prune |
+  gzip - > $LOCATE_DB

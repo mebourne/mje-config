@@ -1,0 +1,10 @@
+# ZSH function file
+# Search for files from the locate database list
+# Usage: locate <filename-regexp>
+#
+# $Id: sifile,v 1.1 2001/02/12 18:13:24 mebourne Exp $
+
+[[ -z $LOCATE_DIR ]] && { echo "LOCATE_DIR not set" ; return 1 }
+[[ -z $LOCATE_DB ]] && { echo "LOCATE_DB not set" ; return 1 }
+
+gunzip - < $LOCATE_DB | grep -i "$1"

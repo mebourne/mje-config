@@ -1,0 +1,36 @@
+# ZSH configuration file
+# Executed for interactive shells via zshrc
+# User's own setup for interactive shells. Run after all other setup has been done
+# Written by Martin Ebourne
+#
+# $Id: interactive,v 1.1 2001/02/12 18:13:25 mebourne Exp $
+
+# Enable incremental history saving
+package history
+
+# Get the normal XPG4 standards commands rather than the strange sun ones
+# Can't just change PATH since that breaks scripts
+if [ -d /usr/xpg4/bin ]
+then
+  for i in /usr/xpg4/bin/*
+  do
+    cmd=${i:t}
+
+    cmdpath=`which $cmd`
+    if [ $cmdpath[(i)gnu] = 0 ]
+    then
+      temp=`alias $cmd`
+      if [ "$temp" = "" ]
+      then
+	    alias $cmd=$i
+      else
+	    # This isn't much fun but we need to edit already existing aliases so we don't lose them
+	    alias $cmd="`echo $temp | /usr/xpg4/bin/sed -e "s:^$cmd=::" \
+							-e "s:^'::" \
+							-e "s:'$::" \
+							-e "s:\\\<$cmd\\\>:$i:g"`"
+      fi
+    fi
+  done
+  unset cmd cmdpath temp
+fi

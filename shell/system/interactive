@@ -1,0 +1,42 @@
+# ZSH configuration file
+# Executed for interactive shells via zshrc
+# Generic system-wide setup for interactive use
+# Written by Martin Ebourne
+#
+# $Id: interactive,v 1.1 2001/02/12 18:13:23 mebourne Exp $
+
+# Initial config files
+config_if_present system/loadfuncs
+config_if_present system/options
+config_if_present system/aliases
+
+# Prompts
+PROMPT='$USERNAME@%m:$CLEARCASE_VIEW%3c%# '
+RPROMPT='%T'
+
+# Pager to use for stand-alone redirections - ie. < file
+READNULLCMD=less
+
+# Treat these characters as part of a word
+WORDCHARS='*?_-.[]~#'
+
+# Ignore these filename extensions in completion
+fignore=(.o \~ %)
+
+# Automatically report time for commands taking longer than a minute
+REPORTTIME=60
+
+# Update XTerm title bar with useful info after each command if we are in an XTerm
+if [ "$TERM" = "xterm" -o "$TERM" = "xterm-color" -o "$TERM" = "rxvt"  -o "$TERM" = "vs100" ]
+then
+  precmd () {
+    local view
+    [ -z "$CLEARCASE_ROOT" ] || view="   View: ${CLEARCASE_ROOT#/view/}"
+    echo -ne "\033]2;$USERNAME@$HOST   Directory: $PWD$view\007\033]1;$USERNAME@$HOST\007"
+  }
+fi
+
+# Final config files
+config_if_present system/oldcompletion
+config_if_present system/completion
+config_if_present system/keys

@@ -1,0 +1,55 @@
+# ZSH configuration file
+# Executed for all shells via zshenv
+# Set up all the autoloaded functions. This is executed for all shells very early on
+# Written by Martin Ebourne
+#
+# $Id: loadfuncs,v 1.1 2001/02/12 18:13:24 mebourne Exp $
+
+# This file can be included more than once. Only execute it once though
+if functions add_functions_directory >/dev/null
+then
+else
+
+  # Add given directory to start of zsh function path if not already present.
+  # Also register all files in the given directory for autoloading, whether
+  # or not directory was already present.
+  # Note that directory given is relative to $ZCONFIGDIR
+  add_functions_directory() {
+    local newdir=$ZCONFIGDIR/$1
+
+    if [[ -d $newdir ]]
+    then
+      # Add the directory to FPATH if not already present
+      if [[ -z $fpath[(r)$newdir] ]]
+      then
+	fpath=($newdir $fpath)
+      fi
+
+      # Get a list of files in the directory, and filter out backups. Care to handle the
+      # no-match case
+      setopt local_options
+      setopt null_glob
+      local files
+      files=($newdir/*(.))
+      files=(${files##*/})
+      files=(${files:#*~})
+
+      # Autoload the files if there are any left
+      if [[ -n $files ]]
+      then
+	autoload -U $files
+  
+	if [[ -n $ZCONFIGDEBUG ]]
+	then
+	  echo "Autoloading functions from $1:"
+	  print -c $files
+	fi
+      fi
+    fi
+  }
+
+  add_functions_directory system/functions
+  add_functions_directory local/functions
+  add_functions_directory user/functions
+
+fi

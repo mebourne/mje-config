@@ -1,0 +1,16 @@
+# ZSH configuration file
+# This is the zlogout file sourced directly by zsh
+# Written by Martin Ebourne
+#
+# $Id: zlogout,v 1.1 2001/02/12 18:13:20 mebourne Exp $
+
+ZFILE=zlogout
+
+[[ -z $ZCONFIGDIR ]] && { print "ERROR: ZCONFIGDIR unset in $ZFILE" ; exit 1 }
+
+# NB. We excecute the logout files in REVERSE order
+config_if_present user/logout
+config_if_present local/logout
+config_if_present system/logout
+
+unset ZFILE

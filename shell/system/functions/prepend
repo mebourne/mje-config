@@ -1,0 +1,11 @@
+# ZSH function file
+# Prepend a component to a : separated path variable. If already present then
+# it will still be prepended, but the already present component will be
+# removed. Any other duplicates in the path will be also removed
+# Usage: prepend <variable-name> <path-component>
+#
+# $Id: prepend,v 1.1 2001/02/12 18:13:25 mebourne Exp $
+
+local var=$1
+eval $var="$2:\${$var}"
+trimpath $var

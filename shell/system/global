@@ -1,0 +1,23 @@
+# ZSH configuration file
+# Executed for all shells via zshenv
+# Generic system-wide setup for ALL shells. This is executed before anything else
+# Written by Martin Ebourne
+#
+# $Id: global,v 1.1 2001/02/12 18:13:23 mebourne Exp $
+
+# Make various path like variables keep unique values only. Need to create any that aren't built
+# into the shell. Most of them are also exported
+typeset -Ugx  CDPATH
+typeset -Ugx  FIGNORE
+typeset -U    FPATH
+typeset -UgxT INFOPATH="$INFOPATH" infopath
+typeset -Ugx  MAILPATH
+typeset -Ugx  MANPATH
+typeset -U    MODULE_PATH
+typeset -Ugx  PATH
+typeset -Ugx  WATCH
+
+# Enable functions early & for everyone. Ha! Should be here but zsh later goes and
+# resets the stupid path. Doh! Have to do it at the start of login AND interactive
+# instead
+#config_if_present system/loadfuncs

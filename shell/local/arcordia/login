@@ -1,0 +1,18 @@
+# ZSH configuration file
+# Executed for login shells via zprofile
+# Local site-specific setup for login shells. Run after all system login setup has been
+# done, but immediately before the user specific files
+# Written by Martin Ebourne
+#
+# $Id: login,v 1.1 2001/02/12 18:13:21 mebourne Exp $
+
+# Arcordia settings
+
+path=($path /opt/emacs/20.3.0.0/solaris/bin /vobs/odyssey/cashsec/script)
+
+typeset -UgxT EMACSLOADPATH emacsloadpath
+emacsloadpath=($HOME/local/share/emacs/site-lisp /opt/emacs/20.3.0.0/solaris/share/emacs/20.3/lisp)
+
+export WU_HOME=/vobs/odyssey/cashsec/script/workunitctrl
+
+umask 002

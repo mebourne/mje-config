@@ -1,0 +1,16 @@
+# ZSH configuration file
+# Executed for interative shells via zshrc
+# Command alias setup
+# Written by Martin Ebourne
+#
+# $Id: aliases,v 1.1 2001/02/12 18:13:23 mebourne Exp $
+
+alias dir="ls -alF" # --color=tty"
+alias ls="ls -F" # --color=tty"
+which less | grep / >/dev/null && alias more=less
+alias rm="rm -i"
+alias which-command=which
+alias mv="nocorrect mv"
+alias cp="nocorrect cp"
+alias mkdir="nocorrect mkdir"
+alias jobs="jobs -l"

@@ -1,0 +1,12 @@
+# ZSH function file
+# Remove duplicates from a standard : separated path variable
+# Usage: trimpath <variable-name>
+#
+# $Id: trimpath,v 1.1 2001/02/12 18:13:25 mebourne Exp $
+
+local var="$1"
+
+# Zsh oddity: -U only works on special vars and on arrays. Hence the unnecessary -T
+local -UT RESULT="${(P)var}" result
+
+eval $var="$RESULT"

@@ -1,0 +1,17 @@
+# ZSH configuration file
+# Executed for login shells via zprofile
+# User's own setup for login shells. Run after all other login setup has been done
+# Written by Martin Ebourne
+#
+# $Id: login,v 1.1 2001/02/12 18:13:25 mebourne Exp $
+
+export EDITOR=emacsclient
+export VISUAL=emacsclient
+export FCEDIT=emacsclient
+export NAME="Martin Ebourne"
+
+#if [ `who am i | grep -c '( *)'` = 1 -o `who am i | grep -c '(.*)'` = 0 ]
+#then
+#  echo "Remapping AltGraph as control key"
+#  xmodmap -e "add control = SunAltGraph"
+#fi

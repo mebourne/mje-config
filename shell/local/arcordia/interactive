@@ -1,0 +1,36 @@
+# ZSH configuration file
+# Executed for interactive shells via zshrc
+# Local site-specific setup for interactive shells. Run after all system setup has been
+# done, but immediately before the user specific files
+# Written by Martin Ebourne
+#
+# $Id: interactive,v 1.1 2001/02/12 18:13:21 mebourne Exp $
+
+# Arcordia settings
+
+# Include various Arcordia special functions
+. /opt/bin/0ENV.sh
+
+# Our default CDPATH
+cdpath=(/vobs/odyssey)
+
+# Simple alias for make
+mk() {
+  clearmake -f /vobs/odyssey/shared/config/makemakefile
+  clearmake
+}
+
+# Include clearcase package
+package clearcase
+
+# Setup for locate shell functions
+local views
+views=($(cd /view; command ls -1 | /usr/xpg4/bin/grep -e "$USER" | /usr/xpg4/bin/grep -v '@@$'))
+if [[ ${#views} -eq 1 ]]
+then
+  LOCATE_DIR=/vobs/odyssey/cashsec
+  LOCATE_DB=/view/$views/vobs/odyssey/cashsec/locatedb.gz
+fi
+
+# Include Sybase package
+package sql/sybase

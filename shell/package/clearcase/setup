@@ -1,0 +1,15 @@
+# ZSH configuration file
+# Executed when the clearcase package is included
+# Setup for clearcase package
+# Written by Martin Ebourne
+#
+# $Id: setup,v 1.1 2001/02/12 18:13:21 mebourne Exp $
+
+if [[ -n "$CLEARCASE_ROOT" ]]
+then
+  CLEARCASE_VIEW="<${CLEARCASE_ROOT#/view/view_}>"
+fi
+
+add_functions_directory package/clearcase/functions
+
+alias ct=cleartool

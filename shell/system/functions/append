@@ -1,0 +1,10 @@
+# ZSH function file
+# Append a component to a : separated path variable if not already present.
+# Any duplicates in the path will be removed
+# Usage: append <variable-name> <path-component>
+#
+# $Id: append,v 1.1 2001/02/12 18:13:24 mebourne Exp $
+
+local var=$1
+eval $var="\${$var}:$2"
+trimpath $var

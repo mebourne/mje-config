@@ -1,0 +1,72 @@
+# ZSH configuration file
+# Executed for login shells via zprofile
+# Generic system-wide setup for login shells. Primarily to set environment vars just once
+# Written by Martin Ebourne
+#
+# $Id: login,v 1.1 2001/02/12 18:13:24 mebourne Exp $
+
+# Ensure functions are loaded early
+config_if_present system/loadfuncs
+
+# Remove . from PATH since it is the work of the devil
+while [ "$path[(r).]" = "." ]
+do
+  path[(r).]=()
+done
+
+# Set up standard paths
+path=($HOME/local/bin/`uname -m` $HOME/local/bin /usr/local/bin $path)
+manpath=($HOME/local/man /usr/local/man $manpath)
+infopath=($HOME/local/info /usr/local/info $infopath)
+
+# Set HOSTNAME unless it already is
+export HOSTNAME=${HOSTNAME:-$(/bin/hostname)}
+
+# Force the default shell to be zsh
+export SHELL=$(which zsh)
+
+# Settings for less
+export LESSOPEN="|lesspipe.sh %s"
+export LESS="-M -e -i"
+
+# If DISPLAY is not set then have a go from 'who am i'
+if [ -z "$DISPLAY" ]
+then
+  FROM=`who am i | sed "s/(\|)/?/g" | cut -d \? -f 2 | grep -v \!`
+  export FROM
+  if [ "$FROM" = ":0.0" -o "$FROM" = "" ]; then
+    FROM="localhost"
+   else
+    export DISPLAY="$FROM:0"
+  fi
+fi
+
+
+# Set up the color-ls environment variables:
+
+# 00=none 01=bold 04=underscore 05=blink 07=reverse 08=concealed
+# Text color codes:
+# 30=black 31=red 32=green 33=yellow 34=blue 35=magenta 36=cyan 37=white
+# Background color codes:
+# 40=black 41=red 42=green 43=yellow 44=blue 45=magenta 46=cyan 47=white
+
+# no=default, fi=file, di=directory, ln=link, pi=named pipe (FIFO), so=socket
+# bd=block device, cd=char device, ex=executable, mi=missing file, or=orphanned symbolic link
+LS_COLORS='no=00:fi=01;33:di=01;36:ln=01;31:pi=01;35:so=01;35:bd=01;35;01:cd=01;35;01:ex=01;32';
+
+# Executables (green)
+LS_COLORS=$LS_COLORS':*.bat=01;32:*.btm=01;32:*.com=01;32:*.cmd=01;32:*.exe=01;32';
+
+# Archived or compressed files (white)
+LS_COLORS=$LS_COLORS':*.arj=01;37:*.deb=01;37:*.lzh=01;37:*.gz=01;37:*.tar=01;37:*.tgz=01;37:*.taz=01;37:*.Z=01;37:*.z=01;37:*.zip=01;37';
+
+# Object files (blue)
+LS_COLORS=$LS_COLORS':*.a=01;34:*.an=01;34:*.at=01;34:*.o=01;34:*.on=01;34:*.ot=01;34:*.d=01;34:*.dn=01;34:*.dt=01;34:*.elc=01;34';
+
+# Backup files (concealed)
+LS_COLORS=$LS_COLORS':*~=08;33:*.flc=08;33';
+
+# we would like to do these too but i can't get it to do it
+#LS_COLORS=$LS_COLORS':\#*\#=08;33':\\.\\#*=08;33';
+
+export LS_COLORS

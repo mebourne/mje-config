@@ -1,0 +1,46 @@
+# ZSH configuration file
+# This is the zshenv file sourced directly by zsh
+# Written by Martin Ebourne
+#
+# $Id: zshenv,v 1.1 2001/02/12 18:13:20 mebourne Exp $
+
+# Enable this (or call the shell with it already set) for progress reports during config
+#ZCONFIGDEBUG=1
+
+ZFILE=zshenv
+
+# Zsh gives us absolutely no indication of which config file we are running, nor
+# where it is. So lets try and find the real zsh config directory
+ZCONFIGDIR=${ZDOTDIR:-$HOME}
+if [[ -L $ZCONFIGDIR/.$ZFILE ]]
+then
+  [[ -z "$modules[zsh/stat]" ]] && zmodload zsh/stat
+  local realfile=$(stat +link $ZCONFIGDIR/.$ZFILE)
+  if [[ $realfile != /* ]]
+  then
+    realfile=$ZCONFIGDIR/$realfile
+  fi
+  ZCONFIGDIR=${realfile%/*}
+  unset realfile
+fi
+ZCONFIGDIR=$(cd $ZCONFIGDIR && echo $PWD)
+
+[[ -z $ZCONFIGDIR ]] && { echo "ERROR: ZCONFIGDIR unset in $ZFILE" ; exit 1 }
+
+[[ -n $ZCONFIGDEBUG ]] && echo "Using configuration from $ZCONFIGDIR"
+
+# Function to make life easier. Executes a config file if present & readable
+config_if_present() {
+  if [[ -r $ZCONFIGDIR/$1 ]]
+  then
+    [[ -n $ZCONFIGDEBUG ]] && echo "Loading config file $1"
+    . $ZCONFIGDIR/$1
+  fi
+}
+
+# Execute the real configuration files
+config_if_present system/global
+config_if_present local/global
+config_if_present user/global
+
+unset ZFILE

@@ -1,0 +1,13 @@
+# ZSH configuration file
+# Executed for interactive shells via zshrc
+# Key bindings setup for the line editor
+# Written by Martin Ebourne
+#
+# $Id: keys,v 1.1 2001/02/12 18:13:24 mebourne Exp $
+
+bindkey -e
+bindkey "^[[A" history-beginning-search-backward
+bindkey "^[[B" history-beginning-search-forward
+bindkey "^[OA" history-beginning-search-backward
+bindkey "^[OB" history-beginning-search-forward
+bindkey "^W" kill-region

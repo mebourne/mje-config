@@ -1,0 +1,12 @@
+# ZSH function file
+# Make single '-' on a line do 'cd -' for consistency with auto_cd
+# However, be careful not to lose the normal functionality of '-'
+#
+# $Id: -,v 1.1 2001/02/12 18:13:24 mebourne Exp $
+
+if [[ -z $1 ]]
+then
+  cd -
+else
+  builtin - "$@"
+fi

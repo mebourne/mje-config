@@ -1,0 +1,19 @@
+# ZSH function file
+# Part of the clearcase package
+# Set view to that matching username
+# Usage: myview
+#
+# $Id: myview,v 1.1 2001/02/12 18:13:21 mebourne Exp $
+
+local views
+views=($(cd /view; command ls -1 | grep -e "$USER" | grep -v '@@$'))
+
+if [[ ${#views} -ne 1 ]]
+then
+  echo "Cannot determine suitable view on this machine. Choices are:" 1>&2
+  print -c $views 1>&2
+  return 1
+fi
+
+echo "Setting view to $views"
+cleartool setview $views

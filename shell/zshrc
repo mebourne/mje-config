@@ -1,0 +1,24 @@
+# ZSH configuration file
+# This is the zshrc file sourced directly by zsh
+# Written by Martin Ebourne
+#
+# $Id: zshrc,v 1.1 2001/02/12 18:13:20 mebourne Exp $
+
+ZFILE=zshrc
+
+[[ -z $ZCONFIGDIR ]] && { print "ERROR: ZCONFIGDIR unset in $ZFILE" ; exit 1 }
+
+config_if_present system/interactive
+config_if_present local/interactive
+config_if_present user/interactive
+
+# TRAPEXIT cannot be set within the other files since they are in a function.
+# Hence need to catch trapexit being set and translate it here
+if functions trapexit >/dev/null
+then
+  TRAPEXIT() {
+    trapexit
+  }
+fi
+
+unset ZFILE

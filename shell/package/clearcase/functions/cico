@@ -1,0 +1,18 @@
+# ZSH function file
+# Part of the clearcase package
+# Checkin checked out files
+# Usage: cico [-r]
+#	 -r	Recurse
+#
+# $Id: cico,v 1.1 2001/02/12 18:13:21 mebourne Exp $
+
+local recurse="$1"
+local files
+
+files=($(cleartool lscheckout -me -cview -short $recurse))
+echo "Check in all of these files?"
+echo "${(F)files}"
+if read -q
+then
+  cleartool ci -cq $files
+fi
