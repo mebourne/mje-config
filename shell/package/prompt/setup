@@ -3,7 +3,7 @@
 # Setup for prompt package
 # Written by Martin Ebourne
 #
-# $Id: setup,v 1.5 2001/03/19 14:27:25 mebourne Exp $
+# $Id: setup,v 1.6 2001/03/30 09:53:31 mebourne Exp $
 
 add_functions_directory package/prompt/functions
 
@@ -51,6 +51,16 @@ prompt_colours=( dark_red	"38;5;172"
 
 # Declare work variables
 typeset -g _prompt_pwd _prompt_gap _prompt_justify _prompt_edit
+typeset -g _prompt_wrapmode=0 _prompt_clearline
+
+# Cache terminal handling of line wrapping
+if [[ $(echotc am 2>/dev/null) != yes || $(echotc xn 2>/dev/null) == yes ]]
+then
+  _prompt_wrapmode=1
+fi
+
+# Cache termcap code for clearing line
+_prompt_clearline=$(echotc ce)
 
 # Register our hooks
 add_to_hook precmd _prompt_precmd
