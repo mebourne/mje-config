@@ -4,7 +4,7 @@
 # done, but immediately before the user specific files
 # Written by Martin Ebourne
 #
-# $Id: interactive,v 1.5 2002/08/29 10:24:59 mebourne Exp $
+# $Id: interactive,v 1.6 2002/08/29 15:33:39 mebourne Exp $
 
 # CSFB settings
 
@@ -48,3 +48,6 @@ then
   [[ -n $ZCONFIGDEBUG ]] && echo "Loading config file ${dbfile:t}"
   . $dbfile
 fi
+
+# Set refresh rate for top
+alias top="top -s3"
