@@ -5,7 +5,7 @@
 # Completion code for sql command
 # Usage: These functions are used by the completion code
 #
-# $Id: _sql,v 1.15 2002/04/19 17:31:53 mebourne Exp $
+# $Id: _sql,v 1.16 2002/04/19 18:00:18 mebourne Exp $
 
 #_sql_trace=1
 
@@ -348,6 +348,20 @@ _sql_pn_select_columns () {
       distinct)
 	_sql_get_token select.column
 	;;
+      \\\()
+        (( parenlevel++ ))
+        _sql_get_token select
+	;;
+      \\\))
+        if (( parenlevel > 0 ))
+	then
+	  (( parenlevel-- ))
+	elif (( $nested ))
+	then
+	  return
+	fi
+	_sql_get_token select
+	;;
       ,)
         _sql_get_token select.column
 	;;
@@ -367,6 +381,20 @@ _sql_pn_select_from () {
 	;;
       where|order|group|having|union)
 	return
+	;;
+      \\\()
+        (( parenlevel++ ))
+        _sql_get_token select.from
+	;;
+      \\\))
+        if (( parenlevel > 0 ))
+	then
+	  (( parenlevel-- ))
+	elif (( $nested ))
+	then
+	  return
+	fi
+	_sql_get_token select.from
 	;;
       ,)
 	_sql_get_token select.from.table
@@ -388,7 +416,7 @@ _sql_pn_select_from_table () {
       tables[$table]=$table
       return
       ;;
-    where|order|group|having|,)
+    where|order|group|having|\\\)|,)
       tables[$table]=$table
       ;;
     *)
@@ -412,6 +440,20 @@ _sql_pn_select_order () {
 	;;
       group|having|union)
 	return
+	;;
+      \\\()
+        (( parenlevel++ ))
+        _sql_get_token select.from
+	;;
+      \\\))
+        if (( parenlevel > 0 ))
+	then
+	  (( parenlevel-- ))
+	elif (( $nested ))
+	then
+	  return
+	fi
+	_sql_get_token select.from
 	;;
       ,)
         _sql_get_token select.order.by.column
@@ -437,6 +479,20 @@ _sql_pn_select_group () {
 	;;
       having|union)
 	return
+	;;
+      \\\()
+        (( parenlevel++ ))
+        _sql_get_token select.from
+	;;
+      \\\))
+        if (( parenlevel > 0 ))
+	then
+	  (( parenlevel-- ))
+	elif (( $nested ))
+	then
+	  return
+	fi
+	_sql_get_token select.from
 	;;
       ,)
         _sql_get_token select.group.by.column
@@ -593,7 +649,7 @@ _sql_pn_update () {
 
   if [[ $token == set ]]
   then
-    _sql_get_token update.set.expression
+    _sql_get_token update.set.column
     _sql_pn_update_set
   fi
 
@@ -647,8 +703,32 @@ _sql_pn_update_set () {
       where)
 	return
 	;;
+      =)
+	_sql_get_token update.set.expression.start
+        ;;
+      \\\()
+        (( parenlevel++ ))
+	if [[ $parenlevel -eq 1 && $tokens[nextstate-2] == \= ]]
+	then
+	  _sql_get_token update.set.subselect
+
+	  if [[ $token == select ]]
+	  then
+	    _sql_pn_sub_select
+	  fi
+	else
+	  _sql_get_token update.set.expression
+	fi
+	;;
+      \\\))
+        if (( parenlevel > 0 ))
+	then
+	  (( parenlevel-- ))
+	fi
+	_sql_get_token update.set
+	;;
       ,)
-	_sql_get_token update.set.expression
+	_sql_get_token update.set.column
         ;;
       *)
         _sql_gpn_column_name update.set update.set 'where'
@@ -715,8 +795,12 @@ _sql_generate_completions () {
   eval $nestedlist[statenestindices[cursorindex]]
 
   case $states[cursorindex] in
-    *.(having|set|where).column.for.*)
+    *.(having|where).column.for.*)
       suffix=""
+      _sql_generate_column_completion ${states[cursorindex]##*.}
+      ;;
+    update.set.column.for.*)
+      suffix="-S ' = ' -r ' =\t\n\-'"
       _sql_generate_column_completion ${states[cursorindex]##*.}
       ;;
     *.column.for.*)
@@ -830,12 +914,20 @@ _sql_generate_completions () {
       ;;
     update.set)
       alts=($alts 'sql:SQL reserved words:(where)')
-      suffix=""
+      suffix="-S ' = ' -r ' =\t\n\-'"
+      _sql_generate_column_completion
+      ;;
+    update.set.column)
+      suffix="-S ' = ' -r ' =\t\n\-'"
       _sql_generate_column_completion
       ;;
     update.set.expression)
-      suffix=""
-      _sql_generate_column_completion
+      ;;
+    update.set.expression.start)
+      alts=($alts 'sql:SQL reserved words:(()')
+      ;;
+    update.set.subselect)
+      alts=($alts 'sql:SQL reserved words:(select)')
       ;;
     update.table)
       alts=($alts 'sql:SQL reserved words:(set)')
