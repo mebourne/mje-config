@@ -2,10 +2,10 @@
 # Add emulate command to start of function. Allows use of scripts to load functions for other
 # shells unchanged, and later can edit the function to force zsh to emulate the correct shell.
 # NB. emulate is always passed -L for local changes
-# Usage: add_emulate [-R] <shell> <function-name>
+# Usage: add_emulate [-R] <shell> <function-name> ...
 #	 -R	As for emulate builtin (reset more options to defaults)
 #
-# $Id: add_emulate,v 1.1 2001/03/14 15:49:34 mebourne Exp $
+# $Id: add_emulate,v 1.2 2001/03/16 12:37:56 mebourne Exp $
 
 local reset
 if [[ $argv[1] == -R ]]
@@ -14,17 +14,23 @@ then
   shift
 fi
 
-if (( ARGC != 2 ))
+if (( ARGC < 2 ))
 then
-  echo "Syntax add_emulate [-R] <shell> <function-name>" 1>&2
+  echo "Syntax add_emulate [-R] <shell> <function-name> ..." 1>&2
   return 1
 fi
 
-local shell=$argv[1] funcname=$argv[2]
+local shell=$argv[1]
+local -a funcnames
+funcnames=($argv[2,-1])
 
-if [[ -n $functions[$funcname] ]]
-then
-  functions[$funcname]="emulate -L $reset $shell
+local funcname
+for funcname in $funcnames
+do
+  if [[ -n $functions[$funcname] ]]
+  then
+    functions[$funcname]="emulate -L $reset $shell
 $functions[$funcname]
 "
-fi
+  fi
+done
