@@ -4,7 +4,7 @@
 # Update config directory
 # Usage: cfgupdate <directory>
 #
-# $Id: cfgupdate,v 1.12 2001/05/22 17:08:06 mebourne Exp $
+# $Id: cfgupdate,v 1.13 2001/08/09 09:48:57 mebourne Exp $
 
 emulate -LR zsh
 
@@ -23,7 +23,7 @@ case $argv[1] in
     file_desc="ZSH configuration system"
     remove_pattern='*~|\#*\#'
     ignore_pattern='*.zwc'
-    remove_compiled='$file.zwc'
+    remove_derived='$file.zwc'
     compile_command='cfg_compile_shell $base_dir'
     ;;
 
@@ -36,9 +36,18 @@ case $argv[1] in
     compile_command='cfg_compile_emacs $base_dir'
     ;;
 
+  *perl)
+    file_desc="Perl configuration system"
+    remove_pattern='*~|\#*\#'
+    ignore_pattern=''
+    # Remove corresponding elc files
+    remove_derived=''
+    compile_command=''
+    ;;
+
   *)
     echo "Syntax: cfgupdate <directory>" 1>&2
-    echo "<directory> must be shell or emacs (with optional path)" 1>&2
+    echo "<directory> must be one of shell, emacs, perl (with optional path)" 1>&2
     return 1
     ;;
 esac
