@@ -2,7 +2,7 @@
 # ZSH function file
 # Release component in SCM
 #
-# $Id: release_component,v 1.2 2002/05/17 16:09:10 mebourne Exp $
+# $Id: release_component,v 1.3 2002/06/13 16:35:07 mebourne Exp $
 
 local vob="/vobs/bpta"
 
@@ -21,6 +21,12 @@ release_component [options] <component> <version> <architecture>
 Options:
   -h, --help			Provide this help
 				# --help | -h * excludes=*
+  -r, --re-release		Re-release a component to a new platform, or
+				for which the abe failed before
+				# --re-release | -r * excludes="--re-release -r --update-labels -u"
+  -u, --update-labels		Re-label and release a component not fully
+				released
+				# --update-labels | -u * excludes="--update-labels -u --re-release -r"
 
 Arguments:
   <component>			The name of the component to release
@@ -38,7 +44,7 @@ then
   return 1
 fi
 
-echo "Releasing component $opts[component] on $opts[arch] as version $opts[version]"
+echo "Re${opts[re-release]+-re}leasing component $opts[component] on $opts[arch] as version $opts[version]"
 
 
 ## Check for any outstanding checkouts
@@ -135,14 +141,22 @@ fi
 
 local label="$opts[component]_$opts[version]"
 
-echo
-echo "Creating label..."
-create_label -t release -c \"Released version $opts[version] of $opts[component]\" $opts[component] $opts[version] || return
+if [[ -z $opts[re-release] ]]
+then
+  if [[ -z $opts[update-labels] ]]
+  then
+    echo
+    echo "Creating label..."
+    create_label -t release -c \"Released version $opts[version] of $opts[component]\" \
+                 $opts[component] $opts[version] \
+      || return
+  fi
 
-echo
-echo "Attaching label..."
-cleartool mklabel -version /main/LATEST $label $vob || return
-cleartool mklabel -version /main/LATEST -r $label $vob/$opts[component] || return
+  echo
+  echo "Attaching label..."
+  cleartool mklabel -replace -version /main/LATEST $label $vob || return
+  cleartool mklabel -replace -version /main/LATEST -r $label $vob/$opts[component] || return
+fi
 
 echo
 echo "Running abe..."
