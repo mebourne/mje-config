@@ -4,7 +4,7 @@
 # done, but immediately before the user specific files
 # Written by Martin Ebourne
 #
-# $Id: login,v 1.1 2001/02/12 18:13:21 mebourne Exp $
+# $Id: login,v 1.2 2001/02/16 16:20:27 mebourne Exp $
 
 # Arcordia settings
 
@@ -14,5 +14,7 @@ typeset -UgxT EMACSLOADPATH emacsloadpath
 emacsloadpath=($HOME/local/share/emacs/site-lisp /opt/emacs/20.3.0.0/solaris/share/emacs/20.3/lisp)
 
 export WU_HOME=/vobs/odyssey/cashsec/script/workunitctrl
+
+export PRINTER=pr_gdac0
 
 umask 002
