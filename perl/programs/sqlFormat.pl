@@ -2,7 +2,7 @@
 #
 # Format SQL output to make it easier to read
 # Written by Martin Ebourne. Started 22/05/01
-# $Id: sqlFormat.pl 792 2003-09-22 11:47:18Z martin $
+# $Id$
 
 use strict;
 use English;
@@ -200,33 +200,33 @@ my $tempFileCount=1;
 my $inputLineNum=0;
 my $maxFieldNameLen=0;
 
-&main();
+main();
 
 exit;
 
 sub main {
 
   # Read the input two lines at a time (but looping once per line), looking for a table header
-  my $thisLine=&getNextLine(0);
+  my $thisLine=getNextLine(0);
   while(defined($thisLine)) {
-    my $nextLine=&getNextLine(0);
+    my $nextLine=getNextLine(0);
 
     # Check to see if we've found the start of a select output
     my ($minLength,$maxLength);
-    if(defined($nextLine) && &isHeader($thisLine, $nextLine, \$minLength, \$maxLength)) {
+    if(defined($nextLine) && isHeader($thisLine, $nextLine, \$minLength, \$maxLength)) {
 
       # Read the table in
       my @columns;
       my @rows;
-      &readHeader(\@columns,$thisLine,$nextLine);
-      &readData(\@columns, \@rows, $minLength, $maxLength, \$nextLine);
+      readHeader(\@columns,$thisLine,$nextLine);
+      readData(\@columns, \@rows, $minLength, $maxLength, \$nextLine);
 
       # Processing
       if($style->{squash}) {
-	&trimLength(\@columns);
+	trimLength(\@columns);
       }
       if($style->{compress}) {
-	&compressLength(\@columns);
+	compressLength(\@columns);
       }
 
       # Write the output
@@ -325,7 +325,7 @@ sub readHeader {
     my $end=$start+$length;
 
     # Extract the column name from the corresponding part of the header line
-    my $name=&trim(substr($header,$start, $length));
+    my $name=trim(substr($header,$start, $length));
 
     # Create a hash for this column, in the column list
     push @$columns, { name        => $name,
@@ -352,7 +352,7 @@ sub readData {
 
   # Loop for each line until the length doesn't match, or we run out
   my $line;
-  while(defined($line=&getNextLine(1)) && length($line)>=$minLength && length($line)<=$maxLength) {
+  while(defined($line=getNextLine(1)) && length($line)>=$minLength && length($line)<=$maxLength) {
     chomp $line;
     my $row=[];
 
@@ -375,7 +375,7 @@ sub readData {
 
 	# Trim the data value (can't do this before alignment check), and
 	# check for the maximum datalength
-	$value=&trim($value);
+	$value=trim($value);
 	if(length($value)>$$column{datalength}) {
 	  $$column{datalength}=length($value);
 	}
@@ -690,8 +690,8 @@ sub rows_control {
 sub emacs_control {
   my ($columns, $rows)=@_;
 
-  &emacs_writeControl($columns,$tempFileBase . $tempFileCount);
-  &emacs_writeData($rows,$tempFileBase . $tempFileCount);
+  emacs_writeControl($columns,$tempFileBase . $tempFileCount);
+  emacs_writeData($rows,$tempFileBase . $tempFileCount);
   $tempFileCount++;
 }
 

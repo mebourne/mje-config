@@ -218,7 +218,7 @@ if($opts->{driver} eq "Sybase") {
   $types{DBI::SQL_BIT}="number";
 }
 
-&main();
+main();
 
 exit;
 
@@ -287,10 +287,10 @@ sub main {
 
     # Prepare the statement
     my $sth = $dbh->prepare($statement)
-        || &raiseError($dbh,$dbh,"dbh->prepare",$statement);
+        || raiseError($dbh,$dbh,"dbh->prepare",$statement);
 
     # Execute the statement
-    $sth->execute || &raiseError($dbh,$sth,"sth->execute",$statement);
+    $sth->execute || raiseError($dbh,$sth,"sth->execute",$statement);
 
     # Output results if a select statement
     if($sth->{NUM_OF_FIELDS}) {
@@ -337,7 +337,7 @@ sub main {
           }
           if(defined($sth->err))
           {
-            &raiseError($dbh,$sth,"sth->fetchrow_array",$statement);
+            raiseError($dbh,$sth,"sth->fetchrow_array",$statement);
           }
 
           # Display the table
@@ -360,12 +360,12 @@ sub main {
     }
 
     # Tidy up
-    $sth->finish || &raiseError($dbh,$sth,"sth->finish",$statement);
+    $sth->finish || raiseError($dbh,$sth,"sth->finish",$statement);
   }
 
   if(!exists($opts->{"auto-commit"})) {
-    $dbh->commit || &raiseError($dbh,$dbh,"dbh->commit");
+    $dbh->commit || raiseError($dbh,$dbh,"dbh->commit");
   }
 
-  $dbh->disconnect || &raiseError($dbh,$dbh,"dbh->disconnect");
+  $dbh->disconnect || raiseError($dbh,$dbh,"dbh->disconnect");
 }

@@ -110,9 +110,9 @@ print "\nThese are the requested versions:\n\n";
 for my $file (sort(keys(%filedata))) {
   my $data = $filedata{$file};
 
-  print &fullName($data), "\n";
+  print fullName($data), "\n";
 
-  &readVersions($data);
+  readVersions($data);
 
   if($data->{chosen}>$data->{latest}) {
     print STDERR "\nERROR: Version for file $file does not exist ($data->{chosen}, latest is $data->{latest})\n";
@@ -120,7 +120,7 @@ for my $file (sort(keys(%filedata))) {
   }
 
   if($opts->{log}) {
-    my $command = "cleartool describe -fmt \"%Nc\" \"" . &fullName($data) . "\"";
+    my $command = "cleartool describe -fmt \"%Nc\" \"" . fullName($data) . "\"";
     my $log = qx{$command};
     $data->{log}=$log;
     if(exists($logEntries{$log})) {
@@ -136,7 +136,7 @@ if($opts->{log}) {
   for my $log (keys(%logEntries)) {
     print "\n";
     for my $data (@{$logEntries{$log}}) {
-      print &fullName($data), ":\n";
+      print fullName($data), ":\n";
     }
     print "  $colours{bold}\"$log\"$colours{reset}\n";
   }
@@ -148,7 +148,7 @@ if($opts->{diff}) {
     my $data = $filedata{$file};
     my %tempData = %$data;
     $tempData{chosen}--;
-    my $command = "diff -uw \"" . &fullName(\%tempData) . "\" \"" . &fullName($data) . "\"";
+    my $command = "diff -uw \"" . fullName(\%tempData) . "\" \"" . fullName($data) . "\"";
     my @text = qx{$command};
     for(my $i = 0; $i<@text; $i++) {
       $_=$text[$i];
@@ -174,7 +174,7 @@ if($opts->{check} || $opts->{label}) {
   print "\nLooking for out of date versions...\n\n";
   for my $data (values(%filedata)) {
     if($data->{chosen}<$data->{latest}) {
-      print &fullName($data), " is superseded by version $data->{latest}\n";
+      print fullName($data), " is superseded by version $data->{latest}\n";
     }
   }
 }
@@ -185,13 +185,13 @@ if($opts->{check}) {
     if(exists($data->{labels}{$opts->{release}})) {
       my $labelled = $data->{versions}{$data->{labels}{$opts->{release}}};
       if($data->{chosen}<$labelled) {
-        print &fullName($data), " is selected (label at version $labelled)\n";
+        print fullName($data), " is selected (label at version $labelled)\n";
       } elsif($data->{chosen}>$labelled) {
-        print "$colours{bold}$colours{lightred}WARNING: ", &fullName($data);
+        print "$colours{bold}$colours{lightred}WARNING: ", fullName($data);
         print " is *NOT* selected (label at version $labelled)$colours{reset}\n";
       }
     } else {
-        print "$colours{bold}$colours{lightred}WARNING: ", &fullName($data);
+        print "$colours{bold}$colours{lightred}WARNING: ", fullName($data);
         print " is *NOT* labelled at any version$colours{reset}\n";
     }
   }
@@ -204,23 +204,23 @@ if($opts->{label}) {
     if(exists($data->{labels}{$opts->{release}})) {
       my $labelled = $data->{versions}{$data->{labels}{$opts->{release}}};
       if($data->{chosen}<$labelled) {
-        print &fullName($data), " is already selected (label at version $labelled)\n";
+        print fullName($data), " is already selected (label at version $labelled)\n";
       } elsif($data->{chosen}>$labelled) {
         $doLabel=1;
         if($data->{chosen}>$labelled+1) {
-          print "$colours{bold}$colours{lightred}WARNING: ", &fullName($data);
+          print "$colours{bold}$colours{lightred}WARNING: ", fullName($data);
 	  print " will jump label by ";
           print $data->{chosen}-$labelled, " versions$colours{reset}\n";
         }
       } else {
-        print &fullName($data), " is already selected\n";
+        print fullName($data), " is already selected\n";
       }
     } else {
       $doLabel=1;
     }
 
     if($doLabel) {
-      system("cleartool mklabel -replace $opts->{release} \"" . &fullName($data) . "\"");
+      system("cleartool mklabel -replace $opts->{release} \"" . fullName($data) . "\"");
     }
   }
 }

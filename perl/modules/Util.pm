@@ -1,7 +1,7 @@
 # Perl package MJE::Util
 # Provide general utility functions
 # Written by Martin Ebourne, 06/08/2001
-# $Id: Util.pm 792 2003-09-22 11:47:18Z martin $
+# $Id$
 #
 # Usage:
 #
@@ -26,7 +26,7 @@ use File::stat;
 
 
 # Validate a data item. Returns the first of $value, $default, or "" which is defined
-sub valid() {
+sub valid {
   my ($value,$default)=@_;
 
   if(defined($value)) {
@@ -44,7 +44,7 @@ sub valid() {
 # Returns an array containing the list of files in the given directory which
 # match the given regular expression (applied to leaf name only). Files
 # returned with full paths
-sub getFileList() {
+sub getFileList {
   my ($dir, $matcher)=@_;
 
   # Read all filenames from the directory
@@ -65,7 +65,7 @@ sub getFileList() {
 
 # Sort the given list of files (including full paths) by increasing last
 # modification time
-sub sortFileListByTime() {
+sub sortFileListByTime {
   my (@files)=@_;
 
   # Sort by last modification time
@@ -82,9 +82,9 @@ sub sortFileListByTime() {
 ### These are useful for debugging
 
 # Print a (possibly recursive) hash reference in a friendly manner
-sub printHash() {
+sub printHash {
   my ($hash,$indent)=@_;
-  $indent=&valid($indent);
+  $indent=valid($indent);
 
   for my $key (sort(keys(%$hash))) {
     my $value=$hash->{$key};

@@ -2,7 +2,7 @@
 #
 # Display a type information using the sourceinfo database.
 # Written by Martin Ebourne. Started 23/02/01
-# $Id: typeInfo.pl 792 2003-09-22 11:47:18Z martin $
+# $Id$
 
 use strict;
 use IO::File;
@@ -52,7 +52,7 @@ my $typeName=$opts->{type};
 
 # Load in the definitions file
 my @defs;
-&loadFile($defsFileName,\@defs);
+loadFile($defsFileName,\@defs);
 
 if(!$opts->{all}) {
   # User did not request -a option to list all types
@@ -61,14 +61,14 @@ if(!$opts->{all}) {
     # User requested short (hierarchical) display
 
     print "Base classes:\n";
-    &shortTypeInfo(\@defs,[],$typeName,1,"",1);
+    shortTypeInfo(\@defs,[],$typeName,1,"",1);
 
     print "\nDerived classes:\n";
-    &reverseTypeInfo(\@defs,[],$typeName,"",1);
+    reverseTypeInfo(\@defs,[],$typeName,"",1);
   } else {
     # User requested standard display
 
-    if(!&printTypeInfo(\@defs,[],$typeName,$opts->{recurse},"")) {
+    if(!printTypeInfo(\@defs,[],$typeName,$opts->{recurse},"")) {
       print "No definition for $typeName found\n";
     }
   }
@@ -77,7 +77,7 @@ if(!$opts->{all}) {
 
   for my $def (@defs) {
     my ($fileName,$recordType,$type,@params)=split(/\#/,$def);
-    &printTypeInfo(\@defs,[],$type,$opts->{recurse},"");
+    printTypeInfo(\@defs,[],$type,$opts->{recurse},"");
   }
 }
 
@@ -137,7 +137,7 @@ sub arrangeMatches {
     my @selectMatches=grep(/^[^\#]*\#[^\#]*\#$type\#/,@$matches);
 
     # Handle any duplicates
-    my $numMatches=&preferredMatches(\@preferredDirs,\@selectMatches);
+    my $numMatches=preferredMatches(\@preferredDirs,\@selectMatches);
     if($numMatches>1) {
       die "Got $numMatches matches for $typeName. Can only handle one in short mode.";
     }
@@ -165,7 +165,7 @@ sub printTypeInfo {
 
     # Handle too many definitions
     if($numMatches>1) {
-      $numMatches=&preferredMatches(\@preferredDirs,\@matches);
+      $numMatches=preferredMatches(\@preferredDirs,\@matches);
 
       if($numMatches>1) {
 	print "$leader*** Got $numMatches matches for $typeName. Listing all...\n";
@@ -174,7 +174,7 @@ sub printTypeInfo {
 
     # Display all definitions
     for my $lineInfo (@matches) {
-      &printLineInfo($defs,$done,$recurse,$leader,$lineInfo);
+      printLineInfo($defs,$done,$recurse,$leader,$lineInfo);
     }
   }
 
@@ -196,7 +196,7 @@ sub printLineInfo {
     if($recurse) {
       my (@possibleTypes)=$params[0]=~/\w+/g;
       for my $possibility (@possibleTypes) {
-	&printTypeInfo($defs,$done,$possibility,$recurse,$leader . "  ");
+	printTypeInfo($defs,$done,$possibility,$recurse,$leader . "  ");
       }
     }
   } elsif($recordType eq "class") {
@@ -218,7 +218,7 @@ sub printLineInfo {
       if($recurse) {
 	my (@possibleTypes)=$base=~/\w+/g;
 	for my $possibility (@possibleTypes) {
-	  &printTypeInfo($defs,$done,$possibility,$recurse,$leader . "    ");
+	  printTypeInfo($defs,$done,$possibility,$recurse,$leader . "    ");
 	}
       }
     }
@@ -241,7 +241,7 @@ sub shortTypeInfo {
 
     # Handle too many definitions
     if($numMatches>1) {
-      $numMatches=&preferredMatches(\@preferredDirs,\@matches);
+      $numMatches=preferredMatches(\@preferredDirs,\@matches);
 
       if($numMatches>1) {
         die "Got $numMatches matches for $typeName. Can only handle one in short mode.";
@@ -250,7 +250,7 @@ sub shortTypeInfo {
 
     # If we got one definition just display it. Zero then report undefined
     if($numMatches==1) {
-      &shortLineInfo($defs,$done,$recurse,$leader,$last,$matches[0]);
+      shortLineInfo($defs,$done,$recurse,$leader,$last,$matches[0]);
     } else {
       if($leader ne "") {
 	$leader=$leader . "+-";
@@ -300,8 +300,8 @@ sub shortLineInfo {
       while(@params) {
 	my $base=shift @params;
 	my ($baseName)=$base=~/(\w+) *(<.*>|)$/g;
-	&shortTypeInfo($defs,$done,$baseName,$recurse,
-		       $leader . ($last ? " " : "|") . "   ",@params==0);
+	shortTypeInfo($defs,$done,$baseName,$recurse,
+		      $leader . ($last ? " " : "|") . "   ",@params==0);
       }
     }
   }
@@ -314,7 +314,7 @@ sub reverseTypeInfo {
   my ($defs,$done,$typeName,$leader,$last)=@_;
 
   # Use the short type display without recursion to describe the type
-  &shortTypeInfo($defs,[],$typeName,0,$leader,1);
+  shortTypeInfo($defs,[],$typeName,0,$leader,1);
 
   # Check type has not already been reported (to trap for recursive loops)
   if((grep { $_ eq $typeName } @$done)==0) {
@@ -323,13 +323,13 @@ sub reverseTypeInfo {
     # Look for class definitions where this type is a base class
     my @matches=grep(/^[^\#]*\#class\#[^\#]*\#[^\#]*\#.*\b$typeName\b/,@$defs);
 
-    &arrangeMatches(\@preferredDirs,\@matches);
+    arrangeMatches(\@preferredDirs,\@matches);
 
     # Display info on all classes derived from this one
     while(@matches) {
       my $lineInfo=shift @matches;
       my ($fileName,$recordType,$type)=split(/\#/,$lineInfo);
-      &reverseTypeInfo($defs,$done,$type,$leader . ($last ? " " : "|") . "   ",@matches==0);
+      reverseTypeInfo($defs,$done,$type,$leader . ($last ? " " : "|") . "   ",@matches==0);
     }
   }
 }

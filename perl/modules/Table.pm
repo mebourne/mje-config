@@ -1,7 +1,7 @@
 # Perl package MJE::Table
 # Provide general utility functions
 # Written by Martin Ebourne, 06/08/2001
-# $Id: Table.pm 792 2003-09-22 11:47:18Z martin $
+# $Id$
 #
 # Usage:
 #
@@ -29,7 +29,7 @@ use MJE::Util;
 ### These turn things into useful strings
 
 # Format a 2d textual table into a string, sizing the columns as appropriate
-sub formatTable() {
+sub formatTable {
   my ($array)=@_;
   my $result="";
 
@@ -63,7 +63,7 @@ sub formatTable() {
 
 # Format a 2d textual table into a string with tab separated columns. The tab
 # can be overridden by providing a different string
-sub formatTableFields() {
+sub formatTableFields {
   my ($array, $separator)=@_;
   my $result="";
 
@@ -99,18 +99,18 @@ sub formatTableFields() {
 #   table  - HTML attributes for table tag
 #   row    - HTML attributes for row tag
 #   cell   - HTML attributes for cell tag
-sub formatTableHtml() {
+sub formatTableHtml {
   my ($array, $options)=@_;
   my $result="";
 
   # True/false options
-  my $header=&valid($options->{header},0);
-  my $encode=&valid($options->{encode},0);
+  my $header=valid($options->{header},0);
+  my $encode=valid($options->{encode},0);
 
   # String options for HTML tags
-  my $tableExtra=&valid($options->{table});
-  my $rowExtra=&valid($options->{row});
-  my $cellExtra=&valid($options->{cell});
+  my $tableExtra=valid($options->{table});
+  my $rowExtra=valid($options->{row});
+  my $cellExtra=valid($options->{cell});
 
   $result.="<TABLE $tableExtra>\n";
 
@@ -157,7 +157,7 @@ sub formatTableHtml() {
 # type       - 'number', 'string', or 'date' relating to the data in the given sort field
 # reverse    - if non-zero sorts in reverse order (optional)
 # skipHeader - number of rows at the top to exclude from the sort (optional)
-sub sortByField() {
+sub sortByField {
   my ($array, $field, $type, $reverse, $skipHeader)=@_;
   my @result;
 
@@ -181,7 +181,7 @@ sub sortByField() {
   } elsif($type eq "string") {
     push @result, sort { ($a->[$field] cmp $b->[$field])*$reverse } @$array[$skipHeader..$#$array];
   } elsif($type eq "date") {
-    push @result, sort { &Date_Cmp($a->[$field],$b->[$field])*$reverse } @$array[$skipHeader..$#$array];
+    push @result, sort { Date_Cmp($a->[$field],$b->[$field])*$reverse } @$array[$skipHeader..$#$array];
   } else {
     die "Invalid type '$type'";
   }

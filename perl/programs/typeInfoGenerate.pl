@@ -2,7 +2,7 @@
 #
 # Parse C++ header files for typedef & class definitions
 # Written by Martin Ebourne. Started 23/02/01
-# $Id: typeInfoGenerate.pl 792 2003-09-22 11:47:18Z martin $
+# $Id$
 
 use strict;
 use IO::File;
@@ -30,7 +30,7 @@ EOF
 my $result=0;
 
 for my $file (@files) {
-  &processFile($file);
+  processFile($file);
 }
 
 exit $result;
@@ -61,8 +61,8 @@ sub processFile {
   $text=~s/ PUBLIC_PS_NEWDELETE//g;
 
 #  print "$text\n";
-  &findTypedefs($file,$text);
-  &findClasses($file,$text);
+  findTypedefs($file,$text);
+  findClasses($file,$text);
 }
 
 sub findTypedefs {
@@ -86,7 +86,7 @@ sub findTypedefs {
 
       # Output definition of the form:
       # <filename>#typedef#<defined type>#<original type>
-      &addField($file,"typedef",$newType,$origType);
+      addField($file,"typedef",$newType,$origType);
     } elsif($typedef=~/\(.*\)$/) {
       # Function typedef. Ignore them for now
     } else {
@@ -127,7 +127,7 @@ sub findClasses {
   
       # Output definition of the form:
       # <filename>#class#<defined class>#<template params>[#<base class>#...]
-      &addField($file,"class",$name,$template,@bases);
+      addField($file,"class",$name,$template,@bases);
     } else {
       print STDERR "Cannot parse class '$class' in $file\n";
       $result=1;

@@ -1,7 +1,7 @@
 # Perl package MJE::Db
 # Provide general utility functions
 # Written by Martin Ebourne, 06/08/2001
-# $Id: Database.pm 792 2003-09-22 11:47:18Z martin $
+# $Id$
 #
 # Usage:
 #
@@ -27,7 +27,7 @@ use Sybase::DBlib;
 # Execute the given statements against the database in the given descriptor.
 # descriptor is a hash reference containing: server, database, user, password.
 # Returns a 2d array of the results of the last statement
-sub sqlExec() {
+sub sqlExec {
   my ($db, @statements)=@_;
 
   die "Invalid database descriptor" if !defined($db);
