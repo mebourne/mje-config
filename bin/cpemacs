@@ -3,9 +3,9 @@
 # cpemacs - Copy emacs files into site-lisp directory and recompile them
 # Written by Martin Ebourne, Started 24/08/99
 #
-# $Id: cpemacs,v 1.4 2000/06/29 10:51:41 ebourm Exp $
+# $Id: cpemacs,v 1.5 2000/12/11 14:35:17 mebourne Exp $
 
-fromdir=$HOME/config/emacs
+fromdir=$HOME/config/emacs-site
 todir=$HOME/local/share/emacs/site-lisp
 
 cd $fromdir
