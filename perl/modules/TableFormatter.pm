@@ -109,6 +109,7 @@ my %styles=(
     extend       => "default",
     description  => "Record style output, row by row",
     headerline   => 0,
+    truncate     => 0,
     printable    => 0,
     formatFn     => \&record_generateFormat,
     dataFn       => \&record_printData,
@@ -116,6 +117,7 @@ my %styles=(
   rows => {
     extend       => "record",
     description  => "Record style output with multiple rows to a record line",
+    truncate     => 1,
     separator    => "  ",
     controlFn    => \&rows_control,
   },
