@@ -3,7 +3,7 @@
 # Execute a block copy command
 # For use only by the SQL packages
 #
-# $Id: _sybase_bcp,v 1.1 2001/06/01 17:18:52 mebourne Exp $
+# $Id: _sybase_bcp,v 1.2 2001/06/13 11:09:01 mebourne Exp $
 
 
 if [[ -z $_sql_parameters[server] || -z $_sql_parameters[user] || -z $_sql_parameters[password] ]]
@@ -12,9 +12,15 @@ then
   return 1
 fi
 
-bcp ${_sql_parameters[database]:+$_sql_parameters[database]..}$argv[1] \
-    $argv[2] \
-    $argv[3] \
+local table="$argv[1]" inout="$argv[2]" file="$argv[3]"
+
+# Table needs database as a prefix. Add default if not overridden
+if [[ $table != *..* && -n $_sql_parameters[database] ]]
+then
+  table="$_sql_parameters[database]..$argv[1]"
+fi
+
+bcp $table $inout $file \
     -S$_sql_parameters[server] \
     -U$_sql_parameters[user] \
     -P$_sql_parameters[password] \
