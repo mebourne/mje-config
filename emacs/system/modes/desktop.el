@@ -1,13 +1,14 @@
 ;; Emacs configuration file
 ;; Setup for desktop session saving
 ;; Written by Martin Ebourne
-;; $Id: desktop.el,v 1.1 2001/05/11 17:31:38 mebourne Exp $
+;; $Id: desktop.el,v 1.2 2001/05/17 13:35:34 mebourne Exp $
 
 ;; Session saver
 (cond (window-system
        (load "desktop")
-       (setq desktop-basefilename (concat ".emacs.desktop." (user-real-login-name)))
-       ;;(desktop-load-default)
+
+       (setq desktop-enable (not secondary))
+
        (setq desktop-globals-to-save
 	     (append
 	      '(kill-ring coding-system-history

@@ -1,7 +1,7 @@
 ;; Emacs configuration file
 ;; Customised variables
 ;; Written by Martin Ebourne
-;; $Id: custom.el,v 1.3 2001/05/16 17:14:26 mebourne Exp $
+;; $Id: custom.el,v 1.4 2001/05/17 13:35:21 mebourne Exp $
 
 (setq custom-file (concat install-user-base-dir "/custom.el"))
 
@@ -48,8 +48,9 @@
  '(european-calendar-style t)
  '(calendar-time-display-form '(24-hours ":" minutes))
 
- ;; Desktop
- '(desktop-missing-file-warning t)
+ ;; Desktop saving
+ '(desktop-basefilename (concat ".emacs.desktop." (user-real-login-name)))
+ '(desktop-missing-file-warning nil)
  '(desktop-buffers-not-to-save "\\(^nn\\.a[0-9]+\\|\\.log$\\|(ftp)\\|^tags\\|^TAGS\\|^pcl-cvs\\.[A-Za-z0-9]+$\\|^\\.newsrc-dribble$\\)")
 
  ;; Save places in files for when reloading them
