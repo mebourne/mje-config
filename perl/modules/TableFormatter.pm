@@ -754,18 +754,14 @@ sub emacs_writeData {
 sub emacs_exit {
   my ($self)=@_;
 
-  my ($formFiles, @allFiles);
+  my ($formFiles, $allFiles);
   for(my $i=1;$i<$self->{_tempFileCount};$i++) {
     $formFiles.=" $self->{_tempFileBase}$i.form";
-    push @allFiles, "$self->{_tempFileBase}$i.form", "$self->{_tempFileBase}$i.data";
+    $allFiles.=" $self->{_tempFileBase}$i.form $self->{_tempFileBase}$i.data";
   }
 
   system("emacsclient --no-wait $formFiles");
-
-  sleep 60;
-  for my $file (@allFiles) {
-    unlink $file;
-  }
+  system("( sleep 60 ; rm -f $allFiles ) &");
 }
 
 
