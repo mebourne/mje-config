@@ -3,7 +3,7 @@
 # Setup for SQL base package
 # Written by Martin Ebourne
 #
-# $Id: setup,v 1.11 2001/08/13 21:22:49 mebourne Exp $
+# $Id: setup,v 1.12 2001/10/02 12:09:28 mebourne Exp $
 
 add_functions_directory package/sql/base/functions
 
@@ -41,13 +41,9 @@ alias select="sql select"
 # Options defaults
 # count    - Print count of number of rows returned (or affected)
 # maxrows  - Maximum number of rows to return. 0 for no maximum
-# format   - Select output type for SQL formatting. Values are:
+# format   - Select output type for SQL formatting. Values are as listed in help
+#            for sqlFormat.pl, with the addition of:
 #	     none   - Formatting completely disabled
-#	     simple - Simple formatting keeping the default output style
-#            squash - As simple but reduces column widths to save on screen space
-#            bcp    - BCP compatible output, tab separated columns with no header
-#	     record - Record style output, row by row
-#	     emacs  - Emacs style output
 # colour   - Colour displayed data based on context (default based on $COLOUR).
 #	     NB. This parameter will only have effect if formatting is enabled
 sqlset count=1 maxrows=0 format=squash colour="${COLOUR:-0}"
