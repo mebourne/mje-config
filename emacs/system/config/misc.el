@@ -1,7 +1,7 @@
 ;; Emacs configuration file
 ;; Miscellaneous stuff
 ;; Written by Martin Ebourne
-;; $Id: misc.el,v 1.6 2002/03/21 11:41:05 mebourne Exp $
+;; $Id: misc.el,v 1.7 2002/03/21 15:59:36 mebourne Exp $
 
 (setq message-log-max 1000)
 
@@ -47,6 +47,9 @@
 
 ;; Enable auto (de-)compression
 (auto-compression-mode t)
+
+;; Enable global auto revert
+(global-auto-revert-mode t)
 
 ;; Default all files in the shell configuration directories to be shell script mode
 (if (getenv "ZCONFIGDIR")
