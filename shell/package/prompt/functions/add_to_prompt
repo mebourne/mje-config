@@ -1,0 +1,18 @@
+# ZSH function file
+# Part of the prompt package
+# Add the given parameters to the previously set prompt
+# Usage: add_to_prompt [<parameter> ...]
+#
+# $Id: add_to_prompt,v 1.1 2001/03/02 18:37:51 mebourne Exp $
+
+local value param
+for param in $argv
+do
+  case $param in
+    \{*\}) param=${${param#\{}%\}}
+           value="$value%{"$'\e'"[\$prompt_colours[$param]m%}";;
+    *)     value="$value$param";;
+  esac
+done
+
+eval $_prompt_edit=\$$_prompt_edit\$value

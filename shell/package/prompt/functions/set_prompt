@@ -1,0 +1,13 @@
+# ZSH function file
+# Part of the prompt package
+# Set the prompt from the given parameters
+# Usage: set_prompt <var-name> [<parameter> ...]
+#
+# $Id: set_prompt,v 1.1 2001/03/02 18:37:51 mebourne Exp $
+
+_prompt_edit=$argv[1]
+shift argv
+
+eval $_prompt_edit=""
+
+add_to_prompt "$argv[@]"

@@ -1,0 +1,54 @@
+# ZSH configuration file
+# Executed when the prompt package is included
+# Setup for prompt package
+# Written by Martin Ebourne
+#
+# $Id: setup,v 1.1 2001/03/02 18:37:18 mebourne Exp $
+
+add_functions_directory package/prompt/functions
+
+# Set up the default prompt colours
+typeset -gA prompt_colours
+prompt_colours=( dark_red	"38;5;130"
+		 dark_green	"38;5;28"
+		 dark_yellow	"38;5;142"
+		 dark_blue	"38;5;73"
+		 grey		"38;5;243"
+		 white		"38;5;15"
+		 normal		"00"
+		 bold		"01"
+	       )
+
+# Declare work variables
+typeset -g _prompt_pwd _prompt_gap _prompt_justify _prompt_edit
+
+# Register our hooks
+add_to_hook precmd _prompt_precmd
+add_to_hook TRAPWINCH _prompt_winch
+
+# Fake resize event to force setup
+_prompt_winch
+
+
+## Now we configure the default prompts
+
+# Default top line prompt
+set_prompt prompt_line
+add_to_prompt {dark_red} '%$COLUMNS>>$USERNAME' {grey} '@' {dark_green} '%m'
+if (( SHLVL > 2 ))
+then
+  add_to_prompt {grey} '  #$[SHLVL-2]'
+fi
+if [[ -n $CLEARCASE_TRIM_VIEW ]]
+then
+  add_to_prompt {dark_yellow} '  $CLEARCASE_VIEW'
+fi
+add_to_prompt {dark_blue} '  $_prompt_pwd'
+add_to_prompt '$_prompt_justify'
+add_to_prompt {grey} '  %D{%a %f %b %Y %H:%M:%S}' {white}
+
+# Default left hand prompt
+set_prompt PROMPT {bold} '%# ' {normal}
+
+# No right hand prompt
+set_prompt RPROMPT
