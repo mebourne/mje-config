@@ -1,183 +1,148 @@
-#!/bin/ksh
-#!/bin/zsh -y
-#===============================================================================
-# lesspipe.sh, a preprocessor for less (version 1.10)
+#!/home/odyssey1/mebourne/local/bin/sun4u/zsh
+# Fancy input pipe script for use with less
+# Written by Martin Ebourne, 05/04/2001
 #
-# Usage:   lesspipe.sh is called when the environment variable LESSOPEN is set:
-#	   LESSOPEN="|lesspipe.sh %s"; export LESSOPEN	(sh like shells)
-#	   setenv LESSOPEN "|lesspipe.sh %s"		(csh, tcsh)
-#	   Use the fully qualified path if lesspipe.sh is not in the search path
-#	   View files in multifile archives:
-#				less archive_file:contained_file
-#	   This can be used to extract single files from a multifile archive:
-#				less archive_file:contained_file>extracted_file
-#          Even a file in a multifile archive that itself is contained in yet
-#          another archive can be viewed this way:
-#				less super_archive:archive_file:contained_file
-#	   Display the last file in the file1:..:fileN chain in raw format:
-#	   Suppress input filtering:	less file1:..:fileN:   (append a colon)
-#	   Suppress decompression:	less file1:..:fileN::  (append 2 colons)
-# Required programs:
-#	   bash (at least version 2.04 or ksh from vendor or zsh)
-#	   (choose the appropriate line as the first line in the script)
-#	   file (a version that recognizes the supported formats)
-#	   ls, rm, cat, cut and further programs for special formats
-# Supported formats:
-#	   gzip, compress, bzip2, zip, tar, nroff(mandoc), ar library, pdf,
-#	   shared library, executable, directory, RPM, Microsoft Word, Debian
-#	   (see also separate file README)
+# To enable:
+#   export LESSOPEN="|lesspipe.sh %s"
 #
-# License: GPL (see file LICENSE)
-#
-# History: see separate file ChangeLog
-# 	   http://www.desy.de/zeuthen/~friebel/unix/lesspipe.html
-#
-# Author:  Wolfgang Friebel DESY Zeuthen (Wolfgang.Friebel@desy.de)
-#===============================================================================
-tarcmd=gtar
-if [[ `tar --version 2>&1` = *GNU* ]]; then
-  tarcmd=tar
-fi
-filecmd='file -L';
-sep=:						# file name separator
-altsep==					# alternate separator character
-if [[ -f "$1" && "$1" = *$sep* || "$1" = *$altsep ]]; then
-  sep=$altsep
-fi
-tmp=/tmp/.lesspipe.$$				# temp file name
-trap 'rm -f $tmp $tmp.fin $tmp. $tmp.. $tmp.1' 0
-trap PIPE
+# To use:
+# - Will automatically process compressed files, archives, and many other types of
+#   file producing them in a useful readable format, with usage hints.
+# - To view files within an archive, append `:<filename-within>' to the archive filename.
+#   This can be repeated indefinitely.
+# - To prevent the leaf file from being formatted/processed on output append `:' to the
+#   filename (may still be decompressed).
+# - To prevent the leaf file from being decompressed and formatted/processed append `::'
+#   to the filename.
 
-show () {
-  file1=${1%%$sep*}
-  rest1=${1#$file1}
-  rest11=${rest1#$sep}
-  file2=${rest11%%$sep*}
-  rest2=${rest11#$file2}
-  rest11=$rest1
-  if [[ $# = 1 ]]; then
-    type=`$filecmd "$file1" | cut -d : -f 2-`
-    get_cmd "$type" "$file1" $rest1
-    if [[ "$cmd" != "" ]]; then
-      show "-$rest1" "$cmd"
-    else
-      isfinal "$type" "$file1" $rest11
-    fi
-  elif [[ $# = 2 ]]; then
-    type=`$2 | $filecmd - | cut -d : -f 2-`
-    get_cmd "$type" "$file1" $rest1
-    if [[ "$cmd" != "" ]]; then
-      show "-$rest1" "$2" "$cmd"
-    else
-      $2 | isfinal "$type" - $rest11
-    fi
-  elif [[ $# = 3 ]]; then
-    type=`$2 | $3 | $filecmd - | cut -d : -f 2-`
-    get_cmd "$type" "$file1" $rest1
-    if [[ "$cmd" != "" ]]; then
-      show "-$rest1" "$2" "$3" "$cmd"
-    else
-      $2 | $3 | isfinal "$type" - $rest11
-    fi
-  elif [[ $# = 4 ]]; then
-    type=`$2 | $3 | $4 | $filecmd - | cut -d : -f 2-`
-    get_cmd "$type" "$file1" $rest1
-    if [[ "$cmd" != "" ]]; then
-      show "-$rest1" "$2" "$3" "$4" "$cmd"
-    else
-      $2 | $3 | $4 | isfinal "$type" - $rest11
-    fi
-  elif [[ $# = 5 ]]; then
-    type=`$2 | $3 | $4 | $5 | $filecmd - | cut -d : -f 2-`
-    get_cmd "$type" "$file1" $rest1
-    if [[ "$cmd" != "" ]]; then
-      show "-$rest1" "$2" "$3" "$4" "$5" "$cmd"
-    else
-      $2 | $3 | $4 | $5 | isfinal "$type" - $rest11
-    fi
-  elif [[ $# = 6 ]]; then
-    type=`$2 | $3 | $4 | $5 | $6 | $filecmd - | cut -d : -f 2-`
-    get_cmd "$type" "$file1" $rest1
-    if [[ "$cmd" != "" ]]; then
-      echo "$0: Too many levels of encapsulation"
-    else
-      $2 | $3 | $4 | $5 | $6 | isfinal "$type" - $rest11
-    fi
+
+### Command tables ###
+
+# These are the commands for uncompressing files.
+# Must use $input but not $component. Result to stdout
+uncompress_cmds() {
+  case $argv[1] in
+    *bzip*)			cmd='do_bzip $input';;
+    *gzip*)			cmd='do_gzip $input';;
+    *compress*)			cmd='uncompress -c $input';;
+  esac
+}
+
+# These are the commands for extracting files from archives.
+# Must use $input and $component. Result to stdout
+extract_cmds() {
+  case $argv[1] in
+    *tar*)			cmd='do_gtar Oxf $input $component';;
+    *Zip*)			cmd='unzip -avp $input $component';;
+    *ar\ archive*)		cmd='ar p $input $component';;
+  esac
+}
+
+# These are the commands for processing the end file.
+# Must use $input but not $component. Result to stdout
+convert_cmds() {
+  case $argv[1] in
+    *tar*)
+      cmd='tar tvf $input'
+      comment=$'listing archive, append `:\' to see archive or `:file\' to view contained file';;
+
+    *Zip*)
+      cmd='unzip -lv $input'
+      comment=$'listing archive, append `:\' to see archive or `:file\' to view contained file';;
+
+    *ar\ archive*)
+      cmd='ar vt $input'
+      comment=$'listing archive, append `:\' to see archive or `:file\' to view contained file';;
+
+    *directory*)
+      cmd='ls -alFhb $input'
+      comment=$'displaying directory with ls';;
+
+    *roff*)
+      cmd='do_nroff $input'
+      comment=$'displaying manpage with nroff, append `:\' to see source';;
+
+    *script*) # This stops scripts being caught by *executable* below
+      ;;
+
+    *executable*)
+      cmd='strings $input'
+      comment=$'displaying executable with strings, append `:\' to see binary';;
+
+    *shared*)
+      cmd='nm $input'
+      comment=$'displaying library with nm, append `:\' to see binary';;
+
+    *dynamic\ lib*)
+      cmd='nm $input'
+      comment=$'displaying library with nm, append `:\' to see binary';;
+
+    *relocatable*)
+      cmd='nm $input'
+      comment=$'displaying object with nm, append `:\' to see binary';;
+
+    *HTML*)
+      cmd='do_lynx $input'
+      comment=$'displaying HTML with lynx, append `:\' to see source';;
+
+    *PDF*)
+      cmd='do_pdftotext $input'
+      comment=$'displaying PDF with pdftotext, append `:\' to see binary';;
+
+    *Microsoft\ (Word|Office)*)
+      cmd='do_antiword $input'
+      comment=$'displaying MSWord with antiword, append `:\' to see binary';;
+
+    *data*)
+      cmd="strings $input"
+      comment=$'displaying binary data file with strings, append `:\' to see binary';;
+  esac
+}
+
+
+### Complex commands ###
+
+# Execute bzip checking for availability
+do_bzip() {
+  if whence -p bzip2 >/dev/null
+  then
+    bzip2 -c -d "$argv[@]"
+  else
+    fatal_error "Cannot process bzip file - bzip2 command missing"
   fi
 }
 
-get_cmd () {
-  cmd=
-  if [[ "$2" = /*\ * ]]; then
-    ln -s "$2" $tmp..
-    set "$1" $tmp..
-  elif [[ "$2" = *\ * ]]; then
-    ln -s $PWD/"$2" $tmp..
-    set "$1" $tmp..
-  fi
-
-  if [[ "$1" = *bzip* || "$1" = *compress[\'e]d\ * ]]; then
-    if [[ "$3" = $sep$sep ]]; then
-      return
-    else
-      cmd="gzip -c -d $2"
-    fi
-    return
-  fi
-    
-  rest1=$rest2
-  if [[ "$file2" != "" ]]; then
-    if [[ "$1" = *tar* ]]; then
-      cmd="$tarcmd Oxf $2 $file2"
-    elif [[ "$1" = *Zip* ]]; then
-      cmd="iszip $2 $file2"
-    elif [[ "$1" = *\ ar\ archive* ]]; then
-      cmd="isar $2 $file2"
-    fi
+# Execute gzip checking for availability
+do_gzip() {
+  if whence -p gzip >/dev/null
+  then
+    gzip -c -d "$argv[@]"
+  else
+    fatal_error "Cannot process gzip file - gzip command missing"
   fi
 }
 
-iszip () {
-  if [[ "$1" = - ]]; then
-    rm -f $tmp
-    cat > $tmp
-    set $tmp "$2"
+# Execute GNU version of tar checking for availability
+do_gtar() {
+  if whence -p gtar >/dev/null && [[ $(gtar --version 2>&1) == *GNU* ]]
+  then
+    gtar "$argv[@]"
+  elif [[ $(tar --version 2>&1) == *GNU* ]]
+  then
+    tar "$argv[@]"
+  else
+    fatal_error "Cannot process tar file - GNU tar command missing"
   fi
-  unzip -avp "$1" "$2"
 }
 
-isar () {
-  if [[ "$1" = - ]]; then
-    rm -f $tmp
-    cat > $tmp
-    set $tmp "$2"
-  fi
-  ar p "$1" "$2"
-}
-
-isfinal() {
-
-  if [[ "$3" = $sep || "$3" = $sep$sep ]]; then
-    cat $2
-    return
-  elif [[ "$2" = - ]]; then
-    case "$1" in 
-    *RPM*|*\ ar\ archive*|*shared*|*Zip*)
-      cat > $tmp.fin
-      set "$1" $tmp.fin
-    esac
-  fi
-  if [[ "$1" = *No\ such* ]]; then
-    return
-  elif [[ "$1" = *directory* ]]; then
-    echo "==> This is a directory, showing the output of ls -lAL"
-    ls -lAL "$2"
-  elif [[ "$1" = *tar* ]]; then
-    echo "==> use tar_file${sep}contained_file to view a file in the archive"
-    $tarcmd tvf "$2"
-  elif [[ "$1" = *roff* ]]; then
-    echo "==> append $sep to filename to view the nroff source"
-    nroff -e -man ${2#-} | sed -n '
+# Execute groff or nroff as available
+do_nroff() {
+  if whence -p groff >/dev/null
+  then
+    groff -s -p -t -e -Tascii -mandoc "$argv[@]"
+  else
+    # sed to compress blank lines
+    nroff -man "$argv[@]" | sed -n '
 /./ {
   p
   d
@@ -191,31 +156,183 @@ isfinal() {
 }
 p
 '
-  elif [[ "$1" = *executable* && "$1" != *script* ]]; then
-    echo "==> append $sep to filename to view the binary file"
-    strings ${2#-}
-  elif [[ "$1" = *\ ar\ archive* ]]; then
-    echo "==> use library${sep}contained_file to view a file in the archive"
-    ar vt "$2"
-  elif [[ "$1" = *shared* ]]; then
-    echo "==> This is a dynamic library, showing the output of nm"
-    nm "$2"
-  elif [[ "$1" = *Zip* ]]; then
-    echo "==> use zip_file${sep}contained_file to view a file in the archive"
-    unzip -lv "$2"
-##ifdef convert,aview
-# very experimental attempt to display images using ASCII art (do not use)
-#  elif [[ "$1" = *image\ data*  || "$1" = *image\ text* || "$1" = *JPEG\ file*  || "$1" = *JPG\ file* ]]; then
-#    convert "$2" /tmp/.lesspipe.pnm
-#    echo 'q' | aview -kbddriver stdin -driver stdout -inverse -eight -nodim -nobold -noreverse -noboldfont /tmp/.lesspipe.pnm 2> /dev/null
-#    rm  /tmp/.lesspipe.pnm
-##endif
-  elif [[ "$2" = - ]]; then
-    cat
   fi
 }
 
-# calling show with arg1 arg2 ... is equivalent to calling with arg1:arg2:...
-IFS=$sep a="$*"
-IFS=' '
-show "$a"
+# Execute lynx checking for availability
+do_lynx() {
+  if whence -p lynx >/dev/null
+  then
+    lynx -dump "$argv[@]"
+  else
+    fatal_error "Cannot process HTML file - lynx command missing"
+  fi
+}
+
+# Execute pdftotext checking for availability
+do_pdftotext() {
+  if whence -p pdftotext >/dev/null
+  then
+    pdftotext -dump "$argv[@]"
+  else
+    fatal_error "Cannot process PDF file - pdftotext command missing"
+  fi
+}
+
+# Execute antiword checking for availability
+do_antiword() {
+  if whence -p antiword >/dev/null
+  then
+    antiword -dump "$argv[@]"
+  else
+    fatal_error "Cannot process Micrsoft Word file - antiword command missing"
+  fi
+}
+
+
+### The program ###
+
+# Cleanup function
+cleanup() {
+
+  # Delete any temporary files, careful not to cause error
+  rm -f $tmpprefix*(N)
+
+  # Return with the original error code
+  return $(( argv[1] ? 128 + argv[1] : 0 ))
+}
+
+# Abort with a fatal error
+fatal_error() {
+
+  # Report the error on both streams since only one of them may be available at the time
+  echo "ERROR: $argv[*]"
+  echo "ERROR: $argv[*]" 1>&2
+
+  # Don't give a failure return code because then less will revert to trying to display the
+  # original file, rather than stopping
+  exit
+}
+
+comment() {
+  if [[ -n "$argv[*]" ]]
+  then
+    echotc mr
+    echo "$argv[*]"
+    echotc me
+  fi
+}
+
+# The processing routine where all the work is done
+# decode_components <num-trailing> <components> ...
+decode_components() {
+  integer trailing=$argv[1]
+  local input="$argv[2]" component="$argv[3]"
+
+  local cmd comment
+  while true
+  do
+    local contents="$(eval $filecmd $input || echo error)"
+
+    case $contents in
+      error)
+        fatal_error "Command 'file' failed"
+	;;
+
+      *No\ such\ file*)
+        # less will report this for us
+        exit 1
+        ;;
+
+      *)
+        # First check to see if the file is compressed. If so we'll need to uncompress
+	# it & then try again
+        cmd=""
+	uncompress_cmds $contents
+	if [[ -n $cmd ]]
+	then
+
+	  # This needs uncompressing unless the user has given `::' and it's the leaf
+	  # component
+	  if (( $#component || trailing < 2 ))
+	  then
+	    if [[ -z $component ]]
+	    then
+              comment "uncompressing, append \`::' to view raw file"
+	    fi
+	    output=$tmpprefix$RANDOM
+	    eval $cmd > $output
+	    input=$output
+	  else
+	    cat $input
+	    return
+	  fi
+	elif [[ -n $component ]]
+	then
+
+	  # Wasn't compressed, but we have a component so user think's it an archive.
+	  # Either we manage to extract a file or we fail here
+	  extract_cmds $contents
+	  if [[ -n $cmd ]]
+	  then
+	    output=$tmpprefix$RANDOM
+	    eval $cmd > $output
+	    input=$output
+	    shift
+	    component=$argv[3]
+	  else
+	    fatal_error "Cannot extract file of type '$contents'"
+	  fi
+	else
+
+	  # Not compressed and leaf component, so display it however
+	  convert_cmds $contents
+	  if (( $#cmd && !trailing ))
+	  then
+
+	    # No trailing `:' and found a processing command, so use it
+	    comment "$comment"
+	    eval $cmd
+	  elif [[ $input == $tmpprefix* || $trailing -ne 0 ]]
+	  then
+
+	    # Trailing `:' or no processing command but already been processed (eg.
+	    # extracted from archive). Need to cat else less can't find the file
+	    cat $input
+	  fi
+	  # Else less will find the file direct, which should be more efficient
+
+	  return
+	fi
+	;;
+    esac
+  done
+}
+
+main() {
+  local file="$argv[1]"
+
+  # Need this for some of our expansions
+  setopt extended_glob
+
+  # Default prefix for our temporary files
+  typeset -g tmpprefix="${TMPPREFIX:-/tmp/zsh}.lp.$$."
+
+  # Determine which sort of file command we have. BSD doesn't follow links but has an
+  # option so it does, Sun does follow links but has an option so it doesn't. Good
+  # stuff.
+  local filecmd="file -L"
+  if ! eval $filecmd /dev/null >/dev/null 2>&1
+  then
+    filecmd="file"
+  fi
+
+  # Clean up before quitting
+  trap cleanup EXIT INT QUIT
+
+  # Split the : separated argument up into normal space separated ones and call the
+  # processing routine
+  decode_components ${#${(M)file%%:#}} ${(s-:-)file}
+}
+
+main "$argv[@]"
