@@ -3,6 +3,17 @@
 # Execute an SQL command
 # Usage: sql <sql-command> ...
 #
-# $Id: sql,v 1.1 2001/02/26 18:37:50 mebourne Exp $
+# $Id: sql,v 1.2 2001/05/29 16:56:26 mebourne Exp $
 
-_sql_call sql "$@"
+if (( ARGC ))
+then
+  local formatcmd
+  if (( $+format && format
+        || !$+format && $+_sql_parameters[format] && _sql_parameters[format]))
+  then
+    formatcmd='| sqlformat.pl -c -s'
+  fi
+  eval _sql_call execute "\$argv[@]" $formatcmd
+else
+  _sql_call interactive
+fi
