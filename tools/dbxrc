@@ -1,9 +1,9 @@
 # DBX configuration file
 # Written by Martin Ebourne
 #
-# $Id: dbxrc,v 1.5 2001/04/10 11:06:56 mebourne Exp $
+# $Id: dbxrc,v 1.6 2002/06/25 14:49:55 mebourne Exp $
 
-dbxenv suppress_startup_message 4.0
+dbxenv suppress_startup_message 6.2
 
 # This pages the help, preferably with less, otherwise anything we can find
 page() {
@@ -59,4 +59,4 @@ alias e=examine
 #language c++
 
 # Catch exceptions
-stop throw
+#stop throw
