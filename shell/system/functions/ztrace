@@ -1,0 +1,27 @@
+#eval compdef -n _parse_opts ztrace
+# ZSH function file
+# Trace execution of Zsh function
+# Usage: ztrace <command> ...
+#
+# $Id: ztrace,v 1.1 2001/08/15 16:14:59 mebourne Exp $
+
+local -a command
+parse_opts -- "$argv[@]" <<'EOF' || return 1
+Description:
+Trace execution of Zsh function.
+
+Usage:
+ztrace [options] [<command> ...]
+
+Options:
+  -h, --help			Provide this help
+				# --help | -h
+
+Arguments:
+  [<command> ...]		The command to be executed
+				# command += [*] command : commandargs
+EOF
+
+setopt x_trace
+
+"$command[@]"

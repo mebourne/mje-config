@@ -1,0 +1,8 @@
+# ZSH function file
+# Part of the xterm package
+# Update title bar on XTerm
+# Usage: xterm_settitletext <text>
+#
+# $Id: xterm_settitletext,v 1.1 2001/08/15 16:14:59 mebourne Exp $
+
+echo -n "\e]2;$argv[1]\007"

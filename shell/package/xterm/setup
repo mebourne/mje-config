@@ -1,0 +1,26 @@
+# ZSH configuration file
+# Executed when the xterm package is included
+# Setup for xterm package
+# Written by Martin Ebourne
+#
+# $Id: setup,v 1.1 2001/08/15 16:14:59 mebourne Exp $
+
+add_functions_directory package/xterm/functions
+
+# Register our hooks
+add_to_hook precmd _xterm_precmd
+add_to_hook preexec '_xterm_preexec "$1"'
+
+
+## Set up default text values
+
+typeset -g xterm_name xterm_title xterm_icon
+
+# This is the default 'name' of the xterm, used for icon text etc.
+xterm_name='xterm'
+
+# This is the default title text, updated after each command
+xterm_title='${xterm_name:+$xterm_name   }%n@%m   Directory: %d ${CLEARCASE_VIEW:+   View: $CLEARCASE_VIEW}'
+
+# This is the default icon text, updated before and after each command
+xterm_icon='${_xterm_command:+%% }${_xterm_command:-$xterm_name}'

@@ -1,0 +1,8 @@
+# ZSH function file
+# Part of the xterm package
+# Update icon name on XTerm
+# Usage: xterm_seticontext <text>
+#
+# $Id: xterm_seticontext,v 1.1 2001/08/15 16:14:59 mebourne Exp $
+
+echo -n "\e]1;$argv[1]\007"

@@ -1,0 +1,11 @@
+# ZSH function file
+# Part of the xterm package
+# Hook for precmd function to handle xterm updating
+# Usage: _xterm_precmd
+#
+# $Id: _xterm_precmd,v 1.1 2001/08/15 16:14:59 mebourne Exp $
+
+local _xterm_command=""
+
+xterm_settitletext ${(%%)xterm_title}
+xterm_seticontext ${(%%)xterm_icon}
