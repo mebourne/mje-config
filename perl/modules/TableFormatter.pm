@@ -15,7 +15,6 @@ use strict;
 
 use Data::Dumper;
 
-
 # Settings for styles
 # Mandatory:
 #   headerline 	 - True to write out header lines
@@ -120,22 +119,50 @@ sub new {
   my ($proto)=@_;
   my $class=ref($proto) || $proto;
   my $self={};
-  my $obj=bless($self,$class);
+  bless($self,$class);
 
+  # Internal vars
   $self->{_debug}=0;
+  $self->{_columns}=[];
+  $self->{_rows}=[];
+  $self->{_maxFieldNameLen}=0;
 
+  # These for Emacs style
+  $self->{_tempFileBase}="/tmp/sqlformat.$::PID.";
+  $self->{_tempFileCount}=1;
+
+  # User settable
   $self->{colour}=1;
   $self->{screenWidth}=undef;
-  $self->(maxFieldNameLen}=0;
 
-  return $obj;
+  return $self;
+}
+
+# CLASS METHOD
+# Generate a simple hash from style name to description for use with
+# ParseOpts. Ignore any styles which don't have a description and hence are
+# intermediates. Also generate summary for main help page
+sub getStylesHelp {
+  my ($stylesHelp)=@_;
+
+  my $stylesSummary;
+  for my $styleName (keys(%styles)) {
+    $styles{$styleName}->{name}=$styleName;
+    if(exists($styles{$styleName}->{description})) {
+      $stylesHelp->{$styleName}=$styles{$styleName}->{description};
+      $stylesSummary.="				$styleName	$styles{$styleName}->{description}\n";
+    }
+  }
+
+  return $stylesSummary;
 }
 
 # Set the style to use
 sub setStyle {
-  my ($self, $style)=@_;
+  my ($self, $styleName)=@_;
 
-  $self->{style}=$styles{$style};
+  my $style=$styles{$styleName};
+  $self->{style}=$style;
 
   # Expand the selected style to include all inherited settings from its base styles
   for(my $extends=exists($style->{extend}) ? $styles{$style->{extend}} : undef;
@@ -149,16 +176,127 @@ sub setStyle {
   }
 }
 
+sub addColumn {
+  my ($self, $name, $length, $type)=@_;
+
+  if($length<length($name)) {
+    $length=length($name);
+  }
+
+  push @{$self->{_columns}}, {
+    name        => $name,
+    length      => $length,
+    titlelength => length($name),
+    datalength  => 0,
+    type        => $type,
+    align       => $type eq "number" ? 1 : -1,
+    needsquote  => 0
+      };
+
+  if(length($name)>$self->{_maxFieldNameLen}) {
+    $self->{_maxFieldNameLen}=length($name);
+  }
+}
+
+sub addRow {
+  my ($self, @values)=@_;
+
+  # Iterate over each column
+  my $row=[];
+  my $i;
+  for($i=0;$i<@{$self->{_columns}};$i++) {
+    my $column=$self->{_columns}->[$i];
+    my $value=$values[$i];
+
+    if(!defined($value)) {
+      $value="NULL";
+    }
+
+    # Check for the maximum datalength
+    if(length($value)>$$column{datalength}) {
+      $$column{datalength}=length($value);
+    }
+
+    # Check if any special characters which may need quoting are present
+    if(defined($self->{style}->{quoteRegexp}) && !$$column{needsquote}) {
+      $$column{needsquote}=$value=~/$self->{style}->{quoteRegexp}/;
+    }
+
+    # Store the value
+    push @$row, $value;
+  }
+
+  # Store the row
+  push @{$self->{_rows}}, $row;
+}
+
+sub display {
+  my ($self)=@_;
+
+  # Processing
+  if($self->{style}->{squash}) {
+    $self->trimLength($self->{_columns});
+  }
+  if($self->{style}->{compress}) {
+    $self->compressLength($self->{_columns});
+  }
+
+  # Write the output
+  &{$self->{style}->{controlFn}}($self,$self->{_columns},$self->{_rows});
+
+  # Ensure a newline is present. Helps make desc output easier to read
+  if($self->{style}->{newline}) {
+    print "\n";
+  }
+
+  # Call any exit function
+  if(exists($self->{style}->{exitFn})) {
+    &{$self->{style}->{exitFn}}($self);
+  }
+}
+
+# For each column shrink length such that it will still fit all data and
+# column title
+sub trimLength {
+  my ($self, $columns)=@_;
+
+  my $x;
+  for($x=0;$x<@$columns;$x++) {
+    my $column=$$columns[$x];
+    if(length($$column{name})>$$column{datalength}) {
+      $$column{length}=length($$column{name});
+    } else {
+      $$column{length}=$$column{datalength};
+    }
+  }
+}
+
+# For each column shrink length such that it will still fit all data, reducing
+# title if required
+sub compressLength {
+  my ($self, $columns)=@_;
+
+  my $x;
+  for($x=0;$x<@$columns;$x++) {
+    my $column=$$columns[$x];
+
+    $$column{length}=$$column{datalength};
+    if($$column{length}<1) {
+      $$column{length}=1;
+    }
+    $$column{name}=substr($$column{name},0,$$column{length});
+  }
+}
 
 sub default_control {
   my ($self, $columns, $rows)=@_;
 
   if($self->{style}->{headerline}) {
-    &{$self->{style}->{headerFn}}($columns);
+    &{$self->{style}->{headerFn}}($self,$columns);
   }
   if(@$rows) {
-    my $format=&{$self->{style}->{formatFn}}($columns);
-    &{$self->{style}->{dataFn}}($format,$rows);
+    my $format=&{$self->{style}->{formatFn}}($self,$columns);
+    &{$self->{style}->{dataFn}}($self,$format,$rows);
   }
 }
 
@@ -290,7 +428,7 @@ sub record_generateFormat {
     # Write a '%<num>s' entry as appropriate
     my $column=$$columns[$x];
     $format.="\e[38;5;10m" if $self->{colour};
-    $format.=sprintf("%-*s",$self->{maxFieldNameLen},$$column{name});
+    $format.=sprintf("%-*s",$self->{_maxFieldNameLen},$$column{name});
     $format.="\e[38;5;15m" if $self->{colour};
     $format.=": ";
     if($self->{colour}) {
@@ -339,7 +477,7 @@ sub rows_control {
 
   my $separator=$self->{style}->{separator};
 
-  my $rowsPerLine=int(($self->{screenWidth}-$self->{maxFieldNameLen}-2+length($separator))
+  my $rowsPerLine=int(($self->{screenWidth}-$self->{_maxFieldNameLen}-2+length($separator))
 		      /($rowWidth+length($separator)));
   $rowsPerLine=1 if $rowsPerLine<1;
 
@@ -359,7 +497,7 @@ sub rows_control {
       $format.="%-*s";
       $format.="\e[38;5;15m" if $self->{colour};
       $format.=": ";
-      printf "$format", $self->{maxFieldNameLen}, $$column{name};
+      printf "$format", $self->{_maxFieldNameLen}, $$column{name};
 
       # Process this column for each row in this block
       for(my $rowNum=$rowBlock;$rowNum<$rowBlock+$rowsPerLine && $rowNum<@$rows;$rowNum++) {
@@ -393,9 +531,9 @@ sub rows_control {
 sub emacs_control {
   my ($self, $columns, $rows)=@_;
 
-  &emacs_writeControl($columns,$tempFileBase . $tempFileCount);
-  &emacs_writeData($rows,$tempFileBase . $tempFileCount);
-  $tempFileCount++;
+  $self->emacs_writeControl($columns,$self->{_tempFileBase} . $self->{_tempFileCount});
+  $self->emacs_writeData($rows,$self->{_tempFileBase} . $self->{_tempFileCount});
+  $self->{_tempFileCount}++;
 }
 
 # Print the header
@@ -418,7 +556,7 @@ sub emacs_writeControl {
   for($x=0;$x<@$columns;$x++) {
     # Write a '%<num>s' entry as appropriate
     my $column=$$columns[$x];
-    $format.=sprintf("%-*s: \" %d \"\n",$self->{maxFieldNameLen},$$column{name}, $x+1);
+    $format.=sprintf("%-*s: \" %d \"\n",$self->{_maxFieldNameLen},$$column{name}, $x+1);
   }
 
   $format.="\"))\n";
@@ -444,14 +582,20 @@ sub emacs_writeData {
 
 # Send the generated files to Emacs via emacsclient when we have finished
 sub emacs_exit {
-  my ($self, $formFiles, $allFiles);
-  for(my $i=1;$i<$tempFileCount;$i++) {
-    $formFiles.=" $tempFileBase$i.form";
-    $allFiles.=" $tempFileBase$i.form $tempFileBase$i.data";
+  my ($self)=@_;
+
+  my ($formFiles, @allFiles);
+  for(my $i=1;$i<$self->{_tempFileCount};$i++) {
+    $formFiles.=" $self->{_tempFileBase}$i.form";
+    push @allFiles, "$self->{_tempFileBase}$i.form", "$self->{_tempFileBase}$i.data";
   }
 
   system("emacsclient --no-wait $formFiles");
-  system("( sleep 60 ; rm -f $allFiles ) &");
+
+  sleep 60;
+  for my $file (@allFiles) {
+    unlink $file;
+  }
 }
 
 return 1;
