@@ -1,19 +1,35 @@
 # ZSH function file
 # Build the cashsec system
-# Usage: build [clean]
+# Usage: build [clean|lib]
 #
-# $Id: build,v 1.1 2001/02/21 11:22:23 mebourne Exp $
+# $Id: build,v 1.2 2001/03/15 11:53:04 mebourne Exp $
 
-if [[ $1 != clean ]]
-then
-  ( cd ~cashsec/src/persist; mk lib ) &&
-    ( cd ~cashsec/src/accruals; mk cfggen.o ) &&
-    ( cd ~cashsec/src/demux; mk cfggen.o ) &&
-    ( cd ~cashsec/src; mk lib ) &&
-    ( cd ~cashsec/src/sched; mk ) &&
-    ( cd ~cashsec/src; mk ) &&
-    echo "cashsec build completed ok"
-else
-  echo "Deleting all derived objects in cashsec"
-  cleartool lsprivate -do -invob ~cashsec | xargs rm -f
-fi
+case $1 in
+  clean)
+    echo "Deleting all derived objects in cashsec"
+    cleartool lsprivate -do -invob ~cashsec | xargs rm -f
+    ;;
+
+  lib)
+    ( cd ~cashsec/src/persist; mk lib ) &&
+      ( cd ~cashsec/src/accruals; mk cfggen.o ) &&
+      ( cd ~cashsec/src/demux; mk cfggen.o ) &&
+      ( cd ~cashsec/src; mk lib ) &&
+      echo "cashsec build lib completed ok"
+    ;;
+
+  "")
+    ( cd ~cashsec/src/persist; mk lib ) &&
+      ( cd ~cashsec/src/accruals; mk cfggen.o ) &&
+      ( cd ~cashsec/src/demux; mk cfggen.o ) &&
+      ( cd ~cashsec/src; mk lib ) &&
+      ( cd ~cashsec/src/sched; mk ) &&
+      ( cd ~cashsec/src; mk ) &&
+      echo "cashsec build completed ok"
+    ;;
+
+  *)
+    echo "Usage: build [clean|lib]" 2>&1
+    return 1
+    ;;
+esac
