@@ -3,7 +3,7 @@
 # Command alias setup
 # Written by Martin Ebourne
 #
-# $Id: aliases,v 1.3 2001/03/02 09:41:12 mebourne Exp $
+# $Id: aliases,v 1.4 2001/03/06 12:10:29 mebourne Exp $
 
 alias rm="rm -i"
 alias which-command=which
@@ -18,11 +18,13 @@ which less | grep / >/dev/null && alias more=less
 # If we've got the GNU ls then enable automatic colour and a few more options, else don't
 if [[ $(ls --version 2>&1) == *GNU* ]]
 then
-  alias l="command ls -F --color=always --ignore='*.o' --ignore='*~' --ignore='.*~'"
+  alias l='command ls -F --color=always ${fignore/#/--ignore=\*} ${fignore/#/--ignore=.\*}'
   alias ls="command ls -F --color=always"
+  alias ll='command ls -lFhb --color=always ${fignore/#/--ignore=\*} ${fignore/#/--ignore=.\*}'
   alias dir="command ls -alFhb --color=always"
 else
   alias l="command ls -F"
   alias ls="command ls -F"
+  alias ll="command ls -lFb"
   alias dir="command ls -alFb"
 fi
