@@ -3,7 +3,7 @@
 # usable as a hook a al emacs
 # Usage: add_to_hook <function-name> <command> ...
 #
-# $Id: add_to_hook,v 1.1 2001/03/02 15:06:30 mebourne Exp $
+# $Id: add_to_hook,v 1.2 2001/03/05 18:51:34 mebourne Exp $
 
 if (( ARGC < 2 ))
 then
@@ -12,6 +12,12 @@ then
 fi
 
 local funcname=$argv[1] command="$argv[2,-1]"
+
+if [[ -z $functions[$funcname] ]]
+then
+  functions[$funcname]="setopt noxtrace
+"
+fi
 
 functions[$funcname]="${functions[$funcname]//$command}
 $command
