@@ -559,6 +559,8 @@ sub store {
 sub expandValues {
   my ($self, $param, $list, $hash)=@_;
 
+  no strict 'refs';
+
   if($param=~/^\(.*\)$/) {
 
     # Literal list
@@ -567,13 +569,19 @@ sub expandValues {
   } elsif($param=~/^@/) {
 
     # Array variable substitution
-    @$list=eval $param;
+    my $arrayRef=substr($param,1);
+    $arrayRef="::" . $arrayRef if $arrayRef!~/^::/;
+
+    @$list=@$arrayRef;
   } elsif($param=~/^%/) {
 
     # Hash variable substitution
-    @$list=eval "keys($param)";
+    my $hashRef=substr($param,1);
+    $hashRef="::" . $hashRef if $hashRef!~/^::/;
+
+    @$list=keys(%$hashRef);
     if(defined($hash)) {
-      %$hash=eval $param;
+      %$hash=%$hashRef;
     }
   } else {
     
@@ -727,7 +735,7 @@ sub generateCompletionType {
       if(scalar(keys(%hash))) {
 	$action="((";
 	for my $key (keys(%hash)) {
-	  $action.=$self->quote($key) . "\\:" . $self->quote($hash{$key});
+	  $action.=$self->quote($key) . "\\:" . $self->quote($hash{$key}) . " ";
 	}
 	$action.="))";
       } else {
