@@ -1,0 +1,15 @@
+# ZSH function file
+# Part of the SQL Oracle package
+# Enter interactive SQL command line
+# For use only by the SQL packages
+#
+# $Id: _oracle_interactive,v 1.1 2002/04/09 15:13:52 mebourne Exp $
+
+if [[ -z $_sql_parameters[user] ]]
+then
+  echo "Error: SQL user variable not set" 1>&2
+  return 1
+fi
+
+sqlplus "$argv[@]" \
+        $_sql_parameters[user]${_sql_parameters[password]:+/$_sql_parameters[password]}${_sql_parameters[server]:+@$_sql_parameters[server]}
