@@ -5,7 +5,7 @@ compdef sql
 # Completion code for sql command
 # Usage: These functions are used by the completion code
 #
-# $Id: _sql,v 1.17 2002/04/25 17:12:09 mebourne Exp $
+# $Id: _sql,v 1.18 2002/04/26 10:43:44 mebourne Exp $
 
 #_sql_trace=1
 
@@ -961,6 +961,10 @@ _sql_generate_completions () {
 
   compset -p $#cursorprefix
   compset -s $#cursorsuffix
+  if [[ -n $cursorsuffix ]]
+  then
+    compstate[to_end]=""
+  fi
   #compset -P '*[^[:alnum:]_]'
   #compset -S '[^[:alnum:]_]*'
 
