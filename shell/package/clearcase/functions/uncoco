@@ -4,14 +4,14 @@
 # Usage: uncoco [-r]
 #	 -r	Recurse
 #
-# $Id: uncoco,v 1.1 2001/02/12 18:13:21 mebourne Exp $
+# $Id: uncoco,v 1.2 2001/03/14 09:55:01 mebourne Exp $
 
 local recurse="$1"
 local files
 
 files=($(cleartool lscheckout -me -cview -short $recurse))
 echo "REVERT all of these files?"
-echo "${(F)files}"
+echo - ${(F)files}
 if read -q
 then
   cleartool unco -rm $files

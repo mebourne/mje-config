@@ -4,14 +4,14 @@
 # Usage: cico [-r]
 #	 -r	Recurse
 #
-# $Id: cico,v 1.1 2001/02/12 18:13:21 mebourne Exp $
+# $Id: cico,v 1.2 2001/03/14 09:54:36 mebourne Exp $
 
 local recurse="$1"
 local files
 
 files=($(cleartool lscheckout -me -cview -short $recurse))
 echo "Check in all of these files?"
-echo "${(F)files}"
+echo - ${(F)files}
 if read -q
 then
   cleartool ci -cq $files

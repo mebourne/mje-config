@@ -3,7 +3,7 @@
 # Hook for preexec function
 # Usage: _prompt_precmd
 #
-# $Id: _prompt_preexec,v 1.6 2001/03/08 18:36:37 mebourne Exp $
+# $Id: _prompt_preexec,v 1.7 2001/03/14 09:51:11 mebourne Exp $
 
 local command="$1"
 
@@ -32,17 +32,17 @@ command=${command//$'\n'/$(echotc ce)$'\n'}
 ## Redraw the command line
 
 # First the left prompt
-echo -n "${(%%)PROMPT}"
+echo -n - "${(%%)PROMPT}"
 
 # Then the command in bold. Don't let echo parse any escape sequences in command
-echo -n "\e[$prompt_colours[bold]m"
-echo -nE "$command"
-echo -n "\e[$prompt_colours[normal]m"
+echo -n - "\e[$prompt_colours[bold]m"
+echo -nE - "$command"
+echo -n - "\e[$prompt_colours[normal]m"
 
 # Then the padding to right justify the right prompt. Only use last logical row of
 # command for this calculation
-echo -n "$_prompt_gap[$[ $#lastrow
+echo -n - "$_prompt_gap[$[ $#lastrow
                          + ${#${(%%)${prompt_right//[%]\{[^%]#%\}/}}} - COLUMNS * lastrows ],-1]"
 
 # Then the right prompt
-echo "${(%%)prompt_right}"
+echo - "${(%%)prompt_right}"
