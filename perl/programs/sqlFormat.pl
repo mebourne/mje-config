@@ -180,18 +180,16 @@ sub generateFormat {
       my $type=$$column{type};
       $type="string" if !defined($type);
       if($type eq "string") {
-	$format.="\e[38;05;11m";
+	$format.="\e[38;5;11m";
       } elsif($type eq "number") {
-	$format.="\e[38;05;214m";
+	$format.="\e[38;5;214m";
       } elsif($type eq "datetime") {
-	$format.="\e[38;05;14m";
+	$format.="\e[38;5;14m";
       }
     }
     $format.="%" . $align*$$column{length} . "s";
-    $format.="\e[00m" if $colour;
+    $format.="\e[38;5;15m" if $colour;
   }
-
-  $format.="\n";
 
   return $format;
 }
@@ -223,9 +221,9 @@ sub printHeader {
   }
 
   # Output header in green
-  $colour && print "\e[38;05;10m";
+  $colour && print "\e[38;5;10m";
   print "$header\n$underline\n";
-  $colour && print "\e[00m";
+  $colour && print "\e[38;5;15m";
 }
 
 # Print the data
@@ -233,7 +231,17 @@ sub printData {
   my ($format, $rows)=@_;
 
   # Print each row with the precalculated format
+  my $background=0;
   for my $row (@$rows) {
+    if($colour) {
+      if($background) {
+	print "\e[48;5;233m";
+      }
+      $background=!$background;
+    }
     printf $format, @$row;
+
+    print "\e[48;5;0m" if $colour;
+    print "\n";
   }
 }
