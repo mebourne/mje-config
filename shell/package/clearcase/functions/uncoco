@@ -3,12 +3,10 @@
 # Part of the clearcase package
 # Un-checkout checked out files
 #
-# $Id: uncoco,v 1.5 2001/08/01 19:36:52 mebourne Exp $
+# $Id: uncoco,v 1.6 2001/08/02 12:12:44 mebourne Exp $
 
-local -a args
-args=($argv[*])
 local -A opts
-parse_opts args opts <<'EOF' || return 1
+parse_opts - opts -- "$argv[@]" <<'EOF' || return 1
 Description:
 Un-checkout checked out Clearcase files
 
@@ -17,9 +15,9 @@ uncoco [options]
 
 Options:
   -h, --help			Provide this help
-				# help | h
+				# --help | -h
   -r, --recurse			Recurse through directories looking for files
-				# recurse | r = constant=-r
+				# --recurse | -r : constant=-r
 EOF
 
 local -a files

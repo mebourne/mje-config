@@ -4,17 +4,13 @@
 # Part of the SourceInfo package
 # Display type information
 #
-# $Id: sitype,v 1.6 2001/08/01 19:37:02 mebourne Exp $
+# $Id: sitype,v 1.7 2001/08/02 12:12:51 mebourne Exp $
 
 [[ -z $sourceinfo_typesdb ]] && { echo "sourceinfo_typesdb not set" ; return 1 }
 
-local -a args
-args=($argv[*])
 local -A opts
-
 local -a dirs
-
-parse_opts args opts <<'EOF' || return 1
+parse_opts - opts -- "$argv[@]" <<'EOF' || return 1
 Display a type information using the sourceinfo database.
 
 Usage:
@@ -23,15 +19,15 @@ sitype [options] <type-name>
 Options:
   -d <dir>, --directory=<dir>	Prefer files within directory if duplicates found
 				(partial name ok, searched in order given)
-				# [dirs] = directory | d = string
+				# dirs += [*] --directory | -d : string
   -h, --help			Provide this help
-				# help | h
+				# --help | -h
   -r, --recurse			Display full type information recursively
-				# recurse | r = constant=-r
+				# --recurse | -r : constant=-r
 
 Arguments:
   <type-name>			The type to retrieve the information for
-				# type = [1] = string
+				# type : string
 EOF
 
 # If no -d options then add all the default ones instead

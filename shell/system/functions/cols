@@ -2,19 +2,16 @@
 # ZSH function file
 # Filter stdin for just the given columns
 #
-# $Id: cols,v 1.4 2001/08/01 19:37:11 mebourne Exp $
+# $Id: cols,v 1.5 2001/08/02 12:12:58 mebourne Exp $
 
 emulate -L zsh
 setopt extended_glob
 
-local -a args
-args=($argv[*])
 local -A opts
+local -a columns
 opts[delimiter]=$IFS
 
-local -a columns
-
-parse_opts args opts <<'EOF' || return 1
+parse_opts - opts -- "$argv[@]" <<'EOF' || return 1
 Description:
 Filter each line of input and return just the given columns
 
@@ -23,14 +20,14 @@ cols [options] <column-number> ...
 
 Options:
   -d, --delimiter		Field delimiter. As for IFS and defaults to whitespace
-				# delimiter | d = string
+				# --delimiter | -d : string
   -h, --help			Provide this help
-				# help | h
+				# --help | -h
 
 Arguments:
   <column-number> ...		The column numbers to return, where 1 is the left-most column.
 				Can use -ve numbers, eg. -1 is rightmost column
-				# [columns] = [1,*] = integer
+				# columns += [1,*] column-number : integer
 EOF
 
 # Working storage

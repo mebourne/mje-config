@@ -2,17 +2,12 @@
 # ZSH function file
 # Repeatedly print a string
 #
-# $Id: yes,v 1.7 2001/08/01 19:43:21 mebourne Exp $
+# $Id: yes,v 1.8 2001/08/02 12:13:17 mebourne Exp $
 
-local -a args
-args=($argv[*])
 local -A opts
-
 opts[lines]=-1
 
-local -a echoopt text
-
-parse_opts args opts <<'EOF' || return 1
+parse_opts - opts -- "$argv[@]" <<'EOF' || return 1
 Description:
 Repeatedly print a string
 
@@ -22,34 +17,34 @@ yes [options] [<text> ...]
 Options:
   -e, --escape			Interpret escape characters as for echo (default unless
 				the BSD_ECHO option is set)
-				# [echoopt] = escape | e = constant=-e
+				# [echoopt] += --escape | -e : constant=-e
   -E, --no-escape		Prevent interpretation of escape characters
-				# [echoopt] = no-escape | E = constant=-E
+				# [echoopt] += --no-escape | -E : constant=-E
   -h, --help			Provide this help
-				# help | h
+				# --help | -h
   -l <count>, --lines=<count>	Output only count times
-				# lines | l = integer
+				# --lines | -l : integer
   -n, --no-newline		Suppress output of automatic newline
-				# [echoopt] = no-newline | n = constant=-n
+				# [echoopt] += --no-newline | -n : constant=-n
   -s <seconds>, --sleep=<seconds>
 				Pause for number of seconds between each echo
-				# sleep | s = integer
+				# --sleep | -s : integer
 
 Arguments:
   [<text> ...]			Optional text to print. Defaults to 'yes'
-				# [text] = [*] = string
+				# [text] += [*] text : string
 EOF
 
 # Default text to 'yes' if no parameters passed
-if (( ! $#text ))
+if (( ! $+opts[text] ))
 then
-  text=('yes')
+  opts[text]="yes"
 fi
 
 # Output as required
 while (( opts[lines] ))
 do
-  echo $echoopt "$text[@]"
+  echo $=opts[echoopt] $opts[text]
   (( opts[sleep] )) && sleep $opts[sleep]
   (( opts[lines] > 0 && opts[lines]-- ))
 done

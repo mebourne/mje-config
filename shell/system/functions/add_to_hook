@@ -3,15 +3,11 @@
 # Add command to function if not already present. Makes a function
 # usable as a hook a al emacs
 #
-# $Id: add_to_hook,v 1.5 2001/08/01 19:37:08 mebourne Exp $
+# $Id: add_to_hook,v 1.6 2001/08/02 12:12:56 mebourne Exp $
 
-local -a args
-args=($argv[*])
 local -A opts
-
 local -a command
-
-parse_opts args opts <<'EOF' || return 1
+parse_opts - opts -- "$argv[@]" <<'EOF' || return 1
 Description:
 Add command to function if not already present. Makes a function usable as a
 hook a al emacs. If the function does not already exist then it will be
@@ -23,21 +19,21 @@ add_to_hook [options] <function-name> <command> ...
 
 Options:
   -h, --help			Provide this help
-				# help | h
+				# --help | -h
 
 Arguments:
   <function-name>		The function to be edited
-				# funcname = [1] = string
+				# function-name : string
   <command> ...			The command words to be added
-				# [command] = [1,*] = string
+				# command += [1,*] command : string
 EOF
 
-if [[ -z $functions[$opts[funcname]] ]]
+if [[ -z $functions[$opts[function-name]] ]]
 then
-  functions[$opts[funcname]]="setopt noxtrace
+  functions[$opts[function-name]]="setopt noxtrace
 "
 fi
 
-functions[$opts[funcname]]="${functions[$opts[funcname]]//$command[@]}
+functions[$opts[function-name]]="${functions[$opts[function-name]]//$command[@]}
 $command[@]
 "

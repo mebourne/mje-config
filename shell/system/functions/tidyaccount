@@ -2,7 +2,7 @@
 # ZSH function file
 # Tidy account up generally
 #
-# $Id: tidyaccount,v 1.10 2001/08/01 19:37:42 mebourne Exp $
+# $Id: tidyaccount,v 1.11 2001/08/02 12:13:15 mebourne Exp $
 
 local this
 if [[ $0 == /* ]]
@@ -12,13 +12,10 @@ else
   this=$ZCONFIGDIR/system/functions/${0:t}
 fi
 
-local -a args
-args=($argv[*])
 local -A opts
+opts[schedule-at]=$SCHEDTIME
 
-opts[scheduleat]=$SCHEDTIME
-
-parse_opts args opts <<'EOF' || return 1
+parse_opts - opts -- "$argv[@]" <<'EOF' || return 1
 Description:
 Tidy account up generally
 
@@ -27,10 +24,10 @@ tidyaccount [options]
 
 Options:
   -h, --help			Provide this help
-				# help | h
+				# --help | -h
   -s <time>, --schedule-at=<time>
 				Re-schedule job with 'at'
-				# scheduleat = schedule-at | s = string
+				# --schedule-at | -s : string
 EOF
 
 # Delete any core/backup/etc files not accessed in the last week
@@ -43,8 +40,8 @@ find $HOME -depth \( -type f -name '.saves-*' -mtime +3 -print \) \
   xargs rm -f
 
 # Re-schedule job if requested
-if [[ -n $opts[scheduleat] ]]
+if [[ -n $opts[schedule-at] ]]
 then
   echo source $this |
-    SCHEDTIME=$opts[scheduleat] at $opts[scheduleat] 2>/dev/null
+    SCHEDTIME=$opts[schedule-at] at $opts[schedule-at] 2>/dev/null
 fi
