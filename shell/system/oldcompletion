@@ -3,22 +3,10 @@
 # Old style completion setup. To be phased out eventually
 # Written by Martin Ebourne
 #
-# $Id: oldcompletion,v 1.1 2001/02/12 18:13:24 mebourne Exp $
+# $Id: oldcompletion,v 1.2 2001/02/13 12:46:55 mebourne Exp $
 
-compctl -c type whence where
-compctl -g '*(-/) .*(-/)' pushd mkdir dircmp
-compctl -g '*(/) .*(/)' rmdir
-compctl -A shift
-compctl -F unfunction
-compctl -a unalias
-compctl -l '' nohup noglob exec nice eval - time rusage
-compctl -v unset typeset declare vared readonly export integer
-compctl -j -P "%" fg disown
-compctl -z -P "%" bg
-compctl -l '' -x 'p[1]' -f -- .
-compctl -k hosts ftp host rup rusers
-compctl -k hosts -x 'p[2,-1]' -l '' -- rsh
-compctl -f -x 'p[1], p[2] C[-1,-*]' -k groups -- chgrp
+compctl -g '*(-/) .*(-/)' mkdir
+compctl -k rusers
 if [[ -r /proc/filesystems ]]
 then
     # Linux
@@ -26,5 +14,5 @@ then
 else
     filesystems='ufs 4.2 4.3 nfs tmp mfs S51K S52K'
 fi
-compctl -g '*.Z' + -g '*(-/)' uncompress zmore
-compctl -g 'RCS/*(:s@RCS/@@:s/,v//)' co rlog rcsdiff
+compctl -g '*.Z' + -g '*(-/)' zmore
+compctl -g 'RCS/*(:s@RCS/@@:s/,v//)' rlog rcsdiff
