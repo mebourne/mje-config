@@ -3,7 +3,7 @@
 # Hook for precmd function to handle prompt formatting and displaying
 # Usage: _prompt_precmd
 #
-# $Id: _prompt_precmd,v 1.5 2001/03/16 12:44:40 mebourne Exp $
+# $Id: _prompt_precmd,v 1.6 2001/03/19 13:50:51 mebourne Exp $
 
 # Null out old strings to get base size
 _prompt_justify=""
@@ -29,5 +29,11 @@ done
 _prompt_justify="${${_prompt_justify[$#_prompt_pwd,-1]}% }"
 
 # Display the prompt
-echo -n - "\r"
-print -P - $prompt_above
+echotc cr
+print -nP - $prompt_above
+
+# May need a newline depending on terminal
+if [[ $(echotc am 2>/dev/null) != yes || $(echotc xn 2>/dev/null) == yes ]]
+then
+  echo
+fi

@@ -3,7 +3,7 @@
 # Hook for preexec function
 # Usage: _prompt_precmd
 #
-# $Id: _prompt_preexec,v 1.7 2001/03/14 09:51:11 mebourne Exp $
+# $Id: _prompt_preexec,v 1.8 2001/03/19 13:51:05 mebourne Exp $
 
 local command="$1"
 
@@ -32,6 +32,7 @@ command=${command//$'\n'/$(echotc ce)$'\n'}
 ## Redraw the command line
 
 # First the left prompt
+echotc cr
 echo -n - "${(%%)PROMPT}"
 
 # Then the command in bold. Don't let echo parse any escape sequences in command
@@ -45,4 +46,10 @@ echo -n - "$_prompt_gap[$[ $#lastrow
                          + ${#${(%%)${prompt_right//[%]\{[^%]#%\}/}}} - COLUMNS * lastrows ],-1]"
 
 # Then the right prompt
-echo - "${(%%)prompt_right}"
+echo -n - "${(%%)prompt_right}"
+
+# May need a newline depending on terminal
+if [[ $(echotc am 2>/dev/null) != yes || $(echotc xn 2>/dev/null) == yes ]]
+then
+  echo
+fi
