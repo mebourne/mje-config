@@ -1,0 +1,55 @@
+# ZSH function file
+# Filter stdin for just the given columns
+# Usage: cols [-d <delimiter>] <column-number> ...
+#
+# $Id: cols,v 1.1 2001/07/30 15:24:02 mebourne Exp $
+
+emulate -L zsh
+setopt extended_glob
+
+if (( !ARGC ))
+then
+  echo "Syntax: cols [-d <delimiter>] <column-number> ..." 1>&2
+  return 1
+fi
+
+# Get optional delimiter. Default to IFS which is various whitespace
+local delimiter="$IFS"
+if [[ $argv[1] == -d ]]
+then
+  delimiter=$argv[2]
+  shift
+  shift
+fi
+
+# Check all column numbers really are numbers
+local -a columns
+columns=($argv)
+for column in $columns
+do
+  if [[ $column != [0-9]## ]]
+  then
+    echo "Invalid column number $column" 1>&2
+    return 1
+  fi
+done
+
+# Working storage
+local -a input output
+
+# Read a line from the input using given word separators. -r for raw mode
+while IFS=$delimiter read -r -A input
+do
+  output=()
+
+  # Iterate over the list of columns retrieving them as required
+  for column in $columns
+  do
+    output=($output $input[$column])
+  done
+
+  # Write new output line
+  echo $output
+done
+
+return 0

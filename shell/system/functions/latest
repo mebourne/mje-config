@@ -1,0 +1,32 @@
+# ZSH function file
+# View the latest of a set of files, given part of the filename
+# Usage: latest <filename-stem>
+#
+# $Id: latest,v 1.1 2001/07/30 15:24:02 mebourne Exp $
+
+if (( ARGC != 1 ))
+then
+  echo "Syntax: latest <filename-stem>" 1>&2
+  return 1
+fi
+
+local stem="$argv[1]"
+
+# Get list of files sorted from latest to earliest modification time
+local -a files
+files=($stem*(Nom))
+
+if (( $#files ))
+then
+  # Found at least one file. Either send it to pager or cat, depending on
+  # whether stdout is a tty or not
+  if [[ -t 1 ]]
+  then
+    $READNULLCMD $files[1]
+  else
+    cat $files[1]
+  fi
+else
+  echo "File not found" 1>&2
+  return 1
+fi
