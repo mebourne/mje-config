@@ -1,20 +1,30 @@
+#eval compdef -n _parse_opts latest
 # ZSH function file
 # View the latest of a set of files, given part of the filename
-# Usage: latest <filename-stem>
 #
-# $Id: latest,v 1.1 2001/07/30 15:24:02 mebourne Exp $
+# $Id: latest,v 1.2 2001/08/03 12:49:08 mebourne Exp $
 
-if (( ARGC != 1 ))
-then
-  echo "Syntax: latest <filename-stem>" 1>&2
-  return 1
-fi
+local -A opts
+parse_opts - opts -- "$argv[@]" <<'EOF' || return 1
+Description:
+View the latest of a set of files, given part of the filename
 
-local stem="$argv[1]"
+Usage:
+latest [options] <filename-stem>
+
+Options:
+  -h, --help			Provide this help
+				# --help | -h
+
+Arguments:
+  <filename-stem>		Start of filename of set of files to view.
+				May contain wildcards
+				# filename-stem : ? file
+EOF
 
 # Get list of files sorted from latest to earliest modification time
 local -a files
-files=($stem*(Nom))
+files=($opts[stem]*(Nom))
 
 if (( $#files ))
 then

@@ -1,8 +1,25 @@
+#eval compdef -n _parse_opts want
 # ZSH function file
 # Halt a shell, waiting for a trigger (supplied by 'go')
-# Usage: want <identifier>
 #
-# $Id: want,v 1.1 2001/06/11 16:38:58 mebourne Exp $
+# $Id: want,v 1.2 2001/08/03 12:49:32 mebourne Exp $
+
+local -A opts
+parse_opts - opts -- "$argv[@]" <<'EOF' || return 1
+Description:
+Halt a shell, waiting for a trigger (supplied by 'go')
+
+Usage:
+want [options] <semaphore>
+
+Options:
+  -h, --help			Provide this help
+				# --help | -h
+
+Arguments:
+  <semaphore>			Name of semaphore to wait for
+				# semaphore : text
+EOF
 
 if [[ -z semaphore_base ]]
 then
@@ -10,16 +27,9 @@ then
   return 1
 fi
 
-if (( ARGC != 1 ))
-then
-  echo "Syntax: want <identifier>" 1>&2
-  return 1
-fi
+local file="$semaphore_base$opts[semaphore]"
 
-local semaphore="$argv[1]"
-local file="$semaphore_base$semaphore"
-
-print -P "Waiting on semaphore '$semaphore' at %D{%a %f %b %Y %H:%M:%S}"
+print -P "Waiting on semaphore '$opts[semaphore]' at %D{%a %f %b %Y %H:%M:%S}"
 
 # 'go' will write the file we are watching for
 while [[ ! -e $file ]]
@@ -30,4 +40,4 @@ done
 # Tidy up
 rm -f $file
 
-print -P "Received semaphore '$semaphore' at %D{%a %f %b %Y %H:%M:%S}"
+print -P "Received semaphore '$opts[semaphore]' at %D{%a %f %b %Y %H:%M:%S}"

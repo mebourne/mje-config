@@ -1,18 +1,25 @@
-#eval compdef -n _functions refn
+#eval compdef -n _parse_opts refn
 # ZSH function file
 # Register new autoload function. Re-registers if already defined
-# Usage: refn <function-name>
 #
-# $Id: refn,v 1.5 2001/03/16 12:41:53 mebourne Exp $
+# $Id: refn,v 1.6 2001/08/03 12:49:24 mebourne Exp $
 
-local fns
-fns=($*)
+local -a fns
+parse_opts -- "$argv[@]" <<'EOF' || return 1
+Description:
+Register new autoload function. Re-registers if already defined
 
-if (( $#fns ))
-then
-  unfunction - $fns 2>/dev/null
-  autoload -U - $fns
-else
-  echo "Syntax: refn <function-name> ..." 1>&2
-  return 1
-fi
+Usage:
+refn [options] <function-name> ...
+
+Options:
+  -h, --help			Provide this help
+				# --help | -h
+
+Arguments:
+  <function-name> ...		List of path variables to update
+				# fns += [1,*] function-name : ? function
+EOF
+
+unfunction - $fns 2>/dev/null
+autoload -U - $fns

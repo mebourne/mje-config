@@ -1,50 +1,63 @@
-#eval compdef -n _dirs override_commands
+#eval compdef -n _parse_opts override_commands
 # ZSH function file
 # Set up aliases to override commands on path. This is useful for example to
 # get XPG4 commands when running on a Sun box. Typically changing the path
 # would break scripts
-# Usage:   override_commands <preferred-directory> <unwanted-directory> ...
-# Example: override_commands /usr/xpg4/bin /bin /usr/bin /usr/ucb/bin /usr/ccs/bin
 #
-# $Id: override_commands,v 1.4 2001/03/16 12:41:15 mebourne Exp $
+# $Id: override_commands,v 1.5 2001/08/03 12:49:10 mebourne Exp $
 
-if (( ARGC < 2 ))
-then
-  echo "Syntax: override_commands <preferred-directory> <unwanted-directory> ..." 1>&2
-  return 1
-fi
-
-local good=$argv[1]
+local good
 local -a bad
-bad=($argv[2,-1])
+parse_opts -- "$argv[@]" <<'EOF' || return 1
+Description:
+Set up aliases to override commands on path. This is useful for example to
+get XPG4 commands when running on a Sun box. Typically changing the path
+would break scripts
 
-if [[ -d $good ]]
-then
-  # Check all of the executable commands in the good directory
-  local goodcmd
-  for goodcmd in $good/*(.x)
-  do
-    local cmd=${goodcmd:t}
+Usage:
+override_commands [options] <preferred-directory> <unwanted-directory> ...
 
-    # Check that the path of the REAL command is in the evil directories list
-    if [[ -n ${(M)bad:#${$(whence -p $cmd):h}} ]]
-    then
-      case ${$(whence -w $cmd)[(w)2]} in
-        alias)
-          # Edit already existing aliases so we don't lose them
-          alias $cmd="${$(whence $cmd)//$cmd/$goodcmd}"
-          ;;
-        command | hashed)
-          # If its a command then add a new simple alias
-          alias $cmd=$goodcmd
-          ;;
-        builtin | function | reserved | none)
-          # If its a built-in or function or something then don't touch
-          ;;
-        *)
-          # Shouldn't get here
-          ;;
-      esac
-    fi
-  done
-fi
+Example:
+override_commands /usr/xpg4/bin /bin /usr/bin /usr/ucb/bin /usr/ccs/bin
+
+Options:
+  -h, --help			Provide this help
+				# --help | -h
+
+Arguments:
+  <preferred-directory>		The directory commands should be run from when
+				there is a clash
+				# good = preferred-directory : directory
+  <unwanted-directory> ...	List of directories commands should not be run
+				from when the equivalent is available in the
+				preferred directory
+				# bad += [1,*] unwanted-directory : directory
+EOF
+
+# Check all of the executable commands in the good directory
+local goodcmd
+for goodcmd in $good/*(.xN)
+do
+  local cmd=${goodcmd:t}
+
+  # Check that the path of the REAL command is in the evil directories list
+  if [[ -n ${(M)bad:#${$(whence -p $cmd):h}} ]]
+  then
+    case ${$(whence -w $cmd)[(w)2]} in
+      alias)
+	# Edit already existing aliases so we don't lose them
+	alias $cmd="${$(whence $cmd)//$cmd/$goodcmd}"
+	;;
+      command | hashed)
+	# If its a command then add a new simple alias
+	alias $cmd=$goodcmd
+	;;
+      builtin | function | reserved | none)
+	# If its a built-in or function or something then don't touch
+	;;
+      *)
+	# Shouldn't get here
+	;;
+    esac
+  fi
+done
