@@ -285,7 +285,7 @@ decode_components() {
 	    shift
 	    component=$argv[3]
 	  else
-	    fatal_error "Cannot extract file of type '$contents'"
+	    fatal_error "Cannot extract file from type '$contents'"
 	  fi
 	else
 
