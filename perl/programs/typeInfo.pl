@@ -7,9 +7,9 @@ use strict;
 use IO::File;
 use MJE::ParseOpts;
 
-use vars qw/@preferredDirs/;
+use vars qw(@preferredDirs);
 
-my $help=q(
+my $opts=new MJE::ParseOpts (<<'EOF') || exit 1;
 Description:
 Display type information using the sourceinfo database.
 
@@ -34,9 +34,7 @@ Arguments:
 	   			# definitions : file
   <type-name>			The type to retrieve the information for
 				# type : text
-);
-
-my $opts=new MJE::ParseOpts ($help) || exit 1;
+EOF
 
 @preferredDirs=map {
   if(!/^\//) {
