@@ -5,7 +5,7 @@
 # Completion code for cleartool command
 # Usage: These functions are used by the completion code
 #
-# $Id: _cleartool,v 1.10 2001/04/04 16:05:20 mebourne Exp $
+# $Id: _cleartool,v 1.11 2001/05/23 12:47:16 mebourne Exp $
 
 _cleartool_decode_pname () {
   case $command in
@@ -377,8 +377,13 @@ _cleartool_read_help () {
 }
 
 _cleartool_write_cache() {
-  # Write cache onto .zcompdump file
+  # Write cache onto .zcompdump file, unless a ZDOTDIR is set, in which case
+  # create our own file
   local cache=$_comp_dumpfile
+  if [[ -n $ZDOTDIR ]]
+  then
+    cache=$ZDOTDIR/.zcleartool
+  fi
 
   # Doesn't write cache if already present. Note that it may be out of date - if so user will
   # have to delete it themselves
