@@ -193,7 +193,7 @@ AddToMenu FvwmModules "Fvwm Modules" Title
 +	"Debug"         	Module FvwmDebug
 +	"IconBox"       	Module FvwmIconBox
 +	"Identify"      	Module FvwmIdent
-+	"Pager"         	Module FvwmPager 0 0
++	"Pager"         	Module FvwmPager 0 1
 +	"Prompt"        	Module FvwmPrompt "hello" raise
 +	"SaveDesktop"   	Module FvwmSave
 +	"Talk"          	Module FvwmTalk
@@ -273,8 +273,8 @@ Mouse 3 	TFSI    A       RaiseLower
 # KEYBOARD Setup
 #
 # press arrow + control + meta anywhere, and scroll by 1 page
-Key Left	A	CM	Scroll -100 +0
-Key Right	A	CM	Scroll +100 +0
+Key Left	A	CM	GoToDesk 0 0
+Key Right	A	CM	GoToDesk 0 1
 Key Up		A	CM	Scroll +0   -100
 Key Down	A	CM	Scroll +0   +100
 
@@ -306,8 +306,9 @@ Key F8		A	MC	Prev [*] focus
 #*FvwmButtonsRows 1
 
 # Define the buttons to use.....
-*FvwmButtons (1x4 Swallow "FvwmPager" 'Module FvwmPager')
-*FvwmButtons (1x2 Title "bin1" Swallow "xload_bin1" 'Exec exec xload -bg gray70 -nolabel -update 15 -t xload_bin1 -jumpscroll 1')
+*FvwmButtons (1x8 Swallow "FvwmPager" 'Module FvwmPager 0 1')
+*FvwmButtons (1x2 Title "bin1" Swallow "xload_bin1" 'Exec exec rsh gdd-odybin1 xload -bg gray70 -nolabel -update 15 -t xload_bin1 -jumpscroll 1 -display $DISPLAY')
+*FvwmButtons (1x2 Title "bin2" Swallow "xload_bin2" 'Exec exec rsh gdd-odybin2 xload -bg gray70 -nolabel -update 15 -t xload_bin2 -jumpscroll 1 -display $DISPLAY')
 
 ############################################################################
 # FvwmIdent
@@ -323,9 +324,14 @@ Key F8		A	MC	Prev [*] focus
 *FvwmPagerFore white
 *FvwmPagerBack gray20
 *FvwmPagerHilight #707045
-*FvwmPagerFont none
-*FvwmPagerGeometry 45-2+0
+*FvwmPagerColumns 1
+*FvwmPagerRows 2
+*FvwmPagerFont 5x8
+#*FvwmPagerGeometry 45-2+0
+*FvwmPagerGeometry 48x301
 *FvwmPagerSmallFont 5x8
+*FvwmPagerLabel 0 bin1
+*FvwmPagerLabel 1 bin2
 
 ############################################################################
 # FvwmWinList
