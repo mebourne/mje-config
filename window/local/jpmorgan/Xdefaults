@@ -47,7 +47,7 @@ XTerm*VT100.Translations:	#override\n\
 				<Key> Prior: scroll-back(1,page)\n\
 				<Key> Next: scroll-forw(1,page)\n\
 				Shift <Key> Insert: insert-selection(CLIPBOARD, PRIMARY)\n\
-				<Btn1Up>: select-end(CLIPBOARD, PRIMARY) \
+				<Btn1Up>: select-end(CLIPBOARD, PRIMARY)\n\
 				<Btn2Up>: insert-selection(PRIMARY)
 
 
