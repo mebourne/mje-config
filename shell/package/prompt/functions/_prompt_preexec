@@ -3,26 +3,19 @@
 # Hook for preexec function
 # Usage: _prompt_precmd
 #
-# $Id: _prompt_preexec,v 1.1 2001/03/05 18:38:26 mebourne Exp $
+# $Id: _prompt_preexec,v 1.2 2001/03/05 19:01:28 mebourne Exp $
 
-local command=$1
+local command="$1"
 
-local rp='%D{%a %f %b %Y %H:%M:%S}'
+# Calculate the number of rows used by the command line (including left prompt)
+local rows
+(( rows = 1 + ( ${#${(%%)${PROMPT//[%]\{[^%]#%\}/}}} + $#command ) / COLUMNS ))
 
-local rows justify 
-
-
-(( rows = ( $#command + COLUMNS - 1 ) / COLUMNS ))
-
+# Move up the required number of rows to get to the start of the command line
 repeat $rows
 do
   echo -n "\e[A"
 done
-
-
-# Get command including left hand prompt and right hand prompt expanded.
-# Just used below to calculate padding
-local combined="${(%%)${PROMPT//[%]\{[^%]#%\}/}}$command${(%%)${prompt_right//[%]\{[^%]#%\}/}}"
 
 
 ## Redraw the command line
@@ -34,7 +27,8 @@ echo -n "${(%%)PROMPT}"
 echo -n "\e[$prompt_colours[bold]m$command\e[$prompt_colours[normal]m"
 
 # Then the padding to right justify the right prompt
-echo -n "$_prompt_gap[$[ ${#${(%%)combined}} - COLUMNS * rows ],-3]"
+echo -n "$_prompt_gap[$[ ${#${(%%)${PROMPT//[%]\{[^%]#%\}/}}} + $#command
+                         + ${#${(%%)${prompt_right//[%]\{[^%]#%\}/}}} - COLUMNS * rows ],-1]"
 
 # Then the right prompt
 echo -n "${(%%)prompt_right}"
