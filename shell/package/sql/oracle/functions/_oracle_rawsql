@@ -3,13 +3,13 @@
 # Execute a raw SQL command
 # For use only by the SQL packages
 #
-# $Id: _oracle_rawsql,v 1.4 2002/05/28 13:28:30 mebourne Exp $
+# $Id: _oracle_rawsql,v 1.5 2002/07/24 10:44:11 mebourne Exp $
 
 local interface_v
 _sql_getparam interface_v interface native
 if [[ $interface_v == dbi ]]
 then
-  _sql_call execute_dbi --style=bcp -- "$argv[@]"
+  _sql_call execute_dbi --style=bcp -- "$argv[*]"
 else
   {
     echo "set pages 0 feed off"
