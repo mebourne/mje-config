@@ -1,0 +1,12 @@
+# ZSH function file
+# Part of the colour package
+# Display all available colours
+# Usage: colourdisplay
+#
+# $Id: colourdisplay,v 1.1 2001/05/23 18:06:52 mebourne Exp $
+
+local num
+for num in {0..255}
+do
+  echo "${colour_start}38;5;$num${colour_end}This is colour $num"
+done
