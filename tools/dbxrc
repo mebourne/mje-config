@@ -1,7 +1,7 @@
 # DBX configuration file
 # Written by Martin Ebourne
 #
-# $Id: dbxrc,v 1.4 2001/04/04 10:20:00 mebourne Exp $
+# $Id: dbxrc,v 1.5 2001/04/10 11:06:56 mebourne Exp $
 
 dbxenv suppress_startup_message 4.0
 
@@ -9,6 +9,8 @@ dbxenv suppress_startup_message 4.0
 page() {
   typeset _cmd="$1"
   shift
+
+  echo -n "$DBXVTRESET"
 
   typeset _pager="$(whence less)"
   if [ -x "$_pager" ]
@@ -40,7 +42,7 @@ bind ^[C=forward-char
 
 # If set correctly by the shell configuration, this sets the prompt to switch the XTerm into
 # VT52 mode in order to make the above cursor keys work
-PS1="$DBXSTTY$PS1"
+PS1="$DBXVTRESET$DBXVT52$PS1"
 
 # Short command aliases
 alias l=list

@@ -2,7 +2,7 @@
 # Wrapper for dbx to enter VT52 terminal mode. Makes cursor keys work with appropriate settings
 # Usage: dbx <arguments>
 #
-# $Id: dbx,v 1.1 2001/04/04 10:15:00 mebourne Exp $
+# $Id: dbx,v 1.2 2001/04/10 11:07:04 mebourne Exp $
 
 # Don't try anything fancy unless in an xterm
 if [[ $TERM == xterm* ]]
@@ -15,10 +15,10 @@ then
   # suspends dbx or something
   typeset -g prompt_reset="$prompt_reset$resetvt52"
 
-  # Run dbx in vt52 mode, and then switch back. DBXSTTY is used in the dbxrc file
+  # Run dbx in vt52 mode, and then switch back. DBXVT* are used in the dbxrc file
   # to set the dbx prompt
   echo -n $setvt52
-  DBXSTTY="$resetvt52$setvt52" command dbx "$@"
+  DBXVTRESET="$resetvt52" DBXVT52="$setvt52" command dbx "$@"
   echo -n $resetvt52
 
   # If we are the only ones to set prompt_reset now we can remove it
