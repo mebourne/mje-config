@@ -3,7 +3,7 @@
 # Setup for SQL base package
 # Written by Martin Ebourne
 #
-# $Id: setup,v 1.4 2001/03/21 11:28:18 mebourne Exp $
+# $Id: setup,v 1.5 2001/05/22 16:56:43 mebourne Exp $
 
 add_functions_directory package/sql/base/functions
 
@@ -25,3 +25,10 @@ zle -N sql_quote _sql_quote
 zle -N sql_quote_line _sql_quote_line
 bindkey "\'" sql_quote
 bindkey "^Xq" sql_quote_line
+
+# Options defaults
+# compress - Squash columns in displayed data so that no space is wasted
+# count    - Print count of number of rows returned (or affected)
+# maxrows  - Maximum number of rows to return
+sqlset compress=1 count=1
+sqlunset maxrows
