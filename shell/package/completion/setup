@@ -3,7 +3,7 @@
 # Setup for completion package
 # Written by Martin Ebourne
 #
-# $Id: setup,v 1.9 2001/08/13 18:46:27 mebourne Exp $
+# $Id: setup,v 1.10 2001/08/14 09:39:54 mebourne Exp $
 
 add_functions_directory package/completion/functions
 
@@ -17,13 +17,15 @@ then
   dumpfile=$ZDOTDIR/.cache.completion
 fi
 
-# Load the completion module. -C speeds things up a lot by skipping audit & zcompdump file
-# regeneration check. Need to rely on user to be sensible about these things
+# Load the completion module. -C speeds things up a lot by skipping audit &
+# zcompdump file regeneration check. Need to rely on user to be sensible about
+# these things
 autoload -U compinit
 compinit -C -d $dumpfile
 
-# Set up so future added function directories are processed for completions, and ensure all
-# previously added function dirs in the config system are re-processed
+# Set up so future added function directories are processed for completions,
+# and ensure all previously added function dirs in the config system are
+# re-processed
 add_to_hook _add_functions_hook '_completion_add_functions "$argv[@]"'
 _completion_add_directories ${(M)fpath:#$ZCONFIGDIR/*}
 
@@ -45,7 +47,8 @@ fi
 # Reduce space used for completion listing
 zstyle ':completion:*:default' list-packed true
 
-# List each group of completions under separate headings (works with formatting below)
+# List each group of completions under separate headings (works with
+# formatting below)
 zstyle ':completion:*' group-name ''
 
 # Return to last prompt after listing completions
@@ -66,11 +69,12 @@ zstyle ':completion:*:expand:*' substitute true
 zstyle ':completion:*:expand:*' tag-order all-expansions expansions original
 
 # Prevent listing of original along with corrections
-zstyle ':completion:*:correct:*' tag-order corrections original
+zstyle ':completion:*:approximate*:*' tag-order corrections original
 
-# Allow one error for every five or part thereof characters typed in approximate completer
-zstyle -e ':completion:*:approximate:*' max-errors \
-  'reply=( $(( ($#PREFIX+$#SUFFIX)/5 + 1 )) numeric )'
+# Allow one error for every four or part thereof characters typed in
+# approximate completer
+zstyle -e ':completion:*:approximate*:*' max-errors \
+  'reply=( $(( ($#PREFIX+$#SUFFIX)/4 + 1 )) numeric )'
 
 # In the case of using prefix to obtain a completion then add a space in to
 # separate the real bit from the discarded stuff
@@ -82,10 +86,15 @@ zstyle ':completion:*:match:*' match-original only
 # Remove duplicates from list (for history completion)
 zstyle ':completion:*:history:*' remove-all-dups true
 
+# Stop approximate and match from breaking in to unexpected menu completion
+zstyle ':completion::approximate*:*' insert-unambiguous always
+zstyle ':completion::match:*' insert-unambiguous pattern
+
 
 ## These are modifications to particular commands or contexts
 
-# When completing for 'cd' try local directories before attempting to use cdpath
+# When completing for 'cd' try local directories before attempting to use
+# cdpath
 zstyle ':completion:*:complete:cd:*' tag-order '! path-directories'
 # Same for commands. Doesn't work
 zstyle ':completion:*:complete:-command-:*' tag-order '! path-directories'
@@ -100,7 +109,8 @@ zstyle ':completion:*:*:-subscript-:*' tag-order indexes parameters
 zstyle ':completion:*:*:*:functions' ignored-patterns '_*'
 
 
-## These give the description format strings. Need the colour package to do this
+## These give the description format strings. Need the colour package to do
+## this
 
 package -i colour
 local temp
@@ -138,12 +148,38 @@ zstyle ':completion:all-matches:*' completer _all_matches
 zstyle ':completion:all-matches:*' old-matches only
 
 
+## Add a widget to give the down arrow two functions - down or menu complete,
+## as appropriate
+
+# Need a completion widget as a helper to determine if we are completing or
+# not. Return value isn't propogated by zle so use var
+_completion_is_completing() {
+  [[ $compstate[old_list] == shown ]] && _completing=1
+}
+
+# Need a normal widget to be able to call the down function
+_completion_menu_or_down() {
+  integer _completing=0
+  zle completion-is-completing
+  if (( _completing ))
+  then
+    zle menu-complete
+  else
+    zle .history-beginning-search-forward
+  fi
+}
+
+# Map the widgets
+zle -C completion-is-completing complete-word _completion_is_completing
+zle -N completion-menu-or-down _completion_menu_or_down
+
+
 ## Extra key bindings
 
 # Normal bindings
 bindkey '^Xa' all-matches
-bindkey '^[OP' menu-complete		# F1
+bindkey "^[[B" completion-menu-or-down
 
 # Bindings for menu selection. Need to ensure module is loaded for the keymap
 zmodload -i zsh/complist
-bindkey -M menuselect ' ' accept-and-infer-next-history
+bindkey -M menuselect '/' accept-and-infer-next-history
