@@ -3,7 +3,7 @@
 # Setup for prompt package
 # Written by Martin Ebourne
 #
-# $Id: setup,v 1.6 2001/03/30 09:53:31 mebourne Exp $
+# $Id: setup,v 1.7 2001/04/20 13:31:06 mebourne Exp $
 
 add_functions_directory package/prompt/functions
 
@@ -96,3 +96,12 @@ set_prompt prompt_right {grey} '%D{%a %f %b %Y %H:%M:%S}' {white}
 
 # Disable the standard ZSH right hand prompt
 set_prompt RPROMPT
+
+# Configure the secondary prompt
+set_prompt PROMPT2 {bold} '%_> ' {normal}
+
+# Configure the prompt used for execution tracing (set -x). Includes timestamp & seconds for
+# profiling
+set_prompt PROMPT4
+add_to_prompt {grey} ': ' {dark_green} '%N' {grey} ':' {dark_yellow} '%i'
+add_to_prompt {grey} ' %D{%H:%M:%S} {$SECONDS} ; ' {white}
