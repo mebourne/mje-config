@@ -2,7 +2,7 @@
 # This is the zshrc file sourced directly by zsh
 # Written by Martin Ebourne
 #
-# $Id: zshrc,v 1.5 2001/05/23 13:22:03 mebourne Exp $
+# $Id: zshrc,v 1.6 2002/03/19 15:26:34 mebourne Exp $
 
 ZFILE=zshrc
 [[ -n $ZCONFIGDEBUG ]] && echo "Executing config file $ZFILE"
@@ -27,7 +27,7 @@ then
 fi
 
 # Profiling. Report results
-if [[ -n $ZCONFIGPROF ]]
+if [[ -n $ZCONFIGPROFILE ]]
 then
   zprof
 fi

@@ -2,13 +2,13 @@
 # This is the zshenv file sourced directly by zsh
 # Written by Martin Ebourne
 #
-# $Id: zshenv,v 1.8 2001/05/23 13:22:00 mebourne Exp $
+# $Id: zshenv,v 1.9 2002/03/19 15:26:40 mebourne Exp $
 
 # Enable this (or call the shell with it already set) for progress reports during config
 #ZCONFIGDEBUG=1
 
 # Enable this (or call the shell with it already set) for profiling output
-#ZCONFIGPROF=1
+#ZCONFIGPROFILE=1
 
 ZFILE=zshenv
 [[ -n $ZCONFIGDEBUG ]] && echo "Executing config file $ZFILE"
@@ -80,7 +80,7 @@ config_if_present() {
 ## Do the stuff
 
 # Profiling. Enable it here. Report at end of zshrc
-if [[ -n $ZCONFIGPROF ]]
+if [[ -n $ZCONFIGPROFILE ]]
 then
   zmodload -i zsh/zprof
   zprof -c
@@ -90,23 +90,23 @@ _init_zshenv() {
   # Zsh gives us absolutely no indication of which config file we are running, nor
   # where it is. So lets try and find the real zsh config directory
   ZCONFIGDIR=${$(_expand_symlink ${ZDOTDIR:-$HOME}/.$ZFILE):h}
-  
+
   # The user directory defaults to $ZCONFIGDIR/user, but can be overridden with
   # a symbolic link called ~/.zsh_user which must point to the required directory
   # (note ~/.zsh_user can be a directory itself, which will be used in that case)
   ZUSERCONFIGDIR=$(_expand_symlink ${ZDOTDIR:-$HOME}/.zsh_user)
   [[ ! -d $ZUSERCONFIGDIR ]] && ZUSERCONFIGDIR=$ZCONFIGDIR/user
-  
+
   # Check we succeeded
   [[ -z $ZCONFIGDIR ]] && { echo "ERROR: ZCONFIGDIR unset in $ZFILE" ; exit 1 }
-  
+
   # Debugging
   if [[ -n $ZCONFIGDEBUG ]]
   then
     echo "Using system configuration from $ZCONFIGDIR"
     echo "Using user configuration from $ZUSERCONFIGDIR"
   fi
-  
+
   # Execute the real configuration files
   config_if_present system/global
   config_if_present local/current/global
