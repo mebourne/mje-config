@@ -4,7 +4,7 @@
 # done, but immediately before the user specific files
 # Written by Martin Ebourne
 #
-# $Id: login,v 1.5 2002/04/25 09:28:51 mebourne Exp $
+# $Id: login,v 1.6 2002/05/07 15:04:19 mebourne Exp $
 
 # CSFB settings
 
@@ -32,7 +32,7 @@ path=($path /sw/SUNWspro-5.0/bin)
 manpath=($manpath /sw/SUNWspro-5.0/man)
 
 # Oracle 8
-export ORACLE_VERSION=8.1.6
+export ORACLE_VERSION=9.0.1
 export ORACLE_HOME=/app/oracle/product/client/${ORACLE_VERSION}
 export ORACLE_SID=SUNSYS
 export ORAWEB_HOME=/export/home/oracle/ows/3.0
