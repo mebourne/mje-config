@@ -3,7 +3,7 @@
 # Generic system-wide setup for interactive use
 # Written by Martin Ebourne
 #
-# $Id: interactive,v 1.8 2001/03/06 17:51:11 mebourne Exp $
+# $Id: interactive,v 1.9 2001/03/16 12:45:42 mebourne Exp $
 
 # Initial config files
 config_if_present system/loadfuncs
@@ -15,7 +15,7 @@ PROMPT='$USERNAME@%m:%3c%# '
 RPROMPT='%T'
 
 # Pager to use for stand-alone redirections - ie. < file
-if which less | grep / >/dev/null
+if [[ $(which less) == /* ]]
 then
   READNULLCMD=less
 else
@@ -47,5 +47,5 @@ then
 fi
 
 # Final config files
-config_if_present system/completion
 config_if_present system/keys
+package completion
