@@ -4,7 +4,7 @@
 # done, but immediately before the user specific files
 # Written by Martin Ebourne
 #
-# $Id: interactive 792 2003-09-22 11:47:18Z martin $
+# $Id$
 
 # JPMorgan settings
 
@@ -90,3 +90,6 @@ prompt_above=${prompt_above/_sql_prompt\}/_sql_prompt\}\${\${_sql_prompt#\$DB_EN
 
 # Setup for environment machines
 alias top8=/apps/top/3.5.0.0/solaris/5.8/bin/top
+
+# Command line access to mcp
+alias mcpcmd='inf/release/solaris/bin/mcpadmin qm/build/socket/system/mcpCmd'
