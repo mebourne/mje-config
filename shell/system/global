@@ -3,18 +3,20 @@
 # Generic system-wide setup for ALL shells. This is executed before anything else
 # Written by Martin Ebourne
 #
-# $Id: global,v 1.5 2001/05/23 12:53:49 mebourne Exp $
+# $Id: global,v 1.6 2001/07/23 12:39:02 mebourne Exp $
 
 # Make various path like variables keep unique values only. Need to create any that aren't built
 # into the shell. Most of them are also exported
 typeset -Ugx  CDPATH
 typeset -Ugx  FIGNORE
 typeset -U    FPATH
+typeset -UgxT LD_LIBRARY_PATH="$LD_LIBRARY_PATH" ld_library_path
 typeset -UgxT INFOPATH="$INFOPATH" infopath
 typeset -Ugx  MAILPATH
 typeset -Ugx  MANPATH
 typeset -U    MODULE_PATH
 typeset -Ugx  PATH
+typeset -UgxT PERLLIB="$PERLLIB" perllib
 typeset -Ugx  WATCH
 
 # Emacs makes use of these for mode selection
