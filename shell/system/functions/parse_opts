@@ -2,7 +2,7 @@
 # Provide options parsing and help output
 # Usage: parse_opts <argv> <results> [<help>]
 #
-# $Id: parse_opts,v 1.12 2001/08/02 16:35:01 mebourne Exp $
+# $Id: parse_opts,v 1.13 2001/08/03 11:46:29 mebourne Exp $
 
 ### Documentation
 
@@ -70,18 +70,34 @@
 # Where integer is a positive integer.
 #
 # type is of the form:
-#   <type-name> [ `=' <value> ]
+#   [ ` ? ' ] <type-name> [ `=' <value> ]
 #
 # Where type-name is one of:
 #   switch   - Simple switch. Result will be 1. NB. This is the default if not supplied
 #   noswitch - Reverse simple switch. Result will be 0 (can be used eg. --no-option)
 #   constant - Constant to be assigned. Result will be value given, with any quotes removed
 #   string   - Takes a parameter with no validation
+#   text     - Takes a parameter with no validation
 #   integer  - Takes a parameter, validation for integer with optional sign
 #   test     - Takes a parameter, validation using value with test. eg. test=-f for files
 #
 # value may only be (and must be) present if the type requires it, and will be
 # used as explained in the type description.
+
+
+### Configuration
+
+# Calls _parse_opts_parsehelp in order to create the built-in types & other
+# default definitions
+_parse_opts_setupdefinitions() {
+  _parse_opts_parsehelp '
+#type directory     test=-d                      directory            _directories
+#type file          test=-f                      file                 _files
+#type function      values=${(k)functions}       "shell function"     _functions
+# --help
+# --zsh-completion
+'
+}
 
 
 ### Implementation
@@ -90,9 +106,141 @@
 # This is to prevent name clashes when options refer back to variables in the
 # calling program's name space
 
-# This helper function takes an encoded helpstring as its only parameter and
-# generates the _po_tags, _po_types, _po_aliases, and _po_helplines
-# associative arrays, and _po_helptext string
+
+# This function handles the parsing of option definitions for
+# _parse_opts_parsehelp (uses locals directly)
+_parse_opts_parseoption() {
+  # Extract the type information if there is any
+  local type=""
+  if (( paraminfo[(I):] ))
+  then
+    type=$paraminfo[paraminfo[(I):]+1,-1]
+    paraminfo=($paraminfo[1,paraminfo[(I):]-1])
+  fi
+
+  # Extract the tag information if there is any. Append (ie. where '+='
+  # instead of '=') is recorded by prefixing a '+' onto the stored tag
+  local tag=""
+  if (( paraminfo[(I)(+|)=] ))
+  then
+    tag=$paraminfo[1,paraminfo[(I)(+|)=]-1]
+    if [[ $paraminfo[(r)(+|)=] == += ]]
+    then
+      tag="+$tag"
+    fi
+    paraminfo=($paraminfo[paraminfo[(I)(+|)=]+1,-1])
+  fi
+
+  # Handle the optional frequency definition
+  # (default is [1] for arguments, [0,1] for options)
+  local frequency=""
+  if [[ $paraminfo[1] == \[*\] ]]
+  then
+    frequency=${${paraminfo[1]#\[}%\]}
+    shift paraminfo
+  fi
+
+  # Options is remainder less the '|'
+  paraminfo=(${paraminfo:#\|})
+
+  # Check we've got something left
+  if (( !$#paraminfo ))
+  then
+    echo "Missing option/argument name in definition: '" $=line "'" 1>&2
+    return 1
+  fi
+
+  # If tag not provided then default to first option name with any leading '-'s removed
+  if [[ -z $tag ]]
+  then
+    tag="[${paraminfo[1]##-#}]"
+  fi
+
+  # Assign all the details for the current options/argument
+  local option=""
+  for option in $paraminfo
+  do
+    local aliases="" excludes=""
+
+    # Establish defaults for missing values
+    if [[ $option == -* ]]
+    then
+      [[ -z $frequency ]] && frequency="0,1"
+      [[ -z $type ]] && type="switch"
+
+      # Aliases, excluding this option
+      aliases=${paraminfo:#$option}
+
+      # Excludes. Only if the max frequency of this option is 1, same as aliases
+      integer min_frequency=0 max_frequency=0
+      _parse_opts_minmaxfrequency min_frequency max_frequency -1 $frequency || return
+      if (( max_frequency == 1 ))
+      then
+        excludes=$aliases
+      fi
+
+    else
+      [[ -z $frequency ]] && frequency="1"
+      [[ -z $type ]] && type="string"
+    fi
+
+    # Report info on option if debugging enabled
+    if (( _po_debug ))
+    then
+      echo "option = '$option' {"
+      echo "  tag       = '$tag'"
+      echo "  frequency = '$frequency'"
+      echo "  type      = '$type'"
+      echo "  help      = '$helpline'"
+      echo "}"
+    fi
+
+    # Store the main data for this option
+    _po_tags[$option]=$tag
+    _po_frequencies[$option]=$frequency
+    _po_types[$option]=$type
+    _po_helplines[$option]=$helpline
+    _po_excludes[$option]=$excludes
+
+    # If its an option then store its aliases in _po_aliases, else store
+    # the option name in _po_arguments. Thus this is how they can be
+    # distinguished from each other (in addition to checking for '-')
+    if [[ $option == -* ]]
+    then
+      _po_aliases[$option]=$aliases
+    else
+      _po_arguments=($_po_arguments $option)
+    fi
+  done
+
+  return 0
+}
+
+# This function handles the parsing of type definitions for
+# _parse_opts_parsehelp (uses locals directly)
+_parse_opts_parsetype() {
+  local type="$paraminfo[1]" basetype="$paraminfo[2]"
+  local description="${(Q)paraminfo[3]}" action="${(Q)paraminfo[4]}"
+
+  # Report info on type if debugging enabled
+  if (( _po_debug ))
+  then
+    echo "type = '$type' {"
+    echo "  basetype    = '$basetype'"
+    echo "  description = '$description'"
+    echo "  action      = '$action'"
+    echo "}"
+  fi
+
+  _po_types_base[$type]=$basetype
+  _po_types_description[$type]=$description
+  _po_types_action[$type]=$action
+
+  return 0
+}
+
+# This function takes an encoded helpstring as its only parameter and
+# generates the various definition arrays
 _parse_opts_parsehelp() {
   local -a helptext
 
@@ -103,114 +251,29 @@ _parse_opts_parsehelp() {
   for line in ${(@f)argv[1]//$'\n\n'/$'\n \n'}
   do
 
-    # If it starts with a '#' then its an option description line
+    # If it starts with a '#' then its some kind of command line
     if [[ $line == [[:blank:]]#\#* ]]
     then
-      # Decode the description line into fields. Use 'z' not '=' to get proper quote handling
+      # Decode the line into fields. Use 'z' not '=' to get proper quote handling
       paraminfo=(${(z)line})
+
+      local command="$paraminfo[1]"
       shift paraminfo
+      case $command in
+        \#) # An option description line
+          _parse_opts_parseoption || return
+          ;;
 
-      # Extract the type information if there is any
-      local type=""
-      if (( paraminfo[(I):] ))
-      then
-        type=$paraminfo[paraminfo[(I):]+1,-1]
-	paraminfo=($paraminfo[1,paraminfo[(I):]-1])
-      fi
+        \#type) # A type definition line
+          _parse_opts_parsetype || return
+          ;;
 
-      # Extract the tag information if there is any
-      local tag=""
-      if (( paraminfo[(I)(+|)=] ))
-      then
-        tag=$paraminfo[1,paraminfo[(I)(+|)=]-1]
-	if [[ $paraminfo[(r)(+|)=] == += ]]
-	then
-	  tag="+$tag"
-	fi
-	paraminfo=($paraminfo[paraminfo[(I)(+|)=]+1,-1])
-      fi
+        *) # This is a configuration error
+          echo "Invalid command: '$command'" 1>&2
+          return 1
+          ;;
+      esac
 
-      # Handle the optional frequency definition
-      # (default is [1] for arguments, [0,1] for options)
-      local frequency=""
-      if [[ $paraminfo[1] == \[*\] ]]
-      then
-        frequency=${${paraminfo[1]#\[}%\]}
-	shift paraminfo
-      fi
-
-      # Options is remainder less the '|'
-      paraminfo=(${paraminfo:#\|})
-
-      # Check we've got something left
-      if (( !$#paraminfo ))
-      then
-        echo "Missing option/argument name in definition: '" $=line "'" 1>&2
-	return 1
-      fi
-
-      # If tag not provided then default to first option name with any leading '-'s removed
-      if [[ -z $tag ]]
-      then
-        tag="[${paraminfo[1]##-#}]"
-      fi
-
-      # Assign all the details for the current options/argument
-      local option=""
-      for option in $paraminfo
-      do
-        local aliases="" excludes=""
-
-        # Establish defaults for missing values
-        if [[ $option == -* ]]
-	then
-	  [[ -z $frequency ]] && frequency="0,1"
-	  [[ -z $type ]] && type="switch"
-
-	  # Aliases, excluding this option
-	  aliases=${paraminfo:#$option}
-
-	  # Excludes. Only if the max frequency of this option is 1, same as aliases
-          integer min_frequency=0 max_frequency=0
-          _parse_opts_minmaxfrequency min_frequency max_frequency -1 $frequency || return 1
-          if (( max_frequency == 1 ))
-          then
-            excludes=$aliases
-          fi
-
-	else
-	  [[ -z $frequency ]] && frequency="1"
-	  [[ -z $type ]] && type="string"
-	fi
-
-	# Report info on option if debugging enabled
-        if (( _po_debug ))
-	then
-	  echo "option = '$option' {"
-	  echo "  tag       = '$tag'"
-	  echo "  frequency = '$frequency'"
-	  echo "  type      = '$type'"
-	  echo "  help      = '$helpline'"
-	  echo "}"
-	fi
-
-	# Store the main data for this option
-        _po_tags[$option]=$tag
-	_po_frequencies[$option]=$frequency
-        _po_types[$option]=$type
-	_po_helplines[$option]=$helpline
- 	_po_excludes[$option]=$excludes
-
-	# If its an option then store its aliases in _po_aliases, else store
-	# the option name in _po_arguments. Thus this is how they can be
-	# distinguished from each other (in addition to checking for '-')
-	if [[ $option == -* ]]
-	then
-  	  _po_aliases[$option]=$aliases
-	else
-  	  _po_arguments=($_po_arguments $option)
-	fi
-      done
     else
       # Doesn't start with a # so append it to help
       helptext=($helptext $line)
@@ -228,16 +291,16 @@ _parse_opts_parsehelp() {
       then
         # Extract the text after any tabs, and trim it of whitespace
         line=${${line##*$'\t'[[:blank:]]#}%%[[:blank:]]}
-	if [[ -n $line ]]
-	then
-	  # Add to current helpline
-	  if [[ -n $helpline ]]
-	  then
-	    helpline="$helpline $line"
-	  else
-	    helpline=$line
-	  fi
-	fi
+        if [[ -n $line ]]
+        then
+          # Add to current helpline
+          if [[ -n $helpline ]]
+          then
+            helpline="$helpline $line"
+          else
+            helpline=$line
+          fi
+        fi
       fi
     fi
   done
@@ -245,18 +308,6 @@ _parse_opts_parsehelp() {
   # Create the help string from the array of lines. In order to get a blank
   # line this far it must have a space on it
   _po_helptext=(${(F)helptext})
-
-  # Useful for debugging
-  if (( _po_debug ))
-  then
-    echo "_po_tags=(${(qqkv)_po_tags[@]})"
-    echo "_po_frequencies=(${(qqkv)_po_frequencies[@]})"
-    echo "_po_types=(${(qqkv)_po_types[@]})"
-    echo "_po_aliases=(${(qqkv)_po_aliases[@]})"
-    echo "_po_excludes=(${(qqkv)_po_excludes[@]})"
-    echo "_po_helplines=(${(qqkv)_po_helplines[@]})"
-    echo "_po_arguments=($_po_arguments)"
-  fi
 
   return 0
 }
@@ -305,15 +356,155 @@ _parse_opts_minmaxfrequency() {
 
   case $expression in
     *,*) # Separate min & max values
-      _parse_opts_frequencyvalue $minvar $number ${expression%,*} || return 1
-      _parse_opts_frequencyvalue $maxvar $number ${expression#*,} || return 1
+      _parse_opts_frequencyvalue $minvar $number ${expression%,*} || return
+      _parse_opts_frequencyvalue $maxvar $number ${expression#*,} || return
       ;;
 
     *) # Min & max values the same
-      _parse_opts_frequencyvalue $minvar $number $expression || return 1
-      _parse_opts_frequencyvalue $maxvar $number $expression || return 1
-     ;;
+      _parse_opts_frequencyvalue $minvar $number $expression || return
+      _parse_opts_frequencyvalue $maxvar $number $expression || return
+      ;;
   esac
+
+  return 0
+}
+
+# This function expands the parameter given after the 'values=' type into a
+# full list of valid values, which are then placed in the array named by list
+#
+# NB. Locals in this function must begin _po_
+_parse_opts_expandvalues() {
+  local _po_list="$argv[1]" _po_param="$argv[2]"
+
+  local -a _po_values_list
+  case $_po_param in
+    \(*\)) # Literal list
+      _po_values_list=(${(z)${${_po_param#\(}%\)}})
+      ;;
+
+    \$*) # Variable substitution
+
+      # We don't know if there's an @ flag late in the substitution - in which
+      # case it would need to be done in quotes to work properly. So try both
+      # with and without and pick which way gave us the most results
+      local -a _po_values_list_q
+      eval _po_values_list="($_po_param)"
+      eval _po_values_list_q="(\"$_po_param\")"
+      if (( $#_po_values_list_q > $#_po_values_list ))
+      then
+        _po_values_list=("$_po_values_list_q[@]")
+      fi
+      ;;
+
+    *) # External variable name
+
+      # Behave according to the type of the external variable
+      case ${(Pt)_po_param} in
+        array*) # An array
+          _po_values_list=("${(@P)_po_param}")
+          ;;
+
+        association*) # An associative array. Just collect keys
+          _po_values_list=("${(@kP)_po_param}")
+          ;;
+
+        *) # Some kind of scalar. Split according to shell rules, remove quotes on each value
+          _po_values_list=("${(@Q)${(P)=_po_param}}")
+          ;;
+      esac
+      ;;
+  esac
+
+  # Return results
+  eval $_po_list='("$_po_values_list[@]")'
+  return 0
+}
+
+# This function decodes our type information into a form suitable for the
+# completion system. It directly sets the _po_description and _po_action
+# variables in _parse_opts_generatecompletion which calls it
+#
+# NB. Locals in this function must begin _po_
+_parse_opts_generatecompletiontype() {
+  local _po_option="$argv[1]"
+
+  # Extract the type without any leading '?'
+  local _po_type="${_po_types[$_po_option]#? }"
+
+  if (( $+_po_types_base[$_po_type] ))
+  then
+
+    # User defined type. Just take settings supplied
+    _po_description=$_po_types_description[$_po_type]
+    _po_action=$_po_types_action[$_po_type]
+  else
+
+    # Decode type as a builtin
+    local _po_param="${_po_type#*=}"
+    case $_po_type in
+      switch|noswitch|constant=*)
+        # No parameters, leave blank
+        ;;
+
+      string)
+        # Takes a parameter with no validation
+        _po_description="string"
+        _po_action="_files"
+        ;;
+
+      text)
+        # Takes a parameter with no validation
+        _po_description="text"
+        _po_action=" "
+        ;;
+
+      integer)
+        # Takes a parameter, validation for integer with optional sign
+        _po_description="integer number"
+        _po_action=" "
+        ;;
+
+      values=*)
+        # Takes a parameter, validated by list of values
+        _po_description="value"
+	local -a _po_values
+        _parse_opts_expandvalues _po_values $_po_param || return
+	_po_values=(${(q)_po_values})
+        _po_action="($_po_values)"
+        ;;
+
+      test=*)
+        # Takes a parameter validated by test. Extract the test flag & try to
+        # figure out the completer
+        case $_po_param in
+          -[aefgkrsuwOGN]) # These are types of file
+            _po_description="file"
+            _po_action="_files"
+            ;;
+
+          -[bcdhpxLS]) # These should be special types of file but need to be looked into
+            _po_description="file"
+            _po_action="_files"
+            ;;
+
+          -[notz]) # These can't be completed
+            _po_description="value"
+            _po_action=" "
+            ;;
+
+          *) # This is not recognised
+            _po_description="unknown"
+            _po_action=" "
+            ;;
+        esac
+        ;;
+
+      *) # This is a configuration error
+        echo "Invalid option type for option $_po_option: '$_po_type'" 1>&2
+        return 1
+        ;;
+    esac
+  fi
 
   return 0
 }
@@ -325,167 +516,96 @@ _parse_opts_minmaxfrequency() {
 # error, errors are written to stderr instead. If returning the completion
 # information, parse_opts always exits with 1 in order to cause the calling
 # program to exit, so the return code can not be used to signal errors
+#
+# NB. Locals in this function must begin _po_
 _parse_opts_generatecompletion() {
-  local -a specs
+  local -a _po_specs
 
   # Process each option to build a list of specifications for _arguments.
   # Careful to skip our magic --zsh-completion option
-  local -a aliases excludes
-  local option
-  for option in ${${(k)_po_aliases}:#--zsh-completion} $_po_arguments
+  local _po_option
+  for _po_option in ${${(k)_po_aliases}:#--zsh-completion} $_po_arguments
   do
-    integer isoption=0
-    [[ $option == -* ]] && isoption=1
-
-    local frequency="$_po_frequencies[$option]"
-    integer min_frequency=0 max_frequency=0
-    _parse_opts_minmaxfrequency min_frequency max_frequency -1 $frequency || return 1
+    local _po_frequency="$_po_frequencies[$_po_option]"
+    integer _po_min_frequency=0 _po_max_frequency=0
+    _parse_opts_minmaxfrequency _po_min_frequency _po_max_frequency -1 $_po_frequency || return
 
     # Try to determine a description/completer from the type of this option
-    local type="$_po_types[$option]" description="" action=""
-    local param="${type#*=}"
-    case $type in
-      switch|noswitch|constant=*)
-        # No parameters, leave blank
-        ;;
+    local _po_description="" _po_action=""
+    _parse_opts_generatecompletiontype $_po_option || return
 
-      string)
-        # Takes a parameter with no validation
-	description="string"
-	action=" "
-        ;;
-
-      integer)
-        # Takes a parameter, validation for integer with optional sign
-	description="integer number"
-	action=" "
-        ;;
-
-      values=*)
-        # Takes a parameter, validated by list of values
-	description="value"
-	case $param in
-	  \(*\)) # Literal list
-	    action=$param
-	    ;;
-
-	  *) # External variable name (array or space separated)
-	    action="(${(P)param})"
-	    ;;
-	esac
-	;;
-
-      function)
-        # Takes a parameter which is a function name
-	description="function"
-	action="_functions"
-	;;
-
-      test=*)
-        # Takes a parameter validated by test. Extract the test flag & try to
-        # figure out the completer
-	case $param in
-	  -[aefgkrsuwOGN]) # These are types of file
-	    description="file"
-	    action="_files"
-	    ;;
-
-	  -[bcdhpxLS]) # These should be special types of file but need to be looked into
-	    description="file"
-	    action="_files"
-	    ;;
-
-	  -[notz]) # These can't be completed
-	    description="value"
-	    action=" "
-	    ;;
-
-	  *) # This is not recognised
-	    description="unknown"
-	    action=" "
-	    ;;
-	esac
-	;;
-
-      *) # This is a configuration error
-        echo "Invalid option type for option $option: '$type'" 1>&2
-        return 1
-	;;
-    esac
-
-
-    local spec=""
-
-    if (( isoption ))
+    local _po_spec=""
+    if [[ $_po_option == -* ]]
     then
 
       # Generate excludes clause if we have any
-      if [[ -n $_po_excludes[$option] ]]
+      if [[ -n $_po_excludes[$_po_option] ]]
       then
-	spec="$spec($_po_excludes[$option])"
+        _po_spec="$_po_spec($_po_excludes[$_po_option])"
       fi
 
       # Add repeating option flag if max frequency is not 1
-      if (( max_frequency != 1 ))
+      if (( _po_max_frequency != 1 ))
       then
-    	spec="$spec*"
+        _po_spec="$_po_spec*"
       fi
 
       # Add the main option name section
-      spec="$spec$option"
+      _po_spec="$_po_spec$_po_option"
 
       # If we have a long option which takes a parameter then add the '=' flag
       # to say --option=value is valid
-      if [[ $option == --* && -n $action ]]
+      if [[ $_po_option == --* && -n $_po_action ]]
       then
-	spec="$spec="
+        _po_spec="$_po_spec="
       fi
 
       # Add the description of the option if one was successfully extracted from the help text
-      if [[ -n $_po_helplines[$option] ]]
+      if [[ -n $_po_helplines[$_po_option] ]]
       then
-	spec="${spec}[$_po_helplines[$option]]"
+        _po_spec="${_po_spec}[$_po_helplines[$_po_option]]"
       fi
 
       # Now add the description and completer for the parameter, if we have one
-      if [[ -n $action ]]
+      if [[ -n $_po_action ]]
       then
-	spec="$spec:$description:$action"
+        _po_spec="$_po_spec:$_po_description:$_po_action"
       fi
 
       # Collect the specifications
-      specs=($specs "'$spec'")
+      _po_specs=($_po_specs "'$_po_spec'")
 
     else
 
-      if (( min_frequency < 0 || max_frequency < 0 ))
+      if (( _po_min_frequency < 0 || _po_max_frequency < 0 ))
       then
-        spec="$spec*"
+        _po_spec="$_po_spec*"
       fi
 
-      spec="$spec:$description"
+      _po_spec="$_po_spec:$_po_description"
 
       # Add the description of the argument if one was successfully extracted from the help text
-      if [[ -n $_po_helplines[$option] ]]
+      if [[ -n $_po_helplines[$_po_option] ]]
       then
-        spec="$spec - $_po_helplines[$option]"
+        _po_spec="$_po_spec - $_po_helplines[$_po_option]"
       fi
 
-      spec="$spec:$action"
+      _po_spec="$_po_spec:$_po_action"
 
       # Collect the specifications
-      if (( min_frequency < 0 || max_frequency < 0 || min_frequency > max_frequency ))
+      if (( _po_min_frequency < 0 || _po_max_frequency < 0
+            || _po_min_frequency > _po_max_frequency ))
       then
-        specs=($specs "'$spec'")
+        _po_specs=($_po_specs "'$_po_spec'")
       else
-        repeat $min_frequency
-	do
-          specs=($specs "'$spec'")
-	done
-        repeat $(( max_frequency - min_frequency ))
-	do
-          specs=($specs "':$spec'")
-	done
+        repeat $_po_min_frequency
+        do
+          _po_specs=($_po_specs "'$_po_spec'")
+        done
+        repeat $(( _po_max_frequency - _po_min_frequency ))
+        do
+          _po_specs=($_po_specs "':$_po_spec'")
+        done
       fi
     fi
   done
@@ -495,13 +615,15 @@ _parse_opts_generatecompletion() {
   # -w - Arguments follow single letter options, one for each relevant option
   # -S - Handle -- to terminate options
   # -A - No more options after first non-option argument
-  echo "_arguments -s -w -S -A '-*' $specs"
+  echo "_arguments -s -w -S -A '-*' $_po_specs"
 
   return 0
 }
 
 # This helper function stores the given value against the given option name,
 # as defined by its related tag
+#
+# NB. Locals in this function must begin _po_
 _parse_opts_store() {
   local _po_name="$argv[1]" _po_value="$argv[2]"
 
@@ -531,37 +653,37 @@ _parse_opts_store() {
 
       # Behave according to the type of the external variable
       case ${(Pt)_po_tag} in
-    	array*)
-    	  # An array
-	  if (( append ))
-	  then
-	    eval $_po_tag='("${(@P)_po_tag}" "$_po_value")'
-	  else
-	    eval $_po_tag='("$_po_value")'
-	  fi
-	  ;;
+        array*)
+          # An array
+          if (( append ))
+          then
+            eval $_po_tag='("${(@P)_po_tag}" "$_po_value")'
+          else
+            eval $_po_tag='("$_po_value")'
+          fi
+          ;;
 
-    	association*)
-    	  # An associative array. Add option/value pair
-	  local _po_oldvalue
-	  eval _po_oldvalue="\$${_po_tag}[$_po_name]"
-	  if (( append && $#_po_oldvalue ))
-	  then
-	    eval $_po_tag\[\$_po_name\]='"$_po_oldvalue $_po_value"'
-	  else
-	    eval $_po_tag\[\$_po_name\]='$_po_value'
-	  fi
-	  ;;
+        association*)
+          # An associative array. Add option/value pair
+          local _po_oldvalue
+          eval _po_oldvalue="\$${_po_tag}[$_po_name]"
+          if (( append && $#_po_oldvalue ))
+          then
+            eval $_po_tag\[\$_po_name\]='"$_po_oldvalue $_po_value"'
+          else
+            eval $_po_tag\[\$_po_name\]='$_po_value'
+          fi
+          ;;
 
-    	*)
-    	  # Some kind of scalar or undefined
-	  if (( append && ${(P)#_po_tag} ))
-	  then
-	    eval $_po_tag='"${(P)_po_tag} $_po_value"'
-	  else
-	    eval $_po_tag='$_po_value'
-	  fi
-    	  ;;
+        *)
+          # Some kind of scalar or undefined
+          if (( append && ${(P)#_po_tag} ))
+          then
+            eval $_po_tag='"${(P)_po_tag} $_po_value"'
+          else
+            eval $_po_tag='$_po_value'
+          fi
+          ;;
       esac
   esac
 
@@ -605,8 +727,23 @@ _parse_opts_getnextvalue() {
 _parse_opts_handletype() {
   local _po_name="$argv[1]" _po_hasgivenvalue="$argv[2]" _po_givenvalue="$argv[3]"
 
-  local _po_type="$_po_types[$_po_name]" _po_value
-  local _po_param="${_po_type#*=}"
+  # Check for leading '?' to disable validation
+  integer _po_validate=1
+  if [[ $_po_types[$_po_name] == ?\ * ]]
+  then
+    _po_validate=0
+  fi
+
+  # Extract the type without any leading '?'
+  local _po_type="${_po_types[$_po_name]#? }"
+
+  # Recursively convert user defined type into base type
+  while (( $+_po_types_base[$_po_type] ))
+  do
+    _po_type=$_po_types_base[$_po_type]
+  done
+
+  local _po_param="${_po_type#*=}" _po_value
   case $_po_type in
     switch)
       # Simple switch. Mark its presence
@@ -623,7 +760,7 @@ _parse_opts_handletype() {
       _po_value=${(Q)_po_param}
       ;;
 
-    string)
+    string|text)
       # Takes a parameter with no validation
       _parse_opts_getnextvalue || return
       ;;
@@ -631,51 +768,36 @@ _parse_opts_handletype() {
     integer)
       # Takes a parameter, validation for integer with optional sign
       _parse_opts_getnextvalue || return
-      if [[ $_po_value != ([-+]|)<-> ]]
+      if [[ $_po_validate -ne 0 && $_po_value != ([-+]|)<-> ]]
       then
         echo "Invalid value for option $_po_name: '$_po_value'" 1>&2
-	return 1
+        return 1
       fi
       ;;
 
     values=*)
       # Takes a parameter, validated by list of values from external array
       _parse_opts_getnextvalue || return
-      local -a _po_values
-      case $_po_param in
-	\(*\)) # Literal list
-	  _po_values=(${(z)${${_po_param#\(}%\)}})
-	  ;;
-
-	*) # External variable name (array or space separated)
-	  _po_values=("${(@P)_po_param}")
-	  ;;
-      esac
-
-      if (( ! $_po_values[(I)$_po_value] ))
+      if (( $_po_validate ))
       then
-        echo "Invalid value for option $_po_name: '$_po_value'" 1>&2
-	return 1
-      fi
-      ;;
+        local -a _po_values
+        _parse_opts_expandvalues _po_values $_po_param || return
 
-    function)
-      # Takes a parameter which is a function name
-      _parse_opts_getnextvalue || return
-      if (( ! $+functions[$_po_value] ))
-      then
-        echo "Invalid value for option $_po_name: '$_po_value'" 1>&2
-	return 1
+        if (( ! $_po_values[(I)$_po_value] ))
+        then
+          echo "Invalid value for option $_po_name: '$_po_value'" 1>&2
+          return 1
+        fi
       fi
       ;;
 
     test=*)
       # Takes a parameter, validation using test. eg. test=-f
       _parse_opts_getnextvalue || return
-      if eval "[[ ! $_po_param \$_po_value ]]"
+      if (( $_po_validate )) && eval "[[ ! $_po_param \$_po_value ]]"
       then
         echo "Invalid value for option $_po_name: '$_po_value'" 1>&2
-	return 1
+        return 1
       fi
       ;;
 
@@ -708,60 +830,60 @@ _parse_opts_dooptions() {
 
         # Nothing else to do - return success
         return 0
-	;;
+        ;;
 
       --*) # Long argument
 
-      	# Check to see if the option exists
-      	if (( $+_po_aliases[$_po_option] ))
-      	then
+        # Check to see if the option exists
+        if (( $+_po_aliases[$_po_option] ))
+        then
 
-	  # Check to see if value was in option, ie. --name=value
-	  if [[ $_po_option == *=* ]]
-	  then
+          # Check to see if value was in option, ie. --name=value
+          if [[ $_po_option == *=* ]]
+          then
 
-	    # Extract value in option and pass to type processing
-	    _parse_opts_handletype $_po_option 1 ${_po_option#*=} || return
-	  else
+            # Extract value in option and pass to type processing
+            _parse_opts_handletype $_po_option 1 ${_po_option#*=} || return
+          else
 
-	    # Call type handling without a value
-	    _parse_opts_handletype $_po_option 0 || return
-	  fi
-      	else
-      	  echo "Invalid option: $_po_option" 1>&2
-	  return 1
-      	fi
-	;;
+            # Call type handling without a value
+            _parse_opts_handletype $_po_option 0 || return
+          fi
+        else
+          echo "Invalid option: $_po_option" 1>&2
+          return 1
+        fi
+        ;;
 
       -?*) # Short option (may be grouped)
 
-      	# Extract the list of options from eg. -jkl
-      	local _po_optiongroup="${_po_option#-}"
+        # Extract the list of options from eg. -jkl
+        local _po_optiongroup="${_po_option#-}"
 
-      	# Process each letter individually
-      	while [[ -n $_po_optiongroup ]]
-      	do
-      	  # Extract the first letter
-      	  local _po_optionletter="$_po_optiongroup[1]"
-	  _po_optiongroup=${_po_optiongroup#?}
+        # Process each letter individually
+        while [[ -n $_po_optiongroup ]]
+        do
+          # Extract the first letter
+          local _po_optionletter="$_po_optiongroup[1]"
+          _po_optiongroup=${_po_optiongroup#?}
 
-      	  # Check to see if is a valid short option
-      	  if (( $+_po_aliases[-$_po_optionletter] ))
-      	  then
+          # Check to see if is a valid short option
+          if (( $+_po_aliases[-$_po_optionletter] ))
+          then
 
-	    # It is so process it as the type determines
-	    _parse_opts_handletype -$_po_optionletter 0 || return
-      	  else
-      	    echo "Invalid option: -$_po_optionletter" 1>&2
-      	    return 1
-      	  fi
-      	done
-	;;
+            # It is so process it as the type determines
+            _parse_opts_handletype -$_po_optionletter 0 || return
+          else
+            echo "Invalid option: -$_po_optionletter" 1>&2
+            return 1
+          fi
+        done
+        ;;
 
       *) # Must be a lone -
         echo "Missing option after -" 1>&2
         return 1
-	;;
+        ;;
     esac
   done
 
@@ -785,7 +907,7 @@ _parse_opts_doarguments() {
 
     # Ensure number of args to use is within required range
     integer _po_use=$#_po_argv _po_min=0 _po_max=0
-    _parse_opts_minmaxfrequency _po_min _po_max $_po_use $_po_frequency || return 1
+    _parse_opts_minmaxfrequency _po_min _po_max $_po_use $_po_frequency || return
     if (( _po_use > _po_max ))
     then
       _po_use=$_po_max
@@ -802,7 +924,7 @@ _parse_opts_doarguments() {
       repeat $_po_use
       do
         _parse_opts_handletype $_po_argument 1 $_po_argv[1] || return
-	shift _po_argv
+        shift _po_argv
       done
     else
       echo "Insufficient arguments" 1>&2
@@ -826,6 +948,7 @@ _parse_opts_doarguments() {
 _parse_opts_process() {
   local -a _po_arguments
   local -A _po_tags _po_frequencies _po_types _po_aliases _po_excludes _po_helplines
+  local -A _po_types_base _po_types_description _po_types_action
   local _po_helptext
 
   # Check for arguments. If we have one and it is not '-' then it is the help
@@ -838,13 +961,26 @@ _parse_opts_process() {
     _po_config=$(cat)
   fi
 
-  # Parse the help string we've got to determine the type of options
-  _parse_opts_parsehelp $_po_config || return 1
+  # Parse the default definitions for types etc.
+  _parse_opts_setupdefinitions || return
 
-  # Add hooks for zsh completion system
-  _po_tags[--zsh-completion]="[zshcompletion]"
-  _po_types[--zsh-completion]="switch"
-  _po_aliases[--zsh-completion]=""
+  # Parse the help string we've got to determine the type of options
+  _parse_opts_parsehelp $_po_config || return
+
+  # Useful for debugging
+  if (( _po_debug ))
+  then
+    echo "_po_tags=(${(qqkv)_po_tags[@]})"
+    echo "_po_frequencies=(${(qqkv)_po_frequencies[@]})"
+    echo "_po_types=(${(qqkv)_po_types[@]})"
+    echo "_po_aliases=(${(qqkv)_po_aliases[@]})"
+    echo "_po_excludes=(${(qqkv)_po_excludes[@]})"
+    echo "_po_helplines=(${(qqkv)_po_helplines[@]})"
+    echo "_po_arguments=($_po_arguments)"
+    echo "_po_types_base=(${(qqkv)_po_types_base[@]})"
+    echo "_po_types_description=(${(qqkv)_po_types_description[@]})"
+    echo "_po_types_action=(${(qqkv)_po_types_action[@]})"
+  fi
 
   # Perform the option recognition
   if _parse_opts_dooptions
@@ -861,7 +997,7 @@ _parse_opts_process() {
     # Entry point for automatic zsh completion. We always return 1 in order to
     # get the calling program to exit. The completion system knows this is not
     # an error
-    if (( _po_results[zshcompletion] ))
+    if (( _po_results[zsh-completion] ))
     then
       _parse_opts_generatecompletion
       return 1
@@ -871,16 +1007,14 @@ _parse_opts_process() {
     if ! _parse_opts_doarguments
     then
 
-      # There was an error in processing. Mention the --help option. Assumes the
-      # function supplied one!
+      # There was an error in processing. Mention the --help option
       echo "Use --help for more information" 1>&2
       return 1
     fi
 
   else
 
-    # There was an error in processing. Mention the --help option. Assumes the
-    # function supplied one!
+    # There was an error in processing. Mention the --help option
     echo "Use --help for more information" 1>&2
     return 1
   fi
