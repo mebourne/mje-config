@@ -1,0 +1,17 @@
+#!/bin/sh
+#
+# makeTags - Make emacs tags file for LH development directory
+# Written by Martin Ebourne, Started ??/03/99
+#
+# $Id: makeTags,v 1.1 1999/08/20 12:38:20 martine Exp $
+
+cd $HOME/LH
+
+rm -f TAGS
+touch TAGS
+
+find * -name '*.hxx' | xargs -n 100 etags -T -a 
+find * -name '*.cxx' | xargs -n 100 etags -T -a 
+find * -name '*.inl' | xargs -n 100 etags -T -a 
+find * -name '*.sqc' | xargs -n 100 etags -T -a 
+

@@ -1,0 +1,46 @@
+#!/bin/sh
+#
+# cleanLH - Remove unwanted files from LH development directory
+# Written by Martin Ebourne, Started 20/08/99
+#
+# $Id: cleanLH,v 1.1 1999/08/20 12:35:29 martine Exp $
+
+cd $HOME/LH
+
+echo "Deleting all temporary files..."
+echo
+
+find . -type f \( -name '*~' -o -name '*.bak' -o -name '*.module' -o -name '*.o' \
+		  -o -name '*.[rso]' -o -name 'Dependency.state' -o -name '.gen*.typemap' \
+		  -o -name '.gen*.join' -o -name '*.log' -o -name '*.out' -o -name 'blah' \
+		  -o -name '.nfs*' \
+	       \) -print \
+    | xargs rm -f
+
+echo "Looking for vunget saves..."
+echo
+
+tmpfile=/tmp/cleanLH.$$
+
+find . -type f -name '*.vcsbak' -print > $tmpfile
+
+if [ -s $tmpfile ]
+then
+  cat $tmpfile
+  echo
+  echo "Remove ALL of these .vcsbak files? (y/n)"
+
+  read key
+  if [ "$key" = "y" -o "$key" = "Y" ]
+  then
+    xargs rm -f < $tmpfile
+  fi
+fi
+
+rm -f $tmpfile
+
+echo
+echo "Listing remaining files..."
+echo
+
+find . -type f \( -name '.VCS' -o -name '*.vcsbak' -o -name '.newbld' -o -print \)
