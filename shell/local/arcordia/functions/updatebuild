@@ -1,13 +1,8 @@
 #eval compdef -n _parse_opts updatebuild
 # ZSH function file
 # Update configspec to current time & rebuild the cashsec system
-# Usage: updatebuild [clean] all|lib|none
-#	 clean	Build from clean
 #
-#
-#
-#
-# $Id: updatebuild,v 1.8 2001/08/03 16:36:03 mebourne Exp $
+# $Id: updatebuild,v 1.9 2001/08/03 16:41:38 mebourne Exp $
 
 local -A what
 what=(
