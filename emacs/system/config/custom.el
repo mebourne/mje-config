@@ -1,7 +1,7 @@
 ;; Emacs configuration file
 ;; Customised variables
 ;; Written by Martin Ebourne
-;; $Id: custom.el,v 1.16 2002/04/12 14:51:49 mebourne Exp $
+;; $Id: custom.el,v 1.17 2002/04/19 18:02:41 mebourne Exp $
 
 (setq custom-file (concat install-user-base-dir "/custom.el"))
 
@@ -144,6 +144,7 @@
  '(sh-indentation 2)
  '(sh-basic-offset 2)
  '(sh-indent-for-do 0)
+ '(sh-indent-after-do '*)
  '(sh-indent-comment nil)
 
  ;; Disable inserting of #! line at top of scripts
