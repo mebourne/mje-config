@@ -3,7 +3,7 @@
 # Hook for precmd function to handle prompt formatting and displaying
 # Usage: _prompt_precmd
 #
-# $Id: _prompt_precmd,v 1.7 2001/03/30 09:53:51 mebourne Exp $
+# $Id: _prompt_precmd,v 1.8 2001/04/04 10:15:03 mebourne Exp $
 
 # Null out old strings to get base size
 _prompt_justify=""
@@ -27,6 +27,12 @@ done
 
 # Get the padding required including the current directory
 _prompt_justify="${${_prompt_justify[$#_prompt_pwd,-1]}% }"
+
+# Reset terminal if required
+if [[ -n $prompt_reset ]]
+then
+  echo -ne $prompt_reset
+fi
 
 # Display the prompt
 echotc cr
