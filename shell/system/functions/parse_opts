@@ -2,7 +2,7 @@
 # Provide options parsing and help output
 # Usage: parse_opts <argv> <results> [<help>]
 #
-# $Id: parse_opts,v 1.17 2001/08/09 09:14:42 mebourne Exp $
+# $Id: parse_opts,v 1.18 2001/08/10 17:01:58 mebourne Exp $
 
 ### Documentation
 
@@ -604,11 +604,6 @@ _parse_opts_generatecompletion() {
 
     else
 
-      if (( _po_max_frequency < 0 ))
-      then
-        _po_spec="$_po_spec*"
-      fi
-
       _po_spec="$_po_spec:$_po_description"
 
       # Add the description of the argument if one was successfully extracted from the help text
@@ -620,19 +615,24 @@ _parse_opts_generatecompletion() {
       _po_spec="$_po_spec:$_po_action"
 
       # Collect the specifications
-      if (( _po_min_frequency < 0 || _po_max_frequency < 0
-            || _po_min_frequency > _po_max_frequency ))
+      if (( _po_min_frequency >= 0 ))
       then
-        _po_specs=($_po_specs "'$_po_spec'")
-      else
         repeat $_po_min_frequency
         do
           _po_specs=($_po_specs "'$_po_spec'")
         done
-        repeat $(( _po_max_frequency - _po_min_frequency ))
-        do
-          _po_specs=($_po_specs "':$_po_spec'")
-        done
+
+        if (( _po_max_frequency >= _po_min_frequency ))
+        then
+          repeat $(( _po_max_frequency - _po_min_frequency ))
+          do
+            _po_specs=($_po_specs "':$_po_spec'")
+          done
+	else
+          _po_specs=($_po_specs "'*$_po_spec'")
+	fi
+      else
+        _po_specs=($_po_specs "'*$_po_spec'")
       fi
     fi
   done

@@ -649,10 +649,6 @@ sub generateCompletion {
       push @specs, "'$spec'";
     } else {
 
-      if($max<0) {
-	$spec.="*";
-      }
-
       $spec.=":" . $description;
 
       # Add the description of the argument if one was successfully extracted from the help text
@@ -666,15 +662,20 @@ sub generateCompletion {
       $spec.=":$action";
 
       # Collect the specifications
-      if($min<0 || $max<0 || $min>$max) {
-	push @specs, "'$spec'";
-      } else {
+      if($min>=0) {
 	for my $i (1..$min) {
 	  push @specs, "'$spec'";
 	}
-	for my $i ($min+1..$max) {
-	  push @specs, "':$spec'";
+
+	if($max>=$min) {
+	  for my $i ($min+1..$max) {
+	    push @specs, "':$spec'";
+	  }
+	} else {
+	  push @specs, "'*$spec'";
 	}
+      } else {
+	push @specs, "'*$spec'";
       }
     }
   }
