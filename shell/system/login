@@ -3,7 +3,7 @@
 # Generic system-wide setup for login shells. Primarily to set environment vars just once
 # Written by Martin Ebourne
 #
-# $Id: login,v 1.11 2002/04/25 09:27:17 mebourne Exp $
+# $Id: login,v 1.12 2002/09/02 11:01:57 mebourne Exp $
 
 # Remove . from PATH since it is the work of the devil
 path=(${path:#.})
@@ -29,8 +29,9 @@ then
   export PAGER="less -s  -PM'<man page> ?ltlines %lt-%lb?L/%L. : byte %bB?s/%s. .?e(END):?pB%pB\%..%t'"
 fi
 
-# If DISPLAY is not set then have a go from 'who am i'
-if [[ -z $DISPLAY ]]
+# If DISPLAY is not set then have a go from 'who am i', unless no tty in which case it
+# won't work
+if [[ -z $DISPLAY && -n $TTY ]]
 then
   local whoami="$(who am i)"
   if [[ $whoami == *\(*\)* ]]
