@@ -3,7 +3,7 @@
 # Generic system-wide setup for interactive use
 # Written by Martin Ebourne
 #
-# $Id: interactive,v 1.15 2001/05/23 13:22:06 mebourne Exp $
+# $Id: interactive,v 1.16 2001/05/23 18:41:55 mebourne Exp $
 
 # Initial config files
 config_if_present system/loadfuncs
@@ -37,6 +37,10 @@ REPORTTIME=60
 HISTSIZE=3000
 SAVEHIST=2000
 HISTFILE=${ZDOTDIR:-$HOME}/.zsh_history
+if [[ ${ZDOTDIR:-$HOME} != $HOME ]]
+then
+  HISTFILE=$ZDOTDIR/.history
+fi
 backup_history
 
 # Update XTerm title bar with useful info after each command
