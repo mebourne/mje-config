@@ -3,7 +3,7 @@
 # Hook for preexec function
 # Usage: _prompt_precmd
 #
-# $Id: _prompt_preexec,v 1.8 2001/03/19 13:51:05 mebourne Exp $
+# $Id: _prompt_preexec,v 1.9 2001/03/19 14:29:25 mebourne Exp $
 
 local command="$1"
 
@@ -36,9 +36,9 @@ echotc cr
 echo -n - "${(%%)PROMPT}"
 
 # Then the command in bold. Don't let echo parse any escape sequences in command
-echo -n - "\e[$prompt_colours[bold]m"
+echo -n - "$prompt_colour_start$prompt_colours[bold]$prompt_colour_end"
 echo -nE - "$command"
-echo -n - "\e[$prompt_colours[normal]m"
+echo -n - "$prompt_colour_start$prompt_colours[normal]$prompt_colour_end"
 
 # Then the padding to right justify the right prompt. Only use last logical row of
 # command for this calculation

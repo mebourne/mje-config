@@ -3,12 +3,18 @@
 # Setup for prompt package
 # Written by Martin Ebourne
 #
-# $Id: setup,v 1.4 2001/03/08 17:52:07 mebourne Exp $
+# $Id: setup,v 1.5 2001/03/19 14:27:25 mebourne Exp $
 
 add_functions_directory package/prompt/functions
 
 # Set up the default prompt colours
 typeset -gA prompt_colours
+
+typeset -g prompt_colour_start prompt_colour_end
+
+# Colour control code sequence for xterm is ESC [ <values> m
+prompt_colour_start=$'\e'"["
+prompt_colour_end="m"
 
 # These are very dark
 prompt_colours=( dark_red	"38;5;130"

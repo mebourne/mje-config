@@ -3,14 +3,14 @@
 # Add the given parameters to the previously set prompt
 # Usage: add_to_prompt [<parameter> ...]
 #
-# $Id: add_to_prompt,v 1.1 2001/03/02 18:37:51 mebourne Exp $
+# $Id: add_to_prompt,v 1.2 2001/03/19 14:27:41 mebourne Exp $
 
 local value param
 for param in $argv
 do
   case $param in
     \{*\}) param=${${param#\{}%\}}
-           value="$value%{"$'\e'"[\$prompt_colours[$param]m%}";;
+           value="$value%{\$prompt_colour_start\$prompt_colours[$param]\$prompt_colour_end%}";;
     *)     value="$value$param";;
   esac
 done
