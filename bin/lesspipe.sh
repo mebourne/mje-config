@@ -9,6 +9,6 @@ case "$1" in
 *.gz) gunzip -c $1 2>/dev/null
       ;;
 *.[0-9]) # Check for a line near the top starting with a '.' command
-	 head -n 3 $1 | grep -q '^\.' && nroff -man $1 2>/dev/null
+	 head -n 3 $1 | grep '^\.' >/dev/null 2>&1 && nroff -man $1 2>/dev/null
          ;;
 esac
