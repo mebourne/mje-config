@@ -1,7 +1,7 @@
 ;; Emacs configuration file
 ;; Customised variables
 ;; Written by Martin Ebourne
-;; $Id: custom.el,v 1.10 2002/03/21 11:41:37 mebourne Exp $
+;; $Id: custom.el,v 1.11 2002/03/21 12:01:32 mebourne Exp $
 
 (setq custom-file (concat install-user-base-dir "/custom.el"))
 
@@ -161,7 +161,10 @@
 		      (line-number-mode "L%l--")
 		      (column-number-mode "C%c--")
 		      (-3 . "%p")
-		      (vc-cc-pwv ("--[" vc-cc-pwv "]")) "-%-"))
+		      (:eval (let ((view (clearcase-fprop-viewtag default-directory)))
+			       (if view
+				   (concat "--[" view "]"))))
+		      "-%-"))
  )
 
 (custom-set-faces
