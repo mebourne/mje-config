@@ -137,7 +137,7 @@ ButtonStyle 2 4 50x35@1 65x65@0 35x65@0 50x35@1
 
 # This is the root menu
 AddToMenu RootMenu "Main" Title
-+	"%mini.xterm.xpm%Xterm"		Exec exec xterm_colour
++	"%mini.xterm.xpm%Xterm"		Exec exec xterm
 +	"%mini.gnu.xpm%Emacs"		Exec exec emacs
 +	"" 				Nop
 +	"Programs"			Popup Programs
@@ -148,8 +148,7 @@ AddToMenu RootMenu "Main" Title
 
 # This menu will fire up some often used programs
 AddToMenu Programs "Programs" Title
-+	"%mini.xterm.xpm%Xterm (colour)" Exec exec xterm_colour
-+	"%mini.xterm.xpm%Xterm (b&&w)"	Exec exec xterm
++	"%mini.xterm.xpm%Xterm"		Exec exec xterm
 +	"%mini.gnu.xpm%Emacs"		Exec exec emacs
 +	"%mini.netscape.xpm%Netscape"	Exec exec netscape
 +	"%mini.xv.xpm%xv"		Func-Warp-or-Run xv "Exec exec xv"
