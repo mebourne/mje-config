@@ -4,7 +4,7 @@
 # done, but immediately before the user specific files
 # Written by Martin Ebourne
 #
-# $Id: interactive,v 1.21 2001/07/17 12:52:56 mebourne Exp $
+# $Id: interactive,v 1.22 2001/08/16 11:10:30 mebourne Exp $
 
 # Arcordia settings
 
@@ -18,7 +18,6 @@ add_emulate ksh variable
 
 # Pull in a couple of useful Arcordia 'packages'
 Load rcs
-Load ssh
 
 # Our default CDPATH
 cdpath=(. /vobs/odyssey/cashsec)
