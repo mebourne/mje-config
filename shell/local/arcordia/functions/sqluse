@@ -2,9 +2,9 @@
 # Update the SQL package settings from Arcordia environment/component
 # Usage: sqluse [<environment> <component>]
 #
-# $Id: sqluse,v 1.4 2001/03/19 14:59:42 mebourne Exp $
+# $Id: sqluse,v 1.5 2001/04/27 11:28:51 mebourne Exp $
 
-local env=$argv[1] com=$argv[2]
+local env=$argv[1] com=$argv[2] db=$argv[3]
 
 if [[ -z $env || -z $com ]]
 then
@@ -23,6 +23,13 @@ else
 	 user=$(db_attribute $env $com username) \
 	 password=$(db_attribute $env $com password) \
 	 database=$(db_attribute $env $com database)
+
+  if [[ $db == -s ]]
+  then
+    export DB_ENV=$env
+    export DB_COM=$com
+  fi
+
   echo "New settings:"
 fi
 
