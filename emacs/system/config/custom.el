@@ -1,7 +1,7 @@
 ;; Emacs configuration file
 ;; Customised variables
 ;; Written by Martin Ebourne
-;; $Id: custom.el,v 1.1 2001/05/11 17:31:38 mebourne Exp $
+;; $Id: custom.el,v 1.2 2001/05/16 14:22:03 mebourne Exp $
 
 (setq custom-file (concat install-user-base-dir "/custom.el"))
 
@@ -120,6 +120,9 @@
 
  ;; Perl
  '(perl-indent-level 2)
+
+ ;; Disable inserting of #! line at top of scripts
+ '(executable-insert nil)
 
  ;; Setup syntax colouring
  '(global-font-lock-mode t nil (font-lock))
