@@ -1,11 +1,8 @@
 ;; Emacs configuration file
 ;; Setup for asm-mode
 ;; Written by Martin Ebourne
-;; $Id: asm-mode.el,v 1.1 2001/05/11 17:31:38 mebourne Exp $
+;; $Id: asm-mode.el,v 1.2 2001/05/16 14:22:45 mebourne Exp $
 
-(setq auto-mode-alist
-      (append '(("\\.asm"   . asm-mode)
-		) auto-mode-alist))
 (add-hook 'asm-mode-hook
 	  (function (lambda ()
 		      (local-set-key ";"    'self-insert-command)
