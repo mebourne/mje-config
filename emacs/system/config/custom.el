@@ -1,7 +1,7 @@
 ;; Emacs configuration file
 ;; Customised variables
 ;; Written by Martin Ebourne
-;; $Id: custom.el,v 1.9 2002/03/19 19:21:37 mebourne Exp $
+;; $Id: custom.el,v 1.10 2002/03/21 11:41:37 mebourne Exp $
 
 (setq custom-file (concat install-user-base-dir "/custom.el"))
 
@@ -28,10 +28,6 @@
 
  ;; Put scroll bars back on the right side
  '(scroll-bar-mode (quote right))
-
- ;; Resize the minibuffer to show all contents as required. Doesn't work in customize
- ;'(resize-minibuffer-mode t)
- '(resize-minibuffer-window-max-height 3)
 
  ;; Mouse yanks at point, not where mouse is
  '(mouse-yank-at-point t)

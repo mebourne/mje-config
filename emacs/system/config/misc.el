@@ -1,7 +1,7 @@
 ;; Emacs configuration file
 ;; Miscellaneous stuff
 ;; Written by Martin Ebourne
-;; $Id: misc.el,v 1.5 2002/03/19 19:21:43 mebourne Exp $
+;; $Id: misc.el,v 1.6 2002/03/21 11:41:05 mebourne Exp $
 
 (setq message-log-max 1000)
 
@@ -10,9 +10,6 @@
 
 ;; Load filecache
 (load "filecache")
-
-;; Minibuffer resizing. Doesn't work through custom
-(resize-minibuffer-mode t)
 
 ;; Display european characters
 (standard-display-european t)
