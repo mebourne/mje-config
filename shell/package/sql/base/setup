@@ -3,7 +3,7 @@
 # Setup for SQL base package
 # Written by Martin Ebourne
 #
-# $Id: setup,v 1.5 2001/05/22 16:56:43 mebourne Exp $
+# $Id: setup,v 1.6 2001/05/29 16:56:50 mebourne Exp $
 
 add_functions_directory package/sql/base/functions
 
@@ -27,8 +27,10 @@ bindkey "\'" sql_quote
 bindkey "^Xq" sql_quote_line
 
 # Options defaults
-# compress - Squash columns in displayed data so that no space is wasted
 # count    - Print count of number of rows returned (or affected)
 # maxrows  - Maximum number of rows to return
-sqlset compress=1 count=1
-sqlunset maxrows
+# format   - Enable SQL formatting. Does nothing by itself, but controls the following:
+#   colour - Colour displayed data based on context (default based on $COLOUR)
+#   squash - Squash columns in displayed data so that no space is wasted
+sqlset count=1 format=1 squash=1
+sqlunset maxrows colour
