@@ -118,6 +118,7 @@ my %styles=(
     extend       => "record",
     description  => "Record style output with multiple rows to a record line",
     truncate     => 1,
+    printable    => 1,
     separator    => "  ",
     controlFn    => \&rows_control,
   },
