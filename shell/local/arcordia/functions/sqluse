@@ -2,7 +2,7 @@
 # Update the SQL package settings from Arcordia environment/component
 # Usage: sqluse [<environment> <component>]
 #
-# $Id: sqluse,v 1.1 2001/02/26 18:53:38 mebourne Exp $
+# $Id: sqluse,v 1.2 2001/02/27 10:40:03 mebourne Exp $
 
 local env=$1 com=$2
 
@@ -10,7 +10,10 @@ if [[ -z $env || -z $com ]]
 then
   echo "Current settings:"
 else
-  db_attribute $env $com server >/dev/null || return 1
+  db_attribute $env $com server >/dev/null || {
+    echo "Unable to select database $env $com" 1>&2
+    return 1
+  }
 
   sqlset environment=$env \
 	 component=$com \
