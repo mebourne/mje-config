@@ -1,0 +1,131 @@
+%_topdir /home/martin/rpm
+
+%vendor Martin Ebourne <martin@zepler.org>
+%distribution %{distname} %{distversion}
+
+#%_signature gpg
+#%_gpg_name Joe Smith
+#%_gpg_path ~/.gnupg
+
+
+### ATRPMs macros ###
+
+## Version
+%distversion %(rpm -qf --qf='%{VERSION}' /etc/redhat-release)
+%distinitials rh%(grep -i fedora /etc/redhat-release >/dev/null && echo "fc")
+%distname %(grep -i fedora /etc/redhat-release >/dev/null && echo "Fedora Core" || echo "Red Hat Linux")
+%disttag %{distinitials}%{distversion}
+%disttag2 %(echo %disttag | sed -e's,\\.,_,g')
+%atrelease() %1.%{disttag}
+
+%eversion       %{?epoch:%{epoch}:}%{version}
+%evr            %{?epoch:%{epoch}:}%{version}-%{release}
+
+## Directories
+%_initdir       %{_sysconfdir}/rc.d/init.d
+%_varlibdir     %{_localstatedir}/lib
+%_varcachedir   %{_localstatedir}/cache
+%_logdir        %{_localstatedir}/log
+%_rundir        %{_localstatedir}/run
+%_subsysdir     %{_localstatedir}/lock/subsys
+%_sysconfigdir  %{_sysconfdir}/sysconfig
+%_logrotatedir  %{_sysconfdir}/logrotate.d
+
+## Kernel
+# Use in specfiles:
+# %kernelmodule foo
+# %kerneldesc
+# %{_kernel} in depmod, %kaddcustomkernel
+# %kmdl_name
+# %if %{kmain}
+# %kernelconfig, %kreqprov
+# %kmdlinstall
+# %kernelname
+
+# kflavour access only in lirc, deprecated
+
+%_kernel            %(uname -r)
+%kmdl_kernelsrcdir  /lib/modules/%{_kernel}/build
+%kmdl_userland      %(test "%{_kernel}" = none && echo 1 || echo 0)
+%_kflavour          %(echo %{_kernel} | grep -E '(smp|enterprise|bigmem)' | sed -e's/^.*\\(smp\\|enterprise\\|bigmem\\).*$/\\1/')
+%_kversion          %(echo %{_kernel} | sed -e's/^\\(.*\\)\\(smp\\|enterprise\\|bigmem\\).*$/\\1/')
+%_krelver           %(echo %{_kversion} | sed -e's/-/_/')
+%_kname             %(echo kernel-%{_kflavour} | sed -e's/-$//')
+%_kname2            %(echo kmodule-%{_kflavour} | sed -e's/-$//')
+%_kname3            %(echo kmdl-%{_kflavour} | sed -e's/-$//')
+%_modflags          -include /tmp/atrpms-mykernel-%{_kernel}-%{_target_cpu}.h -DMODULE -DMODVERSIONS -include %{_kernelsrcdir}/include/linux/modversions.h
+
+# "kernel": the output of "uname -r" of the kernel to build for
+# (default: the running one)
+# "_kernelsrcdir": The directory of the sources used to build "kernel"
+# (default: /lib/modules/%{_kernel}/build)
+
+%kmdl_name kernel-module-%{_kpkgname}-%{_kernel}
+%kmdl_nameof() kernel-module-%1-%{_kernel}
+%kmdl_namepure kernel-module-%{_kpkgname}
+%kmdl_namepureof() kernel-module-%1
+#_kmdl_name_old %{_kpkgname}-kmdl-%{_kernel}
+#_kmdl_nameof_old() %1-kmdl-%{_kernel}
+#_kmdl_name_old %{_kpkgname}-%{_kname3}-%{_kversion}
+#_kmdl_nameof_old() %1-%{_kname3}-%{_kversion}
+#_kmdl_namepure_old %{_kpkgname}-kmdl
+#_kmdl_namepureof_old() %1-kmdl
+
+%_kernelbuildreq %{nil}
+
+%kmdl() \
+%{expand:%%global _kpkgname %1} \
+%_kernelbuildreq \
+%{nil}
+
+%kmdl_parentdependencies\
+Requires: %{kmdl_namepure}-%{evr}
+
+%kmdl_dependencies\
+Requires: atrpms-kmdl-helper \
+#Requires: strictdep-%{_kname}-%{_target_cpu} = %{_kversion}\
+Requires: /boot/vmlinuz-%{_kernel}\
+Requires: %{_kname} = %{_kversion}, /sbin/depmod, modutils >= 2.4.14\
+BuildRequires: %_kernelcompiler\
+Provides: %kmdl_namepure-%{evr}\
+Provides: %kmdl_namepure-%_kernel = %{evr}\
+#\
+# backward compatibility foo-kmdl\
+Provides: Provides: %{_kpkgname}-%{_kname3}-%{_kversion} = %{evr}
+Provides: %{_kpkgname}-kmdl
+# backward compatibility with foo-kernel-...\
+Provides: %{_kpkgname}-kernel\
+%{?_kflavour:Provides: %{_kpkgname}-%{_kname}}\
+Provides: %{_kpkgname}-%{_kname}-%{_kversion} = %{evr}\
+Provides: %{_kpkgname}-%{_kname}-%{_kversion}-%{_target_cpu} = %{evr}\
+# backward compatibility with unversioned kernel-module-foo\
+Provides: kernel-module-%{_kpkgname}\
+%{?_kflavour:Provides: %{_kname}-module-%{_kpkgname}}\
+
+%_kernelcompiler_rhfc2 /usr/bin/gcc
+%_kernelcompiler_rhfc1 /usr/bin/gcc32
+%_kernelcompiler_rh9 /usr/bin/gcc
+%_kernelcompiler_rh8_0 /usr/bin/gcc
+%_kernelcompiler_rh7_3 /usr/bin/gcc
+
+%_kernelcompiler %{expand:%%_kernelcompiler_%{disttag2}}
+
+%kmdl_moduledir /lib/modules/%{_kernel}/updates
+
+%kmdl_config\
+export CC=%_kernelcompiler\
+#/sbin/mkkerneldoth.atrpms %{_kernel} %{_target_cpu} > /tmp/atrpms-mykernel-%{_kernel}-%{_target_cpu}.h\
+#mkdir -p %{buildroot}%{kmdl_moduledir}
+
+%kmdl_desc\
+This package contains the %kmdl_name kernel modules for the Linux kernel package:\
+%{_kname}-%{_kversion}.%{_target_cpu}.rpm.
+
+%_kernelname %{_kname}-%{_kversion}.%{_target_cpu}.rpm
+
+%kmdl_install\
+%{_libdir}/atrpms/addcustomkmdl '/lib/modules/`uname -r`/updates'\
+depmod -ae -F /boot/System.map-%{_kernel} %{_kernel}
+
+%kmdl_remove\
+depmod -ae -F /boot/System.map-%{_kernel} %{_kernel}

@@ -145,4 +145,11 @@ then
   done
 fi
 
+if ask "Install RPM files"
+then
+  backup .rpmmacros
+  echo "Creating .rpmmacros"
+  ln -s "$configdir/tools/rpmmacros" .rpmmacros
+fi
+
 echo "Install completed"
