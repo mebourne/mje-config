@@ -1,10 +1,37 @@
+#eval compdef -n _parse_opts build
 # ZSH function file
 # Build the cashsec system
-# Usage: build [clean|lib]
 #
-# $Id: build,v 1.3 2001/07/02 13:54:36 mebourne Exp $
+# $Id: build,v 1.4 2001/08/03 16:41:25 mebourne Exp $
 
-case $1 in
+local -A what
+what=(
+  clean  "Delete all built objects"
+  lib    "Build only libraries"
+  all    "Build libraries and executables"
+)
+
+local -A opts
+parse_opts - opts -- "$argv[@]" <<'EOF' || return 1
+Description:
+Build the cashsec system
+
+Usage:
+build [options] [<what>]
+
+Options:
+  -h, --help			Provide this help
+				# --help | -h
+
+Arguments:
+  <what>			What to build (default all). One of:
+				clean  Delete all built objects
+				lib    Build only libraries
+				all    Build libraries and executables
+				# [0,1] what : values=what
+EOF
+
+case $opts[what] in
   clean)
     echo "Deleting all derived objects in cashsec"
     cleartool lsprivate -do -invob ~cashsec | xargs rm -f
@@ -16,15 +43,10 @@ case $1 in
       echo "cashsec build lib completed ok"
     ;;
 
-  "")
+  all | "")
     ( cd ~cashsec/src/persist; mk lib ) &&
       ( cd ~cashsec/src; mk lib ) &&
       ( cd ~cashsec/src; mk ) &&
       echo "cashsec build completed ok"
-    ;;
-
-  *)
-    echo "Usage: build [clean|lib]" 2>&1
-    return 1
     ;;
 esac
