@@ -2,7 +2,7 @@
 # Pre-filter to testscript to ensure the APPNAME env is set up correctly
 # Usage: testscript <options>
 #
-# $Id: testscript,v 1.1 2001/06/13 09:11:45 mebourne Exp $
+# $Id: testscript,v 1.2 2001/06/14 16:17:19 mebourne Exp $
 
 # Based on the leafname of the current directory, find the app name
 local appname instance
@@ -17,7 +17,7 @@ case ${PWD:t} in
   mtm)             appname=DEUCE;		instance=DEUCE_3;;
   provisions-bulk) appname=DEUCE;		instance=DEUCE_3;;
   refdata)         appname=ACEREFDATA;		instance=ACEREFDATA_1;;
-  reg)             appname=DEUCE;		instance=DEUCE_3;;
+  reg)             appname=DEUCE;		instance="";;
   wam)             appname=WAM;			instance=WAM_1;;
 
   *) echo "ERROR testscript directory ${PWD:t} is not recognised" 1>&2
