@@ -132,23 +132,38 @@ my %styles=(
   },
 );
 
+my %colours=(
+  reset     => "\e[00m",
+
+  white     => "\e[38;5;15m",
+  yellow    => "\e[38;5;11m",
+  orange    => "\e[38;5;214m",
+  cyan      => "\e[38;5;14m",
+  blue      => "\e[38;5;4m",
+  green     => "\e[38;5;10m",
+
+  bg_grey   => "\e[48;5;233m",
+  bg_black  => "\e[48;5;0m",
+);
+
+
 my %types=(
   string => {
     align     => -1,
-    colour    => "\e[38;5;11m",
+    colour    => $colours{yellow},
     displayFn => \&displayString,
   },
   number => {
     align     => 1,
-    colour    => "\e[38;5;214m",
+    colour    => $colours{orange},
   },
   datetime => {
     align     => -1,
-    colour    => "\e[38;5;14m",
+    colour    => $colours{cyan},
   },
   binary => {
     align     => -1,
-    colour    => "\e[38;5;214m",
+    colour    => $colours{orange},
     displayFn => \&displayBinary,
   },
 );
@@ -364,7 +379,7 @@ sub default_generateFormat {
   for($x=0;$x<@$columns;$x++) {
     if($x) {
       if($self->{colour}) {
-	$format.="\e[38;5;4m";
+	$format.=$colours{blue};
 
 	if($self->{style}->{separator} eq " ") {
 	  $format.="\xb7";
@@ -395,7 +410,7 @@ sub default_generateFormat {
       $format.="\"";
     }
   }
-  $format.="\e[38;5;15m" if $self->{colour};
+  $format.=$colours{white} if $self->{colour};
 
   return $format;
 }
@@ -427,12 +442,12 @@ sub default_printHeader {
   }
 
   # Output header in green
-  $self->{colour} && print "\e[38;5;10m";
+  $self->{colour} && print $colours{green};
   print "$header\n";
   if($self->{style}->{underline}) {
     print "$underline\n";
   }
-  $self->{colour} && print "\e[38;5;15m";
+  $self->{colour} && print $colours{white};
 }
 
 # Print the data
@@ -444,7 +459,7 @@ sub default_printData {
   for my $row (@$rows) {
     if($self->{colour}) {
       if($background) {
-	print "\e[48;5;233m";
+	print $colours{bg_grey};
       }
       $background=!$background;
     }
@@ -456,7 +471,7 @@ sub default_printData {
     }
     printf $format, @$row;
 
-    print "\e[48;5;0m" if $self->{colour};
+    print $colours{bg_black} if $self->{colour};
     print "\n";
   }
 }
@@ -471,16 +486,16 @@ sub record_generateFormat {
   for($x=0;$x<@$columns;$x++) {
     # Write a '%<num>s' entry as appropriate
     my $column=$$columns[$x];
-    $format.="\e[38;5;10m" if $self->{colour};
+    $format.=$colours{green} if $self->{colour};
     $format.=sprintf("%-*s",$self->{_maxFieldNameLen},$$column{name});
-    $format.="\e[38;5;15m" if $self->{colour};
+    $format.=$colours{white} if $self->{colour};
     $format.=": ";
     if($self->{colour}) {
       $format.=$types{$$column{type}}->{colour};
-      $format.="\e[48;5;233m";
+      $format.=$colours{bg_grey};
     }
     $format.="%-" . $$column{datalength} . "s";
-    $format.="\e[00m" if $self->{colour};
+    $format.=$colours{reset} if $self->{colour};
     $format.="\n";
   }
 
@@ -529,9 +544,9 @@ sub rows_control {
       my $column=$$columns[$colNum];
 
       my $format="";
-      $format.="\e[38;5;10m" if $self->{colour};
+      $format.=$colours{green} if $self->{colour};
       $format.="%-*s";
-      $format.="\e[38;5;15m" if $self->{colour};
+      $format.=$colours{white} if $self->{colour};
       $format.=": ";
       printf "$format", $self->{_maxFieldNameLen}, $$column{name};
 
@@ -543,10 +558,10 @@ sub rows_control {
 	}
 	if($self->{colour}) {
 	  $format.=$types{$$column{type}}->{colour};
-	  $format.="\e[48;5;233m";
+	  $format.=$colours{bg_grey};
 	}
 	$format.="%-*s";
-	$format.="\e[00m" if $self->{colour};
+	$format.=$colours{reset} if $self->{colour};
 	$format.=" " x ($rowWidth - $column->{datalength});
 	printf "$format", $column->{datalength}, $rows->[$rowNum]->[$colNum];
       }
