@@ -3,7 +3,7 @@
 # Execute an SQL command
 # Usage: sql <sql-command> ...
 #
-# $Id: sql,v 1.9 2002/05/28 15:37:21 mebourne Exp $
+# $Id: sql,v 1.10 2002/06/17 16:41:42 mebourne Exp $
 
 eval $_sql_intro
 
@@ -43,9 +43,9 @@ then
   _sql_getparam interface_v interface native
   if [[ $interface_v == dbi ]]
   then
-    _sql_call execute_dbi $=formatopts -- "$argv[@]"
+    _sql_call execute_dbi $=formatopts -- "$argv[*]"
   else
-    eval _sql_call execute_native "\$argv[@]" $formatcmd
+    eval _sql_call execute_native "\$argv[*]" $formatcmd
   fi
 else
   _sql_call interactive
