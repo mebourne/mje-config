@@ -3,7 +3,7 @@
 # list - List locked, snapped, and new files in directories
 # Written by Martin Ebourne, Started 20/08/99
 #
-# $Id: list,v 1.9 1999/09/09 13:54:05 martine Exp $
+# $Id: list,v 1.10 1999/09/09 14:01:20 martine Exp $
 
 # Make sure we are in a version controlled directory
 if [ ! -f ".VCS" ]
@@ -25,10 +25,12 @@ $1=="[START]", $1=="[END]" { if(substr($1,1,1)=="[" || substr($1,1,5)=="link=") 
 list=`find . \( -name '.VCS' ! -size ${size}c -print \
 		-o -type f ! \( -name '.VCS' -o -name '*~' -o -name '*.bak' -o -name '*%' \
 				-o -name '*.out' -o -name '*.log' -o -name '*.vcsbak' \
-				-o -name '*.tmp' -o -name 'versionFile.cxx' \
+				-o -name '*.tmp' -o -name '*.proj' -o -name 'versionFile.cxx' \
 				-o -name '.newbld' -o -name 'core' -o -name 'TAGS' \
 			     \) -print \
-		-o -type d \( -name 'sunos' -o -name 'osf1' -o -name 'Templates.DB' \) -prune \
+		-o -type d \( -name 'sunos' -o -name 'osf1' -o -name 'Templates.DB' \
+			      -o -name '.sniffdir' -o -name '.ProjectCache' \
+			   \) -prune \
 	     \) \
       | sed 's:/\.VCS$::'`
 
