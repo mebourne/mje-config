@@ -3,7 +3,7 @@
 # Setup for completion package
 # Written by Martin Ebourne
 #
-# $Id: setup,v 1.14 2001/10/11 12:51:01 mebourne Exp $
+# $Id: setup,v 1.15 2002/04/25 11:46:46 mebourne Exp $
 
 add_functions_directory package/completion/functions
 
@@ -157,6 +157,8 @@ zstyle ':completion:all-matches:*' old-matches only
 ## Add a widget to give the down arrow two functions - down or menu complete,
 ## as appropriate
 
+typeset -g _completion_down_widget="${$(bindkey '^[[B')[(w)2]}"
+
 # Need a completion widget as a helper to determine if we are completing or
 # not. Return value isn't propogated by zle so use var
 _completion_is_completing() {
@@ -172,7 +174,7 @@ _completion_menu_or_down() {
   then
     zle menu-complete
   else
-    zle .history-beginning-search-forward
+    zle $_completion_down_widget
   fi
 }
 
