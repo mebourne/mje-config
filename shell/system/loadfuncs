@@ -3,7 +3,7 @@
 # Set up all the autoloaded functions. This is executed for all shells very early on
 # Written by Martin Ebourne
 #
-# $Id: loadfuncs,v 1.5 2001/03/16 12:46:17 mebourne Exp $
+# $Id: loadfuncs,v 1.6 2001/05/18 14:34:25 mebourne Exp $
 
 # This file can be included more than once. Only execute it once though
 if ! functions add_functions_directory >/dev/null
@@ -54,6 +54,6 @@ then
   }
 
   add_functions_directory system/functions
-  add_functions_directory local/functions
+  add_functions_directory local/current/functions
   add_functions_directory user/functions
 fi

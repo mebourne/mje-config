@@ -2,7 +2,7 @@
 # This is the zshenv file sourced directly by zsh
 # Written by Martin Ebourne
 #
-# $Id: zshenv,v 1.5 2001/05/09 17:02:08 mebourne Exp $
+# $Id: zshenv,v 1.6 2001/05/18 14:34:21 mebourne Exp $
 
 # Enable this (or call the shell with it already set) for progress reports during config
 #ZCONFIGDEBUG=1
@@ -107,7 +107,7 @@ _init_zshenv() {
   
   # Execute the real configuration files
   config_if_present system/global
-  config_if_present local/global
+  config_if_present local/current/global
   config_if_present user/global
 }
 _init_zshenv
