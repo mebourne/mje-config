@@ -1,0 +1,30 @@
+# ZSH configuration file
+# Executed for login shells via zprofile
+# Local site-specific setup for login shells. Run after all system login setup has been
+# done, but immediately before the user specific files
+# Written by Martin Ebourne
+#
+# $Id: login,v 1.1 2002/03/18 16:54:49 mebourne Exp $
+
+# CSFB settings
+
+# Default printer
+export PRINTER=p_ln1527
+
+# Clearcase
+path=($path /usr/atria/bin /sw/clearcase4/pilot_batch_scripts)
+manpath=($manpath /usr/atria/doc/man)
+
+# FOD
+export FOD=/fod
+export FOD_INSTALL=$FOD
+path=($path $FOD/share/bin)
+manpath=($manpath $FOD/develop/man)
+
+# Sun workshop
+export LM_LICENSE_FILE=/sw/faoSUNWspro/license_dir/licenses_combined
+path=($path /sw/SUNWspro-5.0/bin)
+manpath=($manpath /sw/SUNWspro-5.0/man)
+
+# Other comands
+path=($path /usr/ccs/bin)
