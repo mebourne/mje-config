@@ -5,7 +5,7 @@
 # Completion code for sqlbcp command
 # Usage: These functions are used by the completion code
 #
-# $Id: _sqlbcp,v 1.1 2001/06/04 10:04:30 mebourne Exp $
+# $Id: _sqlbcp,v 1.2 2001/06/13 09:13:56 mebourne Exp $
 
 local ret=1
 
@@ -18,10 +18,10 @@ else
     _sql_complete_table_names && ret=0
   elif (( CURRENT == 3 ))
   then
-    _wanted direction expl 'direction' compadd in out
+    _wanted direction expl 'direction' compadd in out && ret=0
   elif (( CURRENT == 4 ))
   then
-    _files ret=0
+    _files && ret=0
   fi
 fi
 
