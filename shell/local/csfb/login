@@ -4,7 +4,7 @@
 # done, but immediately before the user specific files
 # Written by Martin Ebourne
 #
-# $Id: login,v 1.6 2002/05/07 15:04:19 mebourne Exp $
+# $Id: login,v 1.7 2002/05/17 10:31:56 mebourne Exp $
 
 # CSFB settings
 
@@ -26,22 +26,32 @@ export SHARE=$FOD/share/sol27-sunpro5
 path=($path $FOD/share/bin)
 manpath=($manpath $FOD/develop/man)
 
+# OS dependent bits
+case $(uname -r) in
+  5.7)
+    export SUN_CC_DIR=/sw/SUNWspro-5.0
+    export RELEASE_ROOT=/vobs/release/solaris2.7-sunpro5
+    ;;
+  5.8)
+    export SUN_CC_DIR=/sw/SUNWspro-5.3
+    export RELEASE_ROOT=/vobs/release/solaris2.8-sunpro5.3
+    ;;
+  *) echo "Unrecognised OS version $(uname -r) in shell/local/csfb/login" 1>&2
+    ;;
+esac
+
 # Sun workshop
 export LM_LICENSE_FILE=/sw/faoSUNWspro/license_dir/licenses_combined
-path=($path /sw/SUNWspro-5.0/bin)
-manpath=($manpath /sw/SUNWspro-5.0/man)
+path=($path $SUN_CC_DIR/bin)
+manpath=($manpath $SUN_CC_DIR/man)
 
 # Oracle 8
 export ORACLE_VERSION=9.0.1
 export ORACLE_HOME=/app/oracle/product/client/${ORACLE_VERSION}
 export ORACLE_SID=SUNSYS
-export ORAWEB_HOME=/export/home/oracle/ows/3.0
 export TNS_ADMIN=$ORACLE_HOME
 path=($path ${ORAWEB_HOME}/bin ${ORACLE_HOME}/bin)
 ld_library_path=($ld_library_path ${ORACLE_HOME}/lib)
 
 # Other comands
 path=($path /usr/ccs/bin)
-
-# Development environment
-export RELEASE_ROOT=/vobs/release/solaris2.7-sunpro5
