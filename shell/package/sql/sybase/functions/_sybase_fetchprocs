@@ -3,16 +3,11 @@
 # Fetch and return the list of stored procedures
 # For use only by the SQL packages
 #
-# $Id: _sybase_fetchprocs,v 1.1 2001/03/14 15:51:52 mebourne Exp $
+# $Id: _sybase_fetchprocs,v 1.2 2001/03/23 09:30:01 mebourne Exp $
 
 {
   echo "set nocount on"
   echo "go"
-  if [[ -n $_sql_parameters[database] ]]
-  then
-    echo "use $_sql_parameters[database]"
-    echo "go"
-  fi
   echo "select name from sysobjects where type in ('P') and uid=user_id()"
   echo "go"
 } | _sybase_rawsql | tail +3
