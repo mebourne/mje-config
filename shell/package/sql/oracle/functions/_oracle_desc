@@ -1,0 +1,8 @@
+# ZSH function file
+# Part of the SQL Oracle package
+# Describe the given table
+# For use only by the SQL packages
+#
+# $Id: _oracle_desc,v 1.1 2001/08/17 15:17:49 mebourne Exp $
+
+echo "desc $argv[1];" | _oracle_rawsql -s

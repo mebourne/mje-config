@@ -1,0 +1,11 @@
+# ZSH function file
+# Part of the SQL Oracle package
+# Fetch and return the list of tables
+# For use only by the SQL packages
+#
+# $Id: _oracle_fetchtables,v 1.1 2001/08/17 15:17:49 mebourne Exp $
+
+{
+  echo "set pages 0 feed off"
+  echo "select object_name from user_objects;"
+} | _oracle_rawsql
