@@ -3,7 +3,7 @@
 # Generic system-wide setup for login shells. Primarily to set environment vars just once
 # Written by Martin Ebourne
 #
-# $Id: login,v 1.4 2001/03/16 12:46:46 mebourne Exp $
+# $Id: login,v 1.5 2001/03/16 15:10:38 mebourne Exp $
 
 # Ensure functions are loaded early
 config_if_present system/loadfuncs
@@ -22,9 +22,13 @@ export HOSTNAME=${HOSTNAME:-$(/bin/hostname)}
 # Force the default shell to be zsh (== intended)
 export SHELL==zsh
 
-# Settings for less
-export LESSOPEN="|lesspipe.sh %s"
-export LESS="-M -e -i"
+# Setup for less if present. PAGER is for man
+if [[ $(which less) == /* ]]
+then
+  export LESSOPEN="|lesspipe.sh %s"
+  export LESS="-M -e -i -R -PM?f%f:<stdin>. ?n?m(file %i of %m) ..?ltlines %lt-%lb?L/%L. : byte %bB?s/%s. .?e(END) ?x- Next\: %x.:?pB%pB\%..%t$"
+  export PAGER="less -s  -PM'<man page> ?ltlines %lt-%lb?L/%L. : byte %bB?s/%s. .?e(END):?pB%pB\%..%t'"
+fi
 
 # If DISPLAY is not set then have a go from 'who am i'
 if [[ -z $DISPLAY ]]
