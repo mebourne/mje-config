@@ -1,9 +1,10 @@
+#eval compdef -n _parse_opts cfg_compile_shell
 # ZSH function file
 # Written by Martin Ebourne
 # Part of the Config package
 # Compile shell directory
 #
-# $Id: cfg_compile_shell,v 1.5 2001/08/09 17:44:30 mebourne Exp $
+# $Id: cfg_compile_shell,v 1.6 2001/08/09 17:45:57 mebourne Exp $
 
 emulate -LR zsh
 setopt extended_glob
