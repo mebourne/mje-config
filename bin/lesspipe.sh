@@ -232,7 +232,11 @@ decode_components() {
   local cmd comment
   while true
   do
+    # Execute 'file' command to determine the file type
     local contents="$(eval $filecmd $input || echo error)"
+
+    # Strip filename off the start to avoid false matches
+    contents=${contents##*:[$IFS]}
 
     case $contents in
       error)
