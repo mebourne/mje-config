@@ -1,0 +1,22 @@
+# ZSH function file
+# Part of the prompt package
+# Replacement for built in clear-screen ZLE widget to redraw full prompt
+# Can only be called from ZLE as a widgit
+#
+# $Id: _prompt_clear_screen,v 1.1 2001/03/08 17:53:34 mebourne Exp $
+
+# Clear the screen
+echotc cl
+
+# Draw the top line prompt
+_prompt_precmd
+
+# Put the cursor on the right line so that when zsh does the re-display the cursor
+# movement is correct
+repeat $[( ${#${(%%)${PROMPT//[%]\{[^%]#%\}/}}} + $#LBUFFER ) / COLUMNS ]
+do
+  echotc do
+done
+
+# Tell zsh to redraw the command line
+zle redisplay
