@@ -1,7 +1,7 @@
 ;; Emacs function file
 ;; Build a BPTA source tree
 ;; Written by Martin Ebourne
-;; $Id: bpta-build.el,v 1.2 2002/04/24 10:16:13 mebourne Exp $
+;; $Id: bpta-build.el,v 1.3 2002/06/05 12:22:01 mebourne Exp $
 
 ;;;###autoload
 (defun bpta-build (command)
@@ -23,7 +23,7 @@ The ClearCase view of the current file will be set automatically."
     (setq compile-command command))
   (let ((view (clearcase-fprop-viewtag default-directory)))
     (if (not (and view
-		  (string-match "^\\(.*/BPTA[^/]*/\\)" default-directory)))
+		  (string-match "^\\(.*/vobs/bpta/[^/]*/\\)" default-directory)))
 	(error "Not in a BPTA source tree"))
     (let ((default-directory (concat (substring default-directory (match-beginning 0) (match-end 0))
 				     "Source/")))
