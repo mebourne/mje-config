@@ -3,7 +3,9 @@
 # list - List locked, snapped, and new files in directories
 # Written by Martin Ebourne, Started 20/08/99
 #
-# $Id: list,v 1.4 1999/09/08 13:23:13 martine Exp $
+# $Id: list,v 1.5 1999/09/08 13:36:03 martine Exp $
+
+base=`pwd`
 
 for dir in . `find . -name '.VCS' -print | sed -e 's:^./\(.*/\).VCS$:\1:' -e '/VCS/d' | sort`
 do
@@ -20,35 +22,37 @@ $1=="snap" { print "S", dir $2 }
 
   if [ "$1" = "-n" ]
   then
-    (
-      cd $dir
+
+    cd $dir
   
-      files=""
-      for f in * .*
-      do
-        case $f in
-	  .|..|.VCS|*~|*.bak|*.log|*.out|*.vcsbak|.newbld|TAGS)
-	    # Ignore these types of files as temporary or backups
-	    ;;
+    files=""
+    for f in * .*
+    do
+      case $f in
+  	.|..|.VCS|*~|*.bak|*.log|*.out|*.vcsbak|.newbld|TAGS)
+  	  # Ignore these types of files as temporary or backups
+  	  ;;
+  
+  	*)
+  	  if [ ! -h "$f" -a -f "$f" ]
+  	  then
+  	    files="$files$f\n"
+  	  fi
+  	  ;;
+  	esac
+    done
 
-	  *)
-	    if [ ! -h "$f" -a -f "$f" ]
-	    then
-	      files="$files$f\n"
-	    fi
-	    ;;
-	esac
-      done
-
-      if [ -n "$files" ]
-      then
-        vcfiles=`awk '
+    if [ -n "$files" ]
+    then
+      vcfiles=`awk '
 BEGIN { FS="=" }
 $1=="lock" { print $2 }
 $1=="snap" { print $2 }
 ' .VCS`
-        echo "$files$vcfiles" | sort | uniq -u | grep -v '^$' | sed "s:^:N $dir:"
-      fi
-    )
+      echo "$files$vcfiles" | sort | uniq -u | grep -v '^$' | sed "s:^:N $dir:"
+    fi
+
+    cd $base
+
   fi
 done
