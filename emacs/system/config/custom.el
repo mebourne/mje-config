@@ -1,7 +1,7 @@
 ;; Emacs configuration file
 ;; Customised variables
 ;; Written by Martin Ebourne
-;; $Id: custom.el 792 2003-09-22 11:47:18Z martin $
+;; $Id$
 
 (setq custom-file (concat install-user-base-dir "/custom.el"))
 
@@ -91,6 +91,7 @@
  '(clearcase-make-backup-files t)
  '(clearcase-suppress-checkout-comments t)
  '(clearcase-use-normal-diff t)
+ '(clearcase-normal-diff-switches "-uw")
 
  ;; Ange-ftp default to anonymous ftp and binary xfer
  '(ange-ftp-default-user "ftp")
