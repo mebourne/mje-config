@@ -1,0 +1,33 @@
+# ZSH function file
+# Halt a shell, waiting for a trigger (supplied by 'go')
+# Usage: want <identifier>
+#
+# $Id: want,v 1.1 2001/06/11 16:38:58 mebourne Exp $
+
+if [[ -z semaphore_base ]]
+then
+  echo "ERROR: semaphore_base not defined" 1>&2
+  return 1
+fi
+
+if (( ARGC != 1 ))
+then
+  echo "Syntax: want <identifier>" 1>&2
+  return 1
+fi
+
+local semaphore="$argv[1]"
+local file="$semaphore_base$semaphore"
+
+print -P "Waiting on semaphore '$semaphore' at %D{%a %f %b %Y %H:%M:%S}"
+
+# 'go' will write the file we are watching for
+while [[ ! -e $file ]]
+do
+  sleep 5
+done
+
+# Tidy up
+rm -f $file
+
+print -P "Received semaphore '$semaphore' at %D{%a %f %b %Y %H:%M:%S}"
