@@ -4,7 +4,7 @@
 # done, but immediately before the user specific files
 # Written by Martin Ebourne
 #
-# $Id: interactive,v 1.9 2001/03/19 09:38:44 mebourne Exp $
+# $Id: interactive,v 1.10 2001/04/17 09:56:41 mebourne Exp $
 
 # Arcordia settings
 
@@ -49,4 +49,11 @@ if [[ -r $HOME/.zshdb ]]
 then
   [[ -n $ZCONFIGDEBUG ]] && echo "Loading config file .zshdb"
   . $HOME/.zshdb
+fi
+
+# Check quota once per day (takes too long to do each time)
+if [[ ! -f $HOME/.quota || -n $(find $HOME/.quota -ctime +1) ]]
+then
+  touch $HOME/.quota
+  quota -v
 fi
