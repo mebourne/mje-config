@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2001 Martin Ebourne. All rights reserved
 ;;
-;; $Id: install.el,v 1.1 2001/05/11 17:31:38 mebourne Exp $
+;; $Id: install.el,v 1.2 2001/05/18 13:57:25 mebourne Exp $
 
 ;;; Commentary:
 
@@ -146,9 +146,22 @@ install-directories function."
 	  )
 
 	;; Now add the autoloads to our created file
-	(let ((filename (concat dirname "/" install-loadfile-name)))
+	(let ((filename (concat dirname "/" install-loadfile-name))
+	      (backups backup-inhibited)
+	      )
 	  (setq generated-autoload-file filename)
-	  (update-autoloads-from-directories dirname)
+
+	  ;; Make sure we stop backups of the generated file being produced
+	  (unwind-protect
+	      (progn
+		(setq backup-inhibited t)
+		(update-autoloads-from-directories dirname)
+		)
+	    (setq backup-inhibited backups)
+	    )
+
+	  ;; update-autoloads leaves the buffer lying around, so kill it
+	  (kill-buffer (find-file-noselect filename))
 	  )
 
 	(message "Processing autoload directory %s... done" dirname)
