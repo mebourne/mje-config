@@ -1,7 +1,7 @@
 ;; Emacs configuration file
 ;; Customised variables
 ;; Written by Martin Ebourne
-;; $Id: custom.el,v 1.13 2002/03/25 17:42:20 mebourne Exp $
+;; $Id: custom.el,v 1.14 2002/03/26 17:11:25 mebourne Exp $
 
 (setq custom-file (concat install-user-base-dir "/custom.el"))
 
@@ -123,12 +123,15 @@
  '(strokes-file (concat install-user-base-dir "/strokes.el"))
 
  ;; Speedbar. Wider. Sorted.
- '(speedbar-frame-parameters '((minibuffer)
-			       (width . 40)
-			       (border-width . 0)
+ '(speedbar-frame-parameters '((minibuffer . nil)
+			       (unsplittable . t)
 			       (menu-bar-lines . 0)
-			       (unsplittable . t)))
-; '(speedbar-tag-hierarchy-method '(prefix-group trim-words sort))
+			       (border-width . 0)
+			       (width . 40)))
+ '(speedbar-obj-do-check nil)
+ '(speedbar-tag-hierarchy-method '(speedbar-trim-words-tag-hierarchy
+				   speedbar-prefix-group-tag-hierarchy
+				   speedbar-sort-tag-hierarchy))
 
  ;; JDE
  '(jde-use-font-lock nil)
