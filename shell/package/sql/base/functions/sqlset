@@ -3,10 +3,12 @@
 # Set sql variables
 # Usage: sqlset <sql-variable>=<value> ...
 #
-# $Id: sqlset,v 1.1 2001/02/26 18:37:50 mebourne Exp $
+# $Id: sqlset,v 1.2 2001/02/26 18:52:50 mebourne Exp $
 
 if (( $# ))
 then
+
+  sqlrehash
 
   local assign
   for assign in $*
