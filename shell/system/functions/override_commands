@@ -1,0 +1,50 @@
+# ZSH function file
+# Set up aliases to override commands on path. This is useful for example to
+# get XPG4 commands when running on a Sun box. Typically changing the path
+# would break scripts
+# Usage:   override_commands <preferred-directory> <unwanted-directory> ...
+# Example: override_commands /usr/xpg4/bin /bin /usr/bin /usr/ucb/bin /usr/ccs/bin
+#
+# $Id: override_commands,v 1.1 2001/03/01 19:41:31 mebourne Exp $
+
+if (( $#@ < 2 ))
+then
+  echo "Syntax: override_commands <preferred-directory> <unwanted-directory> ..." 1>&2
+  return 1
+fi
+
+local good=$1
+shift
+local -a bad
+bad=($*)
+
+if [[ -d $good ]]
+then
+  # Check all of the executable commands in the good directory
+  local goodcmd
+  for goodcmd in /usr/xpg4/bin/*(.x)
+  do
+    local cmd=${goodcmd:t}
+
+    # Check that the path of the REAL command is in the evil directories list
+    if [[ -n ${(M)bad:#${$(whence -p $cmd):h}} ]]
+    then
+      case ${$(whence -w $cmd)[(w)2]} in
+        alias)
+          # Edit already existing aliases so we don't lose them
+          alias $cmd="${$(whence $cmd)//$cmd/$goodcmd}"
+          ;;
+        command | hashed)
+          # If its a command then add a new simple alias
+          alias $cmd=$goodcmd
+          ;;
+        builtin | function | reserved | none)
+          # If its a built-in or function or something then don't touch
+          ;;
+        *)
+          # Shouldn't get here
+          ;;
+      esac
+    fi
+  done
+fi
