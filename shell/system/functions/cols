@@ -1,30 +1,27 @@
 # ZSH function file
 # Filter stdin for just the given columns
-# Usage: cols [-d <delimiter>] <column-number> ...
 #
-# $Id: cols,v 1.1 2001/07/30 15:24:02 mebourne Exp $
+# $Id: cols,v 1.2 2001/07/30 18:32:59 mebourne Exp $
 
 emulate -L zsh
 setopt extended_glob
 
-if (( !ARGC ))
-then
-  echo "Syntax: cols [-d <delimiter>] <column-number> ..." 1>&2
-  return 1
-fi
+local -a args
+args=($argv[*])
+local -A opts
+opts[delimiter]=$IFS
 
-# Get optional delimiter. Default to IFS which is various whitespace
-local delimiter="$IFS"
-if [[ $argv[1] == -d ]]
-then
-  delimiter=$argv[2]
-  shift
-  shift
-fi
+parse_opts args opts - 1 <<'EOF' || return 1
+cols [options] <column-number> ...
+  -d, --delimiter		Field delimiter. As for IFS and defaults to whitespace
+				# delimiter | d = string
+  -h, --help			Provide this help
+				# help | h
+EOF
 
 # Check all column numbers really are numbers
 local -a columns
-columns=($argv)
+columns=($args)
 for column in $columns
 do
   if [[ $column != [0-9]## ]]
@@ -38,7 +35,7 @@ done
 local -a input output
 
 # Read a line from the input using given word separators. -r for raw mode
-while IFS=$delimiter read -r -A input
+while IFS=$opts[delimiter] read -r -A input
 do
   output=()
 

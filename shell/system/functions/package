@@ -1,89 +1,72 @@
 # ZSH function file
 # Load a package which is part of the configuration system
-# Usage: package [-e] [-i] [-L] [<package-name>]
 #
-# $Id: package,v 1.5 2001/05/09 16:54:49 mebourne Exp $
+# $Id: package,v 1.6 2001/07/30 18:33:01 mebourne Exp $
 
-local package=$argv[1]
-integer list=$((ARGC==0)) examine=0 longlist=0 ignoreduplicate=0
-while (( ARGC ))
-do
-  case $argv[1] in
-    -e)
-      examine=1
-      shift
-      ;;
+local -a args
+args=($argv[*])
+local -A opts
+parse_opts args opts - 0 1 <<'EOF' || return 1
+package [options] [<package-name>]
+  -e, --examine			Just return 0 if package already loaded, 1 otherwise
+				# examine | e
+  -h, --help			Provide this help
+				# help | h
+  -i, --ignore-duplicates	Do not signal an error if package is already loaded
+				# ignore | ignore-duplicates | i
+  -L, --long-list		Display long list of loaded packages (in order executed)
+				# longlist = long-list | L
+EOF
 
-    -i)
-      ignoreduplicate=1
-      shift
-      ;;
+if (( $#args ))
+then
+  local package="$args[1]"
 
-    -L)
-      longlist=1
-      shift
-      ;;
-  
-    -*)
-      echo "ERROR: Invalid option $argv[1]" 1>&2
-      return 1
-      ;;
-  
-    *)
-      package=$argv[1]
-      shift
-      if (( ARGC ))
+  if (( opts[examine] ))
+  then
+    # Return true if package loaded
+    [[ -n $_package_loaded[(r)$package] ]]
+    return
+  else
+    local setupfile=$ZCONFIGDIR/package/$package/setup
+    
+    if [[ -z $_package_loaded[(r)$package] ]]
+    then
+      if [[ -r $setupfile ]]
       then
-        echo "ERROR: Invalid argument $argv[1]" 1>&2
+	[[ -n $ZCONFIGDEBUG ]] && echo "Loading package $package"
+	_package_loaded=($_package_loaded $package)
+    
+	# Define each package setup file into a function and call that. This gives much more
+	# meaningful output when profiled
+	local fn=_package_${package//\\//_}
+	function $fn {
+	  . $setupfile
+	}
+	$fn
+	unfunction $fn  
+      else
+	echo "Package $package does not exist" 1>&2
 	return 1
       fi
-      ;;
-  esac
-done
-
-if (( list ))
-then
-  # Display list of loaded packages (sort them)
-  echo ${(F)${(o)_package_loaded}}
-elif (( longlist ))
-then
-  # Display long list of loaded packages (in order executed)
-  local name
-  for name in $_package_loaded
-  do
-    echo "package -i $name"
-  done
-elif (( examine ))
-then
-  # Return true if package loaded
-  [[ -n $_package_loaded[(r)$package] ]]
-  return
-else
-  local setupfile=$ZCONFIGDIR/package/$package/setup
-  
-  if [[ -z $_package_loaded[(r)$package] ]]
-  then
-    if [[ -r $setupfile ]]
+    elif (( !opts[ignore] ))
     then
-      [[ -n $ZCONFIGDEBUG ]] && echo "Loading package $package"
-      _package_loaded=($_package_loaded $package)
-  
-      # Define each package setup file into a function and call that. This gives much more
-      # meaningful output when profiled
-      local fn=_package_${package//\\//_}
-      function $fn {
-	. $setupfile
-      }
-      $fn
-      unfunction $fn  
-    else
-      echo "Package $package does not exist" 1>&2
+      echo "Package $package already loaded" 1>&2
       return 1
     fi
-  elif (( !ignoreduplicate ))
+  fi
+else
+  if (( opts[longlist] ))
   then
-    echo "Package $package already loaded" 1>&2
-    return 1
+    # Display long list of loaded packages (in order executed)
+    local name
+    for name in $_package_loaded
+    do
+      echo "package -i $name"
+    done
+  else
+    # Display list of loaded packages (sort them)
+    echo ${(F)${(o)_package_loaded}}
   fi
 fi
 
