@@ -15,7 +15,7 @@
 #
 # Colon seperated unix directory paths for Modules, and for images
 #ModulePath /usr/local/libexec/fvwm/2.x.y
-ImagePath  /home/odyssey1/mebourne/local/share/fvwm-icons
+ImagePath  /home/mebourne/local/share/fvwm-icons
 
 ############################################################################
 # COLORS and FONTS
