@@ -22,6 +22,7 @@ my %types=(DBI::SQL_CHAR		, "string",
 	   DBI::SQL_WCHAR		, "string",
 	   DBI::SQL_WLONGVARCHAR	, "string",
 	   DBI::SQL_WVARCHAR		, "string",
+	   -9112                        , "string",  # Oracle CLOB
 
 	   DBI::SQL_BIGINT		, "number",
 	   DBI::SQL_DECIMAL		, "number",
@@ -40,7 +41,8 @@ my %types=(DBI::SQL_CHAR		, "string",
 	   DBI::SQL_BINARY		, "binary",
 	   DBI::SQL_BIT			, "binary",
 	   DBI::SQL_LONGVARBINARY	, "binary",
-	   DBI::SQL_VARBINARY		, "binary"
+	   DBI::SQL_VARBINARY		, "binary",
+	   -9113                        , "binary",  # Oracle BLOB
 	   );
 
 # Generate a simple hash from style name to description for use with
@@ -55,6 +57,10 @@ use vars qw(%colourHelp);
   auto => "Only colour if outputting to tty",
   on   => "Always colour"# (if applicable)"
 );
+
+# Available DBI backends
+use vars qw(@drivers);
+@drivers=DBI->available_drivers;
 
 # Parse the command line options & give help
 my $opts=new MJE::ParseOpts (
@@ -71,10 +77,28 @@ Options:
 				off	No colour
 				auto	Only colour if outputting to tty
 				on	Always colour (if applicable)
+  -C <connect>, --connect=<connect>
+				The DBI connect string to use (see individual
+	 	 	 	driver documentation)
+				# --connect | -C : string
+  --column-width=<count>	Specify the maximum column width to be shown
+				# --column-width : posinteger
+  --count			Display the affected row count
+				# --count
+  -D <driver>, --driver=<driver>
+				The DBI driver to access the database with
+				# --driver | -D : values=@drivers
   -h, --help			Provide this help
 				# --help | -h
+  -P <password>, --password=<password>
+				The password to log on with
+				# --password | -P : string
+  -r <rows>, --max-rows=<rows>	Specify the maximum number of rows to retrieve
+				# --max-rows | -r : posinteger
   -s <style>, --style=<style>	The style of formatting to perform. One of:
 '.$stylesSummary.'		# --style | -s : values=%stylesHelp
+  -U <user>, --user=<user>	The user name to log on with
+				# --user | -U : string
   -w <columns>, --width=<columns>
 				Specify the terminal width in characters
 				# --width | -w : posinteger
@@ -104,19 +128,42 @@ if(exists($opts->{"width-auto"}) && $opts->{"width-auto"} && !$tty) {
   $screenWidth=undef;
 }
 
+if(!exists($opts->{driver}) || !exists($opts->{user})) {
+  die "Must specify database driver and user";
+}
+
 &main();
 
 exit;
 
 sub main {
+  # Create this now so we can query it
+  my $formatter=new MJE::TableFormatter;
+
+  # Configure formatter as per user options
+  $formatter->setStyle(exists($opts->{style}) ? $opts->{style} : "none");
+  $formatter->{colour}=$colour;
+  $formatter->{screenWidth}=$screenWidth;
+  $formatter->{maxColumnWidth}=$opts->{"column-width"};
+
+  # Figure out data length for retrieving columns
+  my $dataLength = $opts->{"column-width"};
+  if(!defined($dataLength) || !$formatter->getStyleInfo("truncate")) {
+    $dataLength=64*1024;
+  }
 
   # Connect to the database
-  my $dbh = DBI->connect("dbi:Oracle:DLNTRC01", "trcadm", "trcadm",
+  my $dbh = DBI->connect("dbi:$opts->{driver}:" . (exists($opts->{connect})
+						   ? $opts->{connect}
+						   : ""),
+			 $opts->{user},
+			 $opts->{password},
 			 { AutoCommit  => 0,
 			   ChopBlanks  => 1,
+			   LongReadLen => $dataLength,
 			   LongTruncOk => 1,
 			   RaiseError  => 1 })
-      || die "Can't connect to Oracle: $DBI::errstr";
+      || die "Can't connect to $opts->{driver}: $DBI::errstr";
 
   # Prepare the statement
   my $sth = $dbh->prepare($opts->{sql});
@@ -126,30 +173,42 @@ sub main {
 
   # Output results if a select statement
   if($sth->{NUM_OF_FIELDS}) {
-    my $formatter=new MJE::TableFormatter;
-
-    # Configure formatter as per user options
-    $formatter->setStyle($opts->{style});
-    $formatter->{colour}=$colour;
-    $formatter->{screenWidth}=$screenWidth;
 
     # List the columns for the formatter
     for(my $i=0;$i<$sth->{NUM_OF_FIELDS};$i++) {
+
+
+      if(!exists($types{$sth->{TYPE}->[$i]})) {
+	print STDERR "Warning: Unknown database type $sth->{TYPE}->[$i]\n";
+      }
+
       $formatter->addColumn($sth->{NAME}->[$i],
 			    $sth->{PRECISION}->[$i],
 			    $types{$sth->{TYPE}->[$i]});
     }
 
     # Write the data to the formatter
+    my $rows=0;
     while(my @data = $sth->fetchrow_array) {
+      if(exists($opts->{"max-rows"}) && $rows>=$opts->{"max-rows"}) {
+	last;
+      }
+
       $formatter->addRow(@data);
+      $rows++;
     }
 
     # Display the table
     $formatter->display;
+
+    if(exists($opts->{count}) && $formatter->getStyleInfo("rowcount")) {
+      print "\n", $rows, " row(s) returned.\n";
+    }
   } else {
     # Non-select statement. Simply output row count
-    print $sth->rows, " row(s) affected.\n";
+    if(exists($opts->{count})) {
+      print $sth->rows, " row(s) affected.\n";
+    }
   }
 
   # Tidy up
