@@ -2,7 +2,7 @@
 # Backup the shell command history file in case anything unpleasant happens to it
 # Usage: backup_history
 #
-# $Id: backup_history,v 1.1 2001/04/19 11:05:47 mebourne Exp $
+# $Id: backup_history,v 1.2 2001/06/29 08:35:12 mebourne Exp $
 
 local file backup
 file=$HISTFILE
@@ -25,7 +25,7 @@ then
       if (( 2 * size[1] > size[2] ))
       then
         # Move the old backup to a temporary file in case writing the backup fails
-        mv $backup $backup.$$
+        mv $backup $backup.$$ 2>/dev/null
         if cp $file $backup
 	then
 	  rm -f $backup.$$
