@@ -1,0 +1,23 @@
+#compdef testscript
+# ZSH function file
+# Completion code for testscript command
+# Usage: These functions are used by the completion code
+#
+# $Id: _testscript,v 1.1 2001/06/13 09:11:45 mebourne Exp $
+
+integer ret=1
+
+# Complete tags from 'testsets' file if it exists
+local -a sets
+if [[ -f testsets ]]
+then
+  sets=(${(f)"$(cat testsets)"})
+fi
+_wanted testsets expl 'test sets' compadd - ${sets%%:*} && ret=0
+
+# Complete .cli files
+local -a files
+files=(*.cli(N))
+_wanted cli-files expl 'CLI files' compadd - ${files%.cli} && ret=0
+
+return ret

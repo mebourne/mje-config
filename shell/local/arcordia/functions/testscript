@@ -1,0 +1,46 @@
+# ZSH function file
+# Pre-filter to testscript to ensure the APPNAME env is set up correctly
+# Usage: testscript <options>
+#
+# $Id: testscript,v 1.1 2001/06/13 09:11:45 mebourne Exp $
+
+# Based on the leafname of the current directory, find the app name
+local appname instance
+case ${PWD:t} in
+  besg)            appname=BESG;		instance=BESG_1;;
+  demux)           appname=DEMUX;		instance=DEMUX_1;;
+  deuce)           appname=DEUCE;		instance=DEUCE_3;;
+  deuce-bulk)      appname=DEUCE;		instance=DEUCE_3;;
+  dispatch)        appname=DISPATCH;		instance=DISPATCH_1;;
+  dividends-bulk)  appname=DEUCE;		instance=DEUCE_3;;
+  formatter)       appname=FORMATTER;		instance=FORMATTER_1;;
+  mtm)             appname=DEUCE;		instance=DEUCE_3;;
+  provisions-bulk) appname=DEUCE;		instance=DEUCE_3;;
+  refdata)         appname=ACEREFDATA;		instance=ACEREFDATA_1;;
+  reg)             appname=DEUCE;		instance=DEUCE_3;;
+  wam)             appname=WAM;			instance=WAM_1;;
+
+  *) echo "ERROR testscript directory ${PWD:t} is not recognised" 1>&2
+     echo "and no AINF_DB_APPNAME setting is known" 1>&2
+     return 1
+     ;;
+esac
+
+# Warn if the user has set this explicitly & it is different
+if [[ -n $AINF_DB_APPNAME && $AINF_DB_APPNAME != $appname ]]
+then
+  echo "WARNING: Overriding setting of AINF_DB_APPNAME (old value $AINF_DB_APPNAME)"
+fi
+if [[ -n $AINF_EVT_MAININSTANCE && $AINF_EVT_MAININSTANCE != $instance ]]
+then
+  echo "WARNING: Overriding setting of AINF_EVT_MAININSTANCE (old value $AINF_EVT_MAININSTANCE)"
+fi
+
+# Apply setting. Make it local so it doesn't affect the shell we are running
+# from, but export it to the sub-command
+local -x AINF_DB_APPNAME="$appname"
+local -x AINF_EVT_MAININSTANCE="$instance"
+
+# Run the original command
+echo "Using: AINF_DB_APPNAME=$AINF_DB_APPNAME AINF_EVT_MAININSTANCE=$AINF_EVT_MAININSTANCE"
+command testscript "$argv[@]"
