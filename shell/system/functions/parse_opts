@@ -2,18 +2,88 @@
 # Provide options parsing and help output
 # Usage: parse_opts <argv> <results> [<help>]
 #
-# $Id: parse_opts,v 1.2 2001/07/31 11:22:07 mebourne Exp $
+# $Id: parse_opts,v 1.3 2001/07/31 17:00:22 mebourne Exp $
+
+### Documentation
+
+
+# todo
+# optional params
+
+
+# This module provides a complete option parsing system, configured entirely
+# from a help string supplied by the user. The help string is free-format text
+# and describes options in the usual way; into this is then embedded special
+# option descriptions which this module decodes to allow it to process the
+# command line arguments.
+#
+# Both standard Unix single character options (which may be grouped, eg. -a -l
+# or -al), and GNU style long options (eg. --long-list) are supported, and
+# parameters provided with an option may be type checked. Parameters are
+# recognised in a variety of formats for the user's convenience.
+# eg.
+#   -d <dir>
+#   --directory=<dir>
+#   --directory <dir>
+#
+# ...more text here...
+#
+# The option descriptions are of the form:
+#   '#' [ <tag> '=' ] <option> [ '|' <option> ] ... [ '=' <type> ]
+#
+# tag is of the form:
+#   <key-name>
+# or
+#   '[' <variable-name> ']'
+#
+# Where key-name is the name of the hash key the value will be stored in. The
+# alternative of variable-name stores the value directly in the given
+# variable. The variable is expected to be local to the calling program, and
+# the exact behaviour depends on its type:
+#   undefined/scalar  - value stored directly
+#   array             - value appended to array
+#   associative array - value stored against a key of the option name (without leading '-'s)
+#
+# If tag is not supplied, then the first <option> value will be re-used as key-name.
+#
+# option is of the form:
+#   <option-name>
+#
+# Where option-name is the name the option will be passed as when invoked by
+# the user, without any leading '-'s. Single letter options are taken to be
+# short options introduced by '-', and may be grouped. Other options are taken
+# to be long options introduced by '--'. It is not possible to have a one
+# character long option (eg. --a is not possible)
+#
+# type is of the form:
+#   <type-name> [ '=' <value> ]
+#
+# Where type-name is one of:
+#   switch   - Simple switch. Result will be 1. NB. This is the default if not supplied
+#   noswitch - Reverse simple switch. Result will be 0 (can be used eg. --no-option)
+#   constant - Constant to be assigned. Result will be value given, with any quotes removed
+#   string   - Takes a parameter with no validation
+#   integer  - Takes a parameter, validation for integer with optional sign
+#   test     - Takes a parameter, validation using value with test. eg. test=-f for files
+#
+# value may only be (and must be) present if the type requires it, and will be
+# used as explained in the type description.
+
+
+### Implementation
+
+# NB. In some of the below functions (marked) locals must begin with _po_.
+# This is to prevent name clashes when options refer back to variables in the
+# calling program's name space
 
 # This helper function takes an encoded helpstring as its only parameter and
-# generates the _po_tags and _po_types associative arrays, and
-# _po_helptext string
-# The option descriptions are of the form:
-#   # [ <tag> '=' ] <option> [ '|' <option> ] ... [ '=' <type> ]
+# generates the _po_tags, _po_types, _po_aliases, and _po_helplines
+# associative arrays, and _po_helptext string
 _parse_opts_parsehelp() {
   local -a helptext
 
   # Process each line in the helptext
-  local line
+  local line helpline
   local -a paraminfo options
   for line in ${(f)argv[1]}
   do
@@ -51,16 +121,42 @@ _parse_opts_parsehelp() {
 	type=$paraminfo[2]
       fi
 
-      # Assign the tag and type to all of the option aliases
+      # Assign all the details for the current options
       local option=""
       for option in $options
       do
         _po_tags[$option]=$tag
         _po_types[$option]=$type
+	_po_aliases[$option]=${options:#$option}
+	_po_helplines[$option]=$helpline
       done
     else
       # Doesn't start with a # so append it to help
       helptext=($helptext $line)
+
+      # If we have a line starting with a '-' then it's an option. So we reset
+      # our current helpline because the description will come after it
+      if [[ $line == [$IFS]#-* ]]
+      then
+        helpline=""
+      fi
+
+      # If the line has a tab on it then it might have a description after the tab
+      if [[ $line == *$'\t'* ]]
+      then
+        # Extract the text after any tabs, and trim it of whitespace
+        line=${${line##*$'\t'[$IFS]#}%%[$IFS]}
+	if [[ -n $line ]]
+	then
+	  # Add to current helpline
+	  if [[ -n $helpline ]]
+	  then
+	    helpline="$helpline $line"
+	  else
+	    helpline=$line
+	  fi
+	fi
+      fi
     fi
   done
 
@@ -69,7 +165,126 @@ _parse_opts_parsehelp() {
   _po_helptext=(${(F)helptext})
 }
 
+# This function generates the _arguments call used by the completion system.
+# It is called when the special option --zsh-completion is passed on the
+# command line to the calling program. The command is written to stdout only
+# on success, and the completion system will then take that and execute it. On
+# error, errors are written to stderr instead. If returning the completion
+# information, parse_opts always exits with 1 in order to cause the calling
+# program to exit, so the return code can not be used to signal errors
+_parse_opts_generatecompletion() {
+  local -a specs
 
+  # Process each option to build a list of specifications for _arguments.
+  # Careful to skip our magic --zsh-completion option
+  local -a aliases excludes
+  local option
+  for option in ${${(k)_po_types}:#zsh-completion}
+  do
+    local spec=""
+
+    aliases=($=_po_aliases[$option])
+
+    # Generate excludes clause if we have any aliases. First get long option
+    # aliases, then short ones, then add the clause
+    excludes=()
+    (( ${#aliases:#?} )) && excludes=($excludes --${^${aliases:#?}})
+    (( ${#aliases:#??*} )) && excludes=($excludes -${^${aliases:#??*}})
+    (( $#excludes )) && spec="$spec(${excludes:#\-})"
+
+    # Generate the main option name section
+    integer long=0
+    if [[ $option == ? ]]
+    then
+      spec="$spec-$option"
+    else
+      long=1
+      spec="$spec--$option"
+    fi
+
+    # Try to determine a description/completer from the type of this option
+    local type="$_po_types[$option]" description="" action=""
+    case $type in
+      switch|noswitch|constant=*)
+        # No parameters, leave blank
+        ;;
+
+      string)
+        # Takes a parameter with no validation
+	description="string"
+	action=" "
+        ;;
+
+      integer)
+        # Takes a parameter, validation for integer with optional sign
+	description="integer number"
+	action=" "
+        ;;
+
+      test=*)
+        # Takes a parameter validated by test. Extract the test flag & try to
+        # figure out the completer
+        local test=${type#*=}
+	case $test in
+	  -[aefgkrsuwOGN]) # These are types of file
+	    description="file"
+	    action="_files"
+	    ;;
+
+	  -[bcdhpxLS]) # These should be special types of file but need to be looked into
+	    description="file"
+	    action="_files"
+	    ;;
+
+	  -[notz]) # These can't be completed
+	    description="value"
+	    action=" "
+	    ;;
+
+	  *) # This is not recognised
+	    description="unknown"
+	    action=" "
+	    ;;
+	esac
+	;;
+
+      *) # This is a configuration error
+        echo "Invalid option type for option $option: '$type'" 1>&2
+        return 1
+	;;
+    esac
+
+    # If we have a long option which takes a parameter then add the '=' flag
+    # to say --option=value is valid
+    (( long && $#action)) && spec="$spec="
+
+    # Add the description of the option if one was successfully extracted from the help text
+    if [[ -n $_po_helplines[$option] ]]
+    then
+      spec="${spec}[$_po_helplines[$option]]"
+    fi
+
+    # Now add the description and completer for the parameter, if we have one
+    if [[ -n $action ]]
+    then
+      spec="$spec:$description:$action"
+    fi
+
+    # Collect the specifications
+    specs=($specs "'$spec'")
+  done
+
+  # Only output the _arguments call on success
+  # -s - Allow option grouping for single letter options
+  # -w - Arguments follow single letter options, one for each relevant option
+  # -S - Handle -- to terminate options
+  # -A - No more options after first non-option argument
+  echo "_arguments -s -w -S -A '-*' $specs '*:file:_files'"
+}
+
+# This helper function for _parse_opts_handletype gets the next value for an
+# option. It uses local variables in _parse_opts_handletype and so should not
+# be called from elsewhere
 _parse_opts_getnextvalue() {
   if (( _po_hasgivenvalue ))
   then
@@ -82,9 +297,10 @@ _parse_opts_getnextvalue() {
     # afterwards in the respective order
 
     # Check there's a value to get
-    if (( $#_po_argv > 1 ))
+    if (( $#_po_argv ))
     then
-      shift _po_argv; _po_value=$_po_argv[1]
+      _po_value=$_po_argv[1]
+      shift _po_argv
     else
       echo "Missing parameter to option '$name'" 1>&2
       return 1
@@ -92,6 +308,12 @@ _parse_opts_getnextvalue() {
   fi
 }
 
+# This helper function handles processing of the option type. Any values it
+# needs will be fetched vie _parse_opts_getnextvalue, and the appropriate
+# result variable will be updated. Any validation of the values is also
+# performed here
+#
+# NB. Locals in this function must begin _po_
 _parse_opts_handletype() {
   local _po_name="$argv[1]" _po_hasgivenvalue="$argv[2]" _po_givenvalue="$argv[3]"
 
@@ -177,76 +399,86 @@ _parse_opts_handletype() {
 # _po_argv and are removed as and when processed. Decoded options are
 # returned in _po_results. Returns 1 if an error prevented the options from
 # being processed, else 0
+#
+# NB. Locals in this function must begin _po_
 _parse_opts_decode() {
   # Process each argument while it is an option
   while [[ $_po_argv[1] == -* ]]
   do
     local _po_option="$_po_argv[1]"
-
-    # First check if it is a long argument
-    if [[ $_po_option == --* ]]
-    then
-
-      # Extract the option name from eg. --name=value
-      local _po_name="${${_po_option#--}%%\=*}"
-
-      # Check to see if the option exists
-      if [[ -n $_po_tags[$_po_name] ]]
-      then
-
-	# Check to see if value was in option, ie. --name=value
-	if [[ $_po_option == *=* ]]
-	then
-
-	  # Extract value in option and pass to type processing
-	  _parse_opts_handletype $_po_name 1 ${_po_option#*=} || return
-	else
-
-	  # Call type handling without a value
-	  _parse_opts_handletype $_po_name 0 || return
-	fi
-      else
-        echo "Invalid option: $_po_name" 1>&2
-	return 1
-      fi
-
-    # Wasn't a long argument, try short one (may be grouped)
-    elif [[ $_po_option == -?* ]]
-    then
-
-      # Extract the list of options from eg. -jkl
-      local _po_optiongroup="${_po_option#-}"
-
-      # Process each letter individually
-      while [[ -n $_po_optiongroup ]]
-      do
-        # Extract the first letter
-        local _po_optionletter="$_po_optiongroup[1]"
-	_po_optiongroup=${_po_optiongroup#?}
-
-        # Check to see if is a valid short option
-        if [[ -n $_po_tags[$_po_optionletter] ]]
-        then
-
-	  # It is so process it as the type determines
-	  _parse_opts_handletype $_po_optionletter 0 || return
-        else
-          echo "Invalid option: $_po_optionletter" 1>&2
-          return 1
-        fi
-      done
-    else
-      # Must be a lone -
-      echo "Missing option after -" 1>&2
-      return 1
-    fi
     shift _po_argv
+
+    case $_po_option in
+      --) # End of option list
+
+        # Nothing else to do - return success
+        return 0
+	;;
+
+      --*) # Long argument
+
+      	# Extract the option name from eg. --name=value
+      	local _po_name="${${_po_option#--}%%\=*}"
+
+      	# Check to see if the option exists
+      	if [[ -n $_po_tags[$_po_name] ]]
+      	then
+
+	  # Check to see if value was in option, ie. --name=value
+	  if [[ $_po_option == *=* ]]
+	  then
+
+	    # Extract value in option and pass to type processing
+	    _parse_opts_handletype $_po_name 1 ${_po_option#*=} || return
+	  else
+
+	    # Call type handling without a value
+	    _parse_opts_handletype $_po_name 0 || return
+	  fi
+      	else
+      	  echo "Invalid option: $_po_name" 1>&2
+	  return 1
+      	fi
+	;;
+
+      -?*) # Short option (may be grouped)
+
+      	# Extract the list of options from eg. -jkl
+      	local _po_optiongroup="${_po_option#-}"
+
+      	# Process each letter individually
+      	while [[ -n $_po_optiongroup ]]
+      	do
+      	  # Extract the first letter
+      	  local _po_optionletter="$_po_optiongroup[1]"
+	  _po_optiongroup=${_po_optiongroup#?}
+
+      	  # Check to see if is a valid short option
+      	  if [[ -n $_po_tags[$_po_optionletter] ]]
+      	  then
+
+	    # It is so process it as the type determines
+	    _parse_opts_handletype $_po_optionletter 0 || return
+      	  else
+      	    echo "Invalid option: $_po_optionletter" 1>&2
+      	    return 1
+      	  fi
+      	done
+	;;
+
+      *) # Must be a lone -
+        echo "Missing option after -" 1>&2
+        return 1
+	;;
+    esac
   done
 }
 
 # This helper function controls the overall processing
+#
+# NB. Locals in this function must begin _po_
 _parse_opts_process() {
-  local -A _po_tags _po_types
+  local -A _po_tags _po_types _po_aliases _po_helplines
   local _po_helptext
 
   # Check for arguments. If we have one and it is not '-' then it is the help
@@ -262,6 +494,10 @@ _parse_opts_process() {
   # Parse the help string we've got to determine the type of options
   _parse_opts_parsehelp $_po_config
 
+  # Add hooks for zsh completion system
+  _po_tags[zsh-completion]="zshcompletion"
+  _po_types[zsh-completion]="switch"
+
   # Perform the argument decoding
   if _parse_opts_decode
   then
@@ -271,6 +507,15 @@ _parse_opts_process() {
     if [[ -n $_po_results[help] ]]
     then
       echo "Usage: $_po_helptext"
+      return 1
+    fi
+
+    # Entry point for automatic zsh completion. We always return 1 in order to
+    # get the calling program to exit. The completion system knows this is not
+    # an error
+    if [[ -n $_po_results[zshcompletion] ]]
+    then
+      _parse_opts_generatecompletion
       return 1
     fi
   else
@@ -299,6 +544,8 @@ _parse_opts_process() {
 #
 # This function is a wrapper for _parse_opts_process to handle accessing the
 # arrays in the calling function's namespace
+#
+# NB. Locals in this function must begin _po_
 parse_opts() {
 
   local _po_ext_argv="$argv[1]" _po_ext_results="$argv[2]" _po_config="$argv[3]"
