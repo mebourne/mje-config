@@ -1,7 +1,7 @@
 ;; Emacs configuration file
 ;; Setup for cc-mode
 ;; Written by Martin Ebourne
-;; $Id: strokes.el,v 1.1 2001/05/11 17:31:38 mebourne Exp $
+;; $Id: strokes.el,v 1.2 2002/03/21 10:54:15 mebourne Exp $
 
 (setq strokes-global-map '((((0 . 5)
 			     (1 . 5)
@@ -91,9 +91,14 @@ if user strokes file does not exist."
   t
   )
 
-(remove-hook 'kill-emacs-query-functions
-	     'strokes-prompt-user-save-strokes
-	     )
-(add-hook 'kill-emacs-query-functions
-	  'strokes-prompt-user-save-strokes-if-present
-	  )
+;; Need to advise the function since otherwise it repeatedly undoes our
+;; changes in Emacs 21 or later
+(defadvice strokes-mode (after strokes-mode-remove-prompt activate preactivate)
+  "Modify the quit emacs prompt that strokes-mode installs to
+work with the emacs config system."
+  (remove-hook 'kill-emacs-query-functions
+	       'strokes-prompt-user-save-strokes
+	       )
+  (add-hook 'kill-emacs-query-functions
+	    'strokes-prompt-user-save-strokes-if-present
+	    ))
