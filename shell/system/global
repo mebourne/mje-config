@@ -3,7 +3,7 @@
 # Generic system-wide setup for ALL shells. This is executed before anything else
 # Written by Martin Ebourne
 #
-# $Id: global,v 1.11 2002/04/23 10:24:42 mebourne Exp $
+# $Id: global,v 1.12 2002/06/17 16:52:11 mebourne Exp $
 
 # Make various path like variables keep unique values only. Need to create any that aren't built
 # into the shell. Most of them are also exported
@@ -11,6 +11,7 @@ typeset -Ugx  CDPATH
 typeset -Ugx  FIGNORE
 typeset -Ug   FPATH
 typeset -UgxT LD_LIBRARY_PATH="$LD_LIBRARY_PATH" ld_library_path
+typeset -UgxT LM_LICENSE_FILE="$LM_LICENSE_FILE" lm_license_file
 typeset -UgxT INFOPATH="$INFOPATH" infopath
 typeset -Ugx  MAILPATH
 typeset -Ugx  MANPATH
