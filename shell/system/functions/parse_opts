@@ -2,7 +2,7 @@
 # Provide options parsing and help output
 # (C) 2001 Martin Ebourne
 #
-# $Id: parse_opts,v 1.22 2001/08/17 12:49:50 mebourne Exp $
+# $Id: parse_opts,v 1.23 2001/08/17 13:09:44 mebourne Exp $
 
 
 ### Documentation
@@ -66,11 +66,12 @@
 #             `-' then this will instead be read from stdin to parse_opts (which
 #             is not normally stdin to the caller)
 # results   - If provided then this is the name of the default associative array
-#             to store the results in. This may be overridden later on a per
-#             parameter basis
+#             to store the results in, though it may be overridden later on a per
+#             parameter basis. On an unsuccessful exit, this will be untouched
 # argv      - This is the name of the array to find the command line arguments in.
-#             It will be modified on exit to contain the remaining unprocessed
-#             arguments, which on a successful exit means it will be empty
+#             On a successful exit the array will have been emptied due to all
+#             the arguments being used. On an successful exit it will be
+#             untouched
 # `--'      - This is required if the arguments are to be given directly
 # arguments - As an alternative to providing the argv parameter, the arguments
 #             may be supplied directly on the command line, after the `--'
@@ -327,6 +328,9 @@
 #            supplied as a command. The command will be provided with an extra
 #            parameter on the end, which will be the word requiring
 #            validation, and should return success/failure in the usual way
+# OR       - Any pre-defined type (none of which take a <value>). For a
+#	     complete list of these, see the _parse_opts_setupdefinitions
+#	     function below, which is where they are defined
 # OR       - Any user defined type (none of which take a <value>)
 #
 # (1) These types take a value, which must be supplied. Others do not and one
@@ -522,9 +526,10 @@
 # To do:
 # excludes properly - options & arguments
 # frequency checking on options
-# optional values for options - or more fully, freqency for same
+# optional values for options - or more fully, frequency for same
 # interface to extend excludes
-
+# type.complete.restrict for options
+# settings identifier names. decide on them properly
 
 # Calls _parse_opts_parsehelp in order to create the built-in types & other
 # default definitions
@@ -577,7 +582,7 @@ _parse_opts_validate_option() {
 # calling program's name space
 
 
-# Print an associative array which multi-field keys ('.' delimited), as if it
+# Print an associative array with multi-field keys ('.' delimited), as if it
 # were a real nested structure. Currently only handles one level of 'nesting'
 # though. Used for debugging
 _parse_opts_showdata() {
@@ -618,7 +623,7 @@ _parse_opts_showdata() {
   echo "}"
 }
 
-# This function handles the parsing of option definitions for
+# This helper function handles the parsing of option definitions for
 # _parse_opts_parsehelp (uses locals directly)
 _parse_opts_parseoption() {
 
@@ -753,7 +758,7 @@ _parse_opts_parseoption() {
   return 0
 }
 
-# This function handles the parsing of type definitions for
+# This helper function handles the parsing of type definitions for
 # _parse_opts_parsehelp (uses locals directly)
 _parse_opts_parsetype() {
 
@@ -905,7 +910,7 @@ _parse_opts_frequencyvalue() {
 
 # This function decodes a frequency expression into min and max values. The
 # variables given to minvar & maxvar will be updated with the results of
-# processing the given expression substituting -1 for `*'
+# processing the given expression substituting 0 or -1 for `*'
 _parse_opts_minmaxfrequency() {
   local minvar="$argv[1]" maxvar="$argv[2]" expression="$argv[3]"
 
@@ -988,9 +993,10 @@ _parse_opts_expandvalues() {
   return 0
 }
 
-# This function decodes our type information into a form suitable for the
-# completion system. It directly sets the _po_description and _po_action
-# variables in _parse_opts_generatecompletion which calls it
+# This helper function for _parse_opts_generatecompletion decodes our type
+# information into a form suitable for the completion system. It directly sets
+# the _po_description, _po_action, and _po_restrict variables in the calling
+# function
 #
 # NB. Locals in this function must begin _po_
 _parse_opts_generatecompletiontype() {
@@ -1203,17 +1209,16 @@ _parse_opts_generatecompletion() {
   return 0
 }
 
-# This helper function stores the given value against the given option name,
+# This function stores the given value against the given option/argument name,
 # as defined by its related tag
 #
 # NB. Locals in this function must begin _po_
 _parse_opts_store() {
   local _po_name="$argv[1]" _po_value="$argv[2]"
 
-  # If tag is of the form [var] then instead assign to real variable.
-  # Note possibility of clashes with our local variables here
   local _po_tag="$_po_params[$_po_name.tag]"
 
+  # If append is enabled for this tag, it will be prefixed with `+'
   integer append=0
   if [[ $_po_tag == +* ]]
   then
@@ -1301,10 +1306,10 @@ _parse_opts_getnextvalue() {
   return 0
 }
 
-# This helper function handles processing of the option type. Any values it
-# needs will be fetched vie _parse_opts_getnextvalue, and the appropriate
-# result variable will be updated. Any validation of the values is also
-# performed here
+# This function handles processing of the option value or argument type. Any
+# values it needs will be fetched vie _parse_opts_getnextvalue, and the
+# appropriate result variable will be updated. Any validation of the values is
+# also performed here
 #
 # NB. Locals in this function must begin _po_
 _parse_opts_handletype() {
@@ -1392,11 +1397,11 @@ _parse_opts_handletype() {
   _parse_opts_store $_po_name $_po_value
 }
 
-# This helper function decodes any options present in the command line
-# arguments, using the pre-generated option arrays from _parse_opts_parsehelp.
-# Arguments are provided in _po_argv and are removed as and when processed.
-# Decoded options are returned in _po_results. Returns 1 if an error prevented
-# the options from being processed, else 0
+# This function decodes any options present in the command line arguments,
+# using the pre-generated option arrays from _parse_opts_parsehelp. Arguments
+# are provided in _po_argv and are removed as and when processed. Decoded
+# options are returned in _po_results. Returns 1 if an error prevented the
+# options from being processed, else 0
 #
 # NB. Locals in this function must begin _po_
 _parse_opts_dooptions() {
@@ -1472,8 +1477,8 @@ _parse_opts_dooptions() {
   return 0
 }
 
-# This helper function decodes any arguments present in the command line after
-# the options have been removed, using the pre-generated option arrays from
+# This function decodes any arguments present in the command line after the
+# options have been removed, using the pre-generated option arrays from
 # _parse_opts_parsehelp. Arguments are provided in _po_argv and are removed as
 # and when processed. Decoded values are returned in _po_results. Returns 1 if
 # an error prevented the arguments from being processed, else 0
@@ -1538,7 +1543,7 @@ _parse_opts_doarguments() {
   return 0
 }
 
-# This helper function controls the overall processing
+# This function controls the overall processing
 #
 # NB. Locals in this function must begin _po_
 _parse_opts_process() {
@@ -1615,18 +1620,9 @@ _parse_opts_process() {
   return 0
 }
 
-# Parse the command line arguments to extract both long and short form options
-# Usage: parse_opts <help> <results> <argv>
-# argv    - The NAME of the array that the arguments have been copied into. Note
-#           that they must have been copied; 'argv' cannot be passed here
-# results - The NAME of the associative array that the decoded options are to be
-#           placed in
-# help    - The help text with the option descriptions encoded in it. If not
-#           provided then this will be read from stdin (this allows the use of
-#           a here-doc to provide the help)
-# Returns 1 if an error occurred or help was given, 0 for success. If 1 is
-# returned then no further action is required - it has already been reported.
-# Also the source arrays will remain unchanged in this case.
+# This is the only entry point for the parse_opts system.
+# Parse the command line arguments to extract both long and short form
+# options.
 #
 # This function is a wrapper for _parse_opts_process to handle accessing the
 # arrays in the calling function's namespace
