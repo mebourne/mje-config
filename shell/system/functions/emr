@@ -1,0 +1,42 @@
+# ZSH function file
+# Re-run last command in history (or matching given) and send any files in the output to Emacs
+# Usage: emr [<command>]
+#
+# $Id: emr,v 1.1 2001/04/24 16:41:56 mebourne Exp $
+
+# First rerun the specified command and grab the output
+echo -n "Using command: "
+local -a output
+output=($(
+  # Disable history saving. If it is enabled along with share_history then the
+  # command we execute below will be entered into the history, which will mess
+  # things up for next time. This way we don't touch the calling shell's
+  # history
+  unset HISTFILE
+
+  # Disable the precmd. If the precmd does anything fancy, such as print a
+  # prompt, it will get captured along with the real command output!
+  unfunction precmd 2>/dev/null
+
+  # Execute the requested command
+  fc -e - $argv[1]
+))
+
+# Loop through each word in the output looking for possible files (including links to)
+local -a files
+local word
+for word in $output
+do
+  if [[ -f $word ]]
+  then
+    files[$#files+1]=$word
+  fi
+done
+
+# Display and edit the files found
+if (( $#files ))
+then
+  echo "Editing files:"
+  print -c -- $files
+  em $files
+fi
