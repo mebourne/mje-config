@@ -2,7 +2,7 @@
 # ZSH function file
 # Filter stdin for just the given columns
 #
-# $Id: cols,v 1.5 2001/08/02 12:12:58 mebourne Exp $
+# $Id: cols,v 1.6 2001/08/03 11:49:04 mebourne Exp $
 
 emulate -L zsh
 setopt extended_glob
@@ -20,7 +20,7 @@ cols [options] <column-number> ...
 
 Options:
   -d, --delimiter		Field delimiter. As for IFS and defaults to whitespace
-				# --delimiter | -d : string
+				# --delimiter | -d : text
   -h, --help			Provide this help
 				# --help | -h
 

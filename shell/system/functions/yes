@@ -2,7 +2,7 @@
 # ZSH function file
 # Repeatedly print a string
 #
-# $Id: yes,v 1.8 2001/08/02 12:13:17 mebourne Exp $
+# $Id: yes,v 1.9 2001/08/03 11:49:14 mebourne Exp $
 
 local -A opts
 opts[lines]=-1
@@ -32,7 +32,7 @@ Options:
 
 Arguments:
   [<text> ...]			Optional text to print. Defaults to 'yes'
-				# [text] += [*] text : string
+				# [text] += [*] text
 EOF
 
 # Default text to 'yes' if no parameters passed

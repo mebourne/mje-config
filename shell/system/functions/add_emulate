@@ -4,7 +4,7 @@
 # shells unchanged, and later can edit the function to force zsh to emulate the correct shell.
 # NB. emulate is always passed -L for local changes
 #
-# $Id: add_emulate,v 1.7 2001/08/02 12:12:54 mebourne Exp $
+# $Id: add_emulate,v 1.8 2001/08/03 11:49:00 mebourne Exp $
 
 local -A opts
 local -a funcnames
@@ -26,9 +26,9 @@ Options:
 
 Arguments:
   <shell>			The shell to be emulated (as for builtin emulate)
-				# shell : string
+				# shell : values=(zsh sh ksh csh)
   <function-name> ...		List of functions to be edited
-				# funcnames += [1,*] function-name : string
+				# funcnames += [1,*] function-name : function
 EOF
 
 local funcname

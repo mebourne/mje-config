@@ -2,7 +2,7 @@
 # ZSH function file
 # Tidy account up generally
 #
-# $Id: tidyaccount,v 1.11 2001/08/02 12:13:15 mebourne Exp $
+# $Id: tidyaccount,v 1.12 2001/08/03 11:49:11 mebourne Exp $
 
 local this
 if [[ $0 == /* ]]
@@ -27,7 +27,7 @@ Options:
 				# --help | -h
   -s <time>, --schedule-at=<time>
 				Re-schedule job with 'at'
-				# --schedule-at | -s : string
+				# --schedule-at | -s : text
 EOF
 
 # Delete any core/backup/etc files not accessed in the last week

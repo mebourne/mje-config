@@ -2,7 +2,13 @@
 # ZSH function file
 # Load a package which is part of the configuration system
 #
-# $Id: package,v 1.9 2001/08/02 12:13:01 mebourne Exp $
+# $Id: package,v 1.10 2001/08/03 11:49:06 mebourne Exp $
+
+local basedir=$ZCONFIGDIR/package
+
+local -a packages
+packages=($basedir/**/setup(N.))
+packages=(${${packages#$basedir/}%/setup})
 
 local -A opts
 local package
@@ -26,7 +32,7 @@ Options:
 Arguments:
   [<package-name>]		Optional name of package to load. If not provided then
 				list currently loaded packages instead
-				# package = [0,1] package-name : string
+				# package = [0,1] package-name : values=packages
 EOF
 
 if [[ -n $package ]]
@@ -37,7 +43,7 @@ then
     [[ -n $_package_loaded[(r)$package] ]]
     return
   else
-    local setupfile=$ZCONFIGDIR/package/$package/setup
+    local setupfile=$basedir/$package/setup
     
     if [[ -z $_package_loaded[(r)$package] ]]
     then

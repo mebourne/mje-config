@@ -3,7 +3,7 @@
 # Add command to function if not already present. Makes a function
 # usable as a hook a al emacs
 #
-# $Id: add_to_hook,v 1.6 2001/08/02 12:12:56 mebourne Exp $
+# $Id: add_to_hook,v 1.7 2001/08/03 11:49:02 mebourne Exp $
 
 local -A opts
 local -a command
@@ -23,9 +23,9 @@ Options:
 
 Arguments:
   <function-name>		The function to be edited
-				# function-name : string
+				# function-name : ? function
   <command> ...			The command words to be added
-				# command += [1,*] command : string
+				# command += [1,*] command
 EOF
 
 if [[ -z $functions[$opts[function-name]] ]]

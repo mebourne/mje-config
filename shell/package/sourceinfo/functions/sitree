@@ -4,7 +4,7 @@
 # Part of the SourceInfo package
 # Display class hierarchy trees
 #
-# $Id: sitree,v 1.7 2001/08/02 12:12:49 mebourne Exp $
+# $Id: sitree,v 1.8 2001/08/03 11:48:48 mebourne Exp $
 
 [[ -z $sourceinfo_typesdb ]] && { echo "sourceinfo_typesdb not set" ; return 1 }
 
@@ -20,13 +20,13 @@ sitree [options] <type-name>
 Options:
   -d <dir>, --directory=<dir>	Prefer files within directory if duplicates found
 				(partial name ok, searched in order given)
-				# dirs += [*] --directory | -d : string
+				# dirs += [*] --directory | -d : directory
   -h, --help			Provide this help
 				# --help | -h
 
 Arguments:
   <type-name>			The type to retrieve the information for
-				# type : string
+				# type : text
 EOF
 
 # If no -d options then add all the default ones instead
