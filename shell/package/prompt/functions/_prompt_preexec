@@ -3,9 +3,14 @@
 # Hook for preexec function
 # Usage: _prompt_precmd
 #
-# $Id: _prompt_preexec,v 1.11 2001/03/30 09:52:43 mebourne Exp $
+# $Id: _prompt_preexec,v 1.12 2001/04/23 08:44:09 mebourne Exp $
 
 local command="$1"
+
+if (( COLUMNS != _prompt_columns ))
+then
+  _prompt_winch
+fi
 
 # Calculate the number of rows used by the command line (including left prompt).
 # Note that the combined line is split into logical rows according to any

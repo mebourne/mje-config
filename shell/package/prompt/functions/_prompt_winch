@@ -3,10 +3,12 @@
 # Hook for TRAPWINCH function to handle window resizing
 # Usage: _prompt_winch
 #
-# $Id: _prompt_winch,v 1.1 2001/03/02 18:37:51 mebourne Exp $
+# $Id: _prompt_winch,v 1.2 2001/04/23 08:44:01 mebourne Exp $
 
 _prompt_gap=""
 repeat $[COLUMNS - 1]
 do
   _prompt_gap="$_prompt_gap "
 done
+
+_prompt_columns=$COLUMNS

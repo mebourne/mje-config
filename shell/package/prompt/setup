@@ -3,13 +3,12 @@
 # Setup for prompt package
 # Written by Martin Ebourne
 #
-# $Id: setup,v 1.7 2001/04/20 13:31:06 mebourne Exp $
+# $Id: setup,v 1.8 2001/04/23 08:43:53 mebourne Exp $
 
 add_functions_directory package/prompt/functions
 
 # Set up the default prompt colours
 typeset -gA prompt_colours
-
 typeset -g prompt_colour_start prompt_colour_end
 
 # Colour control code sequence for xterm is ESC [ <values> m
@@ -51,7 +50,7 @@ prompt_colours=( dark_red	"38;5;172"
 
 # Declare work variables
 typeset -g _prompt_pwd _prompt_gap _prompt_justify _prompt_edit
-typeset -g _prompt_wrapmode=0 _prompt_clearline
+typeset -g _prompt_wrapmode=0 _prompt_clearline _prompt_columns=$COLUMNS
 
 # Cache terminal handling of line wrapping
 if [[ $(echotc am 2>/dev/null) != yes || $(echotc xn 2>/dev/null) == yes ]]
