@@ -4,7 +4,7 @@
 # Written by Martin Ebourne
 # NB. This file should only be included by the SQL base package
 #
-# $Id: setup,v 1.5 2002/05/28 13:27:51 mebourne Exp $
+# $Id: setup,v 1.6 2002/06/19 11:04:49 mebourne Exp $
 
 # Query for owner may be useful:
 # select owner from all_tables
@@ -24,5 +24,5 @@ _sql_functions[oracle:fetch_types]=_oracle_fetchtypes
 _sql_functions[oracle:fetch_synonyms]=_oracle_fetchsynonyms
 _sql_functions[oracle:init]=true
 _sql_functions[oracle:interactive]=_oracle_interactive
-_sql_functions[oracle:execute_dbi]=_sql_execute_dbi
+_sql_functions[oracle:execute_dbi]=_oracle_execute_dbi
 _sql_functions[oracle:execute_native]=_oracle_execute
