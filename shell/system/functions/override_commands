@@ -5,7 +5,7 @@
 # Usage:   override_commands <preferred-directory> <unwanted-directory> ...
 # Example: override_commands /usr/xpg4/bin /bin /usr/bin /usr/ucb/bin /usr/ccs/bin
 #
-# $Id: override_commands,v 1.2 2001/03/02 15:04:48 mebourne Exp $
+# $Id: override_commands,v 1.3 2001/03/06 09:57:15 mebourne Exp $
 
 if (( ARGC < 2 ))
 then
@@ -21,7 +21,7 @@ if [[ -d $good ]]
 then
   # Check all of the executable commands in the good directory
   local goodcmd
-  for goodcmd in /usr/xpg4/bin/*(.x)
+  for goodcmd in $good/*(.x)
   do
     local cmd=${goodcmd:t}
 
