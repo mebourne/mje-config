@@ -3,6 +3,6 @@
 # Execute a raw SQL command
 # For use only by the SQL packages
 #
-# $Id: _oracle_rawsql,v 1.2 2002/04/09 15:15:00 mebourne Exp $
+# $Id: _oracle_rawsql,v 1.3 2002/04/10 16:01:14 mebourne Exp $
 
-_oracle_interactive -S "$argv[@]" | expand
+_oracle_interactive -S "$argv[@]"
