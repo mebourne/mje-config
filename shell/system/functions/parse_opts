@@ -2,7 +2,7 @@
 # Provide options parsing and help output
 # Usage: parse_opts <argv> <results> [<help>]
 #
-# $Id: parse_opts,v 1.4 2001/07/31 17:17:22 mebourne Exp $
+# $Id: parse_opts,v 1.5 2001/08/01 10:27:36 mebourne Exp $
 
 ### Documentation
 
@@ -516,6 +516,14 @@ _parse_opts_process() {
     if [[ -n $_po_results[zshcompletion] ]]
     then
       _parse_opts_generatecompletion
+      return 1
+    fi
+
+    # Check number of arguments remaining, if appropriate parameters supplied
+    if (( ARGC >= 2 && $#_po_argv < argv[2] || ARGV >=3 && $#_po_argv > argv[3] ))
+    then
+      echo "Incorrect number of arguments" 1>&2
+      echo "Use --help for more information" 1>&2
       return 1
     fi
   else
