@@ -4,7 +4,9 @@
 # Update config directory
 # Usage: cfgupdate <directory>
 #
-# $Id: cfgupdate,v 1.9 2001/05/18 16:13:39 mebourne Exp $
+# $Id: cfgupdate,v 1.10 2001/05/21 09:25:16 mebourne Exp $
+
+emulate -LR zsh
 
 local base_dir file_desc remove_pattern ignore_pattern remove_derived compile_command
 
@@ -22,7 +24,7 @@ case $argv[1] in
     remove_pattern='*~|\#*\#'
     ignore_pattern='*.zwc'
     remove_compiled='$file.zwc'
-    compile_command='cfg_compile_shell $base_dir'
+    #compile_command='cfg_compile_shell $base_dir'
     ;;
 
   *emacs)
@@ -31,7 +33,7 @@ case $argv[1] in
     ignore_pattern='*.elc|loaddefs.el|startup.el'
     # Remove corresponding elc files
     remove_derived='${file}c'
-    compile_command='cfg_compile_emacs $base_dir'
+    #compile_command='cfg_compile_emacs $base_dir'
     ;;
 
   *)
@@ -54,7 +56,7 @@ local -a remove_files non_vc_files changed_files unchanged_files
 local dir file leaf name
 for dir in $base_dir/**/RCS(/)
 do
-  dir=${dir:h:h}
+  dir=${dir:h}
 
   # Check files currently here
   for file in $dir/*(.N)
