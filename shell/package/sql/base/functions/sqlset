@@ -3,7 +3,7 @@
 # Set sql variables
 # Usage: sqlset <sql-variable>=<value> ...
 #
-# $Id: sqlset,v 1.6 2001/05/31 11:47:15 mebourne Exp $
+# $Id: sqlset,v 1.7 2001/08/02 15:51:56 mebourne Exp $
 
 eval $_sql_intro
 
@@ -29,7 +29,7 @@ then
   
   local vendor="$_sql_parameters[vendor]"
   local fn="$_sql_functions[$vendor:init]"
-  if [[ -z $fn ]]
+  if [[ -n $vendor && -z $fn ]]
   then
     if package sql/$vendor 2>/dev/null
     then
