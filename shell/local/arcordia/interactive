@@ -4,7 +4,7 @@
 # done, but immediately before the user specific files
 # Written by Martin Ebourne
 #
-# $Id: interactive,v 1.11 2001/04/20 15:50:23 mebourne Exp $
+# $Id: interactive,v 1.12 2001/04/24 12:51:01 mebourne Exp $
 
 # Arcordia settings
 
@@ -48,6 +48,17 @@ sourceinfo_sourcecode_dirs=(
   /vobs/odyssey/shared
   /vobs/odyssey/system
   /vobs/odyssey/xdg
+)
+sourceinfo_preferred_dirs=(
+  /vobs/odyssey/cashsec
+  /vobs/odyssey/ac
+  /vobs/odyssey/busutils
+  /vobs/odyssey/qm
+  /vobs/odyssey/xdg
+  /vobs/odyssey/services
+  /vobs/odyssey/refdata
+  /vobs/odyssey/shared
+  /vobs/odyssey/system
 )
 
 # Setup SQL db environment

@@ -3,7 +3,7 @@
 # Setup for SourceInfo package
 # Written by Martin Ebourne
 #
-# $Id: setup,v 1.1 2001/02/23 18:03:56 mebourne Exp $
+# $Id: setup,v 1.2 2001/04/24 12:48:56 mebourne Exp $
 
 add_functions_directory package/sourceinfo/functions
 
@@ -17,3 +17,7 @@ typeset -g sourceinfo_typesdb=$sourceinfo_dir/types.gz
 # These are the default directories to find the source code. It should be user set
 # to the correct value
 typeset -ga sourceinfo_sourcecode_dirs
+
+# These are the preferred directories used to resolve duplicates, in descending
+# order of preference. It should be user set to the correct value
+typeset -ga sourceinfo_preferred_dirs
