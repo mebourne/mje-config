@@ -5,7 +5,7 @@ compdef sql
 # Completion code for sql command
 # Usage: These functions are used by the completion code
 #
-# $Id: _sql,v 1.18 2002/04/26 10:43:44 mebourne Exp $
+# $Id: _sql,v 1.19 2002/04/26 14:10:56 mebourne Exp $
 
 #_sql_trace=1
 
@@ -108,6 +108,11 @@ _sql_tokenise () {
       (( cursorindex = tokenindex ))
       cursorprefix=$prefix
       setsuffix=1
+
+      if [[ $inputindex -eq $charindex && $tokenid != (key|)word ]]
+      then
+	cursorsuffix="$token"
+      fi
     fi
     (( charindex = newindex ))
 
@@ -764,6 +769,13 @@ _sql_pn_exec () {
 _sql_generate_column_completion () {
   local tablealias="$1"
 
+  local aliassuffix="-S."
+  if [[ -n $cursorsuffix ]]
+  then
+    suffix=""
+    aliassuffix=""
+  fi
+
   if [[ -n $tablealias ]]
   then
     local table="$tables[$tablealias]"
@@ -774,7 +786,7 @@ _sql_generate_column_completion () {
 
     alts=($alts "columns-$table:database columns for $table:_sql_complete_column_names $suffix $table")
   else
-    alts=($alts "table-aliases:table aliases:compadd -S. ${(k)tables}")
+    alts=($alts "table-aliases:table aliases:compadd $aliassuffix ${(k)tables}")
     if (( $#tables ))
     then
       local table=""
@@ -817,7 +829,7 @@ _sql_generate_completions () {
       _sql_generate_column_completion ${states[cursorindex]##*.}
       ;;
     update.set.column.for.*)
-      suffix="-S ' = ' -r ' =\t\n\-'"
+      suffix="-S '=' -r ' =\t\n\-'"
       _sql_generate_column_completion ${states[cursorindex]##*.}
       ;;
     *.column.for.*)
@@ -931,11 +943,11 @@ _sql_generate_completions () {
       ;;
     update.set)
       alts=($alts 'sql:SQL reserved words:(where)')
-      suffix="-S ' = ' -r ' =\t\n\-'"
+      suffix="-S '=' -r ' =\t\n\-'"
       _sql_generate_column_completion
       ;;
     update.set.column)
-      suffix="-S ' = ' -r ' =\t\n\-'"
+      suffix="-S '=' -r ' =\t\n\-'"
       _sql_generate_column_completion
       ;;
     update.set.expression)
