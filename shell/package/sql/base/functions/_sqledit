@@ -1,0 +1,22 @@
+#compdef sqledit
+# ZSH function file
+# Written by Martin Ebourne
+# Part of the SQL base package
+# Completion code for sqledit command
+# Usage: These functions are used by the completion code
+#
+# $Id: _sqledit,v 1.1 2001/06/04 10:04:30 mebourne Exp $
+
+local ret=1
+
+if _sql_call -t _sqledit
+then
+  _sql_call _sqledit && ret=0
+else
+  if (( CURRENT == 2 ))
+  then
+    _sql_complete_table_names && ret=0
+  fi
+fi
+
+return $ret

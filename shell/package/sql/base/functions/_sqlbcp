@@ -1,0 +1,28 @@
+#compdef sqlbcp
+# ZSH function file
+# Written by Martin Ebourne
+# Part of the SQL base package
+# Completion code for sqlbcp command
+# Usage: These functions are used by the completion code
+#
+# $Id: _sqlbcp,v 1.1 2001/06/04 10:04:30 mebourne Exp $
+
+local ret=1
+
+if _sql_call -t _sqlbcp
+then
+  _sql_call _sqlbcp && ret=0
+else
+  if (( CURRENT == 2 ))
+  then
+    _sql_complete_table_names && ret=0
+  elif (( CURRENT == 3 ))
+  then
+    _wanted direction expl 'direction' compadd in out
+  elif (( CURRENT == 4 ))
+  then
+    _files ret=0
+  fi
+fi
+
+return $ret
