@@ -2,7 +2,7 @@
 # ZSH function file
 # Make a new CR directory & contents
 #
-# $Id: makecr 792 2003-09-22 11:47:18Z martin $
+# $Id$
 
 local basedirprefix="/vobs/odyssey/" basedirsuffix="/support/CR"
 
@@ -53,7 +53,7 @@ echo "Checking out $basedir..."
 cleartool checkout -nc $basedir
 
 echo "Create directory $crdir..."
-cleartool mkelem -c "$crname definition" -eltype directory $crdir
+( umask 002; cleartool mkdir -c "$crname definition" $crdir )
 
 echo "Create file $crdir/checkin..."
 cat <<EOF > $crdir/checkin
@@ -62,8 +62,8 @@ EOF
 
 echo "Create file $crdir/finalise..."
 cat <<EOF > $crdir/finalise
-mkrelease -t -v$crname
 ./checkin
+mkrelease -t -v$crname
 EOF
 
 echo "Create file $crdir/install..."
@@ -107,9 +107,9 @@ EOF
 
 echo "Create file $crdir/$crname.sql..."
 cat <<EOF > $crdir/$crname.sql
-BEGIN TRAN
+begin tran
 
-COMMIT TRAN
+commit tran
 EOF
 
 echo "Add execute permissions to $crdir/*..."
