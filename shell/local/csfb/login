@@ -4,7 +4,7 @@
 # done, but immediately before the user specific files
 # Written by Martin Ebourne
 #
-# $Id: login,v 1.10 2002/06/19 11:03:36 mebourne Exp $
+# $Id: login,v 1.11 2002/06/26 16:28:06 mebourne Exp $
 
 # CSFB settings
 
@@ -55,22 +55,15 @@ path=($path ${ORAWEB_HOME}/bin ${ORACLE_HOME}/bin)
 ld_library_path=($ld_library_path ${ORACLE_HOME}/lib)
 
 # Purify
-#local rational_dir=/sw/Rational/2002.05.00
-#path=($path $rational_dir/releases/DeveloperTools.2002.05.00/sun4_solaris2/bin)
-#manpath=($manpath $rational_dir/releases/quantify.sol.2002.05.00/man
-#         $rational_dir/releases/purify.sol.2002.05.00/man
-#	 $rational_dir/releases/purecov.sol.2002.05.00/man)
-
-local rational_dir=$HOME/local/rational
-path=($path $rational_dir/releases/PurifyPlusFamily.2002a.06.00/sun4_solaris2/bin)
-manpath=($manpath $rational_dir/releases/quantify.sol.2002a.06.00/man
-         $rational_dir/releases/purify.sol.2002a.06.00/man
-	 $rational_dir/releases/purecov.sol.2002a.06.00/man)
-rational_dir=/sw/Rational/2002.05.00
-
-lm_license_file=($lm_license_file $rational_dir/config/licenses_combined)
+local rational_ver=2002a.06.00.Proto.0038
+local rational_dir=/sw/Rational/$rational_ver
+path=($path $rational_dir/releases/DeveloperTools.$rational_ver/sun4_solaris2/bin)
+manpath=($manpath
+         $rational_dir/releases/quantify.sol.$rational_ver/man
+         $rational_dir/releases/purify.sol.$rational_ver/man
+	 $rational_dir/releases/purecov.sol.$rational_ver/man)
+lm_license_file=($lm_license_file /sw/Rational/2002.05.00/config/licenses_combined)
 export RSU_LICENSE_MAP=$rational_dir/config/PurifyPlus_License_Map
-export PURIFYOPTIONS='-chain-length="12"'
 
 # Other comands
 path=($path /usr/ccs/bin)
