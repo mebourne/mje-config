@@ -1,0 +1,44 @@
+#eval compdef -n _files emacsclient
+# ZSH function file
+# Front end to handle Clearcase path for emacsclient
+# Usage: emacsclient <params> ...
+#
+# $Id: emacsclient,v 1.1 2001/03/19 15:50:32 mebourne Exp $
+
+local -a params
+local param
+for param in "$@"
+do
+  # Process each parameter checking if it is some kind of file system object
+  if [[ -e $param ]]
+  then
+
+    # Handle relative paths
+
+    # Trim off leafnames of pwd for each ../ at start of param
+    local pwd="$PWD"
+    while [[ $param == ../* ]]
+    do
+      param=${param#../}
+      pwd=${pwd:h}
+    done
+
+    # Append a relative name onto modified pwd
+    if [[ $param != /* ]]
+    then
+      param=$pwd/$param
+    fi
+
+    # Check for being in a vob, if so append full view path
+    if [[ $param == /vobs/* ]]
+    then
+      param=$CLEARCASE_ROOT$param
+    fi
+  fi
+
+  # Rebuild param list
+  params=($params $param)
+done
+
+# Execute the real emacs client
+=emacsclient "$params[@]"
