@@ -155,9 +155,9 @@ mv fvwm_icons $HOME/local/share/fvwm-icons
 ** Subversion
 
 Name:		 subversion
-Version:	 1.0.2
+Version:	 1.1.1
 Home page:	 http://subversion.tigris.org/
-Package name:	 subversion-1.0.2.tar.gz
+Package name:	 subversion-1.1.1.tar.gz
 Build:
 ./configure --prefix=$HOME/local --bindir=$HOME/local/bin/$(uname -m) --with-ssl --with-libs=$HOME/local
 gmake
