@@ -2,7 +2,7 @@
 # Provide options parsing and help output
 # Usage: parse_opts <argv> <results> [<help>]
 #
-# $Id: parse_opts,v 1.10 2001/08/02 12:13:06 mebourne Exp $
+# $Id: parse_opts,v 1.11 2001/08/02 15:58:08 mebourne Exp $
 
 ### Documentation
 
@@ -51,10 +51,9 @@
 #   <option-name>
 #
 # Where option-name is the name the option will be passed as when invoked by
-# the user, without any leading `-'s. Single letter options are taken to be
-# short options introduced by `-', and may be grouped. Other options are taken
-# to be long options introduced by `--'. It is not possible to have a one
-# character long option (eg. --a is not possible)
+# the user. Single letter options are introduced by `-', and may be grouped.
+# Other options are long options introduced by `--'. If there is no `-' at the
+# start of the option name then this is taken to be an argument definition
 #
 # frequency is of the form:
 #   <count>
@@ -112,7 +111,7 @@ _parse_opts_parsehelp() {
       shift paraminfo
 
       # Extract the type information if there is any
-      local type="switch"
+      local type=""
       if (( paraminfo[(I):] ))
       then
         type=$paraminfo[paraminfo[(I):]+1,-1]
@@ -160,16 +159,31 @@ _parse_opts_parsehelp() {
       local option=""
       for option in $paraminfo
       do
-        if [[ -z $frequency ]]
+        local aliases="" excludes=""
+
+        # Establish defaults for missing values
+        if [[ $option == -* ]]
 	then
-          if [[ $option == -* ]]
-	  then
-	    frequency="0,1"
-	  else
-	    frequency="1"
-	  fi
+	  [[ -z $frequency ]] && frequency="0,1"
+	  [[ -z $type ]] && type="switch"
+
+	  # Aliases, excluding this option
+	  aliases=${paraminfo:#$option}
+
+	  # Excludes. Only if the max frequency of this option is 1, same as aliases
+          integer min_frequency=0 max_frequency=0
+          _parse_opts_minmaxfrequency min_frequency max_frequency -1 $frequency || return 1
+          if (( max_frequency == 1 ))
+          then
+            excludes=$aliases
+          fi
+
+	else
+	  [[ -z $frequency ]] && frequency="1"
+	  [[ -z $type ]] && type="string"
 	fi
 
+	# Report info on option if debugging enabled
         if (( _po_debug ))
 	then
 	  echo "option = '$option' {"
@@ -177,19 +191,22 @@ _parse_opts_parsehelp() {
 	  echo "  frequency = '$frequency'"
 	  echo "  type      = '$type'"
 	  echo "  help      = '$helpline'"
+	  echo "}"
 	fi
 
+	# Store the main data for this option
         _po_tags[$option]=$tag
 	_po_frequencies[$option]=$frequency
         _po_types[$option]=$type
 	_po_helplines[$option]=$helpline
+ 	_po_excludes[$option]=$excludes
 
 	# If its an option then store its aliases in _po_aliases, else store
 	# the option name in _po_arguments. Thus this is how they can be
 	# distinguished from each other (in addition to checking for '-')
 	if [[ $option == -* ]]
 	then
-  	  _po_aliases[$option]=${paraminfo:#$option}
+  	  _po_aliases[$option]=$aliases
 	else
   	  _po_arguments=($_po_arguments $option)
 	fi
@@ -236,9 +253,67 @@ _parse_opts_parsehelp() {
     echo "_po_frequencies=(${(qqkv)_po_frequencies[@]})"
     echo "_po_types=(${(qqkv)_po_types[@]})"
     echo "_po_aliases=(${(qqkv)_po_aliases[@]})"
+    echo "_po_excludes=(${(qqkv)_po_excludes[@]})"
     echo "_po_helplines=(${(qqkv)_po_helplines[@]})"
     echo "_po_arguments=($_po_arguments)"
   fi
+
+  return 0
+}
+
+# This function decodes the numeric expression within a frequency
+# specification to return an integer value. The variable given to var will be
+# updated with the results of processing the given expression substituting
+# number for `*'
+_parse_opts_frequencyvalue() {
+  local var="$argv[1]"
+  integer number="$argv[2]"
+  local expression="$argv[3]"
+
+  integer result=0
+  case $expression in
+    \*) # Use default number
+      result=$number
+      ;;
+
+    <->) # Use fixed number
+      result=$expression
+      ;;
+
+    \*-<->) # Use default number minus fixed number
+      (( result = number - ${expression#\*-} ))
+      ;;
+
+    *) # This is a configuration error
+      echo "Unrecognised frequency: '$expression'" 1>&2
+      return 1
+      ;;
+  esac
+
+  eval $var=$result
+
+  return 0
+}
+
+# This function decodes a frequency expression into min and max values. The
+# variables given to minvar & maxvar will be updated with the results of
+# processing the given expression substituting number for `*'
+_parse_opts_minmaxfrequency() {
+  local minvar="$argv[1]" maxvar="$argv[2]"
+  integer number="$argv[3]"
+  local expression="$argv[4]"
+
+  case $expression in
+    *,*) # Separate min & max values
+      _parse_opts_frequencyvalue $minvar $number ${expression%,*} || return 1
+      _parse_opts_frequencyvalue $maxvar $number ${expression#*,} || return 1
+      ;;
+
+    *) # Min & max values the same
+      _parse_opts_frequencyvalue $minvar $number $expression || return 1
+      _parse_opts_frequencyvalue $maxvar $number $expression || return 1
+     ;;
+  esac
 
   return 0
 }
@@ -257,26 +332,14 @@ _parse_opts_generatecompletion() {
   # Careful to skip our magic --zsh-completion option
   local -a aliases excludes
   local option
-  for option in ${${(k)_po_aliases}:#--zsh-completion}
+  for option in ${${(k)_po_aliases}:#--zsh-completion} $_po_arguments
   do
-    local spec=""
+    integer isoption=0
+    [[ $option == -* ]] && isoption=1
 
-    # Generate excludes clause if we have any aliases. First get long option
-    # aliases, then short ones, then add the clause
-    if [[ -n $_po_aliases[$option] ]]
-    then
-      spec="$spec($_po_aliases[$option])"
-    fi
-
-    # Add repeating option flag if frequency is not either 0 or 1
     local frequency="$_po_frequencies[$option]"
-    if [[ $frequency != [01] && $frequency != [01],[01] ]]
-    then
-      spec="$spec*"
-    fi
-
-    # Add the main option name section
-    spec="$spec$option"
+    integer min_frequency=0 max_frequency=0
+    _parse_opts_minmaxfrequency min_frequency max_frequency -1 $frequency || return 1
 
     # Try to determine a description/completer from the type of this option
     local type="$_po_types[$option]" description="" action=""
@@ -330,27 +393,81 @@ _parse_opts_generatecompletion() {
 	;;
     esac
 
-    # If we have a long option which takes a parameter then add the '=' flag
-    # to say --option=value is valid
-    if [[ $option == --* && -n $action ]]
-    then
-      spec="$spec="
-    fi
 
-    # Add the description of the option if one was successfully extracted from the help text
-    if [[ -n $_po_helplines[$option] ]]
-    then
-      spec="${spec}[$_po_helplines[$option]]"
-    fi
+    local spec=""
 
-    # Now add the description and completer for the parameter, if we have one
-    if [[ -n $action ]]
+    if (( isoption ))
     then
-      spec="$spec:$description:$action"
-    fi
 
-    # Collect the specifications
-    specs=($specs "'$spec'")
+      # Generate excludes clause if we have any
+      if [[ -n $_po_excludes[$option] ]]
+      then
+	spec="$spec($_po_excludes[$option])"
+      fi
+
+      # Add repeating option flag if max frequency is not 1
+      if (( max_frequency != 1 ))
+      then
+    	spec="$spec*"
+      fi
+
+      # Add the main option name section
+      spec="$spec$option"
+
+      # If we have a long option which takes a parameter then add the '=' flag
+      # to say --option=value is valid
+      if [[ $option == --* && -n $action ]]
+      then
+	spec="$spec="
+      fi
+
+      # Add the description of the option if one was successfully extracted from the help text
+      if [[ -n $_po_helplines[$option] ]]
+      then
+	spec="${spec}[$_po_helplines[$option]]"
+      fi
+
+      # Now add the description and completer for the parameter, if we have one
+      if [[ -n $action ]]
+      then
+	spec="$spec:$description:$action"
+      fi
+
+      # Collect the specifications
+      specs=($specs "'$spec'")
+
+    else
+
+      if (( min_frequency < 0 || max_frequency < 0 ))
+      then
+        spec="$spec*"
+      fi
+
+      spec="$spec:$description"
+
+      # Add the description of the argument if one was successfully extracted from the help text
+      if [[ -n $_po_helplines[$option] ]]
+      then
+        spec="$spec - $_po_helplines[$option]"
+      fi
+
+      spec="$spec:$action"
+
+      # Collect the specifications
+      if (( min_frequency < 0 || max_frequency < 0 || min_frequency > max_frequency ))
+      then
+        specs=($specs "'$spec'")
+      else
+        repeat $min_frequency
+	do
+          specs=($specs "'$spec'")
+	done
+        repeat $(( max_frequency - min_frequency ))
+	do
+          specs=($specs "':$spec'")
+	done
+      fi
+    fi
   done
 
   # Only output the _arguments call on success
@@ -358,7 +475,7 @@ _parse_opts_generatecompletion() {
   # -w - Arguments follow single letter options, one for each relevant option
   # -S - Handle -- to terminate options
   # -A - No more options after first non-option argument
-  echo "_arguments -s -w -S -A '-*' $specs '*:file:_files'"
+  echo "_arguments -s -w -S -A '-*' $specs"
 
   return 0
 }
@@ -599,35 +716,6 @@ _parse_opts_dooptions() {
   return 0
 }
 
-# This helper function decodes the numeric expression within an argument
-# specification to return an integer value. It uses local variables in
-# _parse_opts_doarguments and so should not be called from elsewhere
-_parse_opts_getuse() {
-  integer number="$argv[1]"
-  local expression="$argv[2]"
-
-  case $expression in
-    \*) # Use default number
-      _po_use=$number
-      ;;
-
-    <->) # Use fixed number
-      _po_use=$expression
-      ;;
-
-    \*-<->) # Use default number minus fixed number
-      (( _po_use = number - ${expression#\*-} ))
-      ;;
-
-    *) # This is a configuration error
-      echo "Unrecognised frequency for option $_po_name: '$expression'" 1>&2
-      return 1
-      ;;
-  esac
-
-  return 0
-}
-
 # This helper function decodes any arguments present in the command line after
 # the options have been removed, using the pre-generated option arrays from
 # _parse_opts_parsehelp. Arguments are provided in _po_argv and are removed as
@@ -643,27 +731,16 @@ _parse_opts_doarguments() {
   do
     local _po_frequency="$_po_frequencies[$_po_argument]"
 
-    integer _po_use=0
-    case $_po_frequency in
-      *,*) # All the remaining arguments with both minimum and maximum
-
-        # First check the lower bound, then the upper. If both number of args
-        # is within both then use that instead
-        _parse_opts_getuse $#_po_argv ${_po_frequency%,*} || return 1
-	if (( _po_use < $#_po_argv ))
-	then
-          _parse_opts_getuse $#_po_argv ${_po_frequency#*,} || return 1
-	  if (( _po_use > $#_po_argv ))
-	  then
-            _po_use=$#_po_argv
-	  fi
-	fi
-	;;
-
-      *) # Fixed number of arguments. eg. [1]
-        _parse_opts_getuse $#_po_argv $_po_frequency || return 1
-	;;
-    esac
+    # Ensure number of args to use is within required range
+    integer _po_use=$#_po_argv _po_min=0 _po_max=0
+    _parse_opts_minmaxfrequency _po_min _po_max $_po_use $_po_frequency || return 1
+    if (( _po_use > _po_max ))
+    then
+      _po_use=$_po_max
+    elif (( _po_use < _po_min ))
+    then
+      _po_use=$_po_min
+    fi
 
     # Check there are a sufficient number of arguments left
     if (( $#_po_argv >= _po_use ))
@@ -696,7 +773,7 @@ _parse_opts_doarguments() {
 # NB. Locals in this function must begin _po_
 _parse_opts_process() {
   local -a _po_arguments
-  local -A _po_tags _po_frequencies _po_types _po_aliases _po_helplines
+  local -A _po_tags _po_frequencies _po_types _po_aliases _po_excludes _po_helplines
   local _po_helptext
 
   # Check for arguments. If we have one and it is not '-' then it is the help
