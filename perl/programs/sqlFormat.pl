@@ -8,6 +8,9 @@
 use strict;
 use English;
 
+# Note if we are outputting to a tty or a file
+my $tty=-t STDOUT;
+
 my $inputLineNum=0;
 my $maxFieldNameLen=0;
 my $colour=0;
@@ -117,7 +120,7 @@ sub getNextLine {
 
   my $line=<STDIN>;
   $inputLineNum++;
-  if(($inputLineNum%100)==0 && $feedback) {
+  if(($inputLineNum%100)==0 && $feedback && $tty) {
     my $old=$|;
     $|=1;
     print "Received $inputLineNum lines...\r";
@@ -219,6 +222,11 @@ sub readData {
 
     # Store the row
     push @$rows, $row;
+  }
+
+  # If outputting to tty ensure line has been blanked of any 'Received...' output
+  if($tty) {
+    print "\e[K";
   }
 
   # Pass the unmatched line back for possible reuse as a header
