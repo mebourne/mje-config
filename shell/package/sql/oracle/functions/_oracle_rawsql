@@ -3,13 +3,6 @@
 # Execute a raw SQL command
 # For use only by the SQL packages
 #
-# $Id: _oracle_rawsql,v 1.1 2001/08/17 15:17:49 mebourne Exp $
+# $Id: _oracle_rawsql,v 1.2 2002/04/09 15:15:00 mebourne Exp $
 
-if [[ -z $_sql_parameters[user] ]]
-then
-  echo "Error: SQL user variable not set" 1>&2
-  return 1
-fi
-
-sqlplus $_sql_parameters[user] \
-        "$argv[@]"
+_oracle_interactive -S "$argv[@]" | expand

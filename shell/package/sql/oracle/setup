@@ -4,7 +4,7 @@
 # Written by Martin Ebourne
 # NB. This file should only be included by the SQL base package
 #
-# $Id: setup,v 1.1 2001/08/17 15:17:49 mebourne Exp $
+# $Id: setup,v 1.2 2002/04/09 15:14:11 mebourne Exp $
 
 # WARNING:
 #
@@ -22,5 +22,5 @@ _sql_functions[oracle:desc]=_oracle_desc
 _sql_functions[oracle:fetch_columns]=_oracle_fetchcolumns
 _sql_functions[oracle:fetch_tables]=_oracle_fetchtables
 _sql_functions[oracle:init]=true
-_sql_functions[oracle:interactive]=_oracle_rawsql
+_sql_functions[oracle:interactive]=_oracle_interactive
 _sql_functions[oracle:execute]=_oracle_execute
