@@ -8,18 +8,23 @@
 use strict;
 use IO::File;
 
+my $result=0;
+
 for my $file (@ARGV) {
   &processFile($file);
 }
 
-exit;
+exit $result;
 
 
 sub processFile {
   my ($file)=@_;
 
   my $fh=new IO::File "<$file";
-  die "Cannot open file $file" if !defined($fh);
+  if(!defined($fh)) {
+    print STDERR "Cannot open file $file\n";
+    $result=1;
+  }
 
   my @text=<$fh>;
   my $text="@text";
@@ -29,6 +34,11 @@ sub processFile {
   $text=~s/^[ \t]*#.*//gm;
   $text=~s/\s+/ /g;
   $text=";" . $text;
+
+  # These horrible hacks for horrible RW (& persistence)
+  $text=~s/ RWBehavior//g;
+  $text=~s/ RWMemoryPool_OPTION//g;
+  $text=~s/ COLON_PS_NEWDELETE//g;
 
 #  print "$text\n";
   &findTypedefs($file,$text);
@@ -57,10 +67,11 @@ sub findTypedefs {
       # Output definition of the form:
       # <filename>#typedef#<defined type>#<original type>
       &addField($file,"typedef",$newType,$origType);
-    } elsif($typedef=~/\(.*\).*\(.*\)$/) {
+    } elsif($typedef=~/\(.*\)$/) {
       # Function typedef. Ignore them for now
     } else {
-      die "Cannot parse typedef '$typedef' in $file";
+      print STDERR "Cannot parse typedef '$typedef' in $file\n";
+      $result=1;
     }
   }
 }
@@ -70,8 +81,9 @@ sub findClasses {
 
   my @classes=$text=~/(?<=[;}]) *((?:template *<[^{;]*?> *|)class [^{;]*?) *\{/g;
   for my $class (@classes) {
+    # This line has horrible hacks for horrible RW. eg. class RWGExport RWGDlist(type) {}
     my ($template,$decl,$name,$templParam,$base)=
-	$class=~/^(?:template *(<.*?>) *|)class( *\w*) (\w+)( *<.*?>|) *(?:: *(.*)|)$/;
+	$class=~/^(?:template *(<.*?>) *|)class( *\w*) (\w+) *(?:\(.*\)|)(<.*?>|) *(?:: *(.*)|)$/;
 
     if(defined($name)) {
       if(!defined($template)) {
@@ -97,7 +109,8 @@ sub findClasses {
       # <filename>#class#<defined class>#<template params>[#<base class>#...]
       &addField($file,"class",$name,$template,@bases);
     } else {
-      die "Cannot parse class '$class' in $file";
+      print STDERR "Cannot parse class '$class' in $file\n";
+      $result=1;
     }
   }
 }
