@@ -1,11 +1,11 @@
-#compdef sql
+compdef sql
 # ZSH function file
 # Written by Martin Ebourne
 # Part of the SQL base package
 # Completion code for sql command
 # Usage: These functions are used by the completion code
 #
-# $Id: _sql,v 1.16 2002/04/19 18:00:18 mebourne Exp $
+# $Id: _sql,v 1.17 2002/04/25 17:12:09 mebourne Exp $
 
 #_sql_trace=1
 
@@ -25,12 +25,18 @@ _sql_tokenise () {
              insert into order select set union update values
 	   )
 
-  local whitespace="" token="" tokenid=""
-  integer newindex=0 tokenindex=0
+  local whitespace="" token="" tokenid="" prefix=""
+  integer newindex=0 tokenindex=0 setsuffix=0
   while [[ $inputline != [[:space:]]# ]]
   do
     whitespace="${(M)inputline##[[:space:]]#}"
     inputline="${inputline#$whitespace}"
+
+    if [[ -n $whitespace ]]
+    then
+      prefix=""
+      setsuffix=0
+    fi
 
     case $inputline in
       \\\'*)
@@ -64,10 +70,6 @@ _sql_tokenise () {
         tokenid=period
 	token="."
 	;;
-      [[:punct:]]*)
-        tokenid=punctuation
-	token=${(M)inputline#[[:punct:]]}
-	;;
       [[:digit:]]*)
         tokenid=number
 	token=${(M)inputline##[[:digit:]]#}
@@ -81,6 +83,10 @@ _sql_tokenise () {
 	  tokenid=word
 	fi
 	;;
+      [[:punct:]]*)
+        tokenid=punctuation
+	token=${(M)inputline#[[:punct:]]}
+	;;
       *)
         echo "_sql_tokenise: Unrecognised text in sql code: '$inputline'" 1>&2
 	return 1
@@ -88,14 +94,24 @@ _sql_tokenise () {
     esac
     inputline="${inputline#$token}"
 
+    if (( setsuffix ))
+    then
+      cursorsuffix="$cursorsuffix$token"
+    fi
+
     (( tokenindex++ ))
 
     (( newindex = charindex + $#whitespace + $#token ))
-    if (( inputindex > charindex && inputindex <= newindex ))
+    if (( !cursorindex )) && [[ $inputindex -lt $newindex ||
+	                        $inputindex -eq $newindex && $tokenid == (key|)word ]]
     then
-    	(( cursorindex = tokenindex ))
+      (( cursorindex = tokenindex ))
+      cursorprefix=$prefix
+      setsuffix=1
     fi
     (( charindex = newindex ))
+
+    prefix="$prefix$token"
 
     tokenids[tokenindex]=$tokenid
     tokens[tokenindex]=$token
@@ -111,6 +127,7 @@ _sql_tokenise () {
   if (( !cursorindex ))
   then
     (( cursorindex = tokenindex ))
+    cursorprefix=$prefix
   fi
 }
 
@@ -755,7 +772,7 @@ _sql_generate_column_completion () {
       table=$tablealias
     fi
 
-    alts=($alts "columns-$table:database columns for $table:_sql_complete_column_names -p '${PREFIX%%[^.]#}' $suffix $table")
+    alts=($alts "columns-$table:database columns for $table:_sql_complete_column_names $suffix $table")
   else
     alts=($alts "table-aliases:table aliases:compadd -S. ${(k)tables}")
     if (( $#tables ))
@@ -942,6 +959,11 @@ _sql_generate_completions () {
       ;;
   esac
 
+  compset -p $#cursorprefix
+  compset -s $#cursorsuffix
+  #compset -P '*[^[:alnum:]_]'
+  #compset -S '[^[:alnum:]_]*'
+
   _alternative $alts
 }
 
@@ -977,6 +999,7 @@ _sql () {
   (( inputindex = ${#${words[2,CURRENT]}} - $#current + $#prefix + 1 ))
 
   local -a tokens tokenids
+  local cursorprefix="" cursorsuffix=""
   integer cursorindex=0
   _sql_tokenise
 
@@ -996,6 +1019,7 @@ _sql () {
     echo "statenestindices=$statenestindices"
     echo "cursorindex=$cursorindex ($states[cursorindex]) $statenestindices[cursorindex]"
     echo "nestedlist=$nestedlist"
+    echo "cursorprefix=>$cursorprefix< cursorsuffix=>$cursorsuffix<"
   fi
 
   _sql_generate_completions
