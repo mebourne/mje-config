@@ -5,7 +5,7 @@
 # Completion code for cleartool command
 # Usage: These functions are used by the completion code
 #
-# $Id: _cleartool,v 1.4 2001/03/15 12:41:28 mebourne Exp $
+# $Id: _cleartool,v 1.5 2001/03/15 15:53:21 mebourne Exp $
 
 _cleartool_decode_pname () {
   case $command in
@@ -277,7 +277,7 @@ _cleartool_read_help () {
 }
 
 _cleartool_write_cache() {
-  local cache=${ZDOTDIR:-$HOME}/.zcompdump
+  local cache=$_comp_dumpfile
 
   if grep '\#\#\#START\#\#\# Added by cleartool package' $cache >/dev/null
   then
