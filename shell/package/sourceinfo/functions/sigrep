@@ -1,0 +1,23 @@
+# ZSH function file
+# Written by Martin Ebourne
+# Part of the SourceInfo package
+# Search contents of files from the source info file list
+# Usage: sigrep <grep-options> <filename-regexp>
+#
+# $Id: sigrep,v 1.1 2001/05/23 13:21:36 mebourne Exp $
+
+[[ -z $sourceinfo_filesdb ]] && { echo "sourceinfo_filesdb not set" 2>&1 ; return 1 }
+
+if (( ARGC<2 ))
+then
+  echo "Syntax: sigrep <grep-options> ... <filename-regexp>" 2>&1
+  return 1
+fi
+
+# Get the list of files, one per line
+# Escape any dangerous characters
+# Use xargs 16 lines at a time to grep for results. Ensure >1 file to grep
+# so it lists filename
+sifile "$argv[-1]" |
+  sed 's/\([ "'\'']\)/\\\1/g' |
+  xargs -l16 grep -n "${(@)argv[1,-2]}" /dev/null
