@@ -1,0 +1,63 @@
+# ZSH function file
+# Give grep -n (line numbers) if grepping files
+# Usage: grep [<options>]
+#
+# $Id: grep,v 1.1 2001/05/01 10:43:49 mebourne Exp $
+
+# Parse the parameters to find if (i) there are any filenames, (ii) -n has already been given
+integer gotn=0 given=0 skip=0 first=1
+local param
+for param in "$argv[@]"
+do
+  if (( skip > 0 ))
+  then
+    (( skip-- ))
+  elif (( skip == 0 ))
+  then
+    case $param in
+      -n)
+	gotn=1
+	;;
+
+      -[ef]) # These take 1 param each and lose the initial search pattern
+        skip=1
+	first=0
+	;;
+
+      --) # All following params are files regardless [not all greps support this]
+        skip=-1
+	;;
+
+      -*) # Skip other options
+        ;;
+
+      *) # Typically first non-option is search pattern
+        if (( first ))
+	then
+	  (( first-- ))
+	else
+	  given=1
+	fi
+    esac
+  else
+    given=1
+  fi
+done
+
+# Add -n option if required
+local extra
+if (( !gotn && given ))
+then
+  extra="-n"
+  echo " adding -n" >&2
+fi
+
+# Find the most useful grep
+local grep==grep
+if [[ =grep == /usr/bin/grep && -x /usr/xpg4/bin/grep ]]
+then
+  grep=/usr/xpg4/bin/grep
+fi
+
+# Execute the command
+$grep $extra "$argv[@]"
