@@ -1,11 +1,13 @@
 ;; Emacs configuration file
 ;; Key bindings
 ;; Written by Martin Ebourne
-;; $Id: keys.el,v 1.3 2001/05/23 14:14:31 mebourne Exp $
+;; $Id: keys.el,v 1.4 2002/03/18 15:13:58 mebourne Exp $
 
 ;; Cursor movement
 (global-set-key "\M-\C-z"     'scroll-other-window-down)
 (global-set-key "\M-g"        'goto-line)
+(global-set-key [home]        'beginning-of-buffer)
+(global-set-key [end]         'end-of-buffer)
 
 ;; Text editing
 (global-set-key "\C-m"        'newline-and-indent)
