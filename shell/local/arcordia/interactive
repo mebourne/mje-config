@@ -4,7 +4,7 @@
 # done, but immediately before the user specific files
 # Written by Martin Ebourne
 #
-# $Id: interactive,v 1.19 2001/06/29 08:41:57 mebourne Exp $
+# $Id: interactive,v 1.20 2001/07/03 13:39:07 mebourne Exp $
 
 # Arcordia settings
 
@@ -26,7 +26,7 @@ cdpath=(. /vobs/odyssey/cashsec)
 # CD vars. Pull in all the vobs available. Add them straight to the hash table
 # to reduce environment variable clutter
 local dir
-for dir in /vobs/odyssey/*
+for dir in /vobs/odyssey/* /home/odyssey/nahmed/Cronjob/prodquery
 do
   dir=${dir%/}
   hash -d ${dir:t}=$dir
