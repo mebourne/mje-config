@@ -5,18 +5,17 @@
 # Usage:   override_commands <preferred-directory> <unwanted-directory> ...
 # Example: override_commands /usr/xpg4/bin /bin /usr/bin /usr/ucb/bin /usr/ccs/bin
 #
-# $Id: override_commands,v 1.1 2001/03/01 19:41:31 mebourne Exp $
+# $Id: override_commands,v 1.2 2001/03/02 15:04:48 mebourne Exp $
 
-if (( $#@ < 2 ))
+if (( ARGC < 2 ))
 then
   echo "Syntax: override_commands <preferred-directory> <unwanted-directory> ..." 1>&2
   return 1
 fi
 
-local good=$1
-shift
+local good=$argv[1]
 local -a bad
-bad=($*)
+bad=($argv[2,-1])
 
 if [[ -d $good ]]
 then
