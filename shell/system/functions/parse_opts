@@ -2,7 +2,7 @@
 # Provide options parsing and help output
 # Usage: parse_opts <argv> <results> [<help>]
 #
-# $Id: parse_opts,v 1.5 2001/08/01 10:27:36 mebourne Exp $
+# $Id: parse_opts,v 1.6 2001/08/01 10:37:53 mebourne Exp $
 
 ### Documentation
 
@@ -520,7 +520,7 @@ _parse_opts_process() {
     fi
 
     # Check number of arguments remaining, if appropriate parameters supplied
-    if (( ARGC >= 2 && $#_po_argv < argv[2] || ARGV >=3 && $#_po_argv > argv[3] ))
+    if (( ARGC >= 2 && $#_po_argv < argv[2] || ARGC >=3 && $#_po_argv > argv[3] ))
     then
       echo "Incorrect number of arguments" 1>&2
       echo "Use --help for more information" 1>&2
@@ -557,6 +557,7 @@ _parse_opts_process() {
 parse_opts() {
 
   local _po_ext_argv="$argv[1]" _po_ext_results="$argv[2]" _po_config="$argv[3]"
+  local _po_min_args="$argv[4]" _po_max_args="$argv[5]"
 
   # Ensure options are in a known & useful state
   emulate -L zsh
@@ -570,7 +571,7 @@ parse_opts() {
   _po_results=("${(@Pkv)_po_ext_results}")
 
   # Do the work. Only update the external arrays if we succeeded
-  if _parse_opts_process $_po_config
+  if _parse_opts_process $_po_config $_po_min_args $_po_max_args
   then
     eval $_po_ext_argv='($_po_argv)'
     eval $_po_ext_results='("${(@kv)_po_results}")'
