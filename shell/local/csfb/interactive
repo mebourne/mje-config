@@ -4,12 +4,12 @@
 # done, but immediately before the user specific files
 # Written by Martin Ebourne
 #
-# $Id: interactive,v 1.1 2002/03/18 15:42:58 mebourne Exp $
+# $Id: interactive,v 1.2 2002/03/26 17:53:38 mebourne Exp $
 
 # CSFB settings
 
 # Add to default CDPATH
-#cdpath=($cdpath /vobs/odyssey/cashsec)
+cdpath=($cdpath /vobs/bpta)
 
 # CD vars. Pull in all the vobs available. Add them straight to the hash table
 # to reduce environment variable clutter
