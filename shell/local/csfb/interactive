@@ -4,7 +4,7 @@
 # done, but immediately before the user specific files
 # Written by Martin Ebourne
 #
-# $Id: interactive,v 1.4 2002/04/25 10:54:33 mebourne Exp $
+# $Id: interactive,v 1.5 2002/08/29 10:24:59 mebourne Exp $
 
 # CSFB settings
 
@@ -13,7 +13,7 @@
 
 # CD vars. Pull in all the vobs available. Add them straight to the hash table
 # to reduce environment variable clutter
-local dir
+local dir=""
 for dir in /vobs/bpta/*(N)
 do
   dir=${dir%/}

@@ -4,7 +4,7 @@
 # shells unchanged, and later can edit the function to force zsh to emulate the correct shell.
 # NB. emulate is always passed -L for local changes
 #
-# $Id: add_emulate,v 1.9 2001/08/29 16:35:04 mebourne Exp $
+# $Id: add_emulate,v 1.10 2002/08/29 10:26:07 mebourne Exp $
 
 local -A opts
 local -a funcnames
@@ -31,7 +31,7 @@ Arguments:
 				# funcnames += [1,*] function-name : function
 EOF
 
-local funcname
+local funcname=""
 for funcname in $funcnames
 do
   if [[ -n $functions[$funcname] ]]

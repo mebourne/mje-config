@@ -3,7 +3,7 @@
 # ZLE widget to cycle backwards through the directory stack
 # Can only be called from ZLE as a widgit
 #
-# $Id: _dirstack_backward,v 1.1 2001/04/20 15:36:21 mebourne Exp $
+# $Id: _dirstack_backward,v 1.2 2002/08/29 10:25:57 mebourne Exp $
 
 # Check whether we between words
 if [[ $LBUFFER == *[$IFS] ]]
@@ -13,10 +13,10 @@ then
   _dirstack_original=""
 else
   # Otherwise we are in a word, so get the start of it
-  local dir=$LBUFFER[(w)-1]
+  local dir="$LBUFFER[(w)-1]"
 
   # Expand ~ etc
-  local expanded=$~dir
+  local expanded="$~dir"
 
   # Get current index into stack
   integer index=$dirstack[(i)$expanded]

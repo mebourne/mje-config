@@ -3,10 +3,10 @@
 # Front end to handle Clearcase path for emacsclient
 # Usage: emacsclient <params> ...
 #
-# $Id: emacsclient,v 1.1 2001/03/19 15:50:32 mebourne Exp $
+# $Id: emacsclient,v 1.2 2002/08/29 10:25:45 mebourne Exp $
 
 local -a params
-local param
+local param=""
 for param in "$@"
 do
   # Process each parameter checking if it is some kind of file system object

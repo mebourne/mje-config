@@ -3,7 +3,7 @@
 # Process the given directories for completion directives
 # Usage: _completion_add_directories <directory> ...
 #
-# $Id: _completion_add_directories,v 1.1 2001/03/16 13:02:20 mebourne Exp $
+# $Id: _completion_add_directories,v 1.2 2002/08/29 10:25:54 mebourne Exp $
 
 if (( ARGC < 1 ))
 then
@@ -14,7 +14,7 @@ fi
 local -a directories files
 directories=($argv[@])
 
-local directory
+local directory=""
 for directory in $directories
 do
   # Get a list of files in the directory, and filter out backups. Care to handle the

@@ -3,13 +3,13 @@
 # Replacement for built in clear-screen ZLE widget to redraw full prompt
 # Can only be called from ZLE as a widgit
 #
-# $Id: _prompt_clear_screen,v 1.2 2001/08/17 17:05:12 mebourne Exp $
+# $Id: _prompt_clear_screen,v 1.3 2002/08/29 10:25:58 mebourne Exp $
 
 # Calculate the number of rows used by the command line up to the current
 # cursor point (including left prompt). Note that the combined line is split
 # into logical rows according to any incorporated newlines, and these are
 # summed up individually
-local row rows=0
+local row="" rows=0
 for row in "${(f)${(%%)${PROMPT//[%]\{[^%]#%\}/}}}${(f)LBUFFER}"
 do
   (( rows += 1 + $#row / COLUMNS ))

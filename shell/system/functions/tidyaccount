@@ -2,9 +2,9 @@
 # ZSH function file
 # Tidy account up generally
 #
-# $Id: tidyaccount,v 1.13 2001/08/29 16:36:02 mebourne Exp $
+# $Id: tidyaccount,v 1.14 2002/08/29 10:26:13 mebourne Exp $
 
-local this
+local this=""
 if [[ $0 == /* ]]
 then
   this=$0

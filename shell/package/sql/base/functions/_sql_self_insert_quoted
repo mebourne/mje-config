@@ -3,7 +3,7 @@
 # ZLE widget to escape quotes while being entered in an SQL command
 # For use only as a widget with ZLE
 #
-# $Id: _sql_self_insert_quoted,v 1.1 2002/04/19 16:45:39 mebourne Exp $
+# $Id: _sql_self_insert_quoted,v 1.2 2002/08/29 10:26:01 mebourne Exp $
 
 # Don't quote if already quoted
 if [[ $CURSOR -ne 0 && $BUFFER[CURSOR] != \\ ]]
@@ -11,7 +11,8 @@ then
 
   # Extract the command word - first word on line which is not an assignment
   # (doesn't cope with multiple commands etc)
-  local cmd count=0
+  local cmd=""
+  integer count=0
   cmd=${${${(z)LBUFFER}:#*=*}[1]}
 
   # Expand all aliases of the command word. Catch loops

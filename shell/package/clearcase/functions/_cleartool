@@ -5,7 +5,7 @@
 # Completion code for cleartool command
 # Usage: These functions are used by the completion code
 #
-# $Id: _cleartool,v 1.14 2001/08/24 10:25:54 mebourne Exp $
+# $Id: _cleartool,v 1.15 2002/08/29 10:25:41 mebourne Exp $
 
 _cleartool_decode_pname () {
   case $command in
@@ -69,7 +69,7 @@ _cleartool_decode_pname () {
 }
 
 _cleartool_decode_type () {
-  local type=$1
+  local type="$1"
 
   case $type in
     ...)				result="";; # Ignore this here for now (findmerge)
@@ -210,10 +210,10 @@ _cleartool_process_option () {
   local input="$argv[1]"
   #echo "Expression to process for command $command >$input<"
 
-  local brackets=${input//[^\[\{<]}
+  local brackets="${input//[^\[\{<]}"
   if (( !$#brackets ))
   then
-    local alternative nextalternative option
+    local alternative="" nextalternative="" option=""
     for nextalternative in ${(s:|:)input}; do
       while [[ -n "$nextalternative" ]]
       do
@@ -278,13 +278,13 @@ _cleartool_nested () {
   # FIXME: Handle these rather than killing them off
   input=${input/\[,...]}
 
-  local brackets=${input//[^\[\{<]}
+  local brackets="${input//[^\[\{<]}"
   if [[ $input != "$oldinput" && -n $brackets ]]
   then
-    local word buffer level=0
+    local word="" buffer="" level=0
     for word in ${(s: :)input}
     do
-	local brackets=${word//[^\[\{<]}
+	local brackets="${word//[^\[\{<]}"
   
 	if (( !level && $#brackets && $#buffer ))
 	then
@@ -323,8 +323,8 @@ _cleartool_expression () {
 
 _cleartool_read_help () {
   typeset -gHA _cleartool_cmds _cleartool_opts
-  local word command buffer
-  integer  state=0 level=0
+  local word="" command="" buffer=""
+  integer state=0 level=0
   for word in $(_call_program commands cleartool help 2>&1)
   do
     if [[ $word == 'Usage:' || $word == "$command" ]]
@@ -470,7 +470,7 @@ _cleartool_command_names () {
 }
 
 _cleartool_dirs_controlled () {
-  local name
+  local name=""
   local -a dirs
   for name in $(_call_program files cleartool ls -vob_only -short -nxname 2>&1); do
     [[ -d $name ]] && dirs=($dirs $name)
@@ -488,7 +488,7 @@ _cleartool_files_controlled () {
 
 _cleartool_log_names () {
   local -a lognames
-  local name
+  local name=""
   for name in ${(f)"$(_call_program logs cleartool getlog -inquire 2>&1)"}; do
     lognames=($lognames $name[(w)1])
   done

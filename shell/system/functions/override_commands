@@ -4,9 +4,9 @@
 # get XPG4 commands when running on a Sun box. Typically changing the path
 # would break scripts
 #
-# $Id: override_commands,v 1.7 2002/05/17 13:34:58 mebourne Exp $
+# $Id: override_commands,v 1.8 2002/08/29 10:26:11 mebourne Exp $
 
-local good
+local good=""
 local -a bad
 parse_opts -- "$argv[@]" <<'EOF' || return 1
 Description:
@@ -35,10 +35,10 @@ Arguments:
 EOF
 
 # Check all of the executable commands in the good directory
-local goodcmd
+local goodcmd=""
 for goodcmd in $good/*(.xN)
 do
-  local cmd=${goodcmd:t}
+  local cmd="${goodcmd:t}"
 
   # Check that the path of the REAL command is in the evil directories list
   if [[ -n ${(M)bad:#${$(whence -p $cmd):h}} ]]
@@ -53,7 +53,7 @@ do
 	;;
       *command* | *hashed*)
 	# If its a command then add a new simple alias
-	alias $cmd=$goodcmd
+	alias $cmd="$goodcmd"
 	;;
       *)
 	# Shouldn't get here

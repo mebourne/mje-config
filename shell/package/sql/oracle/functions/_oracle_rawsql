@@ -3,9 +3,9 @@
 # Execute a raw SQL command
 # For use only by the SQL packages
 #
-# $Id: _oracle_rawsql,v 1.5 2002/07/24 10:44:11 mebourne Exp $
+# $Id: _oracle_rawsql,v 1.6 2002/08/29 10:26:05 mebourne Exp $
 
-local interface_v
+local interface_v=""
 _sql_getparam interface_v interface native
 if [[ $interface_v == dbi ]]
 then

@@ -3,7 +3,7 @@
 # Handle newly added autoload functions to enable any completion directives at the top
 # Usage: _completion_add_functions <directory> <functions> ...
 #
-# $Id: _completion_add_functions,v 1.1 2001/03/16 13:02:20 mebourne Exp $
+# $Id: _completion_add_functions,v 1.2 2002/08/29 10:25:55 mebourne Exp $
 
 if (( ARGC < 2 ))
 then
@@ -11,12 +11,12 @@ then
   return 1
 fi
 
-local directory=$argv[1];
+local directory="$argv[1]"
 local -a files
 files=($argv[2,-1])
 
 # Iterate over the function files
-local file
+local file=""
 for file in $files
 do
   # Read the top line into an array
@@ -24,7 +24,7 @@ do
   read -rA line < $directory/$file
 
   # Switch based on the first word in the line
-  local tag=$line[1]
+  local tag="$line[1]"
   shift line
   case $tag in
     \#compdef) # Compatible with compdef from compinit

@@ -3,18 +3,18 @@
 # Set up connection to Oracle database
 # Usage: ora <connection-info>
 #
-# $Id: ora,v 1.2 2002/05/28 13:28:34 mebourne Exp $
+# $Id: ora,v 1.3 2002/08/29 10:26:05 mebourne Exp $
 
 local user="$argv[1]"
 
-local server
+local server=""
 if [[ $user == *@* ]]
 then
   server="${user##*@}"
   user=${user%@*}
 fi
 
-local password
+local password=""
 if [[ $user == */* ]]
 then
   password="${user##*/}"

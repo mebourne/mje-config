@@ -3,7 +3,7 @@
 # Command alias setup
 # Written by Martin Ebourne
 #
-# $Id: aliases,v 1.10 2002/03/19 11:13:35 mebourne Exp $
+# $Id: aliases,v 1.11 2002/08/29 10:26:06 mebourne Exp $
 
 alias rm='rm -i'
 alias which-command=which
@@ -22,7 +22,7 @@ alias dop='PATH=$PATH:.'
 # If we've got the GNU ls then enable automatic colour and a few more options, else don't
 if [[ $(ls --version 2>&1) == *Free* ]]
 then
-  local colour
+  local colour=""
   if (( COLOUR ))
   then
     colour='--color=always'

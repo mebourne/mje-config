@@ -4,11 +4,12 @@
 # Part of the Config package
 # Update config directory
 #
-# $Id: cfgupdate,v 1.15 2001/08/29 16:34:57 mebourne Exp $
+# $Id: cfgupdate,v 1.16 2002/08/29 10:25:56 mebourne Exp $
 
 emulate -LR zsh
 
-local base_dir file_desc remove_pattern ignore_pattern remove_derived compile_command
+local base_dir="" file_desc="" remove_pattern="" ignore_pattern=""
+local remove_derived="" compile_command=""
 
 local -A opts
 parse_opts - opts -- "$argv[@]" <<'EOF' || return 1
@@ -81,7 +82,7 @@ fi
 local -a remove_files non_vc_files changed_files unchanged_files
 
 # Iterate through the RCS controlled directories in config
-local dir file leaf name
+local dir="" file="" leaf="" name=""
 for dir in $base_dir/**/RCS(/)
 do
   dir=${dir:h}

@@ -3,7 +3,7 @@
 # Hook for preexec function
 # Usage: _prompt_precmd
 #
-# $Id: _prompt_preexec,v 1.16 2001/08/22 17:21:20 mebourne Exp $
+# $Id: _prompt_preexec,v 1.17 2002/08/29 10:25:59 mebourne Exp $
 
 local command="$1"
 
@@ -11,7 +11,8 @@ local command="$1"
 # Note that the combined line is split into logical rows according to any
 # incorporated newlines, and these are summed up individually. lastrows is the
 # number of physical rows used by the last logical row
-local lastrow lastrows=0 rows=0
+local lastrow=""
+integer lastrows=0 rows=0
 for lastrow in "${(f)${(%%)${PROMPT//[%]\{[^%]#%\}/}}}${(f)command}"
 do
   (( lastrows = 1 + $#lastrow / COLUMNS ))

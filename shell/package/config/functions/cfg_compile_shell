@@ -4,7 +4,7 @@
 # Part of the Config package
 # Compile shell directory
 #
-# $Id: cfg_compile_shell,v 1.7 2001/08/29 16:34:56 mebourne Exp $
+# $Id: cfg_compile_shell,v 1.8 2002/08/29 10:25:56 mebourne Exp $
 
 emulate -LR zsh
 setopt extended_glob
@@ -29,7 +29,7 @@ EOF
 local base_dir="$opts[directory]"
 
 # Compile all the individual shell files - ie. excluding all in functions directories
-local file
+local file=""
 for file in $base_dir/**/^(functions|RCS)/^*.zwc(.) $base_dir/^*.zwc(.)
 do
   # Only compile files if not already compiled or source modified
@@ -41,11 +41,11 @@ do
 done
 
 # Compile all the functions directories such that they have one file each
-local dir
+local dir=""
 local -a files
 for dir in $base_dir/**/functions(/)
 do
-  local zwcfile=$dir.zwc
+  local zwcfile="$dir.zwc"
 
   # Get list of files to be compiled into this directory file. Skip anything
   # with a . in the name because that isn't expected to be a function file

@@ -3,9 +3,9 @@
 # Add the given parameters to the previously set shell variable
 # Usage: colour_addvar [<parameter> ...]
 #
-# $Id: colour_addvar,v 1.2 2001/10/11 12:49:56 mebourne Exp $
+# $Id: colour_addvar,v 1.3 2002/08/29 10:25:52 mebourne Exp $
 
-local value param colour
+local value="" param="" colour=""
 local -a codes
 for param in $argv
 do

@@ -3,9 +3,9 @@
 # Display all available colours
 # Usage: colourdisplay
 #
-# $Id: colourdisplay,v 1.1 2001/05/23 18:06:52 mebourne Exp $
+# $Id: colourdisplay,v 1.2 2002/08/29 10:25:53 mebourne Exp $
 
-local num
+integer num=0
 for num in {0..255}
 do
   echo "${colour_start}38;5;$num${colour_end}This is colour $num"

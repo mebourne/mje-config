@@ -3,9 +3,9 @@
 # ZLE widget to escape quotes in an SQL command line
 # For use only as a widget with ZLE
 #
-# $Id: _sql_quote_line,v 1.2 2002/04/19 16:43:32 mebourne Exp $
+# $Id: _sql_quote_line,v 1.3 2002/08/29 10:26:01 mebourne Exp $
 
-local index quoted=0 escaped=0
+integer index=0 quoted=0 escaped=0
 for (( index = 1 ; index <= $#BUFFER ; index++ ))
 do
   local escape=0

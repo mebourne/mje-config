@@ -3,9 +3,9 @@
 # Setup for Config package
 # Written by Martin Ebourne
 #
-# $Id: setup,v 1.1 2001/05/18 15:45:34 mebourne Exp $
+# $Id: setup,v 1.2 2002/08/29 10:25:55 mebourne Exp $
 
 add_functions_directory package/config/functions
 
 # Default base directory for config files
-typeset -g config_dir=${ZCONFIGDIR:h}
+typeset -g config_dir="${ZCONFIGDIR:h}"

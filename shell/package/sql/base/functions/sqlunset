@@ -3,13 +3,13 @@
 # Unset sql variables
 # Usage: sqlunset <sql-variable> ...
 #
-# $Id: sqlunset,v 1.2 2001/05/31 11:47:18 mebourne Exp $
+# $Id: sqlunset,v 1.3 2002/08/29 10:26:04 mebourne Exp $
 
 eval $_sql_intro
 
 if (( ARGC ))
 then
-  local var
+  local var=""
   for var in $argv
   do
     unset "_sql_parameters[$var]"

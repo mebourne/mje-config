@@ -2,16 +2,16 @@
 # ZSH function file
 # Load a package which is part of the configuration system
 #
-# $Id: package,v 1.11 2001/10/08 13:34:58 mebourne Exp $
+# $Id: package,v 1.12 2002/08/29 10:26:12 mebourne Exp $
 
-local basedir=$ZCONFIGDIR/package
+local basedir="$ZCONFIGDIR/package"
 
 local -a packages
 packages=($basedir/**/setup(N.))
 packages=(${${packages#$basedir/}%/setup})
 
 local -A opts
-local package
+local package=""
 parse_opts - opts -- "$argv[@]" <<'EOF' || return 1
 Description:
 Load a package which is part of the ZSH configuration system
@@ -45,7 +45,7 @@ then
     [[ -n $_package_loaded[(r)$package] ]]
     return
   else
-    local setupfile=$basedir/$package/setup
+    local setupfile="$basedir/$package/setup"
     
     if [[ -z $_package_loaded[(r)$package] ]]
     then
@@ -56,7 +56,7 @@ then
     
 	# Define each package setup file into a function and call that. This gives much more
 	# meaningful output when profiled
-	local fn=_package_${package//\\//_}
+	local fn="_package_${package//\\//_}"
 	function $fn {
 	  . $setupfile
 	}
@@ -76,7 +76,7 @@ else
   if (( opts[long-list] ))
   then
     # Display long list of loaded packages (in order executed)
-    local name
+    local name=""
     for name in $_package_loaded
     do
       echo "package -i $name"

@@ -2,7 +2,7 @@
 # Provide options parsing and help output
 # (C) 2001 Martin Ebourne
 #
-# $Id: parse_opts,v 1.27 2002/05/17 17:15:01 mebourne Exp $
+# $Id: parse_opts,v 1.28 2002/08/29 10:26:12 mebourne Exp $
 
 
 ### Documentation
@@ -1414,7 +1414,7 @@ _parse_opts_handletype() {
     _po_type=$_po_types[$_po_type.base]
   done
 
-  local _po_param="${(Q)_po_type#*=}" _po_value
+  local _po_param="${(Q)_po_type#*=}" _po_value=""
   integer _po_isvalid=1
   case $_po_type in
     switch)
@@ -1607,7 +1607,7 @@ _parse_opts_doarguments() {
     integer _po_max=$_po_params[$_po_argument.maxfrequency]
 
     # Try to grab all the spare arguments
-    integer _po_use
+    integer _po_use=0
     (( _po_use = _po_min + _po_spareargs ))
 
     # Restrict this if that's too many
