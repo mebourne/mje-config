@@ -1,0 +1,17 @@
+# ZSH function file
+# Return the exit status of the previous command. Also report status to stdout
+# Usage: ok
+# Example: ok && <some-command>		- To follow on from the previously typed command
+#
+# $Id: ok,v 1.1 2001/02/13 15:27:10 mebourne Exp $
+
+local ok=$?
+
+if [[ $ok -eq 0 ]]
+then
+  echo ok
+else
+  echo failed
+fi
+
+return $ok
