@@ -1,7 +1,7 @@
 ! .Xdefaults - X resources configuration
 ! Written by Martin Ebourne
 !
-! $Id: Xdefaults,v 1.10 2001/03/08 13:42:58 mebourne Exp $
+! $Id: Xdefaults,v 1.11 2001/03/14 18:31:25 mebourne Exp $
 
 
 !!! XTerm configuration
@@ -31,8 +31,10 @@ XTerm*titleBar:			false
 XTerm*ttyModes:			erase ^h
 XTerm*visualBell:		true
 XTerm*VT100.Translations:	#override\n\
-				<KeyPress>Prior : scroll-back(1,page)\n\
-				<KeyPress>Next : scroll-forw(1,page)
+				Shift <KeyPress> Prior : scroll-back(1,halfpage)\n\
+				Shift <KeyPress> Next : scroll-forw(1,halfpage)\n\
+				<KeyPress> Prior : scroll-back(1,page)\n\
+				<KeyPress> Next : scroll-forw(1,page)
 
 
 !!! Emacs configuration
