@@ -129,4 +129,20 @@ then
   ln -s "$configdir/window/fvwm/fvwm2rc" .fvwm2rc
 fi
 
+
+if ask "Install Gnome files"
+then
+  if [ ! -d .themes ]
+  then
+    echo "Creating .themes"
+    mkdir .themes
+  fi
+  for theme in `cd $configdir/window/gnome/themes; echo *`
+  do
+    backup .themes/$theme
+    echo "Creating .themes/$theme"
+    ln -s "$configdir/window/gnome/themes/$theme" .themes/$theme
+  done
+fi
+
 echo "Install completed"
