@@ -3,7 +3,7 @@
 # Part of the clearcase package
 # Checkin checked out files
 #
-# $Id: cico,v 1.8 2001/08/29 16:34:50 mebourne Exp $
+# $Id: cico,v 1.9 2002/04/25 11:02:26 mebourne Exp $
 
 local -A opts
 parse_opts - opts -- "$argv[@]" <<'EOF' || return 1
@@ -23,9 +23,14 @@ EOF
 local -a files
 files=($(cleartool lscheckout -me -cview -short $opts[recurse]))
 
-echo "Check in all of these files?"
-echo - ${(F)files}
-if read -q
+if [[ -n $files ]]
 then
-  cleartool ci -cq $files
+  echo "Check in all of these files?"
+  echo - ${(F)files}
+  if read -q
+    then
+    cleartool ci -cq $files
+  fi
+else
+  echo "No files checked out."
 fi
