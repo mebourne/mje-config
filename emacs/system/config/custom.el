@@ -1,7 +1,7 @@
 ;; Emacs configuration file
 ;; Customised variables
 ;; Written by Martin Ebourne
-;; $Id: custom.el,v 1.4 2001/05/17 13:35:21 mebourne Exp $
+;; $Id: custom.el,v 1.5 2001/05/22 17:12:45 mebourne Exp $
 
 (setq custom-file (concat install-user-base-dir "/custom.el"))
 
@@ -16,7 +16,7 @@
 
  ;; Stop completing onto object files
  '(completion-ignored-extensions (append completion-ignored-extensions
-					 (list ".d")))
+					 (list ".d" ".zwc")))
 
  ;; Try new indenting
  '(c-tab-always-indent nil)
