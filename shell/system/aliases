@@ -3,7 +3,7 @@
 # Command alias setup
 # Written by Martin Ebourne
 #
-# $Id: aliases,v 1.7 2001/05/01 10:15:33 mebourne Exp $
+# $Id: aliases,v 1.8 2001/07/03 10:08:16 mebourne Exp $
 
 alias rm='rm -i'
 alias which-command=which
@@ -11,6 +11,9 @@ alias mv='nocorrect mv'
 alias cp='nocorrect cp'
 alias mkdir='nocorrect mkdir'
 alias jobs='jobs -l'
+
+# For running faulty programs which require . on PATH. Prefix command with 'dop '
+alias dop='PATH=$PATH:.'
 
 # Only alias more to less if less is present on the system
 [[ $(whence -p less) == /* ]] && alias more=less
