@@ -97,6 +97,10 @@
  '(ange-ftp-default-user "ftp")
  '(ange-ftp-binary-file-name-regexp "")
 
+ ;; Tramp default to ssh /bin/sh and su
+ '(tramp-default-method "sshx")
+ '(tramp-default-method-alist '(("\\`localhost\\'" "\\`root\\'" "su")))
+
  ;; Get the bracket matching to stay on
  '(blink-matching-paren nil)
  '(show-paren-mode t nil (paren))
