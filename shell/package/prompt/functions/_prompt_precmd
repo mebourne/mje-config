@@ -3,15 +3,9 @@
 # Hook for precmd function to handle prompt formatting and displaying
 # Usage: _prompt_precmd
 #
-# $Id: _prompt_precmd 792 2003-09-22 11:47:18Z martin $
+# $Id$
 
-# Null out old strings to get base size
-_prompt_justify=""
-_prompt_pwd=""
-
-# Get padding required for base string
-_prompt_justify=${(l:COLUMNS - ${#${(%%)${prompt_above//[%]\{[^%]#%\}/}}[(f)1]}:)}
-
+_prompt_precmd_trimpwd() {
 # Generate the current directory, losing bits off the front until it fits
 _prompt_pwd=$(print -D - $PWD)
 while (( $#_prompt_pwd > 1 && $#_prompt_pwd > $#_prompt_justify ))
@@ -24,6 +18,17 @@ do
     *)		_prompt_pwd=".";;
   esac
 done
+}
+
+_prompt_precmd() {
+# Null out old strings to get base size
+_prompt_justify=""
+_prompt_pwd=""
+
+# Get padding required for base string
+_prompt_justify=${(l:COLUMNS - ${#${(%%)${prompt_above//[%]\{[^%]#%\}/}}[(f)1]}:)}
+
+_prompt_precmd_trimpwd
 
 # Get the padding required including the current directory
 _prompt_justify="${${_prompt_justify[$#_prompt_pwd,-1]}% }"
@@ -50,3 +55,6 @@ if (( _prompt_wrapmode ))
 then
   echo
 fi
+}
+
+_prompt_precmd "$@"
