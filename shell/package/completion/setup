@@ -3,9 +3,12 @@
 # Setup for completion package
 # Written by Martin Ebourne
 #
-# $Id: setup,v 1.8 2001/08/13 09:30:20 mebourne Exp $
+# $Id: setup,v 1.9 2001/08/13 18:46:27 mebourne Exp $
 
 add_functions_directory package/completion/functions
+
+
+## Starting the completion system
 
 # Give the dumpfile a different name if ZDOTDIR!=HOME
 local dumpfile="${ZDOTDIR:-$HOME}/.zcompdump"
@@ -19,11 +22,16 @@ fi
 autoload -U compinit
 compinit -C -d $dumpfile
 
+# Set up so future added function directories are processed for completions, and ensure all
+# previously added function dirs in the config system are re-processed
+add_to_hook _add_functions_hook '_completion_add_functions "$argv[@]"'
+_completion_add_directories ${(M)fpath:#$ZCONFIGDIR/*}
 
-# These are global settings
+
+## These are global settings
 
 # The default sequence to try for completion
-zstyle ':completion:*' completer _expand _complete _ignored _approximate _prefix
+zstyle ':completion:*' completer _oldlist _complete _ignored _match _approximate _prefix
 
 # Make completion case insensitive
 zstyle ':completion:*' matcher-list '' 'm:{a-zA-Z}={A-Za-z}'
@@ -40,14 +48,17 @@ zstyle ':completion:*:default' list-packed true
 # List each group of completions under separate headings (works with formatting below)
 zstyle ':completion:*' group-name ''
 
-# Remove duplicates from list (for history completion)
-zstyle ':completion:*:history:*' remove-all-dups true
+# Return to last prompt after listing completions
+zstyle ':completion:*:default' last-prompt true
+
+# Use menu selection if entering menu completion
+zstyle ':completion:*:default' menu select
 
 
-# These are modifications to specific completers
+## These are modifications to specific completers
 
-# Set expand to do file wildcards and variable substitutions
-zstyle ':completion:*:expand:*' glob true
+# Set expand to do variable substitutions but not file wildcards
+zstyle ':completion:*:expand:*' glob false
 zstyle ':completion:*:expand:*' substitute true
 
 # Force expansion to insert the expected expansion rather than menu-complete
@@ -65,8 +76,14 @@ zstyle -e ':completion:*:approximate:*' max-errors \
 # separate the real bit from the discarded stuff
 zstyle ':completion:*:prefix:*' add-space true
 
+# Only let match work on full patterns
+zstyle ':completion:*:match:*' match-original only
 
-# These are modifications to particular commands
+# Remove duplicates from list (for history completion)
+zstyle ':completion:*:history:*' remove-all-dups true
+
+
+## These are modifications to particular commands or contexts
 
 # When completing for 'cd' try local directories before attempting to use cdpath
 zstyle ':completion:*:complete:cd:*' tag-order '! path-directories'
@@ -77,13 +94,14 @@ zstyle ':completion:*:complete:-command-:*' tag-order '! path-directories'
 zstyle ':completion:*:*:-subscript-:*' tag-order indexes parameters
 
 
-# These are modifications to particular result sets
+## These are modifications to particular result sets
 
 # Ignore completion functions (until the _ignored completer)
 zstyle ':completion:*:*:*:functions' ignored-patterns '_*'
 
 
-# These give the description format strings. Need the colour package to do this
+## These give the description format strings. Need the colour package to do this
+
 package -i colour
 local temp
 
@@ -106,8 +124,26 @@ zstyle -e ':completion:*:*:*:messages' format reply=\"$temp\"
 # More-style prompt when scrolling completions
 zstyle ':completion:*:default' list-prompt '%S<completions> line %l match %m (%p)%s'
 
+# Auto-describe undocumented parameters
+zstyle ':completion:*:default' auto-describe 'specify: %d'
 
-# Set up so future added function directories are processed for completions, and ensure all
-# previously added function dirs in the config system are re-processed
-add_to_hook _add_functions_hook '_completion_add_functions "$argv[@]"'
-_completion_add_directories ${(M)fpath:#$ZCONFIGDIR/*}
+
+## Add an all-matches widget
+
+# Create the widget as a generic completer to call _all_matches
+zle -C all-matches complete-word _generic
+zstyle ':completion:all-matches:*' completer _all_matches
+
+# Only use current list of matches - don't generate new ones
+zstyle ':completion:all-matches:*' old-matches only
+
+
+## Extra key bindings
+
+# Normal bindings
+bindkey '^Xa' all-matches
+bindkey '^[OP' menu-complete		# F1
+
+# Bindings for menu selection. Need to ensure module is loaded for the keymap
+zmodload -i zsh/complist
+bindkey -M menuselect ' ' accept-and-infer-next-history
