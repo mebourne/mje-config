@@ -3,7 +3,7 @@
 # Generic system-wide setup for interactive use
 # Written by Martin Ebourne
 #
-# $Id: interactive,v 1.4 2001/03/02 15:03:24 mebourne Exp $
+# $Id: interactive,v 1.5 2001/03/02 18:39:14 mebourne Exp $
 
 # Initial config files
 config_if_present system/loadfuncs
@@ -11,7 +11,7 @@ config_if_present system/options
 config_if_present system/aliases
 
 # Prompts
-PROMPT='$USERNAME@%m:$CLEARCASE_VIEW%3c%# '
+PROMPT='$USERNAME@%m:%3c%# '
 RPROMPT='%T'
 
 # Pager to use for stand-alone redirections - ie. < file
@@ -26,10 +26,14 @@ fignore=(.o \~ %)
 # Automatically report time for commands taking longer than a minute
 REPORTTIME=60
 
-# Update XTerm title bar with useful info after each command if we are in an XTerm
+# Check for being in a window (xterm etc). Frilly bits
 if [ "$TERM" = "xterm" -o "$TERM" = "xterm-color" -o "$TERM" = "rxvt"  -o "$TERM" = "vs100" ]
 then
+  # Update XTerm title bar with useful info after each command
   add_to_hook precmd set_xterm_title
+
+  # Really fancy multi-line coloured prompt
+  package prompt
 fi
 
 # Final config files
