@@ -2,7 +2,7 @@
 # Emulate csh setenv for use of simple csh setup files
 # Usage: setenv <name> [<value>]
 #
-# $Id: setenv,v 1.1 2001/03/20 18:29:03 mebourne Exp $
+# $Id: setenv,v 1.2 2001/03/23 11:24:33 mebourne Exp $
 
 if (( ARGC < 1 || ARGC > 2 ))
 then
@@ -10,4 +10,4 @@ then
   return 1
 fi
 
-eval export $argv[1]=\$argv[2]
+eval export $argv[1]="\$argv[2]"
