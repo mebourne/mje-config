@@ -2,9 +2,9 @@
 # Update config directory
 # Usage: configupdate [shell|emacs]
 #
-# $Id: cfgupdate,v 1.6 2001/05/15 09:26:08 mebourne Exp $
+# $Id: cfgupdate,v 1.7 2001/05/17 08:21:53 mebourne Exp $
 
-local base_dir file_desc remove_pattern ignore_pattern
+local base_dir file_desc remove_pattern ignore_pattern remove_derived
 
 case $argv[1] in
   shell|) # This is the default
@@ -12,6 +12,7 @@ case $argv[1] in
     file_desc="ZSH configuration system"
     remove_pattern='*~|\#*\#'
     ignore_pattern=''
+    remove_compiled=''
     ;;
 
   emacs)
@@ -19,6 +20,8 @@ case $argv[1] in
     file_desc="Emacs configuration system"
     remove_pattern='*~|\#*\#'
     ignore_pattern='*.elc|loaddefs.el|startup.el'
+    # Remove corresponding elc files
+    remove_derived='${file}c'
     ;;
 
   *)
@@ -89,7 +92,8 @@ do
       if rlog -rdeleted $file >/dev/null 2>&1
       then
         echo "Deleted  ${file#$base_dir/}"
-	rm -f $file
+	# May also delete related derived (eg. compiled) files
+	rm -f $file ${(e)remove_derived}
       else
 	if rcsdiff -q $file >/dev/null
 	then
