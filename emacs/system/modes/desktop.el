@@ -1,7 +1,7 @@
 ;; Emacs configuration file
 ;; Setup for desktop session saving
 ;; Written by Martin Ebourne
-;; $Id: desktop.el,v 1.2 2001/05/17 13:35:34 mebourne Exp $
+;; $Id: desktop.el,v 1.3 2002/11/25 15:42:17 mebourne Exp $
 
 ;; Session saver
 (cond (window-system
@@ -26,8 +26,16 @@
 			  query-replace-history
 			  read-expression-history
 			  regexp-history
-			  set-variable-value-history 
-			  shell-command-history)
+			  set-variable-value-history
+			  shell-command-history
+			  gud-gdb-history
+			  gud-sdb-history
+			  gud-dbx-history
+			  gud-xdb-history
+			  gud-perldb-history
+			  gud-pdb-history
+			  gud-jdb-history
+			  )
 	      desktop-globals-to-save))
        (add-hook 'kill-emacs-hook
 		 (function (lambda ()
