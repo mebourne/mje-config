@@ -3,12 +3,12 @@
 # Fetch and return the list of columns for the current table
 # For use only by the SQL packages
 #
-# $Id: _oracle_fetchcolumns,v 1.1 2001/08/17 15:17:49 mebourne Exp $
+# $Id: _oracle_fetchcolumns,v 1.2 2002/04/10 08:42:43 mebourne Exp $
 
 local table="$argv[1]"
 
 {
   echo "set pages 0 feed off"
-  echo "select column_name from all_tab_columns"
-  echo "where table_name like '$table' and owner='$_sql_parameters[owner]';"
+  echo "select column_name from user_tab_columns"
+  echo "where table_name like '$table';"
 } | _oracle_rawsql
