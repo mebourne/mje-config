@@ -27,7 +27,7 @@ then
       # '\e]4;255;rgb:eeee/eeee/eeee\x07', otherwise nothing
       stty -echo
       echo -n '\e]4;255;?\x07'
-      while read -k -t 0.2 char
+      while read -k -t 0.5 char
       do
         response="$response$char"
       done
