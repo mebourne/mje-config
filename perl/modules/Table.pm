@@ -18,6 +18,7 @@ require Exporter;
 		&formatTableFields
 		&formatTableHtml
 		&sortByField
+		&convertToTable
 		);
 %EXPORT_TAGS = ( all => \@EXPORT_OK );
 
@@ -187,6 +188,25 @@ sub sortByField {
   }
 
   return @result;
+}
+
+
+### Hash processing
+
+# Convert a hash into an array
+sub convertToTable {
+  my ($hash, @columns) = @_;
+  my @table;
+
+  for my $key (sort(keys(%$hash))) {
+    my $val = $hash->{$key};
+    my @row;
+    for my $col (@columns) {
+      push @row, $val->{$col};
+    }
+    push @table, \@row;
+  }
+  return \@table;
 }
 
 return 1;
