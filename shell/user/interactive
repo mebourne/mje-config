@@ -3,7 +3,7 @@
 # User's own setup for interactive shells. Run after all other setup has been done
 # Written by Martin Ebourne
 #
-# $Id: interactive,v 1.1 2001/02/12 18:13:25 mebourne Exp $
+# $Id: interactive,v 1.2 2001/03/01 19:20:21 mebourne Exp $
 
 # Enable incremental history saving
 package history
@@ -12,25 +12,35 @@ package history
 # Can't just change PATH since that breaks scripts
 if [ -d /usr/xpg4/bin ]
 then
-  for i in /usr/xpg4/bin/*
+  local xpgcmd
+  for xpgcmd in /usr/xpg4/bin/*
   do
-    cmd=${i:t}
+    local cmd=${xpgcmd:t}
 
-    cmdpath=`which $cmd`
-    if [ $cmdpath[(i)gnu] = 0 ]
-    then
-      temp=`alias $cmd`
-      if [ "$temp" = "" ]
-      then
-	    alias $cmd=$i
-      else
-	    # This isn't much fun but we need to edit already existing aliases so we don't lose them
-	    alias $cmd="`echo $temp | /usr/xpg4/bin/sed -e "s:^$cmd=::" \
-							-e "s:^'::" \
-							-e "s:'$::" \
-							-e "s:\\\<$cmd\\\>:$i:g"`"
-      fi
-    fi
+    # Check path of command, ignoring alias definitions etc
+    case $(whence -p $cmd) in
+      /bin/* |\
+      /usr/bin/* |\
+      /usr/ucb/* |\
+      /usr/ccs/bin/*)
+        # Only do anything if command is not already overridden by a useful implementation in
+        # the path. (eg. one in local/bin or gnu/bin would be assumed to be ok)
+        case ${$(whence -w $cmd)[(w)2]} in
+	  alias)
+	    # Edit already existing aliases so we don't lose them
+            alias $cmd="${$(whence $cmd)//$cmd/$xpgcmd}"
+	    ;;
+	  command | hashed)
+	    # If its a command then add a new simple alias
+	    alias $cmd=$xpgcmd
+	    ;;
+	  builtin | function | reserved | none)
+	    # If its a built-in or function or something then don't touch
+	    ;;
+	  *)
+	    # Shouldn't get here
+	    ;;
+	esac
+    esac
   done
-  unset cmd cmdpath temp
 fi
