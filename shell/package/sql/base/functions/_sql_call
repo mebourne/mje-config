@@ -3,22 +3,37 @@
 # Call an implementation function
 # For use only by the SQL packages
 #
-# $Id: _sql_call,v 1.1 2001/02/26 18:37:50 mebourne Exp $
+# $Id: _sql_call,v 1.2 2001/03/23 12:30:49 mebourne Exp $
 
-local command=$1
+local quiet=0 test=0
+case $argv[1] in
+  -q) # Quiet - do not report errors
+    quiet=1
+    shift;;
+  -t) # Test - return 0 if call can be made, non-zero otherwise
+    test=1
+    shift;;
+esac
+
+local command=$argv[1]
 shift
 
 if [[ -z $_sql_parameters[vendor] ]]
 then
-  echo "Error: SQL system not initialised" 1>&2
+  (( !quiet )) && echo "Error: SQL system not initialised" 1>&2
   return 1
 fi
 
 local fn=$_sql_functions[$_sql_parameters[vendor]:$command]
 if [[ -z $fn ]]
 then
-  echo "Internal error: Cannot call $_sql_parameters[vendor]:$command" 1>&2
+  (( !quiet )) && echo "Internal error: Cannot call $_sql_parameters[vendor]:$command" 1>&2
   return 1
+fi
+
+if (( test ))
+then
+  return 0
 fi
 
 $fn "$@"
