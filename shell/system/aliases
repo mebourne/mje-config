@@ -3,13 +3,14 @@
 # Command alias setup
 # Written by Martin Ebourne
 #
-# $Id: aliases,v 1.8 2001/07/03 10:08:16 mebourne Exp $
+# $Id: aliases,v 1.9 2001/08/24 10:26:20 mebourne Exp $
 
 alias rm='rm -i'
 alias which-command=which
 alias mv='nocorrect mv'
 alias cp='nocorrect cp'
 alias mkdir='nocorrect mkdir'
+alias tee='nocorrect tee'
 alias jobs='jobs -l'
 
 # For running faulty programs which require . on PATH. Prefix command with 'dop '
