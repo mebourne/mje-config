@@ -2,7 +2,7 @@
 # ZSH function file
 # Repeatedly print a string
 #
-# $Id: yes,v 1.4 2001/07/31 17:17:43 mebourne Exp $
+# $Id: yes,v 1.5 2001/08/01 08:56:03 mebourne Exp $
 
 local -a args
 args=($argv[*])
@@ -26,7 +26,7 @@ yes [options] [<text> ...]
   -n, --no-newline		Suppress output of automatic newline
 				# [echoopt] = no-newline | n = constant=-n
   -s <seconds>, --sleep=<seconds>
-				As for builtin emulate -R (reset more options to defaults)
+				Pause for number of seconds between each echo
 				# sleep | s = integer
 EOF
 
