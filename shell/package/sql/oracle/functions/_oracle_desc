@@ -3,6 +3,6 @@
 # Describe the given table
 # For use only by the SQL packages
 #
-# $Id: _oracle_desc,v 1.2 2002/04/09 15:14:51 mebourne Exp $
+# $Id: _oracle_desc,v 1.3 2002/04/10 16:00:54 mebourne Exp $
 
-sql desc "$argv[1]"
+sql describe "$argv[1]"
