@@ -1,10 +1,22 @@
+#eval compdef -n _parse_opts siupdate
 # ZSH function file
 # Written by Martin Ebourne
 # Part of the SourceInfo package
 # Update the SourceInfo databases
-# Usage: siupdate
 #
-# $Id: siupdate,v 1.9 2001/05/23 12:22:36 mebourne Exp $
+# $Id: siupdate,v 1.10 2001/08/13 09:31:05 mebourne Exp $
+
+parse_opts -- "$argv[@]" <<'EOF' || return 1
+Description:
+Update the SourceInfo databases.
+
+Usage:
+siupdate [options]
+
+Options:
+  -h, --help			Provide this help
+				# --help | -h
+EOF
 
 if [[ -z $sourceinfo_sourcecode_dirs ]]
 then

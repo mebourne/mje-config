@@ -1,15 +1,27 @@
-#eval compdef -n _files em
+#eval compdef -n _parse_opts em
 # ZSH function file
 # Send files to emacs for editing
-# Usage: em <file> ...
 #
-# $Id: em,v 1.3 2001/05/03 11:20:16 mebourne Exp $
+# $Id: em,v 1.4 2001/08/13 09:31:19 mebourne Exp $
 
-local files
-files=($*)
+local -A opts
+local -a files
+parse_opts - opts -- "$argv[@]" <<'EOF' || return 1
+Description:
+Send files to emacs for editing.
 
-if (( $#files ))
-then
+Usage:
+em [options] <file> ...
+
+Options:
+  -h, --help			Provide this help
+				# --help | -h
+
+Arguments:
+  <file> ...			List of files to edit
+				# files += file : file
+EOF
+
 #  # Loop through files individually rather than sending as one block - that way
 #  # they all end up at the top of the buffer stack in Emacs, not all except one
 #  # being on the bottom
@@ -19,11 +31,7 @@ then
 #    emacsclient --no-wait $file
 #  done
 
-  # For now pass all in one go. Two problems with above, (i) it buggers up
-  # with clearcase files, (ii) it may be responsible for 'too many client'
-  # errors
-  emacsclient --no-wait $files
-else
-  echo "Syntax: em <file> ..." 1>&2
-  return 1
-fi
+# For now pass all in one go. Two problems with above, (i) it buggers up
+# with clearcase files, (ii) it may be responsible for 'too many client'
+# errors
+emacsclient --no-wait $files
