@@ -2,7 +2,7 @@
 # Provide options parsing and help output
 # (C) 2001 Martin Ebourne
 #
-# $Id: parse_opts,v 1.20 2001/08/16 20:04:21 mebourne Exp $
+# $Id: parse_opts,v 1.21 2001/08/17 11:01:24 mebourne Exp $
 
 
 ### Documentation
@@ -18,18 +18,18 @@
 # Some of the main features of this system are:
 #
 # - Easy to use, and configure
-# - Provides support both for options, and normal command line arguments
+# - Fully supports both options and normal command line arguments
 # - Option values and arguments may be type checked
 # - There is an extensible user defined type system, based on inheritence
 # - A range of default types is provided
-# - Completion for Zsh is handled fully automatically from the embedded
-#   descriptions in the help text
+# - Completion for Zsh is handled fully automatically
 # - Automatic error reporting and handling of help displaying
-# - Both standard Unix single character options (which may be grouped, eg. -a
-#   -l or -al), and GNU style long options (eg. --long-list) are supported
+# - Both standard Unix single character options (which may be grouped,
+#   eg. `-a -l' or `-al'), and GNU style long options (eg. --long-list) are
+#   supported
 # - Long options with values are supported with two different formats for the
-#   user's convenience. eg. both --directory=<dir> and --directory <dir> are
-#   valid
+#   user's convenience. eg. both `--directory=<dir>' and `--directory <dir>'
+#   are valid
 # - There is a compatible equivalent module for Perl
 #
 # Please see the example section at the end of this help text to see what the
@@ -177,13 +177,21 @@
 
 # Tag part:
 #
+# This determines where the decoded result is stored.
+#
 # One of:
 #   `[' <key-name> `]'
 # or
 #   <variable-name>
 #
-# Where key-name is the name of the hash key the value will be stored in -
-# using the default `return values' associative array provided to parse_opts.
+# eg.
+#   [name]
+#   an_array
+#   associative_array
+#   associative_array[name]
+#
+# <key-name> is the name of the hash key the value will be stored in - using
+# the default `return values' associative array provided to parse_opts.
 #
 # The alternative of variable-name stores the value directly in the given
 # variable. The variable is expected to be local to the calling program, and
@@ -216,12 +224,19 @@
 
 # Option part:
 #
+# This gives the name of the option or argument, with aliases.
+#
 #   [ `[' <frequency> `] ' ] <option-name> [ ` | ' <option-name> ... ]
 #
-# Where <option-name> gives the name of the option, as it will appear on the
-# command line. eg. `-h' or `--help'. Multiple <option-name>s may be given in
-# order to supply aliases of the same option. Single letter options begin with
-# `-', and may be grouped. Other options are long options and begin with `--'.
+# eg.
+#   --help | -h
+#   [*] --directory | -d
+#   [0,1] filename
+#
+# <option-name> gives the name of the option, as it will appear on the command
+# line. eg. `-h' or `--help'. Multiple <option-name>s may be given in order to
+# supply aliases of the same option. Single letter options begin with `-', and
+# may be grouped. Other options are long options and begin with `--'.
 #
 # If there is no `-' at the start of the option name then this is taken to be
 # an argument definition. Obviously this doesn't appear on the command line,
@@ -262,7 +277,7 @@
 # [0,1]   - The default. Optional - may only occur once or not at all.
 # [*]     - Repeatable. May appear any number of times.
 # [1,1]   - Mandatory. NOT YET CHECKED
-# NB. Min/max values are currently not fully checked for options
+# NOTE: Min/max values are currently not fully checked for options
 #
 # Typical frequencies for arguments are:
 #
@@ -273,31 +288,117 @@
 
 # Type part:
 #
+# This gives the type of value with the option or for the argument, used for
+# validation checking and completion.
+#
 #   [ `? ' ] <type-name> [ `=' <value> ]
 #
-# Where type-name is one of:
-#   switch   - (2) Simple switch. Result will be 1. Default for options
-#   constant - (1) (2) Constant to be assigned. Result will be value given,
-#              with any quotes removed
-#   string   - Takes a parameter with no validation. Default for arguments
-#   values   - (1)
-#   pattern  - (1)
-#   exec     - (1)
-#
-# (1) These types take a value, which must be supplied. Others do not and one
-#     must not be supplied to those.
-# (2) These are for use with options only. They clearly have no useful meaning
-#     for arguments.
+# eg.
+#   string
+#   ? filename
+#   constant=true
+#   values="(value1 value2)"
+#   values=${(k)functions}
 #
 # `?' indicates that validation should not be performed on the option
 # value/argument. The type is still used for options to determine if they take
 # a value, and for completion with both options and arguments.
-
-
+#
+# <type-name> is one of:
+#
+# switch   - (2) Simple switch. Result will be 1. Default for options
+# constant - (1) (2) Constant to be assigned. Result will be <value> given
+# string   - Takes a parameter with no validation. Default for arguments
+# values   - (1) Takes a parameter validated against the supplied <value>
+#            interpreted as some kind of list of values. See below for a more
+#            detailed explanation
+# pattern  - (1) Takes a parameter validated against the supplied <value>
+#            which will be interpreted as a shell glob pattern (with the
+#            extended_glob option set)
+# exec     - (1) Takes a parameter validated by executing the <value>
+#            supplied as a command. The command will be provided with an extra
+#            parameter on the end, which will be the word requiring
+#            validation, and should return success/failure in the usual way
+# OR       - Any user defined type (none of which take a <value>)
+#
+# (1) These types take a value, which must be supplied. Others do not and one
+#     must not be supplied to those. The value will be subject to normal shell
+#     quote removal.
+# (2) These are for use with options only. They clearly have no useful meaning
+#     for arguments.
+#
+# values type:
+#
+# There are three modes of operation for the values type. Remember that quote
+# removal will happen on the <value> before any of the following.
+#
+# If the <value> is enclosed in `(' ... `)' then it is taken as a literal list
+# of valid values. These will be handled according to normal shell word
+# splitting and quote removal rules.
+# eg.
+#   "(avalue another_value 'with space')"
+#
+# If the <value> starts with `$' then it will be taken as a variable
+# substitution which is expected to return an array of results. If there is an
+# `@' expansion flag present then the expansion will automatically take place
+# in double quotes in order that it will have the desired effect.
+# eg.
+#   $array
+#   ${(k)associative_array}
+#   ${(@)=string}
+#
+# In all other cases the value is assumed to be the name of some kind of shell
+# variable, and the behaviour will depend on this variable's type:
+#
+# scalar 	    - Treated as a string and handled according to normal shell
+#        	      word splitting and quote removal rules
+# array             - The array values are used directly
+# associative array - The keys are used for validation. In this case the
+#                     values are also used for the completion - each value is
+#                     treated as the description for its key when passed to
+#                     the completion code
+#
+# eg.
+#   string
+#   associative_descriptions
 
 # Settings part:
 #
+# This gives special settings for the option/argument, and is rarely used.
+#
 #   <setting-name> [ `=' <value> ] [ ` ' ... ]
+#
+# eg.
+#   complete.hidden
+#   excludes="-L --no-list"
+#
+# <setting-name> is the identifier of whatever needs to be set. The value is
+# subject to quote removal, and is then assigned directly to the setting after
+# any of the other assignments have been made. If the value is not given, then
+# `1' will be assigned.
+#
+# Current identifiers in use are:
+#
+# NOTE: These identifiers subject to change for now
+#
+# tag       - (1) This is as for the tag section described above
+# frequency - (1) This is the frequency from the option section described
+#             above, with the surrounding brackets removed
+# type      - (1) This is as the the type section described above
+# help      - (2) This is the description for this option extracted from the
+#             help
+# aliases   - (2) This is a list of aliases of this option - ie. the other
+#             <option-name>s provided in the same specification. It is empty
+#             for arguments
+# excludes  - (2) This is a list of options which are not allowed if this one
+#             is present. For a non-repeatable option, this is usually the same
+#             as aliases. It is currently unused for arguments
+# complete.hidden - If true then the option is not supplied for completion
+#
+# (1) This should not normally be set, since it just duplicates information
+#     already provided
+# (2) This is generated automatically, but it may on rare occasions be useful
+#     to override it manually with a different value
 
 
 
@@ -349,9 +450,11 @@
 
 ### Configuration
 
-# todo
-# optional params
-# extendable excludes
+# To do:
+# excludes properly - options & arguments
+# frequency checking on options
+# optional values for options - or more fully, freqency for same
+# interface to extend excludes
 
 
 # Calls _parse_opts_parsehelp in order to create the built-in types & other
@@ -431,15 +534,7 @@ _parse_opts_showdata() {
     keys=(${${(Mk)data:#$stem.*}#$stem.})
 
     # Work out the width of field padding required
-    integer length=0
-    local key=""
-    for key in $keys
-    do
-      if (( $#key > length ))
-      then
-  	length=$#key
-      fi
-    done
+    integer length=${#${(O)keys//?/?}[1]}
 
     # Print each of the key/value pairs
     local key=""
@@ -576,7 +671,7 @@ _parse_opts_parseoption() {
     do
       if [[ $parameter == *=* ]]
       then
-	value=${parameter#*=}
+	value=${(Q)parameter#*=}
 	parameter=${parameter%%\=*}
       else
 	value=1
@@ -615,7 +710,7 @@ _parse_opts_parsetype() {
   do
     if [[ $parameter == *=* ]]
     then
-      value=${parameter#*=}
+      value=${(Q)parameter#*=}
       parameter=${parameter%%\=*}
     else
       value=1
@@ -841,7 +936,7 @@ _parse_opts_generatecompletiontype() {
   done
 
   # Decode built in type to set anything not done already
-  local _po_param="${_po_type#*=}"
+  local _po_param="${(Q)_po_type#*=}"
   case $_po_type in
     switch|constant=*)
       # No parameters, leave blank
