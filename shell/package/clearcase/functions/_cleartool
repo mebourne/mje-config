@@ -5,7 +5,7 @@
 # Completion code for cleartool command
 # Usage: These functions are used by the completion code
 #
-# $Id: _cleartool,v 1.13 2001/06/08 14:23:40 mebourne Exp $
+# $Id: _cleartool,v 1.14 2001/08/24 10:25:54 mebourne Exp $
 
 _cleartool_decode_pname () {
   case $command in
@@ -322,7 +322,7 @@ _cleartool_expression () {
 }
 
 _cleartool_read_help () {
-  typeset -gA _cleartool_cmds _cleartool_opts
+  typeset -gHA _cleartool_cmds _cleartool_opts
   local word command buffer
   integer  state=0 level=0
   for word in $(_call_program commands cleartool help 2>&1)
@@ -395,7 +395,7 @@ _cleartool_write_cache() {
     {
       echo
       echo "###START### Added by cleartool package"
-      echo "typeset -gA _cleartool_cmds _cleartool_opts"
+      echo "typeset -gHA _cleartool_cmds _cleartool_opts"
       echo "_cleartool_cmds=(" ${(qkv)_cleartool_cmds} ")"
       echo "_cleartool_opts=(" ${(qkv)_cleartool_opts} ")"
       echo "###END### Added by cleartool package"

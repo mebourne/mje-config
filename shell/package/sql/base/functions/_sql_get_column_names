@@ -4,12 +4,12 @@
 # called _sql_columns_<table-name>. Caching is handled automatically
 # For use only by the SQL packages
 #
-# $Id: _sql_get_column_names,v 1.2 2001/05/30 08:15:03 mebourne Exp $
+# $Id: _sql_get_column_names,v 1.3 2001/08/24 10:26:14 mebourne Exp $
 
 local table="$argv[1]"
 
 if [[ -z ${(P)$(echo _sql_columns_$table)} ]]
 then
-  typeset -gaU _sql_columns_$table
+  typeset -gHUa _sql_columns_$table
   eval _sql_columns_$table=\(\$\(_sql_call fetch_columns ${table:-%}\)\)
 fi

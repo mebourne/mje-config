@@ -4,10 +4,10 @@
 # Caching is handled automatically
 # For use only by the SQL packages
 #
-# $Id: _sql_get_proc_names,v 1.1 2001/03/14 15:51:52 mebourne Exp $
+# $Id: _sql_get_proc_names,v 1.2 2001/08/24 10:26:15 mebourne Exp $
 
 if [[ -z $_sql_procs ]]
 then
-  typeset -gaU _sql_procs
+  typeset -gHUa _sql_procs
   _sql_procs=($(_sql_call fetch_procs))
 fi

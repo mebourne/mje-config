@@ -3,13 +3,13 @@
 # Setup for colour package
 # Written by Martin Ebourne
 #
-# $Id: setup,v 1.1 2001/05/09 16:45:03 mebourne Exp $
+# $Id: setup,v 1.2 2001/08/24 10:26:12 mebourne Exp $
 
 add_functions_directory package/colour/functions
 
 # Set up the global data
 typeset -gA colours
-typeset -g colour_start colour_end
+typeset -gH colour_start colour_end
 
 # Only set the colour data if colour is enabled
 if (( COLOUR ))

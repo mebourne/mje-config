@@ -4,10 +4,10 @@
 # Caching is handled automatically
 # For use only by the SQL packages
 #
-# $Id: _sql_get_type_names,v 1.1 2001/03/23 12:30:25 mebourne Exp $
+# $Id: _sql_get_type_names,v 1.2 2001/08/24 10:26:19 mebourne Exp $
 
 if [[ -z $_sql_types ]]
 then
-  typeset -gaU _sql_types
+  typeset -gHUa _sql_types
   _sql_types=($(_sql_call fetch_types))
 fi
