@@ -63,13 +63,15 @@ use vars qw(@drivers);
 @drivers=DBI->available_drivers;
 
 # Parse the command line options & give help
+use vars qw(@statements);
+@statements=();
 my $opts=new MJE::ParseOpts (
 'Description:
 Execute an SQL command against a database and format the output in a fully
 configurable manner.
 
 Usage:
-sqlExecute.pl [options] <sql>
+sqlExecute.pl [options] <sql-statement> ...
 
 Options:
   -c <when>, --colour=<when>	Colour output. One of:
@@ -106,8 +108,10 @@ Options:
 				# --width-auto
 
 Arguments:
-  <sql> ...			SQL statement to execute
-	   			# [sql] += [*] sql : string
+  <sql-statement> ...		SQL statement(s) to execute. If a statement is
+				in parentheses then the row count will not be
+				reported for it
+	   			# @statements += [*] sql : string
 ') || exit 1;
 
 # Note if we are outputting to a tty or a file
@@ -165,54 +169,64 @@ sub main {
 			   RaiseError  => 1 })
       || die "Can't connect to $opts->{driver}: $DBI::errstr";
 
-  # Prepare the statement
-  my $sth = $dbh->prepare($opts->{sql});
+  # Iterate over all of the statements
+  for my $statement (@statements) {
 
-  # Execute the statement
-  $sth->execute;
+    my $report = 1;
+    if($statement=~/^\((.*)\)$/) {
+      $statement=$1;
+      $report=0;
+    }
 
-  # Output results if a select statement
-  if($sth->{NUM_OF_FIELDS}) {
+    # Prepare the statement
+    my $sth = $dbh->prepare($statement);
 
-    # List the columns for the formatter
-    for(my $i=0;$i<$sth->{NUM_OF_FIELDS};$i++) {
+    # Execute the statement
+    $sth->execute;
 
+    # Output results if a select statement
+    if($sth->{NUM_OF_FIELDS}) {
 
-      if(!exists($types{$sth->{TYPE}->[$i]})) {
-	print STDERR "Warning: Unknown database type $sth->{TYPE}->[$i]\n";
+      # List the columns for the formatter
+      for(my $i=0;$i<$sth->{NUM_OF_FIELDS};$i++) {
+
+	if(!exists($types{$sth->{TYPE}->[$i]})) {
+	  print STDERR "Warning: Unknown database type $sth->{TYPE}->[$i]\n";
+	}
+
+	$formatter->addColumn($sth->{NAME}->[$i],
+			      $sth->{PRECISION}->[$i],
+			      $types{$sth->{TYPE}->[$i]});
       }
 
-      $formatter->addColumn($sth->{NAME}->[$i],
-			    $sth->{PRECISION}->[$i],
-			    $types{$sth->{TYPE}->[$i]});
-    }
+      # Write the data to the formatter
+      my $rows=0;
+      while(my @data = $sth->fetchrow_array) {
+	if(exists($opts->{"max-rows"}) && $rows>=$opts->{"max-rows"}) {
+	  last;
+	}
 
-    # Write the data to the formatter
-    my $rows=0;
-    while(my @data = $sth->fetchrow_array) {
-      if(exists($opts->{"max-rows"}) && $rows>=$opts->{"max-rows"}) {
-	last;
+	$formatter->addRow(@data);
+	$rows++;
       }
 
-      $formatter->addRow(@data);
-      $rows++;
+      # Display the table
+      $formatter->display;
+
+      if($report && exists($opts->{count}) && $formatter->getStyleInfo("rowcount")) {
+	print "\n", $rows, " row(s) returned.\n";
+      }
+    } else {
+      # Non-select statement. Simply output row count
+      if($report && exists($opts->{count})) {
+	print $sth->rows, " row(s) affected.\n";
+      }
     }
 
-    # Display the table
-    $formatter->display;
-
-    if(exists($opts->{count}) && $formatter->getStyleInfo("rowcount")) {
-      print "\n", $rows, " row(s) returned.\n";
-    }
-  } else {
-    # Non-select statement. Simply output row count
-    if(exists($opts->{count})) {
-      print $sth->rows, " row(s) affected.\n";
-    }
+    # Tidy up
+    $sth->finish;
   }
 
-  # Tidy up
-  $sth->finish;
   $dbh->commit;
   $dbh->disconnect;
 }
