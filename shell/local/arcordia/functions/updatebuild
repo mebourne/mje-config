@@ -1,12 +1,42 @@
+#eval compdef -n _parse_opts updatebuild
 # ZSH function file
 # Update configspec to current time & rebuild the cashsec system
 # Usage: updatebuild [clean] all|lib|none
 #	 clean	Build from clean
-#	 all	Build libraries and exectables
-#	 lib	Build only libraries
-#	 none	Don't build. Just update configspec
 #
-# $Id: updatebuild,v 1.7 2001/06/13 09:29:43 mebourne Exp $
+#
+#
+#
+# $Id: updatebuild,v 1.8 2001/08/03 16:36:03 mebourne Exp $
+
+local -A what
+what=(
+  none   "Do not build. Just update configspec"
+  lib    "Build only libraries"
+  all    "Build libraries and executables"
+)
+
+local -A opts
+parse_opts - opts -- "$argv[@]" <<'EOF' || return 1
+Description:
+Update configspec to current time & rebuild the cashsec system
+
+Usage:
+updatebuild [options] [clean] <what>
+
+Options:
+  -h, --help			Provide this help
+				# --help | -h
+
+Arguments:
+  clean				Build from clean
+				# [0,1] clean : values=(clean)
+  <what>			What to build. One of:
+				none   Do not build. Just update configspec
+				lib    Build only libraries
+				all    Build libraries and executables
+				# what : values=what
+EOF
 
 local file=$HOME/.configspec
 local time=$(date '+%d-%b.%H:%M')
@@ -25,13 +55,12 @@ if (( ok == 0 ))
 then
   echo "Updated config spec to $time"
 
-  if [[ $argv[1] == clean ]]
+  if [[ -n $opts[clean] ]]
   then
-    shift
-    build clean || return 1
+    build clean || return
   fi
 
-  case $argv[1] in
+  case $opts[what] in
     all)
       build
       ;;
@@ -41,11 +70,6 @@ then
       ;;
 
     none)
-      ;;
-
-    *)
-      echo "Usage: updatebuild [clean] all|lib|none" 1>&2
-      return 1
       ;;
   esac
 fi
