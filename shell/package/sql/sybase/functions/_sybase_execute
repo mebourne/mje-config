@@ -3,21 +3,20 @@
 # Execute the given SQL command
 # For use only by the SQL packages
 #
-# $Id: _sybase_execute,v 1.1 2001/05/29 16:56:05 mebourne Exp $
+# $Id: _sybase_execute,v 1.2 2001/05/31 11:47:38 mebourne Exp $
 
 {
-  if (( $+maxrows ))
+  local maxrows_v
+  _sql_getparam maxrows_v maxrows 0
+  if (( ${maxrows_v:-0} ))
   then
-    echo "set rowcount $maxrows"
-    echo "go"
-  elif (( $+_sql_parameters[maxrows] ))
-  then
-    echo "set rowcount $_sql_parameters[maxrows]"
+    echo "set rowcount $maxrows_v"
     echo "go"
   fi
 
-  if (( $+count && !count
-        || !$+count && $+_sql_parameters[count] && !_sql_parameters[count] ))
+  local count_v
+  _sql_getparam count_v count 1
+  if (( ! ${count_v:-1} ))
   then
     echo "set nocount on"
     echo "go"
