@@ -3,7 +3,7 @@
 # Setup for completion package
 # Written by Martin Ebourne
 #
-# $Id: setup,v 1.12 2001/10/08 13:34:07 mebourne Exp $
+# $Id: setup,v 1.13 2001/10/11 12:39:30 mebourne Exp $
 
 add_functions_directory package/completion/functions
 
@@ -92,6 +92,9 @@ zstyle ':completion:*:history:*' remove-all-dups true
 # Stop approximate and match from breaking in to unexpected menu completion
 zstyle ':completion::approximate*:*' insert-unambiguous always
 zstyle ':completion::match:*' insert-unambiguous pattern
+
+# Stop _history_complete_word from listing the matches
+zstyle ':completion:history-words:*' list false
 
 
 ## These are modifications to particular commands or contexts
