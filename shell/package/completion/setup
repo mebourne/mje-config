@@ -3,7 +3,7 @@
 # Setup for completion package
 # Written by Martin Ebourne
 #
-# $Id: setup,v 1.15 2002/04/25 11:46:46 mebourne Exp $
+# $Id: setup,v 1.16 2002/04/25 12:09:49 mebourne Exp $
 
 add_functions_directory package/completion/functions
 
@@ -119,7 +119,7 @@ zstyle ':completion:*:*:*:functions' ignored-patterns '_*'
 ## this
 
 package -i colour
-local temp
+local temp=""
 
 # Describe the group of completions
 colour_setvar temp [black,bg_cyan] '%d:' [normal]
@@ -156,29 +156,6 @@ zstyle ':completion:all-matches:*' old-matches only
 
 ## Add a widget to give the down arrow two functions - down or menu complete,
 ## as appropriate
-
-typeset -g _completion_down_widget="${$(bindkey '^[[B')[(w)2]}"
-
-# Need a completion widget as a helper to determine if we are completing or
-# not. Return value isn't propogated by zle so use var
-_completion_is_completing() {
-  _completing=$compstate[old_list]
-  compstate[old_list]=keep
-}
-
-# Need a normal widget to be able to call the down function
-_completion_menu_or_down() {
-  local _completing=""
-  zle completion-is-completing
-  if [[ $_completing == (yes|shown) ]]
-  then
-    zle menu-complete
-  else
-    zle $_completion_down_widget
-  fi
-}
-
-# Map the widgets
 zle -C completion-is-completing complete-word _completion_is_completing
 zle -N completion-menu-or-down _completion_menu_or_down
 
@@ -187,6 +164,10 @@ zle -N completion-menu-or-down _completion_menu_or_down
 
 # Normal bindings
 bindkey '^Xa' all-matches
+
+# Before assigning completion-menu-or-down to down arrow need to find out what
+# previous down arrow did
+typeset -g _completion_down_widget="${$(bindkey '^[[B')[(w)2]}"
 bindkey "^[[B" completion-menu-or-down
 
 # Bindings for menu selection. Need to ensure module is loaded for the keymap
