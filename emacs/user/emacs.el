@@ -1,7 +1,7 @@
 ;; Emacs configuration file
 ;; .emacs.el, main user startup file
 ;; Written by Martin Ebourne
-;; $Id: emacs.el,v 1.4 2002/03/18 15:13:09 mebourne Exp $
+;; $Id: emacs.el,v 1.5 2002/03/26 17:27:23 mebourne Exp $
 
 (load "~/config/emacs/startup")
 (load custom-file)
@@ -19,15 +19,6 @@
 
 ;; Keep cursor on middle line
 (setq constrain-percentage 50)
-
-;; Set up mail addresses
-(setq mail-user-agent 'message-user-agent)
-(setq mail-host-address "arcordia.com")
-(setq user-mail-address "ebourne_martin_j@arcordia.com")
-(setq message-signature
-      "Martin Ebourne
-ebourne_martin_j@arcordia.com
-")
 
 ;; Can't set in X defaults since spacing goes all wrong
 ;(set-frame-font "7x13")
