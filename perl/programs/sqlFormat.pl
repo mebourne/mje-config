@@ -133,7 +133,7 @@ my $opts=new MJE::ParseOpts (
 Format SQL output to make it easier to read.
 
 Usage:
-sqlformat.pl [options] <style>
+sqlformat.pl [options]
 
 Options:
   -c <when>, --colour=<when>	Colour output. One of:
@@ -141,22 +141,25 @@ Options:
 				off	No colour
 				auto	Only colour if outputting to tty
 				on	Always colour (if applicable)
+  --column-width=<count>	Specify the maximum column width to be shown
+				# --column-width : posinteger
+  --count			Display the affected row count
+				# --count
   -h, --help			Provide this help
 				# --help | -h
+  -r <rows>, --max-rows=<rows>	Specify the maximum number of rows to retrieve
+				# --max-rows | -r : posinteger
+  -s <style>, --style=<style>	The style of formatting to perform. One of:
+'.$stylesSummary.'		# --style | -s : values=%stylesHelp
   -w <columns>, --width=<columns>
 				Specify the terminal width in characters
 				# --width | -w : posinteger
   --width-auto			With --width, only apply if output to tty
 				# --width-auto
-
-Arguments:
-  <style>			The style of formatting to perform. One of:
-'.$stylesSummary.'##
-	   			# style : values=%stylesHelp
 ') || exit 1;
 
 # Get the user selected style
-my $style=$styles{$opts->{style}};
+my $style=$styles{exists($opts->{style}) ? $opts->{style} : "none"};
 
 # Expand the selected style to include all inherited settings from its base styles
 for(my $extends=exists($style->{extend}) ? $styles{$style->{extend}} : undef;
