@@ -1,0 +1,8 @@
+#eval compdef -n _files lpp
+# ZSH function file
+# Print text files after converting to postscript
+# Usage: lpp [<file> ...]
+#
+# $Id: lpp,v 1.1 2001/05/02 12:14:21 mebourne Exp $
+
+a2ps -F8 -ns -p -nP -t8 "$argv[@]" | lp -onobanner
