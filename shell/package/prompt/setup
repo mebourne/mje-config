@@ -3,7 +3,7 @@
 # Setup for prompt package
 # Written by Martin Ebourne
 #
-# $Id: setup,v 1.8 2001/04/23 08:43:53 mebourne Exp $
+# $Id: setup,v 1.9 2001/04/26 11:14:14 mebourne Exp $
 
 add_functions_directory package/prompt/functions
 
@@ -18,8 +18,9 @@ prompt_colour_end="m"
 # These are very dark
 prompt_colours=( dark_red	"38;5;130"
 		 dark_green	"38;5;28"
+		 dark_magenta	"38;5;132"
 		 dark_yellow	"38;5;142"
-		 dark_blue	"38;5;73"
+		 dark_cyan	"38;5;73"
 		 grey		"38;5;243"
 		 white		"38;5;15"
 		 normal		"00"
@@ -29,8 +30,9 @@ prompt_colours=( dark_red	"38;5;130"
 # These aren't very dark
 prompt_colours=( dark_red	"38;5;214"
 		 dark_green	"38;5;2"
+		 dark_magenta	"38;5;13"
 		 dark_yellow	"38;5;3"
-		 dark_blue	"38;5;6"
+		 dark_cyan	"38;5;6"
 		 grey		"38;5;247"
 		 white		"38;5;15"
 		 normal		"00"
@@ -40,8 +42,9 @@ prompt_colours=( dark_red	"38;5;214"
 # These are inbetween
 prompt_colours=( dark_red	"38;5;172"
 		 dark_green	"38;5;34"
+		 dark_magenta	"38;5;176"
 		 dark_yellow	"38;5;184"
-		 dark_blue	"38;5;80"
+		 dark_cyan	"38;5;80"
 		 grey		"38;5;243"
 		 white		"38;5;15"
 		 normal		"00"
@@ -82,8 +85,9 @@ if (( SHLVL > 2 ))
 then
   add_to_prompt {grey} '  #$[SHLVL-2]'
 fi
+add_to_prompt {dark_magenta} '${_sql_prompt:+  $_sql_prompt}'
 add_to_prompt {dark_yellow} '${CLEARCASE_VIEW:+  $CLEARCASE_VIEW}'
-add_to_prompt {dark_blue} '  $_prompt_pwd'
+add_to_prompt {dark_cyan} '  $_prompt_pwd'
 add_to_prompt '$_prompt_justify'
 add_to_prompt {grey} '  %D{%a %f %b %Y %H:%M:%S}' {white}
 

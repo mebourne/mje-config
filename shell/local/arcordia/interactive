@@ -4,7 +4,7 @@
 # done, but immediately before the user specific files
 # Written by Martin Ebourne
 #
-# $Id: interactive,v 1.13 2001/04/24 14:30:55 mebourne Exp $
+# $Id: interactive,v 1.14 2001/04/26 11:14:05 mebourne Exp $
 
 # Arcordia settings
 
@@ -68,6 +68,10 @@ then
   [[ -n $ZCONFIGDEBUG ]] && echo "Loading config file .zshdb"
   . $HOME/.zshdb
 fi
+
+# Show SQL settings in prompt
+add_to_hook sqlset _sql_prompt_update
+_sql_prompt_update
 
 # Check quota once per day (takes too long to do each time)
 if [[ ! -f $HOME/.quota || -n $(find $HOME/.quota -ctime +1) ]]
