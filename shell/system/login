@@ -3,7 +3,7 @@
 # Generic system-wide setup for login shells. Primarily to set environment vars just once
 # Written by Martin Ebourne
 #
-# $Id: login,v 1.8 2001/08/01 10:28:49 mebourne Exp $
+# $Id: login,v 1.9 2001/08/09 09:49:03 mebourne Exp $
 
 # Remove . from PATH since it is the work of the devil
 path=(${path:#.})
@@ -79,3 +79,11 @@ LS_COLORS=$LS_COLORS':*~=38;5;245:*.flc=38;5;245'
 #LS_COLORS=$LS_COLORS':#*#=38;5;245:.#*=38;5;245'
 
 export LS_COLORS
+
+# Set paths for Perl config if it can be found
+local perldir="${ZCONFIGDIR:h}/perl"
+if [[ -d $perldir ]]
+then
+  path=($perldir/programs $path)
+  perllib=($perldir/lib $perllib)
+fi
