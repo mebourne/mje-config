@@ -3,7 +3,7 @@
 # Setup for completion package
 # Written by Martin Ebourne
 #
-# $Id: setup,v 1.11 2001/08/14 16:56:16 mebourne Exp $
+# $Id: setup,v 1.12 2001/10/08 13:34:07 mebourne Exp $
 
 add_functions_directory package/completion/functions
 
@@ -57,6 +57,9 @@ zstyle ':completion:*:default' last-prompt true
 # Use menu selection if entering menu completion
 zstyle ':completion:*:default' menu select
 
+# Description separator for listing options
+zstyle ':completion:*' list-separator ':'
+
 
 ## These are modifications to specific completers
 
@@ -94,8 +97,8 @@ zstyle ':completion::match:*' insert-unambiguous pattern
 ## These are modifications to particular commands or contexts
 
 # When completing for 'cd' try local directories before attempting to use
-# cdpath
-zstyle ':completion:*:complete:cd:*' tag-order '! path-directories'
+# cdpath/cdablevars/etc
+zstyle ':completion:*:complete:cd:*' tag-order local-directories
 # Same for commands. Doesn't work
 zstyle ':completion:*:complete:-command-:*' tag-order '! path-directories'
 
@@ -135,7 +138,7 @@ zstyle -e ':completion:*:*:*:messages' format reply=\"$temp\"
 zstyle ':completion:*:default' list-prompt '%S<completions> line %l match %m (%p)%s'
 
 # Auto-describe undocumented parameters
-zstyle ':completion:*:default' auto-describe 'specify: %d'
+zstyle ':completion:*:default' auto-description 'specify: %d'
 
 
 ## Add an all-matches widget
