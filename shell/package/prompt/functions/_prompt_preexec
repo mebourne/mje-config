@@ -3,7 +3,7 @@
 # Hook for preexec function
 # Usage: _prompt_precmd
 #
-# $Id: _prompt_preexec,v 1.4 2001/03/08 17:15:51 mebourne Exp $
+# $Id: _prompt_preexec,v 1.5 2001/03/08 17:52:20 mebourne Exp $
 
 local command="$1"
 
@@ -14,7 +14,7 @@ local rows
 # Move up the required number of rows to get to the start of the command line
 repeat $rows
 do
-  echo -n "\e[A"
+  echotc up
 done
 
 
