@@ -3,13 +3,13 @@
 # Execute an SQL command
 # Usage: sql <sql-command> ...
 #
-# $Id: sql,v 1.8 2002/05/28 13:27:28 mebourne Exp $
+# $Id: sql,v 1.9 2002/05/28 15:37:21 mebourne Exp $
 
 eval $_sql_intro
 
 if (( ARGC ))
 then
-  local format_v colour_v formatopts formatcmd interface_v
+  local format_v colour_v formatopts formatcmd maxrows_v truncate_v count_v interface_v
 
   _sql_getparam format_v format none
   formatopts="--style=$format_v"
@@ -18,6 +18,24 @@ then
     _sql_getparam colour_v colour off
 
     formatopts="$formatopts --colour=$colour_v --width=$COLUMNS --width-auto"
+
+    _sql_getparam maxrows_v maxrows 0
+    if (( ${maxrows_v:-0} ))
+    then
+      formatopts="$formatopts --max-rows=$maxrows_v"
+    fi
+
+    _sql_getparam truncate_v truncate 0
+    if (( ${truncate_v:-0} ))
+    then
+      formatopts="$formatopts --column-width=$truncate_v"
+    fi
+
+    _sql_getparam count_v count 1
+    if (( ${count_v:-1} ))
+    then
+      formatopts="$formatopts --count"
+    fi
 
     formatcmd="| $_sql_formatprogram $formatopts"
   fi
