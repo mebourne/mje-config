@@ -3,14 +3,14 @@
 # Hook for precmd function to handle prompt formatting and displaying
 # Usage: _prompt_precmd
 #
-# $Id: _prompt_precmd,v 1.9 2001/08/17 16:47:35 mebourne Exp $
+# $Id: _prompt_precmd,v 1.10 2001/08/22 17:21:46 mebourne Exp $
 
 # Null out old strings to get base size
 _prompt_justify=""
 _prompt_pwd=""
 
 # Get padding required for base string
-_prompt_justify=${(l:COLUMNS - ${#${(%%)${prompt_above//[%]\{[^%]#%\}/}}[(f)1]}:::::)}
+_prompt_justify=${(l:COLUMNS - ${#${(%%)${prompt_above//[%]\{[^%]#%\}/}}[(f)1]}:)}
 
 # Generate the current directory, losing bits off the front until it fits
 _prompt_pwd=$(print -D - $PWD)
@@ -37,7 +37,7 @@ fi
 # Display the prompt_eol and follow it up with spaces to just less than
 # COLUMNS characters in total
 print -nP - $prompt_eol
-echo -n "${(l:COLUMNS - ${#${(%%)${prompt_eol//[%]\{[^%]#%\}/}}}:::::)}"
+echo -n "${(l:COLUMNS - ${#${(%%)${prompt_eol//[%]\{[^%]#%\}/}}}:)}"
 
 # Force newline
 echotc cr

@@ -3,7 +3,7 @@
 # Hook for preexec function
 # Usage: _prompt_precmd
 #
-# $Id: _prompt_preexec,v 1.15 2001/08/21 13:40:48 mebourne Exp $
+# $Id: _prompt_preexec,v 1.16 2001/08/22 17:21:20 mebourne Exp $
 
 local command="$1"
 
@@ -27,7 +27,7 @@ command=${command//$'\n'/$termcap[ce]$'\n'}
 ## Redraw the command line
 
 # Move up the required number of rows to get to the start of the command line
-echo -n - "${${(l:rows:::::)}// /$termcap[up]}"
+echo -n - "${${(l:rows:)}// /$termcap[up]}"
 
 # First the left prompt
 echotc cr
@@ -44,11 +44,11 @@ echo -n - "$colour_start$colours[normal]$colour_end"
 integer gap=$(( COLUMNS * lastrows - $#lastrow - ${#${(%%)${prompt_right//[%]\{[^%]#%\}/}}} ))
 if (( gap > 0 ))
 then
-  echo -n - "${(l:gap:::::)}"
+  echo -n - "${(l:gap:)}"
 else
   echotc ce
   echo
-  echo -n - "${(l:COLUMNS - ${#${(%%)${prompt_right//[%]\{[^%]#%\}/}}}:::::)}"  
+  echo -n - "${(l:COLUMNS - ${#${(%%)${prompt_right//[%]\{[^%]#%\}/}}}:)}"  
 fi
 
 # Then the right prompt
