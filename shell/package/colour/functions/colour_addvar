@@ -3,18 +3,18 @@
 # Add the given parameters to the previously set shell variable
 # Usage: colour_addvar [<parameter> ...]
 #
-# $Id: colour_addvar,v 1.1 2001/05/09 16:45:03 mebourne Exp $
+# $Id: colour_addvar,v 1.2 2001/10/11 12:49:56 mebourne Exp $
 
 local value param colour
 local -a codes
 for param in $argv
 do
   case $param in
-    \{*\})
+    \[*\])
       if (( COLOUR ))
       then
 	codes=()
-	for colour in ${(s:,:)${param#\{}%\}}
+	for colour in ${(s:,:)${param#\[}%\]}
 	do
 	  codes[$#codes+1]="\$colours[$colour]"
 	done

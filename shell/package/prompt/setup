@@ -3,7 +3,7 @@
 # Setup for prompt package
 # Written by Martin Ebourne
 #
-# $Id: setup,v 1.15 2001/10/01 12:51:13 mebourne Exp $
+# $Id: setup,v 1.16 2001/10/11 12:51:03 mebourne Exp $
 
 add_functions_directory package/prompt/functions
 
@@ -38,36 +38,36 @@ typeset -g prompt_above prompt_right prompt_eol
 
 # Configure the above line prompt
 colour_setvar prompt_above
-colour_addvar {dark_red} '%$COLUMNS>>%n' {grey} '@' {dark_green} '%m'
+colour_addvar [dark_red] '%$COLUMNS>>%n' [grey] '@' [dark_green] '%m'
 if (( SHLVL > 2 ))
 then
-  colour_addvar {grey} '  #$[SHLVL-2]'
+  colour_addvar [grey] '  #$[SHLVL-2]'
 fi
-colour_addvar {dark_red} '${${_prompt_retcode:#0}:+  [$_prompt_retcode${signals[$_prompt_retcode-127]:+ $signals[$_prompt_retcode-127]}]}'
-colour_addvar {dark_red} '${jobstates:+  ${(AA)_prompt_jobs::=}${${(e)${(@j:, :)${(@)jobstates%%:*}/(#b)(?*)/_prompt_jobs[$match[1]]++}/(#b)(?*)/\$(($match[1]))}:#*}${(@kv)_prompt_jobs:/(#b)(???)[a-z]*/$match[1]}}'
-colour_addvar {dark_magenta} '${_sql_prompt:+  $_sql_prompt}'
-colour_addvar {dark_yellow} '${CLEARCASE_VIEW:+  $CLEARCASE_VIEW}'
-colour_addvar {dark_cyan} '  $_prompt_pwd'
+colour_addvar [dark_red] '${${_prompt_retcode:#0}:+  [$_prompt_retcode${signals[$_prompt_retcode-127]:+ $signals[$_prompt_retcode-127]}]}'
+colour_addvar [dark_red] '${jobstates:+  ${(AA)_prompt_jobs::=}${${(e)${(@j:, :)${(@)jobstates%%:*}/(#b)(?*)/_prompt_jobs[$match[1]]++}/(#b)(?*)/\$(($match[1]))}:#*}${(@kv)_prompt_jobs:/(#b)(???)[a-z]*/$match[1]}}'
+colour_addvar [dark_magenta] '${_sql_prompt:+  $_sql_prompt}'
+colour_addvar [dark_yellow] '${CLEARCASE_VIEW:+  $CLEARCASE_VIEW}'
+colour_addvar [dark_cyan] '  $_prompt_pwd'
 colour_addvar '$_prompt_justify'
-colour_addvar {grey} '  %D{%a %f %b %Y %H:%M:%S}' {white}
+colour_addvar [grey] '  %D{%a %f %b %Y %H:%M:%S}' [white]
 
 # Configure the left hand prompt
-colour_setvar PROMPT {bold} '%# ' {normal}
+colour_setvar PROMPT [bold] '%# ' [normal]
 
 # Configure our special right hand prompt which is printed when the command has been entered
-colour_setvar prompt_right {grey} '%D{%a %f %b %Y %H:%M:%S}' {white}
+colour_setvar prompt_right [grey] '%D{%a %f %b %Y %H:%M:%S}' [white]
 
 # Disable the standard ZSH right hand prompt
 colour_setvar RPROMPT
 
 # Configure the secondary prompt
-colour_setvar PROMPT2 {bold} '%_> ' {normal}
+colour_setvar PROMPT2 [bold] '%_> ' [normal]
 
 # Configure the prompt used for execution tracing (set -x). Includes timestamp & seconds for
 # profiling
 colour_setvar PROMPT4
-colour_addvar {grey} ': ' {dark_green} '%N' {grey} ':' {dark_yellow} '%i'
-colour_addvar {grey} ' %D{%H:%M:%S} {$SECONDS} ; ' {white}
+colour_addvar [grey] ': ' [dark_green] '%N' [grey] ':' [dark_yellow] '%i'
+colour_addvar [grey] ' %D{%H:%M:%S} {$SECONDS} ; ' [white]
 
 # Configure our end of line marker string
-colour_setvar prompt_eol {red} '$' {white}
+colour_setvar prompt_eol [red] '$' [white]

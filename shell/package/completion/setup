@@ -3,7 +3,7 @@
 # Setup for completion package
 # Written by Martin Ebourne
 #
-# $Id: setup,v 1.13 2001/10/11 12:39:30 mebourne Exp $
+# $Id: setup,v 1.14 2001/10/11 12:51:01 mebourne Exp $
 
 add_functions_directory package/completion/functions
 
@@ -122,19 +122,19 @@ package -i colour
 local temp
 
 # Describe the group of completions
-colour_setvar temp '{black,bg_cyan}' '%d:' '{normal}'
+colour_setvar temp [black,bg_cyan] '%d:' [normal]
 zstyle -e ':completion:*:*:*:descriptions' format reply=\"$temp\"
 
 # Give info on errors when corrected
-colour_setvar temp '{black,bg_cyan}' '%d (errors: %e):' '{normal}'
+colour_setvar temp [black,bg_cyan] '%d (errors: %e):' [normal]
 zstyle -e ':completion:*:*:*:corrections' format reply=\"$temp\"
 
 # Notify if no matches
-colour_setvar temp '{black,bg_red}' 'No matches for: %d' '{normal}'
+colour_setvar temp [black,bg_red] 'No matches for: %d' [normal]
 zstyle -e ':completion:*:*:*:warnings' format reply=\"$temp\"
 
 # Displaying miscellaneous messages
-colour_setvar temp '{black,bg_magenta}' '%d' '{normal}'
+colour_setvar temp [black,bg_magenta] '%d' [normal]
 zstyle -e ':completion:*:*:*:messages' format reply=\"$temp\"
 
 # More-style prompt when scrolling completions
