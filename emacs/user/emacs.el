@@ -1,13 +1,10 @@
 ;; Emacs configuration file
 ;; .emacs.el, main user startup file
 ;; Written by Martin Ebourne
-;; $Id: emacs.el,v 1.1 2001/05/11 17:31:38 mebourne Exp $
+;; $Id: emacs.el,v 1.2 2001/05/17 13:38:21 mebourne Exp $
 
 (load "~/config/emacs/startup")
 (load custom-file)
-(if (and (not secondary)
-	 window-system)
-    (desktop-read))
 
 ;; Enable useful commands which are disabled by default
 (put 'eval-expression 'disabled nil)
@@ -28,3 +25,6 @@
       "Martin Ebourne
 ebourne_martin_j@arcordia.com
 ")
+
+;; Can't set in X defaults since spacing goes all wrong
+(set-frame-font "7x13")
