@@ -4,7 +4,7 @@
 # done, but immediately before the user specific files
 # Written by Martin Ebourne
 #
-# $Id: login,v 1.7 2002/05/17 10:31:56 mebourne Exp $
+# $Id: login,v 1.8 2002/05/20 08:59:17 mebourne Exp $
 
 # CSFB settings
 
@@ -30,10 +30,12 @@ manpath=($manpath $FOD/develop/man)
 case $(uname -r) in
   5.7)
     export SUN_CC_DIR=/sw/SUNWspro-5.0
+    export LM_LICENSE_FILE=/sw/faoSUNWspro/license_dir/licenses_combined
     export RELEASE_ROOT=/vobs/release/solaris2.7-sunpro5
     ;;
   5.8)
     export SUN_CC_DIR=/sw/SUNWspro-5.3
+    export LM_LICENSE_FILE=/sw/SUNWspro-5.3/license_dir/Forte-C-Enterp-Ed-6SPARC-6
     export RELEASE_ROOT=/vobs/release/solaris2.8-sunpro5.3
     ;;
   *) echo "Unrecognised OS version $(uname -r) in shell/local/csfb/login" 1>&2
@@ -41,7 +43,6 @@ case $(uname -r) in
 esac
 
 # Sun workshop
-export LM_LICENSE_FILE=/sw/faoSUNWspro/license_dir/licenses_combined
 path=($path $SUN_CC_DIR/bin)
 manpath=($manpath $SUN_CC_DIR/man)
 
@@ -52,6 +53,10 @@ export ORACLE_SID=SUNSYS
 export TNS_ADMIN=$ORACLE_HOME
 path=($path ${ORAWEB_HOME}/bin ${ORACLE_HOME}/bin)
 ld_library_path=($ld_library_path ${ORACLE_HOME}/lib)
+
+# Purify
+path=($path /sw/purify/purifyplus.2002.05.00/releases/purify.sol.2002.05.00)
+#ld_library_path=($ld_library_path /sw/purify/purifyplus.2002.05.00/releases/purify.sol.2002.05.00/lib64)
 
 # Other comands
 path=($path /usr/ccs/bin)
