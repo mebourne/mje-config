@@ -5,7 +5,7 @@
 # Completion code for sql command
 # Usage: These functions are used by the completion code
 #
-# $Id: _sql,v 1.5 2001/03/23 12:00:02 mebourne Exp $
+# $Id: _sql,v 1.6 2001/06/08 15:11:28 mebourne Exp $
 
 _sql () {
   local -A tables
@@ -103,7 +103,18 @@ _sql () {
     191)	_wanted sql expl 'SQL reserved words' compadd by && ret=0;;
     192)	_wanted sql expl 'SQL reserved words' compadd by && ret=0;;
     2*|3*|4*|5*)
-		_sql_complete_column_names $tables && ret=0;;
+		if [[ $PREFIX == *.* ]]
+		then
+		  local tablealias="${PREFIX%%.*}"
+		  if (( $+tables[$tablealias] ))
+		  then
+		    _sql_complete_column_names -p $tablealias $tables[$tablealias] && ret=0
+		  fi
+		else
+		  _wanted table-alias expl 'table aliases' compadd -S. ${(k)tables} && ret=0
+		  _sql_complete_column_names $tables && ret=0
+	        fi
+		;;
   esac
 
   return $ret

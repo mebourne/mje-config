@@ -3,7 +3,14 @@
 # Complete on the column names from the given list of tables
 # For use only by the SQL packages
 #
-# $Id: _sql_complete_column_names,v 1.2 2001/05/30 08:13:43 mebourne Exp $
+# $Id: _sql_complete_column_names,v 1.3 2001/06/08 15:11:54 mebourne Exp $
+
+local prefix=""
+if [[ $argv[1] == -p ]]
+then
+  prefix="$argv[2]."
+  shift 2
+fi
 
 local -aU tables
 tables=($argv[*])
@@ -14,9 +21,11 @@ then
   for table in $tables
   do
     _sql_get_column_names $table
-    _wanted columns expl 'database columns' compadd -a _sql_columns_$table
+    _wanted columns-$table expl "database columns for $table" \
+      compadd ${prefix:+-p$prefix} -a _sql_columns_$table
   done
 else
   _sql_get_column_names
-  _wanted columns expl 'database columns' compadd -a _sql_columns_
+  _wanted all-columns expl 'all database columns' \
+    compadd ${prefix:+-p$prefix} -a _sql_columns_
 fi
