@@ -1,71 +1,78 @@
 ! .Xdefaults - X resources configuration
 ! Written by Martin Ebourne
 !
-! $Id: Xdefaults,v 1.5 2000/12/11 14:42:28 mebourne Exp $
+! $Id: Xdefaults,v 1.6 2001/02/28 16:15:23 mebourne Exp $
 
-Mwm*keyboardFocusPolicy:		Pointer
-Mwm*clientAutoPlace: 			True
-Mwm*focusAutoRaise: 			false
-Mwm*IconPlacement: 				left bottom
-!Mwm*UseIconBox: 				True
-!Mwm*iconbox*ClientDecoration: 	-title
-Mwm*shadowThickness: 			3
-Mwm*ButtonWidth: 				20
-Mwm*FrameBorderWidth:			6
-Mwm*background:  				#7c8498
-Mwm*foreground: 				#fce089
-Mwm*activeForeground: 			white
-Mwm*activeBackground: 			blueviolet
-Mwm*info*ClientDecoration:	 	-menu
-Mwm*xload*ClientDecoration: 	-menu
-Mwm*xclock*ClientDecoration: 	-title
 
-! xterm configurations
-! xterm*geometry:       82x32
-! xterm*font:           Rom10
-! xterm*boldFont:       Bld10
-! xterm*font:			  7x14
-xterm*foreground:     white
-xterm*background:     black
-xterm*scrollBar:      true
-xterm*saveLines:      5000
-XTerm*cursorColor:	green
-XTerm*scrollBar:	true
-xterm*fullCursor:	true
-xterm*reverseWrap:	true
-xterm*titleBar:		false
-xterm*eightBitInput:	false
-xterm*ttyModes:		erase ^h
-xterm*VT100.Translations: #override\n\
-	<KeyPress>Prior : scroll-back(1,page)\n\
-	<KeyPress>Next : scroll-forw(1,page)
+!!! XTerm configuration
 
-*visualBell:		true
-*scrollTtyOutput:	False
-*scrollKey:		True
-Scrollbar.JumpCursor:	True
+! Sizes
+!XTerm*font:			7x14
+!XTerm*geometry:		101x50
 
-dxdiff.geometry: 1100x500+80+20
-dxdiff.background: blue
+! Colours
+XTerm*background:		black
+XTerm*color0:			black
+XTerm*color1:			red
+XTerm*color2:			green
+XTerm*color3:			yellow
+XTerm*color4:			blue
+XTerm*color5:			magenta
+XTerm*color6:			cyan
+XTerm*color7:			white
+XTerm*cursorColor:		green
+XTerm*foreground:		white
 
-! dxmail
-DXMail*background:			LightGrey
-DXMail*font:				6x13
+! Options
+XTerm*eightBitInput:		false
+XTerm*fullCursor:		true
+XTerm*reverseWrap:		true
+XTerm*saveLines:		5000
+XTerm*scrollBar:		true
+XTerm*scrollKey:		true
+XTerm*scrollTtyOutput:		false
+XTerm*titleBar:			false
+XTerm*ttyModes:			erase ^h
+XTerm*visualBell:		true
+XTerm*VT100.Translations:	#override\n\
+				<KeyPress>Prior : scroll-back(1,page)\n\
+				<KeyPress>Next : scroll-forw(1,page)
 
-! dxclock
-! Clock*foreground:              Turquoise
-! Clock*background:              DarkSlateGrey
 
-! Emacs settings:
-! Emacs*foreground:		White
-! Emacs*background:		Black
-! Emacs*geometry:			101x69
-! Emacs*geometry:			101x58
-Emacs*geometry:			101x50
-Emacs*bitmapIcon:		on
-Emacs*cursorColor:		Green
+!!! Emacs configuration
+
+! Sizes
 !Emacs*font:			7x13
+Emacs*geometry:			101x50
 
-Emacs*foreground:		Black
-Emacs*background:		White
+! Colours
+Emacs*background:		white
+Emacs*cursorColor:		green
+Emacs*foreground:		black
+
+! Options
+Emacs*bitmapIcon:		on
 Emacs*reverseVideo:		on
+
+
+
+!!! Old stuff
+
+!Mwm*UseIconBox:		true
+!Mwm*iconbox*ClientDecoration:	-title
+Mwm*ButtonWidth:		20
+Mwm*FrameBorderWidth:		6
+Mwm*IconPlacement:		left bottom
+Mwm*activeBackground:		blueviolet
+Mwm*activeForeground:		white
+Mwm*background:			#7c8498
+Mwm*clientAutoPlace:		true
+Mwm*focusAutoRaise:		false
+Mwm*foreground:			#fce089
+Mwm*info*ClientDecoration:	-menu
+Mwm*keyboardFocusPolicy:	pointer
+Mwm*shadowThickness:		3
+Mwm*xclock*ClientDecoration:	-title
+Mwm*xload*ClientDecoration:	-menu
+
+Scrollbar.JumpCursor:		true
