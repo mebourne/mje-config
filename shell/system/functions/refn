@@ -2,11 +2,11 @@
 # Register new autoload function. Re-registers if already defined
 # Usage: refn <function-name>
 #
-# $Id: refn,v 1.1 2001/02/13 10:20:11 mebourne Exp $
+# $Id: refn,v 1.2 2001/02/13 12:21:45 mebourne Exp $
 
 local fn=$1
 
 [[ -z $1 ]] && { echo "Syntax: refn <function-name>" 1>&2; return 1 }
 
-unfunction $1
-autoload -U $1
+unfunction - $1
+autoload -U - $1
