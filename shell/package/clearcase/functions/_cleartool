@@ -5,7 +5,7 @@
 # Completion code for cleartool command
 # Usage: These functions are used by the completion code
 #
-# $Id: _cleartool,v 1.12 2001/05/23 18:28:09 mebourne Exp $
+# $Id: _cleartool,v 1.13 2001/06/08 14:23:40 mebourne Exp $
 
 _cleartool_decode_pname () {
   case $command in
@@ -323,8 +323,9 @@ _cleartool_expression () {
 
 _cleartool_read_help () {
   typeset -gA _cleartool_cmds _cleartool_opts
-  local word command state=0 buffer level=0
-  for word in $(_call commands cleartool help 2>&1)
+  local word command buffer
+  integer  state=0 level=0
+  for word in $(_call_program commands cleartool help 2>&1)
   do
     if [[ $word == 'Usage:' || $word == "$command" ]]
     then
@@ -471,39 +472,39 @@ _cleartool_command_names () {
 _cleartool_dirs_controlled () {
   local name
   local -a dirs
-  for name in $(_call files cleartool ls -vob_only -short -nxname 2>&1); do
+  for name in $(_call_program files cleartool ls -vob_only -short -nxname 2>&1); do
     [[ -d $name ]] && dirs=($dirs $name)
   done
   _wanted directories expl 'version controlled directories' compadd - $dirs
 }
 
 _cleartool_files_checkedout () {
-  _wanted files expl 'checked out files' compadd - $(_call files cleartool lsco -short -cview -me 2>&1)
+  _wanted files expl 'checked out files' compadd - $(_call_program files cleartool lsco -short -cview -me 2>&1)
 }
 
 _cleartool_files_controlled () {
-  _wanted files expl 'version controlled files' compadd - $(_call files cleartool ls -vob_only -short -nxname 2>&1)
+  _wanted files expl 'version controlled files' compadd - $(_call_program files cleartool ls -vob_only -short -nxname 2>&1)
 }
 
 _cleartool_log_names () {
   local -a lognames
   local name
-  for name in ${(f)"$(_call logs cleartool getlog -inquire 2>&1)"}; do
+  for name in ${(f)"$(_call_program logs cleartool getlog -inquire 2>&1)"}; do
     lognames=($lognames $name[(w)1])
   done
   _wanted logs expl 'log names' compadd -a lognames
 }
 
 _cleartool_pool_names () {
-  _wanted pools expl 'pool names' compadd - $(_call pools cleartool lspool -short 2>&1)
+  _wanted pools expl 'pool names' compadd - $(_call_program pools cleartool lspool -short 2>&1)
 }
 
 _cleartool_region_tags () {
-  _wanted regions expl 'region names' compadd - $(_call regions cleartool lsregion 2>&1)
+  _wanted regions expl 'region names' compadd - $(_call_program regions cleartool lsregion 2>&1)
 }
 
 _cleartool_replica_names () {
-  _wanted replicas expl 'replica names' compadd - $(_call replicas cleartool lsreplica -short 2>&1)
+  _wanted replicas expl 'replica names' compadd - $(_call_program replicas cleartool lsreplica -short 2>&1)
 }
 
 _cleartool_text_modes () {
@@ -524,7 +525,7 @@ _cleartool_view_tags () {
 }
 
 _cleartool_vob_tags () {
-  _wanted vobs expl 'vob names' compadd - $(_call vobs cleartool lsvob -short 2>&1)
+  _wanted vobs expl 'vob names' compadd - $(_call_program vobs cleartool lsvob -short 2>&1)
 }
 
 
