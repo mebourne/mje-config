@@ -1,0 +1,23 @@
+ACTION Xterm
+{
+        LABEL		Xterm
+        ICON            Dtterm
+        ARG_COUNT	0
+	TYPE		COMMAND
+	WINDOW_TYPE	NO_STDIO
+	EXEC_STRING	xterm -T xterm -e /usr/users/martine/bin/sun4u/zsh -l
+	DESCRIPTION	The Xterm action starts an \
+                        'xterm' terminal emulator.
+}
+
+ACTION Emacs
+{
+        LABEL		Emacs
+        ICON            Fppenpd
+        ARG_COUNT	0
+	TYPE		COMMAND
+	WINDOW_TYPE	NO_STDIO
+	EXEC_STRING	/opt/emacs/bin/emacs
+	DESCRIPTION	The Emacs action starts the Emacs editor.
+}
+

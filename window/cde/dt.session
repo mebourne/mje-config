@@ -1,0 +1,24 @@
+dtsmcmd -hints "-geometry 120x58+897+837 -state NormalState -workspaces \"ws0 ws2 \" -cmd \"xload -jumpscroll 1 -update 15 -nolabel -title sun13 -geometry 120x58+892+814 -display sun13:0 \"" -screen 0 -cmd "xload -jumpscroll 1 -update 15 -nolabel -title sun13 -geometry 120x58+892+814 -display sun13:0"
+
+dtsmcmd -hints "-geometry 120x58+1027+837 -state NormalState -host osf2 -workspaces \"ws0 ws2 \" -cmd \"xload -jumpscroll 1 -update 15 -nolabel -title osf2 -geometry 120x58+1022+814 -display sun13:0 \"" -host osf2 -screen 0 -cmd "xload -jumpscroll 1 -update 15 -nolabel -title osf2 -geometry 120x58+1022+814 -display sun13:0"
+
+
+dtsmcmd -hints "-geometry 120x58+637+837 -state NormalState -host sun18 -workspaces \"ws1 ws3 \" -cmd \"xload -jumpscroll 1 -update 15 -nolabel -title sun18 -geometry 120x58+632+814 -display sun13:0 \"" -host sun18 -screen 0 -cmd "xload -jumpscroll 1 -update 15 -nolabel -title sun18 -geometry 120x58+632+814 -display sun13:0"
+
+dtsmcmd -hints "-geometry 120x58+767+837 -state NormalState -host sun19 -workspaces \"ws1 ws3 \" -cmd \"xload -jumpscroll 1 -update 15 -nolabel -title sun19 -geometry 120x58+762+814 -display sun13:0 \"" -host sun19 -screen 0 -cmd "xload -jumpscroll 1 -update 15 -nolabel -title sun19 -geometry 120x58+762+814 -display sun13:0"
+
+dtsmcmd -hints "-geometry 120x58+897+837 -state NormalState -host sunqa1 -workspaces \"ws1 ws3 \" -cmd \"xload -jumpscroll 1 -update 15 -nolabel -title sunqa1 -geometry 120x58+892+814 -display sun13:0 \"" -host sunqa1 -screen 0 -cmd "xload -jumpscroll 1 -update 15 -nolabel -title sunqa1 -geometry 120x58+892+814 -display sun13:0"
+
+dtsmcmd -hints "-geometry 120x58+1027+837 -state NormalState -host sunqa2 -workspaces \"ws1 ws3 \" -cmd \"xload -jumpscroll 1 -update 15 -nolabel -title sunqa2 -geometry 120x58+1022+814 -display sun13:0 \"" -host sunqa2 -screen 0 -cmd "xload -jumpscroll 1 -update 15 -nolabel -title sunqa2 -geometry 120x58+1022+814 -display sun13:0"
+
+
+dtsmcmd -hints "-geometry 101x60+5+24 -state NormalState -workspaces \"ws1 \" -cmd \"xterm -T xterm -g 101x60 -e /usr/users/martine/bin/sun4u/zsh -l \"" -screen 0 -cmd "xterm -T xterm -g 101x60 -e /usr/users/martine/bin/sun4u/zsh -l"
+
+dtsmcmd -hints "-geometry 160x60+4+23 -state NormalState -workspaces \"ws2 \" -cmd \"xterm -T xterm -g 160x60 -e /usr/users/martine/bin/sun4u/zsh -l \"" -screen 0 -cmd "xterm -T xterm -g 160x60 -e /usr/users/martine/bin/sun4u/zsh -l"
+
+dtsmcmd -hints "-geometry 91x60+491+24 -state NormalState -workspaces \"ws1 \" -cmd \"xterm -T xterm -g 91x60 -e /usr/users/martine/bin/sun4u/zsh -l \"" -screen 0 -cmd "xterm -T xterm -g 91x60 -e /usr/users/martine/bin/sun4u/zsh -l"
+
+dtsmcmd -hints "-geometry 101x60+5+24 -state NormalState -workspaces \"ws0 \" -cmd \"xterm -T xterm -g 101x60 -e /usr/users/martine/bin/sun4u/zsh -l \"" -screen 0 -cmd "xterm -T xterm -g 101x60 -e /usr/users/martine/bin/sun4u/zsh -l"
+
+dtsmcmd -hints "-geometry 98x58+440+0 -state NormalState -workspaces \"ws0 \" -cmd \"/opt/emacs/bin/emacs -geometry 98x58+440+0\"" -screen 0 -cmd "/opt/emacs/bin/emacs -geometry 98x58+440+0"
+

@@ -1,0 +1,243 @@
+####################################################################
+#
+#    Original copy: /usr/dt/config/C/sys.dtwmrc
+#
+#    The Resource Description File for the CDE Window Manager dtwm
+#
+#    (c) Copyright 1993, 1994 Hewlett-Packard Company.
+#    (c) Copyright 1993, 1994 International Business Machines Corp. 
+#    (c) Copyright 1993, 1994 Sun Microsystems, Inc.
+#    (c) Copyright 1993, 1994 Unix System Labs, Inc., a subsidiary
+#        of Novell, Inc.
+#
+#    $XConsortium: sys.dtwmrc.src /main/cde1_maint/3 1995/10/30 17:23:26 drk $
+#
+####################################################################
+
+###
+#
+#  Please make a COPY of this file before editing it.
+#
+#  Personalized copies typically exist as:
+#
+#       $HOME/.dt/dtwmrc
+#
+###
+
+###
+#
+# Root Menu Description
+#
+###
+
+Menu DtRootMenu
+{
+    "Workspace Menu"			f.title
+    "Programs"				f.menu ProgramsMenu
+     no-label				f.separator
+    "Shuffle Up"			f.circle_up
+    "Shuffle Down"			f.circle_down
+    "Refresh"				f.refresh
+    "Minimize/Restore Front Panel"	f.toggle_frontpanel
+     no-label				f.separator
+    "Restart Workspace Manager..."	f.restart
+     no-label				f.separator
+
+     "Suspend System..."			f.action SDTsuspend
+
+     "Log out..."			f.action ExitSession
+}
+
+Menu ProgramsMenu
+{
+    "Programs"				f.title
+    "File Manager..."			f.action DtfileHome
+    "Text Editor..."			f.action TextEditor
+    "Mailer..."				f.action Dtmail
+    "Calendar..."			f.action Dtcm
+    "Web Browser..."			f.action WebBrowser
+     no-label				f.separator
+    "Terminal..."			f.action Terminal
+    "Console..."			f.action DttermConsole
+     no-label				f.separator
+    "Clock..."				f.action OWclock
+    "Calculator..."			f.action Dtcalc
+    "Performance Meter..."		f.action OWperfmeter
+
+      "Power Manager..."			f.action SDTpowermgr
+
+     "Print Manager..."			f.action DtPrintManager
+    "Audio..."				f.action SDTaudio
+     no-label				f.separator
+    "Image Viewer..."			f.action SDTimage
+    "Snapshot..."			f.action SDTsnapshot
+    "Icon Editor..."			f.action Dticon
+     no-label				f.separator
+    "Style Manager..."			f.action Dtstyle
+    "App Manager..."			f.action Dtappmgr
+    "Help..."				f.action Dthelpview
+    "AnswerBook2..."			f.action SDTab2
+}
+
+###
+#
+# Front panel Manu Description
+#
+###
+
+Menu DtPanelMenu
+{
+    Restore			_R	f.normalize
+    Move			_M	f.move
+    Minimize			_n	f.minimize
+    Lower			_L	f.lower
+    Refresh			_f	f.refresh
+     no-label				f.separator
+    "Log out..."		_o	f.action ExitSession
+}
+
+
+###
+#
+# Sample Window Menu Description
+# This menu description exists as a sample only.
+# The normal window manager menu is built in.
+#
+###
+
+Menu SampleWindowMenu
+{
+    "Restore"			_R			f.normalize
+    "Move"			_M			f.move
+    "Size"			_S			f.resize
+    "Minimize"			_n			f.minimize
+    "Maximize"			_x			f.maximize
+    "Lower"			_L			f.lower
+     no-label						f.separator
+    "Occupy Workspace..."	_O			f.workspace_presence
+    "Occupy All Workspaces"	_A			f.occupy_all
+    "Unoccupy Workspace"	_U			f.remove
+     no-label						f.separator
+    "Close"			_C	Alt<Key>F4	f.kill
+}
+
+###
+#
+# Alternate Window Menu Description without accelerators
+#
+###
+
+Menu NoAcceleratorWindowMenu
+{
+    "Restore"			_R	f.normalize
+    "Move"			_M	f.move
+    "Size"			_S	f.resize
+    "Minimize"			_n	f.minimize
+    "Maximize"			_x	f.maximize
+    "Lower"			_L	f.lower
+     no-label				f.separator
+    "Occupy Workspace..."	_O	f.workspace_presence
+    "Occupy All Workspaces"	_A	f.occupy_all
+    "Unoccupy Workspace"	_U	f.remove
+     no-label				f.separator
+    "Close"			_C	f.kill
+}
+
+###
+#
+# Key Bindings Description
+#
+###
+
+Keys DtKeyBindings
+{
+
+
+#   Alt<Key>Menu		root|icon|window	f.toggle_frontpanel 
+
+    Shift<Key>Escape		icon|window		f.post_wmenu
+    Alt<Key>space		icon|window		f.post_wmenu
+    Alt<Key>Tab			root|icon|window	f.next_key
+    Alt Shift<Key>Tab		root|icon|window	f.prev_key
+    Alt<Key>Escape		root|icon|window	f.next_key
+    Alt Shift<Key>Escape	root|icon|window	f.prev_key
+    Alt<Key>Down		root|icon|window	f.circle_down
+    Alt<Key>Up			root|icon|window	f.circle_up
+    Alt<Key>Left		root|icon|window	f.prev_workspace
+    Alt<Key>Right		root|icon|window	f.next_workspace
+    Alt Ctrl Shift<Key>exclam	root|icon|window	f.set_behavior
+    Alt<Key>F6  		window			f.next_key transient
+    Alt Shift<Key>F6		window			f.prev_key transient
+    <Key>SunFront               ifkey|icon|window       f.raise_lower
+    <Key>SunOpen                ifkey|window            f.minimize
+    <Key>SunOpen                ifkey|icon              f.restore
+    Ctrl<Key>L2			ifkey|window		f.next_cmap
+    Ctrl<Key>L4			ifkey|window		f.prev_cmap
+
+}
+
+###
+#
+# Mouse Button Bindings Description
+#
+###
+
+Buttons DtButtonBindings
+{
+    <Btn1Down>		root			f.marquee_selection
+    <Btn3Down>		root			f.menu  DtRootMenu
+    <Btn1Down>		frame|icon		f.raise
+    <Btn3Down>		frame|icon		f.post_wmenu
+    Alt<Btn1Down>	icon|window		f.move
+    Alt<Btn3Down>	window			f.minimize
+}
+
+
+###
+#
+# Defaults:   Window menus, key bindings, and mouse button bindings
+#
+###
+
+Menu DefaultWindowMenu
+{
+    "Restore"	_R	Alt<Key>F5	f.normalize
+    "Move"	_M	Alt<Key>F7	f.move
+    "Size"	_S	Alt<Key>F8	f.resize
+    "Minimize"	_n	Alt<Key>F9	f.minimize
+    "Maximize"	_x	Alt<Key>F10	f.maximize
+    "Lower"	_L	Alt<Key>F3	f.lower
+    no-label				f.separator
+    "Close"	_C	Alt<Key>F4	f.kill
+}
+
+Keys DefaultKeyBindings
+{
+    Shift<Key>Escape		icon|window		f.post_wmenu
+    Alt<Key>space		icon|window		f.post_wmenu
+    Alt<Key>Tab			root|icon|window	f.next_key
+    Alt Shift<Key>Tab		root|icon|window	f.prev_key
+    Alt<Key>Escape		root|icon|window	f.next_key
+    Alt Shift<Key>Escape	root|icon|window	f.prev_key
+    Alt Ctrl Shift<Key>exclam	root|icon|window	f.set_behavior
+    Alt<Key>F6			window			f.next_key transient
+}
+
+Buttons DefaultButtonBindings
+{
+    <Btn1Down>		frame|icon	f.raise
+    <Btn3Down>		icon		f.post_wmenu
+}
+
+###
+#
+# User Customization: $HOME/.dt/user.dtwmrc (if it exists)
+#
+###
+
+INCLUDE
+{
+    $HOME/.dt/user.dtwmrc
+}
+
+#################  End of the dtwmrc file   #####################
