@@ -3,10 +3,12 @@
 # Set view to that matching username
 # Usage: myview
 #
-# $Id: myview,v 1.1 2001/02/12 18:13:21 mebourne Exp $
+# $Id: myview,v 1.2 2001/02/21 11:19:00 mebourne Exp $
+
+_clearcase_getviews
 
 local views
-views=($(cd /view; command ls -1 | grep -e "$USER" | grep -v '@@$'))
+views=(${(M)_clearcase_views:#*$USER*})
 
 if [[ ${#views} -ne 1 ]]
 then
