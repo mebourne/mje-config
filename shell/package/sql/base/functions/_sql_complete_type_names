@@ -1,0 +1,9 @@
+# ZSH function file
+# Part of the SQL base package
+# Complete on the list of type names
+# For use only by the SQL packages
+#
+# $Id: _sql_complete_type_names,v 1.1 2001/03/23 12:30:25 mebourne Exp $
+
+_sql_get_type_names
+_wanted types expl 'database types' compadd -a _sql_types

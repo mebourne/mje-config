@@ -1,0 +1,13 @@
+# ZSH function file
+# Part of the SQL base package
+# Retrieve the list of type names. The names are return in an array called _sql_types.
+# Caching is handled automatically
+# For use only by the SQL packages
+#
+# $Id: _sql_get_type_names,v 1.1 2001/03/23 12:30:25 mebourne Exp $
+
+if [[ -z $_sql_types ]]
+then
+  typeset -gaU _sql_types
+  _sql_types=($(_sql_call fetch_types))
+fi

@@ -1,0 +1,13 @@
+# ZSH function file
+# Part of the SQL Sybase package
+# Fetch and return the list of types
+# For use only by the SQL packages
+#
+# $Id: _sybase_fetchtypes,v 1.1 2001/03/23 12:30:25 mebourne Exp $
+
+{
+  echo "set nocount on"
+  echo "go"
+  echo "select name from systypes where uid=user_id()"
+  echo "go"
+} | _sybase_rawsql | tail +3
