@@ -1,7 +1,7 @@
 ;; Emacs configuration file
 ;; Miscellaneous stuff
 ;; Written by Martin Ebourne
-;; $Id: misc.el,v 1.10 2002/03/26 17:11:48 mebourne Exp $
+;; $Id: misc.el,v 1.11 2002/03/26 17:21:47 mebourne Exp $
 
 (setq message-log-max 1000)
 
@@ -13,8 +13,8 @@
 
 ;; Load semantic
 (load "semantic-load")
-(global-semantic-auto-parse-mode t)
-(global-semanticdb-minor-mode t)
+(global-semantic-auto-parse-mode 1)
+;;(global-semanticdb-minor-mode 1)
 (add-hook 'semantic-init-hooks
 	  (lambda ()
 	    (imenu-add-to-menubar "Tokens")))
