@@ -3,7 +3,9 @@
 # Set sql variables
 # Usage: sqlset <sql-variable>=<value> ...
 #
-# $Id: sqlset,v 1.5 2001/05/30 08:27:25 mebourne Exp $
+# $Id: sqlset,v 1.6 2001/05/31 11:47:15 mebourne Exp $
+
+eval $_sql_intro
 
 if (( ARGC ))
 then

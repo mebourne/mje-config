@@ -3,7 +3,9 @@
 # Unset sql variables
 # Usage: sqlunset <sql-variable> ...
 #
-# $Id: sqlunset,v 1.1 2001/05/22 16:56:04 mebourne Exp $
+# $Id: sqlunset,v 1.2 2001/05/31 11:47:18 mebourne Exp $
+
+eval $_sql_intro
 
 if (( ARGC ))
 then
