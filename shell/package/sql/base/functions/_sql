@@ -5,7 +5,7 @@
 # Completion code for sql command
 # Usage: These functions are used by the completion code
 #
-# $Id: _sql,v 1.13 2002/04/18 17:49:07 mebourne Exp $
+# $Id: _sql,v 1.14 2002/04/19 13:37:57 mebourne Exp $
 
 #_sql_trace=1
 
@@ -128,20 +128,88 @@ _sql_get_token () {
   (( _sql_trace )) && echo "token $tokenid >$token<"
 }
 
-_sql_get_column_name () {
-  local followingstate="$1" abortexpr="$2"
+_sql_save_nest () {
+  nestedlist[nestedindex]="
+parentindex=$parentindex
+nestedindex=$nestedindex
+nested=$nested
+parenlevel=$parenlevel
+tables=(${(kv)tables})
+"
+}
+
+_sql_nest () {
+  _sql_save_nest
+  (( parentindex = nestedindex ))
+  (( nestedindex = $#nestedlist + 1 ))
+  (( nested++ ))
+  parenlevel=0
+}
+
+_sql_unnest () {
+  _sql_save_nest
+  eval $nestedlist[parentindex]
+}
+
+_sql_new_nest () {
+  _sql_unnest
+  _sql_nest
+}
+
+_sql_gpn_column_name () {
+  local stateprefix="$1" followingstate="$2" endexpr="$3"
+
   if [[ $tokenids[nextstate] == period ]]
   then
     local tablealias="$token"
-    _sql_get_token column.for.$tablealias
-    _sql_get_token column.for.$tablealias
-    if [[ $tokenid == (word|keyword) && $token != $~abortexpr ]]
+
+    _sql_get_token $stateprefix.column.for.$tablealias
+    _sql_get_token $stateprefix.column.for.$tablealias
+
+    if [[ $tokenid == (word|keyword) && $token != $~endexpr ]]
     then
       _sql_get_token $followingstate
     fi
   else
     _sql_get_token $followingstate
   fi
+}
+
+_sql_gpn_where () {
+  local stateprefix="$1" endexpr="$2"
+
+  while true
+  do
+    case $token in
+      -eof)
+	return
+	;;
+      $~endexpr)
+	return
+	;;
+      \\\()
+        (( parenlevel++ ))
+        _sql_get_token $stateprefix
+	if [[ $parenlevel -eq 1 && $token == select ]]
+	then
+	  _sql_pn_sub_select
+	fi
+	;;
+      \\\))
+        if (( parenlevel > 0 ))
+	then
+	  (( parenlevel-- ))
+	elif (( $nested ))
+	then
+	  return
+	fi
+	_sql_get_token $stateprefix
+	;;
+      *)
+        _sql_gpn_column_name $stateprefix $stateprefix $endexpr
+	;;
+    esac
+  done
 }
 
 _sql_pn_start () {
@@ -178,36 +246,12 @@ _sql_pn_start () {
   esac
 }
 
-_sql_save_nest () {
-  nestedlist[nestedindex]="
-parentindex=$parentindex
-nestedindex=$nestedindex
-nested=$nested
-parenlevel=$parenlevel
-tables=(${(kv)tables})
-"
-}
-
-_sql_nest () {
-  _sql_save_nest
-  (( parentindex = nestedindex ))
-  (( nestedindex = $#nestedlist + 1 ))
-  (( nested++ ))
-  parenlevel=0
-}
-
-_sql_unnest () {
-  _sql_save_nest
-  eval $nestedlist[parentindex]
-}
-
-_sql_new_nest () {
-  _sql_unnest
-  _sql_nest
-}
-
 _sql_pn_sub_select () {
   _sql_nest
+  if [[ $token == select ]]
+  then
+    _sql_get_token select.distinct
+  fi
   _sql_pn_select
   _sql_unnest
 }
@@ -240,7 +284,7 @@ _sql_pn_select_statement () {
   if [[ $token == where ]]
   then
     _sql_get_token select.where.expression
-    _sql_pn_select_where
+    _sql_gpn_where select.where 'order|group|having|union'
   fi
 
   if [[ $token == order ]]
@@ -258,7 +302,7 @@ _sql_pn_select_statement () {
   if [[ $token == having ]]
   then
     _sql_get_token select.having.expression
-    _sql_pn_select_having
+    _sql_gpn_where select.having 'union'
   fi
 }
 
@@ -279,7 +323,7 @@ _sql_pn_select_columns () {
         _sql_get_token select.column
 	;;
       *)
-        _sql_get_column_name select 'from|where|order|group|having|union'
+        _sql_gpn_column_name select select 'from|where|order|group|having|union'
 	;;
     esac
   done
@@ -325,41 +369,6 @@ _sql_pn_select_from_table () {
   esac
 }
 
-_sql_pn_select_where () {
-  while true
-  do
-    case $token in
-      -eof)
-	return
-	;;
-      order|group|having|union)
-	return
-	;;
-      \\\()
-        (( parenlevel++ ))
-        _sql_get_token select.where
-	if [[ $parenlevel -eq 1 && $token == select ]]
-	then
-	  _sql_pn_sub_select
-	fi
-	;;
-      \\\))
-        if (( parenlevel > 0 ))
-	then
-	  (( parenlevel-- ))
-	elif (( $nested ))
-	then
-	  return
-	fi
-	_sql_get_token select.where
-	;;
-      *)
-        _sql_get_column_name select.where 'order|group|having|union'
-	;;
-    esac
-  done
-}
-
 _sql_pn_select_order () {
   if [[ $token == by ]]
   then
@@ -379,7 +388,7 @@ _sql_pn_select_order () {
         _sql_get_token select.order.by.column
 	;;
       *)
-        _sql_get_column_name select.order.by 'group|having|union'
+        _sql_gpn_column_name select.order.by select.order.by 'group|having|union'
 	;;
     esac
   done
@@ -404,24 +413,7 @@ _sql_pn_select_group () {
         _sql_get_token select.group.by.column
 	;;
       *)
-        _sql_get_column_name select.group.by 'having|union'
-	;;
-    esac
-  done
-}
-
-_sql_pn_select_having () {
-  while true
-  do
-    case $token in
-      -eof)
-	return
-	;;
-      union)
-	return
-	;;
-      *)
-        _sql_get_column_name select.having 'union'
+        _sql_gpn_column_name select.group.by select.group.by 'having|union'
 	;;
     esac
   done
@@ -433,7 +425,7 @@ _sql_pn_delete () {
   if [[ $token == where ]]
   then
     _sql_get_token delete.where
-    _sql_pn_delete_where
+    _sql_gpn_where delete.where ''
   fi
 }
 
@@ -473,20 +465,6 @@ _sql_pn_delete_from () {
       _sql_get_token delete.table
       ;;
   esac
-}
-
-_sql_pn_delete_where () {
-  while true
-  do
-    case $token in
-      -eof)
-	return
-	;;
-      *)
-        _sql_get_column_name delete.where ''
-	;;
-    esac
-  done
 }
 
 _sql_pn_insert () {
@@ -561,7 +539,7 @@ _sql_pn_insert_columns () {
 	_sql_get_token insert.columns.column
 	;;
       *)
-        _sql_get_column_name insert.columns 'values'
+        _sql_gpn_column_name insert.columns insert.columns 'values'
 	;;
     esac
   done
@@ -593,7 +571,7 @@ _sql_pn_update () {
   if [[ $token == where ]]
   then
     _sql_get_token update.where
-    _sql_pn_update_where
+    _sql_gpn_where update.where ''
   fi
 }
 
@@ -644,21 +622,7 @@ _sql_pn_update_set () {
 	_sql_get_token update.set.expression
         ;;
       *)
-        _sql_get_column_name update.set 'where'
-	;;
-    esac
-  done
-}
-
-_sql_pn_update_where () {
-  while true
-  do
-    case $token in
-      -eof)
-	return
-	;;
-      *)
-        _sql_get_column_name update.where ''
+        _sql_gpn_column_name update.set update.set 'where'
 	;;
     esac
   done
@@ -717,7 +681,11 @@ _sql_generate_completions () {
   eval $nestedlist[statenestindices[cursorindex]]
 
   case $states[cursorindex] in
-    column.for.*)
+    *.(having|set|where).column.for.*)
+      suffix=""
+      _sql_generate_column_completion ${states[cursorindex]##*.}
+      ;;
+    *.column.for.*)
       _sql_generate_column_completion ${states[cursorindex]##*.}
       ;;
     delete)
