@@ -3,7 +3,7 @@
 # list - List locked, snapped, and new files in directories
 # Written by Martin Ebourne, Started 20/08/99
 #
-# $Id: list,v 1.7 1999/09/09 12:15:19 martine Exp $
+# $Id: list,v 1.8 1999/09/09 13:44:09 martine Exp $
 
 # Make sure we are in a version controlled directory
 if [ ! -f ".VCS" ]
@@ -12,91 +12,51 @@ then
   exit 1
 fi
 
-# Check for command line option '-n': check for new files
-unset new
-if [ "$1" = "-n" ]
-then
-  new=1
-fi
-
-# If not looking for new files then a useful speed optimisation is to only find .VCS files
-# which have something extra in them and are therefore not 'empty' for our purposes
-unset size_opt
-if [ -z "$new" ]
-then
-  # Need to use awk to strip this .VCS file to ensure it is 'empty' for finding its size
-  size=`awk '
+# Most .VCS files don't have snapped or locked files and are therefore all the same size. Hence
+# a useful speed optimisation is to find and check only .VCS files which have a different size.
+# Need to use awk to strip this .VCS file to ensure it is 'empty' for finding its size
+size=`awk '
 $1=="[START]", $1=="[END]" { if(substr($1,1,1)=="[" || substr($1,1,5)=="link=") print $0; next }
 { print $0 }' .VCS | wc -c`
-  size_opt="-a ! -size ${size}c"
-fi
 
-# Find where we are to return to later
-base=`pwd`
+# Search for .VCS files of unusual size, and any other files that are out of place. Remove
+# /.VCS off the end so we have a list of directories with checked out files and a list of
+# potentially new files
+list=`find . \( -name '.VCS' ! -size ${size}c \
+		-o -type f ! \( -name '.VCS' -o -name '*~' -o -name '*.bak' -o -name '*.log' \
+				-o -name '*.out' -o -name '*.vcsbak' -o -name '.newbld' \
+				-o -name 'TAGS' \
+			     \) \
+	     \) -print \
+      | sed 's:/\.VCS$::'`
 
-# Find the .VCS files and turn them into a sorted list of directories (sort to give nice
-# output)
-for dir in . `find . \( -name '.VCS' $size_opt \) -print \
-		| sed -e 's:^./\(.*/\).VCS$:\1:' -e '/VCS/d' \
-		| sort`
+# Iterate over the list building a list of files to report
+files=""
+for item in $list
 do
-  # Special case: . has no following / so add one
-  if [ "$dir" = "." ]
-  then
-    dir=./
-  fi
 
-  # Process VCS file and print list of locked and snapped files, including dir path
-  awk '
+  # Check this item for being a directory
+  if [ -d "$item" ]
+  then
+
+    # Process the .VCS file in the directory and print list of locked and snapped files,
+    # including the directory path
+    foundfiles=`awk '
 BEGIN { FS="=" }
 $1=="lock" { print "L", dir $2 }
 $1=="snap" { print "S", dir $2 }
-' dir=$dir $dir/.VCS
+' dir=$item/ $item/.VCS`
+  else
 
-  # Extra processing if looking for new files
-  if [ -n "$new" ]
-  then
-
-    # Change to directory to make glob easier
-    cd $dir
-
-    # Iterate over all files etc. in directory
-    files=""
-    for f in * .*
-    do
-      case $f in
-  	.|..|.VCS|*~|*.bak|*.log|*.out|*.vcsbak|.newbld|TAGS)
-  	  # Ignore these types of files as temporary or backups
-  	  ;;
-  
-  	*)
-	  # Check all other files for not being symlink and being a file. -f follows symlink so
-	  # use -h separately first to save extra stat if not needed
-  	  if [ ! -h "$f" ] && [ -f "$f" ]
-  	  then
-	    # Build list of real files
-  	    files="$files$f\n"
-  	  fi
-  	  ;;
-  	esac
-    done
-
-    # If there were some real files we need to check them against snapped & locked
-    if [ -n "$files" ]
-    then
-      # Make list of locked & snapped files
-      vcfiles=`awk '
-BEGIN { FS="=" }
-$1=="lock" { print $2 }
-$1=="snap" { print $2 }
-' .VCS`
-
-      # Append both lists and use uniq to list files which only occur in one list (ie. files)
-      echo "$files$vcfiles" | sort | uniq -u | grep -v '^$' | sed "s:^:N $dir:"
-    fi
-
-    # cd - doesn't work in sh
-    cd $base
-
+    # Might be a new file. Output just in case - will be filtered out later if not. Use 'Z' to
+    # ensure it is sorted last and removed if it duplicates a checked out file
+    foundfiles="Z $item"
   fi
+
+  # Append files we've just found onto list, newline separated
+  files="$files$foundfiles\n"
 done
+
+# Sort files by filename then state. uniq ignoring state to remove files listed as new which
+# are actually checked out. Change Z back to N for the user and filter blank lines
+echo "$files" | sort -k 2 -k 1 | uniq -s 2 | sed -e 's/^Z/N/' -e 's:\./::' -e '/^$/d'
