@@ -148,12 +148,13 @@ sub raiseError {
   print STDERR "Database error: ";
   print STDERR $errh->errstr, "\n";
 
-  print STDERR "In DBI call:    $function\n";
+  print STDERR "In DBI call   : $function\n";
 
   if(defined($sql)) {
     print STDERR "Processing SQL: $sql\n";
   }
 
+  $errh->finish if $errh!=$dbh;
   $dbh->rollback;
   $dbh->disconnect;
   print STDERR "Changes rolled back.\n";
