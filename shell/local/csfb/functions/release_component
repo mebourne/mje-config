@@ -2,7 +2,7 @@
 # ZSH function file
 # Release component in SCM
 #
-# $Id: release_component,v 1.8 2002/10/18 09:24:04 mebourne Exp $
+# $Id: release_component,v 1.9 2002/10/29 12:41:45 mebourne Exp $
 
 local vob="/vobs/bpta"
 
@@ -162,8 +162,8 @@ then
 
   echo
   echo "Attaching label..."
-  cleartool mklabel -replace -version /main/LATEST $label $vob || return
-  cleartool mklabel -replace -version /main/LATEST -r $label $vob/$opts[component] || return
+  cleartool mklabel -replace $label $vob || return
+  cleartool mklabel -replace -r $label $vob/$opts[component] || return
 fi
 
 echo
