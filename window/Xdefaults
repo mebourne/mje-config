@@ -7,6 +7,7 @@
 *shapeStyle:        Rectangle
 *beNiceToColormap:  False
 
+
 !!! XTerm configuration
 
 ! Sizes
@@ -41,10 +42,12 @@ XTerm*titleBar:			false
 XTerm*ttyModes:			erase ^h
 XTerm*visualBell:		true
 XTerm*VT100.Translations:	#override\n\
-				Shift <KeyPress> Prior : scroll-back(1,halfpage)\n\
-				Shift <KeyPress> Next : scroll-forw(1,halfpage)\n\
-				<KeyPress> Prior : scroll-back(1,page)\n\
-				<KeyPress> Next : scroll-forw(1,page)
+				Shift <Key> Prior: scroll-back(1,halfpage)\n\
+				Shift <Key> Next: scroll-forw(1,halfpage)\n\
+				<Key> Prior: scroll-back(1,page)\n\
+				<Key> Next: scroll-forw(1,page)\n\
+				Shift <Key> Insert: insert-selection(CLIPBOARD, PRIMARY)\n\
+				<Btn1Up>: select-end(CLIPBOARD, PRIMARY)
 
 
 !!! Emacs configuration
@@ -61,7 +64,6 @@ Emacs*foreground:		black
 ! Options
 Emacs*bitmapIcon:		on
 Emacs*reverseVideo:		on
-
 
 
 !!! Old stuff
