@@ -1,0 +1,44 @@
+# ZSH function file
+# Backup the shell command history file in case anything unpleasant happens to it
+# Usage: backup_history
+#
+# $Id: backup_history,v 1.1 2001/04/19 11:05:47 mebourne Exp $
+
+local file backup
+file=$HISTFILE
+backup="$file.backup"
+
+if [[ -e $file ]]
+then
+  if [[ -e $backup ]]
+  then
+    # Both files exist, check history is newer than backup
+    if [[ $file -nt $backup ]]
+    then
+      # Now get the sizes of each
+      zmodload -i zsh/stat
+      local -a size
+      stat -A size +size $file $backup
+
+      # Check that history is at least half the size of backup. This should catch
+      # cases where it accidentally gets truncated
+      if (( 2 * size[1] > size[2] ))
+      then
+        # Move the old backup to a temporary file in case writing the backup fails
+        mv $backup $backup.$$
+        if cp $file $backup
+	then
+	  rm -f $backup.$$
+	else
+          echo "ERROR: Failed to backup history file" 1>&2
+	  echo "(Original backup preserved as $backup.$$)"
+	fi
+      else
+        echo "ERROR: History file has been truncated - backup suspended" 1>&2
+      fi
+    fi
+  else
+    # No backup yet so make one
+    cp $file $backup || echo "ERROR: Failed to backup history file" 1>&2
+  fi
+fi
