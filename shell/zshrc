@@ -2,15 +2,19 @@
 # This is the zshrc file sourced directly by zsh
 # Written by Martin Ebourne
 #
-# $Id: zshrc,v 1.1 2001/02/12 18:13:20 mebourne Exp $
+# $Id: zshrc,v 1.2 2001/05/09 10:50:50 mebourne Exp $
 
 ZFILE=zshrc
 
 [[ -z $ZCONFIGDIR ]] && { print "ERROR: ZCONFIGDIR unset in $ZFILE" ; exit 1 }
 
-config_if_present system/interactive
-config_if_present local/interactive
-config_if_present user/interactive
+_init_zshrc() {
+  config_if_present system/interactive
+  config_if_present local/interactive
+  config_if_present user/interactive
+}
+_init_zshrc
+unfunction _init_zshrc
 
 # TRAPEXIT cannot be set within the other files since they are in a function.
 # Hence need to catch trapexit being set and translate it here
@@ -19,6 +23,12 @@ then
   TRAPEXIT() {
     trapexit
   }
+fi
+
+# Profiling. Report results
+if [[ -n $ZCONFIGPROF ]]
+then
+  zprof
 fi
 
 unset ZFILE

@@ -2,14 +2,18 @@
 # This is the zprofile file sourced directly by zsh
 # Written by Martin Ebourne
 #
-# $Id: zprofile,v 1.1 2001/02/12 18:13:20 mebourne Exp $
+# $Id: zprofile,v 1.2 2001/05/09 10:50:28 mebourne Exp $
 
 ZFILE=zprofile
 
 [[ -z $ZCONFIGDIR ]] && { print "ERROR: ZCONFIGDIR unset in $ZFILE" ; exit 1 }
 
-config_if_present system/login
-config_if_present local/login
-config_if_present user/login
+_init_zprofile() {
+  config_if_present system/login
+  config_if_present local/login
+  config_if_present user/login
+}
+_init_zprofile
+unfunction _init_zprofile
 
 unset ZFILE
