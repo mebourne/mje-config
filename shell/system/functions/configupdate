@@ -2,29 +2,27 @@
 # Update config directory
 # Usage: configupdate
 #
-# $Id: configupdate,v 1.1 2001/03/16 17:22:52 mebourne Exp $
+# $Id: configupdate,v 1.2 2001/03/16 17:31:14 mebourne Exp $
 
 local -a backup_files non_vc_files changed_files unchanged_files
 
-local -a untouchable_files
-
-
+# Iterate through the RCS controlled directories in config
 local dir file leaf name
 for dir in $ZCONFIGDIR/**/RCS(/)
 do
   dir=${dir:h:h}
-  untouchable_files=()
 
+  # Check files currently here
   for file in $dir/*(.N)
   do
     leaf=${file:t}
 
     case $leaf in
-      *~|\#*\#)
+      *~|\#*\#) # Backup files
         backup_files=($backup_files $file)
 	;;
 
-      *)
+      *) # Other files. Catch them if no corresponding RCS file
         if [[ ! -f $dir/RCS/$leaf,v ]]
 	then
 	  non_vc_files=($non_vc_files $file)
@@ -33,6 +31,7 @@ do
     esac
   done
 
+  # Check RCS files
   for file in $dir/RCS/*,v(.N)
   do
     leaf=${${file:t}%,v}
@@ -41,6 +40,7 @@ do
 
     if [[ -w $file ]]
     then
+      # Writable. Either edited or not (presumed locked if writable)
       if rcsdiff -q $file >/dev/null
       then
 	echo "LOCKED   $name"
@@ -50,6 +50,7 @@ do
 	changed_files=($changed_files $file)
       fi
     else
+      # Not writable. Replace with latest from version history
       if rlog -rdeleted $file >/dev/null 2>&1
       then
         echo "Deleted  ${file#$ZCONFIGDIR/}"
@@ -61,6 +62,9 @@ do
     fi
   done
 done
+
+
+# List the various types of files and give optional actions for them
 
 if [[ -n $backup_files ]]
 then
@@ -102,6 +106,10 @@ then
   print -c - ${changed_files#$ZCONFIGDIR/}
   if read -q
   then
-    ci -u $changed_files
+    for file in $changed_files
+    do
+      rcsdiff -u $file
+      ci -u $file
+    done
   fi
 fi
