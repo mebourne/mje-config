@@ -4,12 +4,7 @@
 # Written by Martin Ebourne
 # NB. This file should only be included by the SQL base package
 #
-# $Id: setup,v 1.2 2002/04/09 15:14:11 mebourne Exp $
-
-# WARNING:
-#
-# This package has been ported from the old sql system. It has undergone no
-# testing and probably isn't even complete yet.
+# $Id: setup,v 1.3 2002/04/11 15:42:51 mebourne Exp $
 
 # Query for owner may be useful:
 # select owner from all_tables
@@ -18,9 +13,12 @@
 
 add_functions_directory package/sql/oracle/functions
 
+_sql_functions[oracle:_desc]=_oracle__desc
 _sql_functions[oracle:desc]=_oracle_desc
 _sql_functions[oracle:fetch_columns]=_oracle_fetchcolumns
+_sql_functions[oracle:fetch_procs]=_oracle_fetchprocs
 _sql_functions[oracle:fetch_tables]=_oracle_fetchtables
+_sql_functions[oracle:fetch_types]=_oracle_fetchtypes
 _sql_functions[oracle:init]=true
 _sql_functions[oracle:interactive]=_oracle_interactive
 _sql_functions[oracle:execute]=_oracle_execute
