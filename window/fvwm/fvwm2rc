@@ -100,10 +100,11 @@ Style * Icon unknown1.xpm, DecorateTransient, ResizeOpaque
 
 #Style "Fvwm*"		NoTitle, Sticky, WindowListSkip
 Style "FvwmPager"	NoTitle, Sticky, WindowListSkip, ClickToFocus
-Style "FvwmButtons"	NoTitle, Sticky, WindowListSkip, ClickToFocus
+Style "FvwmButtons"	NoHandles, BorderWidth 0, NoTitle, Sticky, WindowListSkip, ClickToFocus
 Style "*lock"		NoTitle, Sticky, WindowListSkip, ClickToFocus
 Style "xbiff"		NoTitle, Sticky, WindowListSkip, ClickToFocus
-Style "xload"		NoTitle, Sticky, WindowListSkip, ClickToFocus
+Style "xload"		Sticky, WindowListSkip, ClickToFocus
+Style "xload"		NoButton 1, NoButton 3, NoButton 4, NoButton 2
 Style "*term"		Icon xterm-blank.xpm
 Style "xcalc"		Icon xcalc.xpm
 Style "xbiff"		Icon mail1.xpm
@@ -114,10 +115,11 @@ Style "xman"		Icon xman.xpm
 #############################################################################
 # START-UP Functions
 #
-AddToFunc "StartFunction" I Module FvwmPager 0 0
-+		I Exec exec xsetroot -solid MidnightBlue
-+		I Next [!iconic CurrentScreen xterm] Focus
-+		I CursorMove 30 40
+AddToFunc "StartFunction"
++	I Exec exec xsetroot -solid MidnightBlue
++	I Module FvwmButtons
++	I Next [!iconic CurrentScreen xterm] Focus
++	I CursorMove 30 40
 
 ############################################################################
 # BUTTON Setup
@@ -290,31 +292,22 @@ Key F8		A	MC	Prev [*] focus
 # FvwmButtons
 #
 # Colors
-*FvwmButtonsFore Black
-*FvwmButtonsBack #908090
+*FvwmButtonsFore black
+*FvwmButtonsBack gray70
 
 # Font
 *FvwmButtonsFont	5x8
 
-# Geometry-- really likes to pick its own size, but giving a position is OK
-*FvwmButtonsGeometry -0+100
+# Geometry
+*FvwmButtonsButtonGeometry 53x38-2+0
 
 # Layout: specify rows or columns, not both
-#*FvwmButtonsColumns 1
-*FvwmButtonsRows 1
+*FvwmButtonsColumns 1
+#*FvwmButtonsRows 1
 
 # Define the buttons to use.....
-*FvwmButtons Move		arrows2.xpm	Move
-*FvwmButtons Kill		skull.xpm	Destroy
-*FvwmButtons Quit		nuke.xpm	Popup "Quit-Verify"
-
-#*FvwmButtons (de)Iconify	eyenew.xpm	Iconify
-#*FvwmButtons Restart eye2.xpm     Restart
-#*FvwmButtons Xcalc   rcalc.xpm   Exec "Calculator" xcalc &
-#*FvwmButtons junk   3dx.xpm     Swallow "xload"  xload -bg \#908090
-#*FvwmButtons xmter x.xpm	     Swallow "xmter" xmter &
-#*FvwmButtons ""  clock.xpm   Swallow "xclock" xclock -bg \#908090 -padding 0 &
-#*FvwmButtons "" 3dx.xpm Swallow "Time 3D" t3d -fg \#908090 -mag .3 -wobber 0 &
+*FvwmButtons (1x4 Swallow "FvwmPager" 'Module FvwmPager')
+*FvwmButtons (1x2 Title "bin1" Swallow "xload_bin1" 'Exec exec xload -bg gray70 -nolabel -update 15 -t xload_bin1 -jumpscroll 1')
 
 ############################################################################
 # FvwmIdent
