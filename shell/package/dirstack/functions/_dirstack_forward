@@ -1,0 +1,37 @@
+# ZSH function file
+# Part of the dirstack package
+# ZLE widget to cycle forwards through the directory stack
+# Can only be called from ZLE as a widgit
+#
+# $Id: _dirstack_forward,v 1.1 2001/04/20 15:36:21 mebourne Exp $
+
+# Check whether we between words
+if [[ $LBUFFER == *[$IFS] ]]
+then
+  # If so then insert bottom of stack
+  LBUFFER=$LBUFFER$(print -D - $dirstack[-1])
+  _dirstack_original=""
+else
+  # Otherwise we are in a word, so get the start of it
+  local dir=$LBUFFER[(w)-1]
+
+  # Expand ~ etc
+  local expanded=$~dir
+
+  # Get current index into stack
+  integer index=$dirstack[(i)$expanded]
+
+  if (( index > $#dirstack ))
+  then
+    # Didn't match in stack, so replace word with bottom entry
+    LBUFFER[(w)-1]=$(print -D - $dirstack[-1])
+    _dirstack_original=$dir
+  elif (( index > 1 ))
+  then
+    # Did match, so replace with previous entry
+    LBUFFER[(w)-1]=$(print -D - $dirstack[$index-1])
+  else
+    # Start of stack, so replace original text
+    LBUFFER[(w)-1]=$_dirstack_original
+  fi
+fi

@@ -1,0 +1,24 @@
+# ZSH configuration file
+# Executed when the dirstack package is included
+# Setup for dirstack package
+# Written by Martin Ebourne
+#
+# $Id: setup,v 1.1 2001/04/20 15:36:21 mebourne Exp $
+
+add_functions_directory package/dirstack/functions
+
+# Maximum 25 entries in directory list
+DIRSTACKSIZE=25
+
+# Set options as required
+setopt auto_pushd
+setopt pushd_ignore_dups
+setopt pushd_minus
+
+# Create ZLE widgets
+zle -N directory-history-backward _dirstack_backward
+zle -N directory-history-forward _dirstack_forward
+
+# Map shell history keys. [home] previous directory, [end] next directory
+bindkey "^[[H" directory-history-backward
+bindkey "^[[F" directory-history-forward
