@@ -2,10 +2,40 @@
 # Written by Martin Ebourne
 # Part of the SourceInfo package
 # Display class hierarchy trees
-# Usage: sitree <type-name>
+# Usage: sitree [-d <dir-name>] <type-name>
+#	 -d	Prefer files within directory if duplicates found (partial name ok)
 #
-# $Id: sitree,v 1.1 2001/02/23 18:04:39 mebourne Exp $
+# $Id: sitree,v 1.2 2001/04/23 17:21:05 mebourne Exp $
 
 [[ -z $sourceinfo_typesdb ]] && { echo "sourceinfo_typesdb not set" ; return 1 }
 
-typeInfo.pl -s $sourceinfo_typesdb "$1"
+# Pass through any valid options
+integer invalid=0
+local -a options
+while [[ $argv[1] == -* ]]
+do
+  case $argv[1] in
+    -d)
+      options[$#options+1]=$argv[1]
+      shift
+      options[$#options+1]=$argv[1]
+      shift
+      ;;
+
+    *)
+      invalid=1
+      ;;
+  esac
+done
+
+# Give help if error with parameters
+if (( ARGC != 1 || invalid ))
+then
+  {
+    echo "Syntax: sitree [-d <dir-name>] <type-name>"
+    echo "  -d    Prefer files within directory if duplicates found (partial name ok)"
+  } 1>&2
+  return 1
+fi
+
+typeInfo.pl -s $options $sourceinfo_typesdb $argv[1]

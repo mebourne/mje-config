@@ -3,7 +3,7 @@
 # Parse type definition file generated from parseCpp.pl
 # Written by Martin Ebourne. Started 23/02/01
 #
-# Usage: typeInfo.pl <definition-file> <type-name>
+# Usage: typeInfo.pl [-r] [-s] [-d <dir-name>] <definition-file> <type-name>
 
 use strict;
 use IO::File;
@@ -12,6 +12,7 @@ use IO::File;
 my $recurse=0;
 my $short=0;
 my $all=0;
+my @preferredDirs;
 
 # Handle the option parameters
 my $got=1;
@@ -25,13 +26,23 @@ while(@ARGV>2 && $got) {
   } elsif($ARGV[0] eq "-a") {
     $all=1;
     shift @ARGV;
+  } elsif($ARGV[0] eq "-d") {
+    shift @ARGV;
+    my $dir=shift @ARGV;
+    if($dir!~/^\//) {
+      $dir="/" . $dir;
+    }
+    if($dir!~/\/$/) {
+      $dir=$dir . "/";
+    }
+    $preferredDirs[@preferredDirs]=$dir;
   } else {
     $got=0;
   }
 }
 
 # Check the syntax
-die "Usage: typeInfo.pl [-r] [-s] <definition-file> <type-name>" if @ARGV!=2;
+die "Usage: typeInfo.pl [-r] [-s] [-d <dir-name>] <definition-file> <type-name>" if @ARGV!=2;
 
 # Handle the mandatory parameters
 my ($defsFileName,$typeName)=@ARGV;
@@ -88,6 +99,53 @@ sub loadFile {
   chomp(@$array=<$fh>);
 }
 
+# Given more than one match, filter for the most preferred one if it is unique, else don't touch
+sub preferredMatches {
+  my ($preferredDirs,$matches)=@_;
+
+  # Iterate over each of the preferred directories until one is found where only one result is
+  # matched
+  for(my $i=0; $i<@$preferredDirs && @$matches>1; $i++) {
+    my @newMatches=grep(/^[^\#]*$preferredDirs->[$i]/,@$matches);
+    if(@newMatches==1) {
+      @$matches=@newMatches;
+    }
+  }
+
+  # Return new number of matches
+  return @$matches;
+}
+
+# Filter a list of matches which may have duplicate classes so that only the preferred entry
+# for each class remains. Raises error if cannot find a preferred one
+sub arrangeMatches {
+  my($preferredDirs,$matches)=@_;
+
+  # Get a unique list of types in the matches array supplied
+  my %types;
+  for my $match (@$matches) {
+    my ($fileName,$recordType,$type,$trailing)=split(/\#/,$match);
+    $types{$type}=1;
+  }
+
+  # Iterate over this unique list (sorted) to extract all matches for that type
+  my @newMatches;
+  for my $type (sort(keys(%types))) {
+    my @selectMatches=grep(/^[^\#]*\#[^\#]*\#$type\#/,@$matches);
+
+    # Handle any duplicates
+    my $numMatches=&preferredMatches(\@preferredDirs,\@selectMatches);
+    if($numMatches>1) {
+      die "Got $numMatches matches for $typeName. Can only handle one in short mode.";
+    }
+
+    # Build a new list without duplicates
+    push @newMatches, @selectMatches;
+  }
+
+  # Replace the given list with the new one
+  @$matches=@newMatches;
+}
 
 # Print verbose information about a given type
 sub printTypeInfo {
@@ -102,9 +160,13 @@ sub printTypeInfo {
     my @matches=grep(/^[^\#]*\#[^\#]*\#$typeName\#/,@$defs);
     $numMatches=@matches;
 
-    # Warn if we got too many definitions
+    # Handle too many definitions
     if($numMatches>1) {
-      print "$leader*** Got $numMatches matches for $typeName. Listing all...\n";
+      $numMatches=&preferredMatches(\@preferredDirs,\@matches);
+
+      if($numMatches>1) {
+	print "$leader*** Got $numMatches matches for $typeName. Listing all...\n";
+      }
     }
 
     # Display all definitions
@@ -174,12 +236,17 @@ sub shortTypeInfo {
     my @matches=grep(/^[^\#]*\#[^\#]*\#$typeName\#/,@$defs);
     $numMatches=@matches;
 
-    # If we got one definition just display it. Zero then report undefined, else its an error
+    # Handle too many definitions
     if($numMatches>1) {
-#      die "Got $numMatches matches for $typeName. Can only handle one in short mode.";
-      &shortLineInfo($defs,$done,$recurse,$leader,$last,$matches[0]);
+      $numMatches=&preferredMatches(\@preferredDirs,\@matches);
+
+      if($numMatches>1) {
+        die "Got $numMatches matches for $typeName. Can only handle one in short mode.";
+      }
     }
-    elsif($numMatches==1) {
+
+    # If we got one definition just display it. Zero then report undefined
+    if($numMatches==1) {
       &shortLineInfo($defs,$done,$recurse,$leader,$last,$matches[0]);
     } else {
       if($leader ne "") {
@@ -252,6 +319,8 @@ sub reverseTypeInfo {
 
     # Look for class definitions where this type is a base class
     my @matches=grep(/^[^\#]*\#class\#[^\#]*\#[^\#]*\#.*\b$typeName\b/,@$defs);
+
+    &arrangeMatches(\@preferredDirs,\@matches);
 
     # Display info on all classes derived from this one
     while(@matches) {
