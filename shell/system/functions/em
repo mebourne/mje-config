@@ -1,0 +1,17 @@
+#eval compdef -n _files em
+# ZSH function file
+# Send files to emacs for editing
+# Usage: em <file> ...
+#
+# $Id: em,v 1.1 2001/03/16 15:33:18 mebourne Exp $
+
+local files
+files=($*)
+
+if (( $#files ))
+then
+  emacsclient --no-wait $files
+else
+  echo "Syntax: em <file> ..." 1>&2
+  return 1
+fi
