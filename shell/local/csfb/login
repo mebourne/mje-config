@@ -4,7 +4,7 @@
 # done, but immediately before the user specific files
 # Written by Martin Ebourne
 #
-# $Id: login,v 1.12 2002/09/26 09:48:40 mebourne Exp $
+# $Id: login,v 1.13 2002/10/17 14:10:13 mebourne Exp $
 
 # CSFB settings
 
@@ -14,6 +14,7 @@ export PRINTER=p_ln1506
 # Perl. Add to start to override /usr/local/bin
 path=(/app/perl5005/bin $path)
 manpath=(/app/perl5005/man $manpath)
+perllib=($perllib ~/local/lib/perl5/site_perl/5.005/sun4-solaris ~/local/lib/site_perl/5.005)
 
 # Clearcase
 path=($path /usr/atria/bin /sw/scmtoolkit/A)
@@ -46,7 +47,8 @@ esac
 path=($path $SUN_CC_DIR/bin)
 manpath=($manpath $SUN_CC_DIR/man)
 
-# Oracle 8
+# Oracle
+export ORACLE_VERSION=9.0.1.3_64
 export ORACLE_VERSION=9.0.1
 export ORACLE_HOME=/app/oracle/product/client/${ORACLE_VERSION}
 export ORACLE_SID=SUNSYS
@@ -67,3 +69,7 @@ export RSU_LICENSE_MAP=$rational_dir/config/PurifyPlus_License_Map
 
 # Other comands
 path=($path /usr/ccs/bin)
+
+# CAS settings
+path=($path /vobs/bpta/BPTA_CAS_CORE/bin)
+export BPTA_CAS_SOAP_BASE=6500
