@@ -1,4 +1,3 @@
-#!/bin/bash
 #!/bin/ksh
 #!/bin/zsh -y
 #===============================================================================
@@ -178,8 +177,21 @@ isfinal() {
     $tarcmd tvf "$2"
   elif [[ "$1" = *roff* ]]; then
     echo "==> append $sep to filename to view the nroff source"
-    groff -s -p -t -e -Tascii -mandoc ${2#-}
-  elif [[ "$1" = *executable* ]]; then
+    nroff -e -man ${2#-} | sed -n '
+/./ {
+  p
+  d
+}
+/^$/ p
+:Empty
+/^$/ {
+  N
+  s/.//
+  b Empty
+}
+p
+'
+  elif [[ "$1" = *executable* && "$1" != *script* ]]; then
     echo "==> append $sep to filename to view the binary file"
     strings ${2#-}
   elif [[ "$1" = *\ ar\ archive* ]]; then
