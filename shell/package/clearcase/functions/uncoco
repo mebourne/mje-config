@@ -3,7 +3,7 @@
 # Part of the clearcase package
 # Un-checkout checked out files
 #
-# $Id: uncoco,v 1.9 2002/04/25 11:03:20 mebourne Exp $
+# $Id: uncoco 792 2003-09-22 11:47:18Z martin $
 
 local -A opts
 parse_opts - opts -- "$argv[@]" <<'EOF' || return 1

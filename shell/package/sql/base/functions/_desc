@@ -5,7 +5,7 @@
 # Completion code for desc command
 # Usage: These functions are used by the completion code
 #
-# $Id: _desc,v 1.2 2001/03/23 12:30:32 mebourne Exp $
+# $Id: _desc 792 2003-09-22 11:47:18Z martin $
 
 local ret=1
 

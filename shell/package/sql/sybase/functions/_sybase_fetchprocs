@@ -3,7 +3,7 @@
 # Fetch and return the list of stored procedures
 # For use only by the SQL packages
 #
-# $Id: _sybase_fetchprocs,v 1.5 2001/07/06 15:49:47 mebourne Exp $
+# $Id: _sybase_fetchprocs 792 2003-09-22 11:47:18Z martin $
 
 {
   echo "set nocount on"

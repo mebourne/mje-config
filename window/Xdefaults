@@ -1,14 +1,21 @@
 ! .Xdefaults - X resources configuration
 ! Written by Martin Ebourne
 !
-! $Id: Xdefaults,v 1.12 2002/03/26 09:18:48 mebourne Exp $
+! $Id: Xdefaults 792 2003-09-22 11:47:18Z martin $
 
+*background:        LightSkyBlue
+*shapeStyle:        Rectangle
+*beNiceToColormap:  False
 
 !!! XTerm configuration
 
 ! Sizes
+XTerm*font:			6x13
 !XTerm*font:			7x14
 !XTerm*geometry:		101x50
+
+! TrueType
+!XTerm*faceName:		andale:size=8:charwidth=6
 
 ! Colours
 XTerm*background:		black
@@ -17,6 +24,8 @@ XTerm*foreground:		white
 XTerm*highlightColor:		blue
 
 ! Options
+XTerm*boldMode:			true
+XTerm*colorBDMode:		false
 XTerm*cursorBlink:		true
 XTerm*cursorOffTime:		500
 XTerm*cursorOnTime:		1500
@@ -40,8 +49,8 @@ XTerm*VT100.Translations:	#override\n\
 !!! Emacs configuration
 
 ! Sizes
-Emacs*font:			7x13
-Emacs*geometry:			101x50
+Emacs*font:			6x13
+!Emacs*geometry:			101x50
 
 ! Colours
 Emacs*background:		white

@@ -3,7 +3,7 @@
 # Generic system-wide setup for interactive use
 # Written by Martin Ebourne
 #
-# $Id: interactive,v 1.23 2002/04/25 11:46:15 mebourne Exp $
+# $Id: interactive 809 2003-10-06 15:21:04Z martin $
 
 # Initial config files
 config_if_present system/options
@@ -27,7 +27,7 @@ fi
 WORDCHARS='*?_-.[]~#'
 
 # Ignore these filename extensions in completion
-fignore=(\~ % \# .o .d .elc .zwc)
+fignore=(\~ % \# .o .elc .zwc)
 
 # Basic CDPATH. Need . on it because it is export to ksh etc.
 cdpath=(. $HOME)

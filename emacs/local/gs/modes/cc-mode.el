@@ -1,7 +1,7 @@
 ;; Emacs configuration file
 ;; Setup for cc-mode
 ;; Written by Martin Ebourne
-;; $Id: cc-mode.el,v 1.2 2002/03/21 13:40:45 mebourne Exp $
+;; $Id: cc-mode.el 792 2003-09-22 11:47:18Z martin $
 
 ;; Add our styles
 (c-add-style "gs-java"

@@ -1,7 +1,7 @@
 ;; Emacs configuration file
 ;; Syntax colouring regular expressions for cc-mode
 ;; Written by Martin Ebourne
-;; $Id: cc-mode.el,v 1.2 2002/04/24 13:45:47 mebourne Exp $
+;; $Id: cc-mode.el 792 2003-09-22 11:47:18Z martin $
 
 ;; C/C++/Java
 (defvar c-font-lock-keywords-local nil)

@@ -2,6 +2,8 @@
 # FVWM - F? Virtual Window Manager, Version 2.x (fvwm) Configuration File
 # Created April 1996
 #
+# Settings by Martin Ebourne
+# $Id: fvwm2rc 792 2003-09-22 11:47:18Z martin $
 
 ##########################################################################
 # PATH Setup
@@ -15,7 +17,7 @@
 #
 # Colon seperated unix directory paths for Modules, and for images
 #ModulePath /usr/local/libexec/fvwm/2.x.y
-ImagePath  /home/mebourne/local/share/fvwm-icons
+ImagePath  $HOME/local/share/fvwm-icons
 
 ############################################################################
 # COLORS and FONTS
@@ -215,7 +217,7 @@ AddToMenu WindowOps
 # COMPLEX FUNCTIONS
 #
 
-AddToFunc Func-Maximize         C Maximize 95 100
+AddToFunc Func-Maximize         C Maximize 94 100
 +                               D Maximize 0 100
 
 AddToFunc Func-Resize-or-Raise	I Raise
@@ -307,8 +309,8 @@ Key F8		A	MC	Prev [*] focus
 
 # Define the buttons to use.....
 *FvwmButtons (1x8 Swallow "FvwmPager" 'Module FvwmPager 0 1')
-*FvwmButtons (1x2 Title "local" Swallow "xload_local" 'Exec xload -bg gray70 -nolabel -update 15 -t xload_local -jumpscroll 1')
-*FvwmButtons (1x2 Title "lns-2012" Swallow "xload_2012" 'Exec rsh lns45a-2012 exec xload -bg gray70 -nolabel -update 15 -t xload_2012 -jumpscroll 1 -display $DISPLAY &')
+*FvwmButtons (1x2 Title "bin1" Swallow "xload_bin1" 'Exec rsh gdd-odybin1 exec xload -bg gray70 -nolabel -update 15 -t xload_bin1 -jumpscroll 1 -display $DISPLAY &')
+*FvwmButtons (1x2 Title "bin2" Swallow "xload_bin2" 'Exec rsh gdd-odybin2 exec xload -bg gray70 -nolabel -update 15 -t xload_bin2 -jumpscroll 1 -display $DISPLAY &')
 
 ############################################################################
 # FvwmIdent

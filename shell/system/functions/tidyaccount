@@ -2,7 +2,7 @@
 # ZSH function file
 # Tidy account up generally
 #
-# $Id: tidyaccount,v 1.14 2002/08/29 10:26:13 mebourne Exp $
+# $Id: tidyaccount 792 2003-09-22 11:47:18Z martin $
 
 local this=""
 if [[ $0 == /* ]]

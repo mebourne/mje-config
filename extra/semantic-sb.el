@@ -5,7 +5,7 @@
 ;; Author: Eric M. Ludlam <zappo@gnu.org>
 ;; Version: 0.1
 ;; Keywords: syntax
-;; X-RCS: $Id: semantic-sb.el,v 1.1 2002/03/25 18:14:28 mebourne Exp $
+;; X-RCS: $Id: semantic-sb.el 792 2003-09-22 11:47:18Z martin $
 
 ;; This file is not part of GNU Emacs.
 

@@ -1,7 +1,7 @@
 ;; Emacs configuration file
 ;; Setup for cc-mode
 ;; Written by Martin Ebourne
-;; $Id: strokes.el,v 1.2 2002/03/21 10:54:15 mebourne Exp $
+;; $Id: strokes.el 792 2003-09-22 11:47:18Z martin $
 
 (setq strokes-global-map '((((0 . 5)
 			     (1 . 5)

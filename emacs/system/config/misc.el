@@ -1,23 +1,29 @@
 ;; Emacs configuration file
 ;; Miscellaneous stuff
 ;; Written by Martin Ebourne
-;; $Id: misc.el,v 1.12 2002/03/26 18:11:52 mebourne Exp $
+;; $Id: misc.el 795 2003-09-22 13:40:16Z martin $
 
 (setq message-log-max 1000)
 
-;; Load site-lisp files
+;; Load clearcase integration
 (load "clearcase")
+
+;; Load Subversion integrations
+(add-to-list 'vc-handled-backends 'SVN)
+(require 'psvn)
 
 ;; Load filecache
 (load "filecache")
 
 ;; Load semantic
-(load "semantic-load")
-(global-semantic-auto-parse-mode 1)
+;(load "semantic-load")
+; Disable auto-parse for now since it give errors during startup:
+; Symbol's function definition is void: semantic-map-buffers
+;(global-semantic-auto-parse-mode 1)
 ;;(global-semanticdb-minor-mode 1)
-(add-hook 'semantic-init-hooks
-	  (lambda ()
-	    (imenu-add-to-menubar "Tokens")))
+;(add-hook 'semantic-init-hooks
+;	  (lambda ()
+;	    (imenu-add-to-menubar "Tokens")))
 
 ;; Display european characters
 (standard-display-european t)

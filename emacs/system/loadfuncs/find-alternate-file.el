@@ -2,7 +2,7 @@
 ;; Modified find-alternate-file to call save-places so that buffer position
 ;; is not lost
 ;; Written by Martin Ebourne
-;; $Id: find-alternate-file.el,v 1.1 2001/05/11 17:31:38 mebourne Exp $
+;; $Id: find-alternate-file.el 792 2003-09-22 11:47:18Z martin $
 
 ;;;###autoload
 (defun find-alternate-file (filename)

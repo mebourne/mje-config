@@ -3,7 +3,7 @@
 # Enter interactive SQL command line
 # For use only by the SQL packages
 #
-# $Id: _oracle_interactive,v 1.1 2002/04/09 15:13:52 mebourne Exp $
+# $Id: _oracle_interactive 792 2003-09-22 11:47:18Z martin $
 
 if [[ -z $_sql_parameters[user] ]]
 then

@@ -4,7 +4,7 @@
 # Part of the Config package
 # Compile shell directory
 #
-# $Id: cfg_compile_shell,v 1.8 2002/08/29 10:25:56 mebourne Exp $
+# $Id: cfg_compile_shell 792 2003-09-22 11:47:18Z martin $
 
 emulate -LR zsh
 setopt extended_glob

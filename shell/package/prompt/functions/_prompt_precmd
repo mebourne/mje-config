@@ -3,7 +3,7 @@
 # Hook for precmd function to handle prompt formatting and displaying
 # Usage: _prompt_precmd
 #
-# $Id: _prompt_precmd,v 1.10 2001/08/22 17:21:46 mebourne Exp $
+# $Id: _prompt_precmd 792 2003-09-22 11:47:18Z martin $
 
 # Null out old strings to get base size
 _prompt_justify=""

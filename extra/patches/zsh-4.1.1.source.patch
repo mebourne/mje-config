@@ -1,0 +1,25 @@
+diff -rc zsh-4.0.1/Completion/Zsh/Command/_source zsh-4.0.1.new/Completion/Zsh/Command/_source
+*** zsh-4.0.1/Completion/Zsh/Command/_source	Mon Apr  2 12:30:51 2001
+--- zsh-4.0.1.new/Completion/Zsh/Command/_source	Tue Jun 26 11:34:59 2001
+***************
+*** 6,13 ****
+  else
+    if [[ -prefix */ && ! -o pathdirs ]]; then
+      _files
+!   elif [[ $service = . ]]; then
+!     _files -W path
+    else
+      _files -W "(. $path)"
+    fi
+--- 6,16 ----
+  else
+    if [[ -prefix */ && ! -o pathdirs ]]; then
+      _files
+!   elif [[ $service = . && ! -prefix */ ]]; then
+!     local ret=1
+!     _files -/ && ret=0
+!     _files -W path && ret=0
+!     (( ret == 0 )) && ?=0
+    else
+      _files -W "(. $path)"
+    fi

@@ -2,7 +2,7 @@
 # ZSH function file
 # Re-run last command in history (or matching given) and send any files in the output to Emacs
 #
-# $Id: emr,v 1.5 2002/08/29 10:26:10 mebourne Exp $
+# $Id: emr 792 2003-09-22 11:47:18Z martin $
 
 local -A opts
 parse_opts - opts -- "$argv[@]" <<'EOF' || return 1

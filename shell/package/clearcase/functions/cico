@@ -3,7 +3,7 @@
 # Part of the clearcase package
 # Checkin checked out files
 #
-# $Id: cico,v 1.9 2002/04/25 11:02:26 mebourne Exp $
+# $Id: cico 792 2003-09-22 11:47:18Z martin $
 
 local -A opts
 parse_opts - opts -- "$argv[@]" <<'EOF' || return 1

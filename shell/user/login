@@ -3,7 +3,7 @@
 # User's own setup for login shells. Run after all other login setup has been done
 # Written by Martin Ebourne
 #
-# $Id: login,v 1.5 2002/04/25 09:27:05 mebourne Exp $
+# $Id: login 792 2003-09-22 11:47:18Z martin $
 
 export EDITOR=emacsclient
 export VISUAL=emacsclient
@@ -15,3 +15,6 @@ export NAME="Martin Ebourne"
 #  echo "Remapping AltGraph as control key"
 #  xmodmap -e "add control = SunAltGraph"
 #fi
+
+export WINDOW_MANAGER=/usr/bin/sawfish
+

@@ -3,7 +3,7 @@
 # Fetch and return the list of tables
 # For use only by the SQL packages
 #
-# $Id: _sybase_fetchtables,v 1.4 2002/05/24 16:14:20 mebourne Exp $
+# $Id: _sybase_fetchtables 792 2003-09-22 11:47:18Z martin $
 
 local sys=""
 if [[ $_sql_parameters[access] == all ]]

@@ -1,7 +1,7 @@
 ;; Emacs configuration file
 ;; Advised functions
 ;; Written by Martin Ebourne
-;; $Id: advice.el,v 1.3 2002/03/18 17:29:07 mebourne Exp $
+;; $Id: advice.el 792 2003-09-22 11:47:18Z martin $
 
 (defadvice switch-to-buffer (before existing-buffers-only activate preactivate)
   "When called interactively switch to existing buffers only, unless 

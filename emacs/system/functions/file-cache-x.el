@@ -1,7 +1,7 @@
 ;; Emacs function file
 ;; Extra file-cache functions
 ;; Written by Martin Ebourne
-;; $Id: file-cache-x.el,v 1.1 2001/05/11 17:31:38 mebourne Exp $
+;; $Id: file-cache-x.el 792 2003-09-22 11:47:18Z martin $
 
 ;; Command to complete from file cache and open file
 (defun file-cache-minibuffer-complete-and-exit (arg)

@@ -2,7 +2,7 @@
 # dozsh - Execute zsh from another shell environment
 # Written by Martin Ebourne
 #
-# $Id: dozsh,v 1.4 2002/08/01 10:19:44 mebourne Exp $
+# $Id: dozsh 792 2003-09-22 11:47:18Z martin $
 
 MJEHOME=/home/mebourne
 

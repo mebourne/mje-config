@@ -2,7 +2,7 @@
 # ZSH function file
 # Backup the shell command history file in case anything unpleasant happens to it
 #
-# $Id: backup_history,v 1.7 2002/08/29 10:26:08 mebourne Exp $
+# $Id: backup_history 792 2003-09-22 11:47:18Z martin $
 
 parse_opts -- "$argv[@]" <<'EOF' || return 1
 Description:

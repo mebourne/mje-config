@@ -1,7 +1,7 @@
 ;; Emacs configuration file
 ;; Setup for asm-mode
 ;; Written by Martin Ebourne
-;; $Id: asm-mode.el,v 1.2 2001/05/16 14:22:45 mebourne Exp $
+;; $Id: asm-mode.el 792 2003-09-22 11:47:18Z martin $
 
 (add-hook 'asm-mode-hook
 	  (function (lambda ()

@@ -3,7 +3,7 @@
 # Execute a block copy command
 # For use only by the SQL packages
 #
-# $Id: _sybase_bcp,v 1.2 2001/06/13 11:09:01 mebourne Exp $
+# $Id: _sybase_bcp 792 2003-09-22 11:47:18Z martin $
 
 
 if [[ -z $_sql_parameters[server] || -z $_sql_parameters[user] || -z $_sql_parameters[password] ]]

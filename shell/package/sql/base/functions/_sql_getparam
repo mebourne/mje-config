@@ -3,7 +3,7 @@
 # Return an SQL parameter
 # For use only by the SQL packages
 #
-# $Id: _sql_getparam,v 1.1 2001/05/31 11:46:22 mebourne Exp $
+# $Id: _sql_getparam 792 2003-09-22 11:47:18Z martin $
 
 local valuevar="$argv[1]" param="$argv[2]" default="$argv[3]" indicatorvar="$argv[4]"
 

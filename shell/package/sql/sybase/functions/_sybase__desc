@@ -5,7 +5,7 @@
 # Completion code for desc command
 # For use only by the SQL packages
 #
-# $Id: _sybase__desc,v 1.1 2001/03/23 12:30:25 mebourne Exp $
+# $Id: _sybase__desc 792 2003-09-22 11:47:18Z martin $
 
 local ret=1
 

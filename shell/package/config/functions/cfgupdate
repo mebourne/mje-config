@@ -4,7 +4,7 @@
 # Part of the Config package
 # Update config directory
 #
-# $Id: cfgupdate,v 1.16 2002/08/29 10:25:56 mebourne Exp $
+# $Id: cfgupdate 792 2003-09-22 11:47:18Z martin $
 
 emulate -LR zsh
 
@@ -83,6 +83,7 @@ local -a remove_files non_vc_files changed_files unchanged_files
 
 # Iterate through the RCS controlled directories in config
 local dir="" file="" leaf="" name=""
+local -a writeable
 for dir in $base_dir/**/RCS(/)
 do
   dir=${dir:h}
@@ -118,7 +119,9 @@ do
     file=$dir/$leaf
     name=${file#$base_dir/}
 
-    if [[ -w $file ]]
+    # This hoop because test -w always returns true for root
+    writeable=($file(wN))
+    if [[ -n $writeable ]]
     then
       # Writable. Either edited or not (presumed locked if writable)
       if rcsdiff -q $file >/dev/null

@@ -4,7 +4,7 @@
 # Written by Martin Ebourne
 # NB. This file should only be included by the SQL base package
 #
-# $Id: setup,v 1.6 2002/05/28 13:28:38 mebourne Exp $
+# $Id: setup 792 2003-09-22 11:47:18Z martin $
 
 add_functions_directory package/sql/sybase/functions
 

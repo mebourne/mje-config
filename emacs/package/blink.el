@@ -3,7 +3,7 @@
 ;; Copyright (C) 1997 Martin Ebourne
 ;; All rights reserved
 ;;
-;; $Id: blink.el,v 1.2 2002/03/26 18:06:40 mebourne Exp $
+;; $Id: blink.el 792 2003-09-22 11:47:18Z martin $
 
 ;;; Commentary:
 

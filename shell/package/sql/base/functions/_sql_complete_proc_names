@@ -3,7 +3,7 @@
 # Complete on the list of stored procedure names
 # For use only by the SQL packages
 #
-# $Id: _sql_complete_proc_names,v 1.1 2001/03/14 15:51:52 mebourne Exp $
+# $Id: _sql_complete_proc_names 792 2003-09-22 11:47:18Z martin $
 
 _sql_get_proc_names
 _wanted stored-procs expl 'database stored procedures' compadd -a _sql_procs

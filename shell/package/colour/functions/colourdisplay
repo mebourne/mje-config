@@ -3,7 +3,7 @@
 # Display all available colours
 # Usage: colourdisplay
 #
-# $Id: colourdisplay,v 1.2 2002/08/29 10:25:53 mebourne Exp $
+# $Id: colourdisplay 792 2003-09-22 11:47:18Z martin $
 
 integer num=0
 for num in {0..255}

@@ -5,7 +5,7 @@
 # Completion code for sqledit command
 # Usage: These functions are used by the completion code
 #
-# $Id: _sqledit,v 1.1 2001/06/04 10:04:30 mebourne Exp $
+# $Id: _sqledit 792 2003-09-22 11:47:18Z martin $
 
 local ret=1
 

@@ -4,7 +4,7 @@
 # Search for files from the source info file list
 # Usage: sifile <filename-regexp>
 #
-# $Id: sifile,v 1.3 2001/05/23 12:11:02 mebourne Exp $
+# $Id: sifile 792 2003-09-22 11:47:18Z martin $
 
 [[ -z $sourceinfo_filesdb ]] && { echo "sourceinfo_filesdb not set" ; return 1 }
 

@@ -1,7 +1,7 @@
 ;; Emacs function file
 ;; Modified yank to make it actually work like the text claims it does
 ;; Written by Martin Ebourne
-;; $Id: yank.el,v 1.1 2001/05/11 17:31:38 mebourne Exp $
+;; $Id: yank.el 792 2003-09-22 11:47:18Z martin $
 
 (defun yank (&optional arg)
   "Reinsert the last stretch of killed text.

@@ -1,7 +1,7 @@
 ;; Emacs configuration file
 ;; Xwindows specific setup
 ;; Written by Martin Ebourne
-;; $Id: xwindows.el,v 1.2 2002/03/18 20:04:48 mebourne Exp $
+;; $Id: xwindows.el 792 2003-09-22 11:47:18Z martin $
 
 ;; Syntax colouring. X only
 (cond (window-system
@@ -46,4 +46,7 @@
 
        ;; Enable strokes
        (strokes-mode)
+
+       ;; Enable wheelmouse support
+       (mwheel-install)
        ))

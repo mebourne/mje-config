@@ -3,6 +3,6 @@
 # Print text files after converting to postscript
 # Usage: lpp [<file> ...]
 #
-# $Id: lpp,v 1.1 2001/05/02 12:14:21 mebourne Exp $
+# $Id: lpp 792 2003-09-22 11:47:18Z martin $
 
 a2ps -F8 -ns -p -nP -t8 "$argv[@]" | lp -onobanner

@@ -2,7 +2,7 @@
 # ZSH function file
 # View the latest of a set of files, given part of the filename
 #
-# $Id: latest,v 1.5 2002/11/20 16:16:45 mebourne Exp $
+# $Id: latest 792 2003-09-22 11:47:18Z martin $
 
 local -A opts
 parse_opts - opts -- "$argv[@]" <<'EOF' || return 1

@@ -1,7 +1,7 @@
 ;; Emacs configuration file
 ;; Syntax colouring regular expressions for make-mode
 ;; Written by Martin Ebourne
-;; $Id: make-mode.el,v 1.1 2001/05/11 17:31:38 mebourne Exp $
+;; $Id: make-mode.el 792 2003-09-22 11:47:18Z martin $
 
 ;; Makefile mode
 (eval-after-load

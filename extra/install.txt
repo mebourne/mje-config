@@ -1,0 +1,36 @@
+Installation guide
+============ =====
+
+1. Place configuration in $HOME/config
+
+2. Compile required programs as listed in config/extra/programs.txt
+
+3. Create ZSH init directory
+
+mkdir $HOME/.zsh
+ln -s .zsh/.zshenv $HOME/.zshenv
+ln -s ../config/shell/zlogout  $HOME/.zsh/.zlogout
+ln -s ../config/shell/zprofile $HOME/.zsh/.zprofile
+ln -s ../config/shell/zshenv   $HOME/.zsh/.zshenv
+ln -s ../config/shell/zshrc    $HOME/.zsh/.zshrc
+
+4. Create local directories
+
+location=<your location here>
+for i in $HOME/config/{shell,emacs}/local
+do
+  mkdir $i/$location
+  ln -s $location $i/current
+done
+
+5. Install Emacs configuration
+
+ln -s config/emacs/user/emacs.el $HOME/.emacs.el
+ln -s config/emacs/user/gnus.el $HOME/.gnus
+cfg_compile_emacs $HOME/config/emacs
+
+6. Install other config files
+
+ln -s config/window/Xdefaults .Xdefaults
+ln -s config/tools/dbxrc .dbxrc
+ln -s config/window/fvwm/fvwm2rc .fvwm2rc

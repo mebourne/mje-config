@@ -1,7 +1,7 @@
 ;; Emacs configuration file
 ;; Setup for compile
 ;; Written by Martin Ebourne
-;; $Id: compile.el,v 1.1 2001/05/11 17:31:38 mebourne Exp $
+;; $Id: compile.el 792 2003-09-22 11:47:18Z martin $
 
 ;; Modify compilation to understand MSM build script output
 (eval-after-load "compile"

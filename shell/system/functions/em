@@ -2,7 +2,7 @@
 # ZSH function file
 # Send files to emacs for editing
 #
-# $Id: em,v 1.6 2001/08/29 16:35:08 mebourne Exp $
+# $Id: em 792 2003-09-22 11:47:18Z martin $
 
 local -A opts
 local -a files

@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2001 Martin Ebourne. All rights reserved
 ;;
-;; $Id: install.el,v 1.2 2001/05/18 13:57:25 mebourne Exp $
+;; $Id: install.el 792 2003-09-22 11:47:18Z martin $
 
 ;;; Commentary:
 
@@ -12,6 +12,7 @@
 
 ;;; Code:
 
+(require 'bytecomp)
 
 ;; User configurable variables. May be set in the layout file
 
@@ -32,6 +33,9 @@
 
 (defvar install-init-file-list nil
   "List of init files")
+
+(defvar install-directory-list nil
+  "List of directories")
 
 
 ;; User interface functions
@@ -60,6 +64,7 @@
   (load install-layout-file)
 
   (setq install-init-file-list nil)
+  (setq install-directory-list (list install-base-dir))
 
   (message "Executing layout file %s... done" install-layout-file)
   (message "Base directory is %s" install-base-dir)
@@ -68,7 +73,7 @@
   (install-write-startup)
 
   (message "Byte compiling files...")
-  (byte-recompile-directory install-base-dir 0)
+  (install-recompile-directory install-directory-list)
   (message "Byte compiling files... done")
 
   (message "Installing emacs configuration... done")
@@ -95,6 +100,10 @@ install-directories function."
   (if (file-directory-p dirname)
       (progn
 	(message "Processing load directory %s..." dirname)
+
+	;; Remember directory for compiling
+	(setq install-directory-list (append install-directory-list
+					     (list dirname)))
 
 	(save-excursion
 	  (install-create-buffer install-loadfile-name)
@@ -133,6 +142,10 @@ install-directories function."
   (if (file-directory-p dirname)
       (progn
 	(message "Processing autoload directory %s..." dirname)
+
+	;; Remember directory for compiling
+	(setq install-directory-list (append install-directory-list
+					     (list dirname)))
 
 	;; To start with just create the basics of the file
 	(save-excursion
@@ -271,6 +284,38 @@ install-directories function."
 
   (message "Creating main startup file... done")
   )
+
+(defun install-recompile-directory (directories)
+  "Recompile every `.el' file in DIRECTORIES that needs recompilation.
+This is if a `.elc' file does not exist or is is older than the `.el' file."
+  (let ((file-count 0)
+	(dir-count 0)
+	last-dir)
+     (while directories
+       (setq directory (car directories))
+       (message "Checking %s..." directory)
+       (let ((files (directory-files directory))
+	     source dest)
+	 (while files
+	   (setq source (expand-file-name (car files) directory))
+
+	   ;; Decide whether to compile file
+	   (if (and (string-match emacs-lisp-file-regexp source)
+		    (not (auto-save-file-name-p source))
+		    (setq dest (byte-compile-dest-file source))
+		    (file-newer-than-file-p source dest))
+	       (progn (message "Compiling %s..." source)
+		      (byte-compile-file source)
+		      (setq file-count (1+ file-count))
+		      (if (not (eq last-dir directory))
+			  (setq last-dir directory
+				dir-count (1+ dir-count)))
+		      ))
+	   (setq files (cdr files))))
+       (setq directories (cdr directories)))
+    (message "Done (Total of %d file%s compiled%s)"
+	     file-count (if (= file-count 1) "" "s")
+	     (if (> dir-count 1) (format " in %d directories" dir-count) ""))))
 
 
 (provide 'install)

@@ -2,7 +2,7 @@
 # ZSH function file
 # Release component in SCM
 #
-# $Id: release_component,v 1.9 2002/10/29 12:41:45 mebourne Exp $
+# $Id: release_component 792 2003-09-22 11:47:18Z martin $
 
 local vob="/vobs/bpta"
 

@@ -1,7 +1,7 @@
 ;; Emacs configuration file
 ;; Setup for sql-mode
 ;; Written by Martin Ebourne
-;; $Id: sql-mode.el,v 1.2 2001/05/17 13:35:51 mebourne Exp $
+;; $Id: sql-mode.el 792 2003-09-22 11:47:18Z martin $
 
 (setq auto-mode-alist
       (append '(("\\.sql\\'" . sql-mode)

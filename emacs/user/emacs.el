@@ -1,9 +1,9 @@
 ;; Emacs configuration file
 ;; .emacs.el, main user startup file
 ;; Written by Martin Ebourne
-;; $Id: emacs.el,v 1.6 2002/12/12 11:01:27 mebourne Exp $
+;; $Id: emacs.el 792 2003-09-22 11:47:18Z martin $
 
-(load "~/config/emacs/startup")
+(load "/etc/config/emacs/startup")
 (load custom-file)
 
 ;; Enable useful commands which are disabled by default

@@ -1,7 +1,7 @@
 ;; Emacs configuration file
 ;; Customised variables
 ;; Written by Martin Ebourne
-;; $Id: custom.el,v 1.1 2001/05/16 17:13:57 mebourne Exp $
+;; $Id: custom.el 792 2003-09-22 11:47:18Z martin $
 
 ;; Change local customisation defaults
 (custom-set-variables

@@ -2,7 +2,7 @@
 # ZSH function file
 # Make a new CR directory & contents
 #
-# $Id: makecr,v 1.4 2001/08/29 16:34:43 mebourne Exp $
+# $Id: makecr 792 2003-09-22 11:47:18Z martin $
 
 local basedirprefix="/vobs/odyssey/" basedirsuffix="/support/CR"
 

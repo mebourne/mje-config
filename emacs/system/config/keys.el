@@ -1,7 +1,7 @@
 ;; Emacs configuration file
 ;; Key bindings
 ;; Written by Martin Ebourne
-;; $Id: keys.el,v 1.4 2002/03/18 15:13:58 mebourne Exp $
+;; $Id: keys.el 792 2003-09-22 11:47:18Z martin $
 
 ;; Cursor movement
 (global-set-key "\M-\C-z"     'scroll-other-window-down)

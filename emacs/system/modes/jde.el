@@ -1,7 +1,7 @@
 ;; Emacs configuration file
 ;; Setup for jde
 ;; Written by Martin Ebourne
-;; $Id: jde.el,v 1.2 2001/05/16 14:23:13 mebourne Exp $
+;; $Id: jde.el 792 2003-09-22 11:47:18Z martin $
 
 ;(setq auto-mode-alist
 ;      (append

@@ -2,7 +2,7 @@
 # ZSH function file
 # Kill all processes of a certain program
 #
-# $Id: blat,v 1.1 2002/05/17 17:14:47 mebourne Exp $
+# $Id: blat 792 2003-09-22 11:47:18Z martin $
 
 local signal="TERM"
 local -a names

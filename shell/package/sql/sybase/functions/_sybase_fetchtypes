@@ -3,7 +3,7 @@
 # Fetch and return the list of types
 # For use only by the SQL packages
 #
-# $Id: _sybase_fetchtypes,v 1.2 2001/07/02 13:55:19 mebourne Exp $
+# $Id: _sybase_fetchtypes 792 2003-09-22 11:47:18Z martin $
 
 {
   echo "set nocount on"

@@ -1,7 +1,7 @@
 ;; Emacs function file
 ;; Build a BPTA source tree
 ;; Written by Martin Ebourne
-;; $Id: bpta-build.el,v 1.3 2002/06/05 12:22:01 mebourne Exp $
+;; $Id: bpta-build.el 792 2003-09-22 11:47:18Z martin $
 
 ;;;###autoload
 (defun bpta-build (command)

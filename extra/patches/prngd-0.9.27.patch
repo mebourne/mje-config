@@ -1,0 +1,27 @@
+--- prngd-0.9.27/Makefile.orig	Wed Dec 18 13:42:10 2002
++++ prngd-0.9.27/Makefile	Tue Aug  5 17:29:27 2003
+@@ -35,9 +35,9 @@
+ # Solaris 2.6
+ # CC=cc
+ # CFLAGS=-xO4 -KPIC -DSOLARIS26 -D__EXTENSIONS__
+-# CC=gcc
+-# CFLAGS=-O -DSOLARIS26 -D__EXTENSIONS__
+-# SYSLIBS=-lsocket -lnsl
++CC=gcc
++CFLAGS=-O -DSOLARIS26 -D__EXTENSIONS__
++SYSLIBS=-lsocket -lnsl
+ 
+ # Solaris 2.5.1
+ # CC=cc or gcc
+@@ -178,10 +178,7 @@
+ SRC = bsd-daemon.c bsd-snprintf.c unix_socket.c tcp_socket.c close_on_exec.c conffile.c error_handlers.c error_log.c non_blocking.c obtain_limit.c prngd.c rand.c seed.c serverloop.c sha1.c sockio.c
+ 
+ # Move default locations
+-#DEFS=-DRANDSAVENAME=\"/tmp/prngd-seed\" -DCONFIGFILE=\"/tmp/prngd.conf\"
+-# or
+-#DEFS=-DRANDSAVENAME=\"/usr/local/etc/prngd/prngd-seed\" -DCONFIGFILE=\"/usr/local/etc/prngd/prngd.conf\"
+-# or
++DEFS=-DRANDSAVENAME=\"/home/odyssey/mebourne/.prngd-seed\" -DCONFIGFILE=\"/home/odyssey/mebourne/.prngd.conf\"
+ 
+ COMPLETE_CPPFLAGS=-I. $(CPPFLAGS)
+ 

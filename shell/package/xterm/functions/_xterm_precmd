@@ -3,7 +3,7 @@
 # Hook for precmd function to handle xterm updating
 # Usage: _xterm_precmd
 #
-# $Id: _xterm_precmd,v 1.1 2001/08/15 16:14:59 mebourne Exp $
+# $Id: _xterm_precmd 792 2003-09-22 11:47:18Z martin $
 
 local _xterm_command=""
 

@@ -3,7 +3,7 @@
 # Setup for dirstack package
 # Written by Martin Ebourne
 #
-# $Id: setup,v 1.1 2001/04/20 15:36:21 mebourne Exp $
+# $Id: setup 792 2003-09-22 11:47:18Z martin $
 
 add_functions_directory package/dirstack/functions
 

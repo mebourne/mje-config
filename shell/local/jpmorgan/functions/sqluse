@@ -1,8 +1,8 @@
 # ZSH function file
-# Update the SQL package settings from Arcordia environment/component
+# Update the SQL package settings from JPMorgan environment/component
 # Usage: sqluse [<environment> <component>]
 #
-# $Id: sqluse,v 1.5 2001/04/27 11:28:51 mebourne Exp $
+# $Id: sqluse 792 2003-09-22 11:47:18Z martin $
 
 local env=$argv[1] com=$argv[2] db=$argv[3]
 

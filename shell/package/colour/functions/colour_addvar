@@ -3,7 +3,7 @@
 # Add the given parameters to the previously set shell variable
 # Usage: colour_addvar [<parameter> ...]
 #
-# $Id: colour_addvar,v 1.3 2002/08/29 10:25:52 mebourne Exp $
+# $Id: colour_addvar 792 2003-09-22 11:47:18Z martin $
 
 local value="" param="" colour=""
 local -a codes

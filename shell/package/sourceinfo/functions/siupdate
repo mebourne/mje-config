@@ -4,7 +4,7 @@
 # Part of the SourceInfo package
 # Update the SourceInfo databases
 #
-# $Id: siupdate,v 1.14 2002/08/29 10:25:59 mebourne Exp $
+# $Id: siupdate 792 2003-09-22 11:47:18Z martin $
 
 parse_opts -- "$argv[@]" <<'EOF' || return 1
 Description:
@@ -30,15 +30,16 @@ local dir="" new=".new.$$"
 echo "Creating $sourceinfo_filesdb..."
 for dir in $sourceinfo_sourcecode_dirs
 do
-  find $dir -type f \! \( -name '.*' -o -name '*~' -o -name '*#' \
+  find $dir -type f \! \( -name '.*' -o -name '*~*' -o -name '*#' \
 			  -o -name '*.[ado]' -o -name '*.so' \
 			  -o -name '*.elc' -o -name '*.zwc' \
 			  -o -name '*[mM]akefile' -o -name '*.mk' -o -name '*.mak' \
-			  -o -name '*.bak' -o -name '*.orig' -o -name '*.keep' -o -name '*.old' \
+			  -o -name '*.bak' -o -name '*.orig' -o -name '*.old' \
+			  -o -name '*.keep' -o -name '*.keep.*' \
 			  -o -name 'core' \
 		       \) \
 		    -print \
-	    -o \( -name 'lost+found' -o -name 'RCS' -o -name 'CVS' \
+	    -o \( -name '.*' -o -name 'lost+found' -o -name 'RCS' -o -name 'CVS' \
                   -o -name 'sol2.d' -o -name 'SunWS_cache' \
 	       \) \
 	       -prune

@@ -1,7 +1,7 @@
 ;; Emacs configuration file
 ;; Syntax colouring regular expressions for dired
 ;; Written by Martin Ebourne
-;; $Id: dired.el,v 1.1 2001/05/11 17:31:38 mebourne Exp $
+;; $Id: dired.el 792 2003-09-22 11:47:18Z martin $
 
 ;; Dired mode
 (eval-after-load

@@ -3,7 +3,7 @@
 # Complete on the column names from the given list of tables
 # For use only by the SQL packages
 #
-# $Id: _sql_complete_column_names,v 1.5 2001/08/13 21:20:35 mebourne Exp $
+# $Id: _sql_complete_column_names 792 2003-09-22 11:47:18Z martin $
 
 local table="$argv[-1]"
 

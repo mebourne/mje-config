@@ -1,7 +1,7 @@
 ;; Emacs configuration file
 ;; Syntax colouring regular expressions pcl-cvs
 ;; Written by Martin Ebourne
-;; $Id: pcl-cvs.el,v 1.1 2001/05/11 17:31:38 mebourne Exp $
+;; $Id: pcl-cvs.el 792 2003-09-22 11:47:18Z martin $
 
 ;; PCL-CVS
 (defconst cvs-font-lock-keywords-local

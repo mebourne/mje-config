@@ -3,7 +3,7 @@
 # Setup for completion package
 # Written by Martin Ebourne
 #
-# $Id: setup,v 1.16 2002/04/25 12:09:49 mebourne Exp $
+# $Id: setup 792 2003-09-22 11:47:18Z martin $
 
 add_functions_directory package/completion/functions
 
@@ -18,9 +18,13 @@ then
 fi
 
 # Load the completion module. -C speeds things up a lot by skipping audit &
-# zcompdump file regeneration check. Need to rely on user to be sensible about
-# these things
+# zcompdump file regeneration check. Check for zsh newer than dumpfile (ie.
+# upgraded), otherwise need to rely on user to be sensible about these things
 autoload -U compinit
+if [[ $MODULE_PATH -nt $dumpfile ]]
+then
+  command rm -f $dumpfile
+fi
 compinit -C -d $dumpfile
 
 # Set up so future added function directories are processed for completions,

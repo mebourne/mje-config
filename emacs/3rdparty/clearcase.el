@@ -1,12 +1,32 @@
 ;;; clearcase.el --- ClearCase/Emacs integration.
 
+;; Copyright (C) 1999, 2000, 2001, 2002 Kevin Esler
+
+;; Author: Kevin Esler <esler@rational.com>
+;; Maintainer: Kevin Esler <esler@rational.com>
+;; Keywords: clearcase tools
+;; Web home: http://members.verizon.net/~vze24fr2/EmacsClearCase
+
+;; This file is not part of GNU Emacs.
+;;
+;; This program is free software; you can redistribute it and/or modify it under
+;; the terms of the GNU General Public License as published by the Free Software
+;; Foundation; either version 2, or (at your option) any later version.
+
+;; This program is distributed in the hope that it will be useful, but WITHOUT
+;; ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+;; FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+;; details.
+
+;; You should have received a copy of the GNU General Public License along with
+;; GNU Emacs; see the file COPYING.  If not, write to the Free Software
+;; Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+
 ;;{{{ Introduction
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
 ;; This is a ClearCase/Emacs integration.
 ;;
-;; Author: esler@rational.com
+
 ;;
 ;; How to use
 ;; ==========
@@ -105,15 +125,22 @@
 
 ;;{{{ Version info
 
-(defconst clearcase-version-stamp "ClearCase-version: </main/laptop/101>")
+(defconst clearcase-version-stamp "ClearCase-version: </main/laptop/116>")
 (defconst clearcase-version (substring clearcase-version-stamp 19))
-(defconst clearcase-maintainer-address "esler@rational.com")
+
+(defun clearcase-maintainer-address ()
+  ;; Avoid spam.
+  ;;
+  (concat "kevin.esler.1989"
+          "@"
+          "alum.bu.edu"))
+
 (defun clearcase-submit-bug-report ()
   "Submit via mail a bug report on ClearCase Mode"
   (interactive)
   (and (y-or-n-p "Do you really want to submit a report on ClearCase Mode ? ")
        (reporter-submit-bug-report
-        clearcase-maintainer-address
+        (clearcase-maintainer-address)
         (concat "clearcase.el " clearcase-version)
         '(
           system-type
@@ -125,9 +152,10 @@
           clearcase-v3
           clearcase-v4
           clearcase-v5
+          clearcase-v6
           clearcase-servers-online
           clearcase-disable-tq
-          clearcase-on-cygwin32
+          clearcase-on-cygwin
           clearcase-setview-root
           clearcase-suppress-vc-within-mvfs
           shell-file-name
@@ -157,9 +185,10 @@
 
 (defvar clearcase-xemacs-p (string-match "XEmacs" emacs-version))
 
-(defvar clearcase-on-mswindows (memq system-type '(windows-nt ms-windows cygwin32)))
+(defvar clearcase-on-mswindows (memq system-type
+                                     '(windows-nt ms-windows cygwin cygwin32)))
 
-(defvar clearcase-on-cygwin32 (eq system-type 'cygwin32))
+(defvar clearcase-on-cygwin (memq system-type '(cygwin cygwin32)))
 
 (defun clearcase-view-mode-quit (buf)
   "Exit from View mode, restoring the previous window configuration."
@@ -716,59 +745,109 @@ recommended to produce unified diffs, when your
         (forward-line 1))))
   (message "Reformatting...Done"))
 
+
+(defun clearcase-path-follow-if-vob-slink (path)
+  (if (clearcase-fprop-file-is-vob-slink-p path)
+
+      ;; It's a slink so follow it.
+      ;;
+      (let ((slink-text (clearcase-fprop-vob-slink-text path)))
+        (if (file-name-absolute-p slink-text)
+            slink-text
+          (concat (file-name-directory path) slink-text)))
+
+    ;; Not an slink.
+    ;;
+    path))
+
 (defun clearcase-dired-list-checkouts (directory)
   "Returns a list of files checked-out to the current view in DIRECTORY."
 
-  ;; Don't bother looking for checkouts in a history-mode listing
-  ;; nor in view-private directories.
+  ;; Don't bother looking for checkouts in
+  ;;  - a history-mode branch-qua-directory
+  ;;  - a view-private directory
+  ;;
+  ;; NYI: For now don't run lsco in root of a snapshot because it gives errors.
+  ;;      We need to make this smarter.
+  ;;
+  ;; NYI: For a pathname which is a slink to a dir, despite the fact that
+  ;;      clearcase-fprop-file-is-version-p returns true, lsco fails on it,
+  ;;      with "not an element". Sheesh, surely lsco ought to follow links ?
+  ;;      Solution: catch the error and check if the dir is a slink then follow
+  ;;      the link and retry the lsco on the target.
+  ;;
+  ;;      For now just ignore the error.
   ;;
   (if (and (not (clearcase-vxpath-p directory))
-           (not (eq 'view-private-object (clearcase-fprop-mtype directory))))
+           (not (eq 'view-private-object (clearcase-fprop-mtype directory)))
+           (clearcase-fprop-file-is-version-p directory))
+
 
       (let* ((ignore (message "Listing ClearCase checkouts..."))
+             
+             (true-dir-path (file-truename directory))
 
-             (true-directory (file-truename directory))
+             ;; Give the directory as an argument so all names will be
+             ;; fullpaths. For some reason ClearCase adds an extra slash if you
+             ;; leave the trailing slash on the directory, so we need to remove
+             ;; it.
+             ;;
+             (native-dir-path (clearcase-path-native (directory-file-name true-dir-path)))
 
+             (followed-dir-path (clearcase-path-follow-if-vob-slink native-dir-path))
+             
              ;; Form the command:
              ;;
              (cmd (list
                    "lsco" "-cview" "-fmt"
                    (if clearcase-on-mswindows
-		       "%n\\n"
+                       "%n\\n"
                      "'%n\\n'")
 
-                   ;; Give the directory as an argument so all names will be
-                   ;; fullpaths. For some reason ClearCase adds an extra slash
-                   ;; if you leave the trailing slash on the directory, so we
-                   ;; need to remove it.
-                   ;;
-                   (clearcase-path-native (directory-file-name true-directory))))
-
+                   followed-dir-path))
+             
              ;; Capture the output:
              ;;
              (string (clearcase-path-canonicalise-slashes
                       (apply 'clearcase-ct-cleartool-cmd cmd)))
-
+             
              ;; Split the output at the newlines:
              ;;
              (checkout-list (clearcase-utl-split-string-at-char string ?\n)))
-
+        
         ;; Add entries for "." and ".." if they're checked-out.
         ;;
         (let* ((entry ".")
-               (path (expand-file-name (concat true-directory entry))))
+               (path (expand-file-name (concat (file-name-as-directory true-dir-path)
+                                               entry))))
           (if (clearcase-fprop-checked-out path)
               (setq checkout-list (cons path checkout-list))))
         (let* ((entry "..")
-               (path (expand-file-name (concat true-directory entry))))
+               (path (expand-file-name (concat (file-name-as-directory true-dir-path)
+                                               entry))))
           (if (clearcase-fprop-checked-out path)
               (setq checkout-list (cons path checkout-list))))
 
+        ;; If DIRECTORY is a vob-slink, checkout list will contain pathnames
+        ;; relative to the vob-slink target rather than to DIRECTORY.  Convert
+        ;; them back here.  We're making it appear that lsco works on
+        ;; slinks-to-dirs.
+        ;;
+        (if (clearcase-fprop-file-is-vob-slink-p true-dir-path)
+            (let ((re (regexp-quote (file-name-as-directory followed-dir-path))))
+              (setq checkout-list
+                    (mapcar
+                     (function
+                      (lambda (path)
+                        (replace-regexp-in-string re true-dir-path path)))
+                     checkout-list))))
+        
         (message "Listing ClearCase checkouts...done")
-
+        
         ;; Return the result.
         ;;
-        checkout-list)))
+        checkout-list)
+    ))
 
 ;; I had believed that this implementation below OUGHT to be faster, having
 ;; read the code in "ct+lsco". It seemed that "lsco -cview" hit the VOB and
@@ -1327,16 +1406,20 @@ the user to edit."
 
 (defun clearcase-edcs-edit (tag-name)
   "Edit a ClearCase configuration specification"
+
   (interactive
    (let ((vxname (clearcase-fprop-viewtag default-directory)))
-     (list (directory-file-name
-            (completing-read "View Tag: "
-                             (clearcase-viewtag-all-viewtags-obarray)
-                             nil
-                             ;;'fascist
-                             nil
-                             vxname
-                             'clearcase-edcs-tag-history)))))
+     (if clearcase-complete-viewtags
+         (list (directory-file-name
+                (completing-read "View Tag: "
+                                 (clearcase-viewtag-all-viewtags-obarray)
+                                 nil
+                                 ;;'fascist
+                                 nil
+                                 vxname
+                                 'clearcase-edcs-tag-history)))
+       (read-string "View Tag: "))))
+
   (let ((start (current-buffer))
         (buffer-name (format "*ClearCase-Config-%s*" tag-name)))
     (kill-buffer (get-buffer-create buffer-name))
@@ -2746,8 +2829,8 @@ on the directory element itself is listed, not on its contents."
 
 ;;{{{ File property cache
 
-;; ClearCase properties of files are stored in a vector in a hashtable
-;; with the absolute-filename (with no trailing slashes) as the lookup key.
+;; ClearCase properties of files are stored in a vector in a hashtable with the
+;; absolute-filename (with no trailing slashes) as the lookup key.
 ;;
 ;; Properties are:
 ;;
@@ -2763,12 +2846,15 @@ on the directory element itself is listed, not on its contents."
 ;; [6] oid                 : string
 ;; [7] user                : string
 ;; [8] date                : string (yyyymmdd.hhmmss)
-;; [9] time-last-described : (N, N, N) time when the properties were last read from ClearCase
+;; [9] time-last-described : (N, N, N) time when the properties were last read
+;;                           from ClearCase
 ;; [10] viewtag            : string
 ;; [11] comment            : string
+;; [12] slink-text         : string (empty string if not symlink)
 
 ;; nyi: other possible properties to record:
-;;      mtime when last described (lets us know when the cached properties might be stale)
+;;      mtime when last described (lets us know when the cached properties
+;;      might be stale)
 
 ;;{{{ Debug code
 
@@ -2786,7 +2872,8 @@ on the directory element itself is listed, not on its contents."
    (format "date:                %s\n" (aref properties 8))
    (format "time-last-described: %s\n" (current-time-string (aref properties 9)))
    (format "viewtag:             %s\n" (aref properties 10))
-   (format "comment:             %s\n" (aref properties 11))))
+   (format "comment:             %s\n" (aref properties 11))
+   (format "slink-text:          %s\n" (aref properties 12))))
 
 (defun clearcase-fprop-display-properties (file)
   "Display the recorded ClearCase properties of FILE."
@@ -2939,6 +3026,10 @@ and then return them."
   "For FILE, return its \"comment\" ClearCase property."
   (aref (clearcase-fprop-get-properties file) 11))
 
+(defun clearcase-fprop-vob-slink-text (file)
+  "For FILE, return its \"slink-text\" ClearCase property."
+  (aref (clearcase-fprop-get-properties file) 12))
+
 (defun clearcase-fprop-set-comment (file comment)
   "For FILE, set its \"comment\" ClearCase property to COMMENT."
   (aset (clearcase-fprop-get-properties file) 11 comment))
@@ -2948,6 +3039,9 @@ and then return them."
   (if (clearcase-fprop-checked-out file)
       (clearcase-fprop-user file)
     nil))
+
+(defun clearcase-fprop-file-is-vob-slink-p (object-name)
+  (not (zerop (length (clearcase-fprop-vob-slink-text object-name)))))
 
 (defun clearcase-fprop-file-is-version-p (object-name)
   (if object-name
@@ -2971,21 +3065,22 @@ and then return them."
       (if clearcase-xemacs-p
           ;; XEmacs/Windows
           ;;
-	  (if clearcase-on-cygwin32
+	  (if clearcase-on-cygwin
 	      ;; Cygwin build
 	      ;;
-	      "[nil \\\"%m\\\" \\\"%f\\\" \\\"%Rf\\\" \\\"%Sn\\\" \\\"%PSn\\\" \\\"%On\\\" \\\"%u\\\" \\\"%Nd\\\" nil nil nil]\\n%c"
+	      "[nil \\\"%m\\\" \\\"%f\\\" \\\"%Rf\\\" \\\"%Sn\\\" \\\"%PSn\\\" \\\"%On\\\" \\\"%u\\\" \\\"%Nd\\\" nil nil nil \\\"%[slink_text]p\\\" ]\\n%c"
 	    ;; Native build
 	    ;;
-	    ;;"\"[nil \\\"%m\\\" \\\"%f\\\" \\\"%Rf\\\" \\\"%Sn\\\" \\\"%PSn\\\" \\\"%On\\\" \\\"%u\\\" \\\"%Nd\\\" nil nil nil]\n%c\"")
+	    ;;"\"[nil \\\"%m\\\" \\\"%f\\\" \\\"%Rf\\\" \\\"%Sn\\\" \\\"%PSn\\\" \\\"%On\\\" \\\"%u\\\" \\\"%Nd\\\" nil nil nil \\\"%[slink_text]p\\\"]\n%c\"")
             "[nil \\\"%m\\\" \\\"%f\\\" \\\"%Rf\\\" \\\"%Sn\\\" \\\"%PSn\\\" \\\"%On\\\" \\\"%u\\\" \\\"%Nd\\\" nil nil nil]\n%c")
 
         ;; GnuEmacs/Windows
         ;;
-        "[nil \"%m\" \"%f\" \"%Rf\" \"%Sn\" \"%PSn\" \"%On\" \"%u\" \"%Nd\" nil nil nil]\\n%c")
+        "[nil \"%m\" \"%f\" \"%Rf\" \"%Sn\" \"%PSn\" \"%On\" \"%u\" \"%Nd\" nil nil nil \"%[slink_text]p\"]\\n%c")
+
     ;; Unix
     ;;
-    "'[nil \"%m\" \"%f\" \"%Rf\" \"%Sn\" \"%PSn\" \"%On\" \"%u\" \"%Nd\" nil nil nil]\\n%c'")
+    "'[nil \"%m\" \"%f\" \"%Rf\" \"%Sn\" \"%PSn\" \"%On\" \"%u\" \"%Nd\" nil nil nil \"%[slink_text]p\"]\\n%c'")
 
   "Format for cleartool+describe command when reading the
 ClearCase properties of a file")
@@ -3318,7 +3413,7 @@ to cause a future re-fetch."
       (if clearcase-xemacs-p
           ;; XEmacs/Windows
           ;;
-	  (if clearcase-on-cygwin32
+	  (if clearcase-on-cygwin
 	      ;; Cygwin build
 	      ;;
 	      "[\\\"%n\\\"  \\\"%[master]p\\\" ]"
@@ -3874,8 +3969,20 @@ If so, return the viewtag."
   (let  ((truename (file-truename (expand-file-name filename))))
     ;; Shortcut if the file is a version-extended path.
     ;;
-    (or (clearcase-vxpath-p truename)
-        (clearcase-fprop-mtype truename))))
+    (or (clearcase-file-snapshot-root truename)
+        (clearcase-vxpath-p truename)
+        (clearcase-fprop-mtype truename)
+
+        ;; nyi: How to efficiently know if we're in a dynamic-view root
+        ;;   1. Test each contained name for elementness.
+        ;;      Too inefficient.
+        ;;   2. If it is viewroot-relative.
+        ;;      Okay but not sufficient.
+        ;;      How about case v:/ when view is substed ?
+        ;;   3. We're setviewed.
+        ;;      Okay but not sufficient.
+        ;;  Maintain a cache of viewroots ?
+        )))
 
 (defun clearcase-file-viewtag (filename)
   "Find the viewtag associated with existing FILENAME."
@@ -3999,7 +4106,7 @@ or the empty string if none")
            (process-connection-type nil)
            (cleartool-process
             (start-process "cleartool" ;; Absolute path won't work here
-                           "*cleartool*"
+                           " *cleartool*"
                            clearcase-cleartool-path)))
       (process-kill-without-query cleartool-process)
       (setq clearcase-ct-view "")
@@ -4082,6 +4189,7 @@ FLAGS."
     (mapcar
      (function (lambda (s)
                  (and s
+                      (not (zerop (length s)))
                       (setq squeezed
                             (append squeezed (list s))))))
      flags)
@@ -4277,8 +4385,9 @@ an optional list of FLAGS."
 
 (defun clearcase-viewtag-try-to-start-view (viewtag)
   "If VIEW is not apparently already visible under viewroot, start it."
-  (if (not (member viewtag (clearcase-viewtag-started-viewtags)))
-      (clearcase-viewtag-start-view viewtag)))
+  )
+;  (if (not (member viewtag (clearcase-viewtag-started-viewtags)))
+;      (clearcase-viewtag-start-view viewtag)))
 
 (defun clearcase-viewtag-started-viewtags-alist ()
   "Return an alist of views that are currently visible under the viewroot."
@@ -4628,15 +4737,15 @@ Intended for use in snapshot views."
 (defun clearcase-path-canonical (path)
   (if (not clearcase-on-mswindows)
       path
-    (if clearcase-on-cygwin32
-	(substring (shell-command-to-string (concat "cygpath -u -p '" path "'")) 0 -1)
+    (if clearcase-on-cygwin
+	(substring (shell-command-to-string (concat "cygpath -u '" path "'")) 0 -1)
       (subst-char-in-string ?\\ ?/ path))))
 
 (defun clearcase-path-native (path)
   (if (not clearcase-on-mswindows)
       path
-    (if clearcase-on-cygwin32
-	(substring (shell-command-to-string (concat "cygpath -w -p " path)) 0 -1)
+    (if clearcase-on-cygwin
+	(substring (shell-command-to-string (concat "cygpath -w " path)) 0 -1)
       (subst-char-in-string ?/ ?\\ path))))
 
 (defun clearcase-path-file-really-exists-p (filename)
@@ -6436,7 +6545,7 @@ its ClearCase server(s)."
 ;;{{{ A write-file-hook to auto-insert a version-string.
 
 ;; To use this, put a line containing this in the first 8 lines of your file:
-;;    ClearCase-version: </main/laptop/100>
+;;    ClearCase-version: </main/laptop/115>
 ;; and make sure that clearcase-version-stamp-active gets set to true at least
 ;; locally in the file.
 
@@ -6629,36 +6738,6 @@ version."
 
 ;;}}}
 
-;;{{{ Disable VC in the MVFS
-
-;; This handler ensures that VC doesn't attempt to operate inside the MVFS.
-;; This stops it from futile searches for RCS directories and the like inside.
-;; It prevents a certain amount of clutter in the MVFS' noent-cache.
-;;
-(defun clearcase-suppress-vc-within-mvfs-file-name-handler (operation &rest args)
-  (clearcase-when-debugging
-   (if (fboundp 'clearcase-utl-syslog)
-       (clearcase-utl-syslog "*clearcase-fh-trace*"
-                             (cons "clearcase-suppress-vc-within-mvfs-file-name-handler:"
-                                   (cons operation args)))))
-  ;; Inhibit recursion:
-  ;;
-  (let ((inhibit-file-name-handlers
-         (cons 'clearcase-suppress-vc-within-mvfs-file-name-handler
-               (and (eq inhibit-file-name-operation operation)
-                    inhibit-file-name-handlers)))
-        (inhibit-file-name-operation operation))
-
-    (cond
-     ((and (eq operation 'vc-registered)
-           (clearcase-file-would-be-in-view-p (car args)))
-      nil)
-
-     (t
-      (apply operation args)))))
-
-;;}}}
-
 ;;{{{ File name handler for version extended file names
 
 ;; For version extended pathnames there are two possible answers
@@ -6741,6 +6820,21 @@ version."
 ;;}}}
 
 ;;}}}
+;;{{{ Advice: Disable VC in the MVFS
+
+;; This handler ensures that VC doesn't attempt to operate inside the MVFS.
+;; This stops it from futile searches for RCS directories and the like inside.
+;; It prevents a certain amount of clutter in the MVFS' noent-cache.
+;;
+
+(defadvice vc-registered (around clearcase-interceptor disable compile)
+  "Disable normal behavior if in a clearcase dynamic view.
+This is enabled/disabled by clearcase-integrate/clearcase-unintegrate."
+  (if (clearcase-file-would-be-in-view-p (ad-get-arg 0))
+      nil
+    ad-do-it))
+
+;;}}}
 
 ;;{{{ Functions: integrate and un-integrate.
 
@@ -6781,8 +6875,9 @@ version."
   ;;    2.3 Turn off RCS/VCS/SCCS activity inside a ClearCase dynamic view.
   ;;
   (if clearcase-suppress-vc-within-mvfs
-      (add-to-list 'file-name-handler-alist
-                   (cons ".*" 'clearcase-suppress-vc-within-mvfs-file-name-handler)))
+      (when clearcase-suppress-vc-within-mvfs
+	(ad-enable-advice 'vc-registered 'around 'clearcase-interceptor)
+	(ad-activate 'vc-registered)))
 
 ;; Disabled for now. See comments above clearcase-vxpath-file-name-handler.
 ;;
@@ -6819,9 +6914,13 @@ version."
                       (memq (cdr entry)
                             '(clearcase-viewroot-relative-file-name-handler
                               clearcase-viewtag-file-name-handler
-                              clearcase-suppress-vc-within-mvfs-file-name-handler
                               clearcase-vxpath-file-name-handler))))
-                   file-name-handler-alist)))
+                   file-name-handler-alist))
+
+  ;; 3. Turn on RCS/VCS/SCCS activity everywhere.
+  ;;
+  (ad-disable-advice 'vc-registered 'around 'clearcase-interceptor)
+  (ad-activate 'vc-registered))
 
 ;;}}}
 
@@ -6832,7 +6931,7 @@ version."
 (defvar clearcase-lt nil)
 (defvar clearcase-v3 nil)
 (defvar clearcase-v4 nil)
-(defvar clearcase-v5 nil)
+(defvar clearcase-v6 nil)
 (defvar clearcase-servers-online nil)
 (defvar clearcase-setview-root nil)
 (defvar clearcase-setview-viewtag)
@@ -6844,12 +6943,10 @@ version."
   ;; call-process fails on Windows and this startup fails.
   ;; Check for this and unset the useless EV.
 
-  ;; nyi: This didn't seem to work.
-  ;;
   (let ((shell-ev-value (getenv "SHELL")))
     (if clearcase-on-mswindows
         (if (stringp shell-ev-value)
-            (if (not (file-exists-p shell-ev-value))
+            (if (not (executable-find shell-ev-value))
                 (setenv "SHELL" nil)))))
   
   ;; Things have to be done here in a certain order.
@@ -6872,6 +6969,9 @@ version."
                                        clearcase-clearcase-version-installed))))
         (setq clearcase-v5
               (not (null (string-match "^ClearCase \\(LT \\)?version 2002.05"
+                                       clearcase-clearcase-version-installed))))
+        (setq clearcase-v6
+              (not (null (string-match "^ClearCase \\(LT \\)?version 2003.06"
                                        clearcase-clearcase-version-installed))))
 
         ;; 3. Gather setview information:

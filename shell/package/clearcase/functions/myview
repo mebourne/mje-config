@@ -3,7 +3,7 @@
 # Part of the clearcase package
 # Set view to that matching username
 #
-# $Id: myview,v 1.8 2002/10/14 11:27:42 mebourne Exp $
+# $Id: myview 792 2003-09-22 11:47:18Z martin $
 
 _clearcase_getviews
 

@@ -2,6 +2,6 @@
 # Update the prompt to display the current SQL settings
 # This function is for use by the sql/prompt code
 #
-# $Id: _sql_prompt_update,v 1.2 2001/04/27 11:07:10 mebourne Exp $
+# $Id: _sql_prompt_update 792 2003-09-22 11:47:18Z martin $
 
 _sql_prompt="$_sql_parameters[environment] $_sql_parameters[component]"

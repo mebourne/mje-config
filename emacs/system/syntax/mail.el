@@ -1,7 +1,7 @@
 ;; Emacs configuration file
 ;; Syntax colouring regular expressions for sendmail and message
 ;; Written by Martin Ebourne
-;; $Id: mail.el,v 1.1 2001/05/11 17:31:38 mebourne Exp $
+;; $Id: mail.el 792 2003-09-22 11:47:18Z martin $
 
 ;; Mail editing modes
 (defconst mail-keywords-local

@@ -3,7 +3,7 @@
 # Shell option settings
 # Written by Martin Ebourne
 #
-# $Id: options,v 1.7 2001/10/11 12:51:05 mebourne Exp $
+# $Id: options 792 2003-09-22 11:47:18Z martin $
 
 setopt append_history
 setopt auto_cd

@@ -3,7 +3,7 @@
 # Setup for Config package
 # Written by Martin Ebourne
 #
-# $Id: setup,v 1.2 2002/08/29 10:25:55 mebourne Exp $
+# $Id: setup 792 2003-09-22 11:47:18Z martin $
 
 add_functions_directory package/config/functions
 

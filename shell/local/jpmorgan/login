@@ -4,17 +4,11 @@
 # done, but immediately before the user specific files
 # Written by Martin Ebourne
 #
-# $Id: login,v 1.4 2001/05/18 14:29:17 mebourne Exp $
+# $Id: login 792 2003-09-22 11:47:18Z martin $
 
-# Arcordia settings
+# JPMorgan settings
 
-# Set up paths for Emacs
-local emacshome=/opt/emacs/20.3.0.0/solaris
-path=($path $emacshome/bin /vobs/odyssey/cashsec/script)
-infopath=($infopath $emacshome/info)
-
-typeset -UgxT EMACSLOADPATH emacsloadpath
-emacsloadpath=($emacshome/share/emacs/20.3/lisp)
+unset EMACSLOADPATH
 
 export WU_HOME=/vobs/odyssey/cashsec/script/workunitctrl
 

@@ -1,6 +1,7 @@
 # Perl package MJE::Table
 # Provide general utility functions
 # Written by Martin Ebourne, 06/08/2001
+# $Id: Table.pm 792 2003-09-22 11:47:18Z martin $
 #
 # Usage:
 #

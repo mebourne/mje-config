@@ -4,7 +4,7 @@
 # Caching is handled automatically
 # For use only by the SQL packages
 #
-# $Id: _sql_get_proc_names,v 1.2 2001/08/24 10:26:15 mebourne Exp $
+# $Id: _sql_get_proc_names 792 2003-09-22 11:47:18Z martin $
 
 if [[ -z $_sql_procs ]]
 then

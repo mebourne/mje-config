@@ -2,6 +2,7 @@
 #
 # Display a type information using the sourceinfo database.
 # Written by Martin Ebourne. Started 23/02/01
+# $Id: typeInfo.pl 792 2003-09-22 11:47:18Z martin $
 
 use strict;
 use IO::File;

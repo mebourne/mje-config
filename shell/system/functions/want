@@ -2,7 +2,7 @@
 # ZSH function file
 # Halt a shell, waiting for a trigger (supplied by 'go')
 #
-# $Id: want,v 1.5 2002/04/24 17:03:58 mebourne Exp $
+# $Id: want 792 2003-09-22 11:47:18Z martin $
 
 local -A opts
 parse_opts - opts -- "$argv[@]" <<'EOF' || return 1

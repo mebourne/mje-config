@@ -1,7 +1,7 @@
 ;; Emacs configuration file
 ;; MS Windows specific setup
 ;; Written by Martin Ebourne
-;; $Id: mswindows.el,v 1.1 2001/05/11 17:31:38 mebourne Exp $
+;; $Id: mswindows.el 792 2003-09-22 11:47:18Z martin $
 
 (if (eq system-type 'windows-nt)
     (progn

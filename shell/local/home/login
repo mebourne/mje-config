@@ -1,0 +1,12 @@
+# ZSH configuration file
+# Executed for login shells via zprofile
+# Local site-specific setup for login shells. Run after all system login setup has been
+# done, but immediately before the user specific files
+# Written by Martin Ebourne
+#
+# $Id: login 792 2003-09-22 11:47:18Z martin $
+
+# Home settings
+
+# Java run time
+path=($path /usr/java/j2sdk1.4.2/bin)

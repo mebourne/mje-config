@@ -1,5 +1,7 @@
 -*- Outline -*-
-	
+$Id: programs.txt 792 2003-09-22 11:47:18Z martin $
+
+
 Installed programs
 ========= ========
 
@@ -7,13 +9,20 @@ Installed programs
 
 ** Zsh
 Name:		 Zsh
-Version:	 4.0.4
+Version:	 4.1.1
 Home page:	 http://www.zsh.org/
-Package name:	 zsh-4.0.4.tar.gz
+Package name:	 zsh-4.1.1.tar.gz
 Source location: ftp://ftp.net.lut.ac.uk/zsh/
 Build:
-See zsh-cfg
-Notes:		 CSFB: Use CC=cc ./configure ...
+patch -p0 < $HOME/config/extra/patches/zsh-4.1.1.approximate.patch
+patch -p1 < $HOME/config/extra/patches/zsh-4.1.1.source.patch
+./configure --prefix=$HOME/local --bindir=$HOME/local/bin/`uname -m` --enable-function-subdirs
+gmake
+gmake check
+gmake install
+gmake install.info
+for i in $HOME/local/share/zsh/*/functions/Misc; do if [[ ! -e $i/zcp ]]; then ln $i/zmv $i/zcp; ln $i/zmv $i/zln; ln $i/zed $i/fned; fi; done
+Notes:	 	 CSFB: Use CC=cc ./configure ...
 
 
 
@@ -21,19 +30,41 @@ Notes:		 CSFB: Use CC=cc ./configure ...
 
 ** Emacs
 Name:		 Emacs
-Version:	 21.2.2
+Version:	 21.3
 Home page:	 http://www.gnu.org/
-Package name:	 emacs-21.2.tar.gz
+Package name:	 emacs-21.3.tar.gz
 Source location: ftp://ftp.warwick.ac.uk/pub/gnu/emacs/
 Build:
-./configure --prefix=$HOME/local --bindir=$HOME/local/bin/`uname -m`
+./configure --prefix=$HOME/local --bindir=$HOME/local/bin/$(uname -m)
 gmake
 gmake install
-gmake install-info
 Notes:		 If image libraries (JPEG & XPM) compiled, use also:
 		     --with-xpm --with-jpeg --x-includes=$HOME/local/include
 		     --x-libraries=$HOME/local/lib
 		 CSFB: Use --without-gcc to ./configure
+
+** Xpm
+Name:		 XPM library
+Version:	 3.4k solaris binary
+Package name:	 xpm-3.4k-solaris.tgz
+Source location: ftp://ftp.x.org/contrib/libraries/
+Build:
+mkdir xpm-3.4k-solaris/bin/$(uname -m)
+mv xpm-3.4k-solaris/bin/*(.) xpm-3.4k-solaris/bin/$(uname -m)/
+mv xpm-3.4k-solaris local
+tar cvf ~/local.tar local
+cd ~
+tar xvf local.tar
+
+** Jpeg
+Name:		 JPEG library
+Version:	 6b
+Package name:	 jpegsrc.v6b.tar.gz
+Source location: ftp://ftp.uu.net/graphics/jpeg/
+Build:
+./configure --prefix=$HOME/local --bindir=$HOME/local/bin/$(uname -m)
+gmake
+gmake install install-lib bindir=$HOME/local/bin/$(uname -m)
 
 ** Emacs lisp help
 Name:		 Emacs lisp help
@@ -89,10 +120,10 @@ Package name:	 xterm.tar.gz
 Source location: http://invisible-island.net/xterm/
 		 ftp://dickey.his.com/xterm/
 Build:
-./configure --prefix=$HOME/local --bindir=$HOME/local/bin/`uname -m` --enable-256-color --enable-wide-chars
+./configure --prefix=$HOME/local --bindir=$HOME/local/bin/$(uname -m) --enable-256-color --enable-wide-chars
 gmake
 gmake install
-( cd $HOME/local/bin; mv resize uxterm xterm `uname -m` )
+( cd $HOME/local/bin; mv resize uxterm xterm $(uname -m) )
 Notes:		 CSFB: Use CC=cc ./configure ...
 
 ** Fvwm
@@ -102,7 +133,7 @@ Home page:	 http://www.fvwm.org/
 Package name:	 fvwm-2.4.6.tar.gz
 Source location: ftp://ftp.fvwm.org/pub/fvwm/version-2/
 Build:
-./configure --prefix=$HOME/local --bindir=$HOME/local/bin/`uname -m`
+./configure --prefix=$HOME/local --bindir=$HOME/local/bin/$(uname -m)
 gmake
 gmake install
 gmake install-info
@@ -119,6 +150,55 @@ mv fvwm_icons $HOME/local/share/fvwm-icons
 
 
 
+* Version control related
+
+** Subversion
+
+Name:		 subversion
+Version:	 0.26
+Home page:	 http://subversion.tigris.org/
+Package name:	 subversion-0.26.0.tar.gz
+Build:
+./configure --prefix=$HOME/local --bindir=$HOME/local/bin/$(uname -m) --with-ssl --with-libs=$HOME/local
+gmake
+gmake install
+Notes:		 CSFB: Use CC=cc ./configure ...
+
+** OpenSSL
+
+Name:		 openSSL
+Version:	 0.9.7b
+Home page:	 http://www.openssl.org/
+Package name:	 openssl-0.9.7b.tar.gz
+Source location: http://www.openssl.org/source/
+Build:
+./config --prefix=$HOME/local
+gmake
+gmake install
+Notes:		 If using on system without /dev/{,u}random, will need prngd. Apply patch
+		 openssl-0.9.7b.patch in this case:
+		 patch -p1 < $HOME/config/extra/patches/openssl-0.9.7b.patch
+
+** Prngd
+
+Name:		 prngd
+Version:	 0.9.27
+Home page:	 http://ftp.aet.TU-Cottbus.DE/personen/jaenicke/postfix_tls/prngd.html
+Package name:	 prngd-0.9.27.tar.gz
+Build:
+patch -p1 < $HOME/config/extra/patches/prngd-0.9.27.patch
+gmake
+cp prngd ~/local/bin/$(uname -m)/
+cp contrib/Solaris-2.6/prngd.conf.solaris-26 ~/.prngd.conf
+cp /var/adm/messages ~/.prngd-seed
+Notes:
+To run daemon use:
+prngd ~/.egd-pool
+To stop daemon use:
+prngd --kill ~/.egd-pool
+
+
+
 * General unix
 
 ** Less
@@ -128,7 +208,7 @@ Home page:	 http://www.gnu.org/
 Package name:	 less-374.tar.gz
 Source location: ftp://ftp.warwick.ac.uk/pub/gnu/less/
 Build:
-./configure --prefix=$HOME/local --bindir=$HOME/local/bin/`uname -m`
+./configure --prefix=$HOME/local --bindir=$HOME/local/bin/$(uname -m)
 gmake
 gmake install
 gmake install-info
@@ -141,7 +221,7 @@ Home page:	 http://www.gnu.org/
 Package name:	 fileutils-4.1.tar.gz
 Source location: ftp://ftp.warwick.ac.uk/pub/gnu/fileutils/
 Build:
-./configure --prefix=$HOME/local --bindir=$HOME/local/bin/`uname -m`
+./configure --prefix=$HOME/local --bindir=$HOME/local/bin/$(uname -m)
 gmake
 gmake check
 gmake install

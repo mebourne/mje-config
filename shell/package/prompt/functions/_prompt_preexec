@@ -3,7 +3,7 @@
 # Hook for preexec function
 # Usage: _prompt_precmd
 #
-# $Id: _prompt_preexec,v 1.17 2002/08/29 10:25:59 mebourne Exp $
+# $Id: _prompt_preexec 792 2003-09-22 11:47:18Z martin $
 
 local command="$1"
 

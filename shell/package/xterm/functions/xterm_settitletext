@@ -3,6 +3,6 @@
 # Update title bar on XTerm
 # Usage: xterm_settitletext <text>
 #
-# $Id: xterm_settitletext,v 1.1 2001/08/15 16:14:59 mebourne Exp $
+# $Id: xterm_settitletext 792 2003-09-22 11:47:18Z martin $
 
 echo -n "\e]2;$argv[1]\007"

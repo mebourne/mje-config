@@ -1,0 +1,85 @@
+! .Xdefaults - X resources configuration
+! Written by Martin Ebourne
+!
+! $Id: Xdefaults 800 2003-09-22 15:20:17Z martin $
+
+*background:        LightSkyBlue
+*shapeStyle:        Rectangle
+*beNiceToColormap:  False
+
+!!! XTerm configuration
+
+! Sizes
+XTerm*font:			6x13
+!XTerm*font:			7x14
+!XTerm*geometry:		101x50
+
+! TrueType
+!XTerm*faceName:		andale:size=8:charwidth=6
+
+! Colours
+XTerm*background:		black
+XTerm*cursorColor:		green
+XTerm*foreground:		white
+XTerm*highlightColor:		blue
+
+! Options
+XTerm*boldMode:			true
+XTerm*colorBDMode:		false
+XTerm*cursorBlink:		true
+XTerm*cursorOffTime:		500
+XTerm*cursorOnTime:		1500
+XTerm*eightBitInput:		false
+XTerm*fullCursor:		true
+XTerm*reverseWrap:		true
+XTerm*saveLines:		10000
+XTerm*scrollBar:		true
+XTerm*scrollKey:		true
+XTerm*scrollTtyOutput:		false
+XTerm*titleBar:			false
+XTerm*ttyModes:			erase ^h
+XTerm*visualBell:		true
+XTerm*VT100.Translations:	#override\n\
+				Shift <KeyPress> Prior : scroll-back(1,halfpage)\n\
+				Shift <KeyPress> Next : scroll-forw(1,halfpage)\n\
+				<KeyPress> Prior : scroll-back(1,page)\n\
+				<KeyPress> Next : scroll-forw(1,page)
+
+
+!!! Emacs configuration
+
+! Sizes
+Emacs*font:			6x13
+Emacs*geometry:			101x50
+
+! Colours
+Emacs*background:		white
+Emacs*cursorColor:		green
+Emacs*foreground:		black
+
+! Options
+Emacs*bitmapIcon:		on
+Emacs*reverseVideo:		on
+
+
+
+!!! Old stuff
+
+!Mwm*UseIconBox:		true
+!Mwm*iconbox*ClientDecoration:	-title
+Mwm*ButtonWidth:		20
+Mwm*FrameBorderWidth:		6
+Mwm*IconPlacement:		left bottom
+Mwm*activeBackground:		blueviolet
+Mwm*activeForeground:		white
+Mwm*background:			#7c8498
+Mwm*clientAutoPlace:		true
+Mwm*focusAutoRaise:		false
+Mwm*foreground:			#fce089
+Mwm*info*ClientDecoration:	-menu
+Mwm*keyboardFocusPolicy:	pointer
+Mwm*shadowThickness:		3
+Mwm*xclock*ClientDecoration:	-title
+Mwm*xload*ClientDecoration:	-menu
+
+Scrollbar.JumpCursor:		true

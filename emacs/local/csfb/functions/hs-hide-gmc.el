@@ -1,7 +1,7 @@
 ;; Emacs function file
 ;; Hide GMC logging code
 ;; Written by Martin Ebourne
-;; $Id: hs-hide-gmc.el,v 1.1 2002/10/10 15:44:12 mebourne Exp $
+;; $Id: hs-hide-gmc.el 792 2003-09-22 11:47:18Z martin $
 
 ;;;###autoload
 (defun hs-hide-gmc ()

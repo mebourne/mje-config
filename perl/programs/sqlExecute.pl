@@ -1,7 +1,8 @@
-#!/app/perl5005/bin/perl -w
+#!/usr/local/bin/perl -w
 #
 # Format SQL output to make it easier to read
 # Written by Martin Ebourne. Started 22/05/01
+# $Id: sqlExecute.pl 792 2003-09-22 11:47:18Z martin $
 
 use strict;
 use Data::Dumper;

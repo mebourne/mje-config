@@ -3,7 +3,7 @@
 # Trigger a waiting shell (stopped with 'want')
 # Usage: go <identifier>
 #
-# $Id: go,v 1.4 2002/04/23 10:21:01 mebourne Exp $
+# $Id: go 792 2003-09-22 11:47:18Z martin $
 
 local -A opts
 parse_opts - opts -- "$argv[@]" <<'EOF' || return 1

@@ -4,7 +4,7 @@
 # Part of the SourceInfo package
 # Display class hierarchy trees
 #
-# $Id: sitree,v 1.10 2001/08/29 16:35:00 mebourne Exp $
+# $Id: sitree 792 2003-09-22 11:47:18Z martin $
 
 local -A opts
 local -a dirs
@@ -18,7 +18,7 @@ sitree [options] <type-name>
 Options:
   -d <dir>, --directory=<dir>	Prefer files within directory if duplicates found
 				(partial name ok, searched in order given)
-				# dirs += [*] --directory | -d : directory
+				# dirs += [*] --directory | -d : ? directory
   -h, --help			Provide this help
 				# --help | -h * excludes=*
 

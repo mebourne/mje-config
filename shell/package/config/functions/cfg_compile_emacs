@@ -4,7 +4,7 @@
 # Part of the Config package
 # Compile emacs directory
 #
-# $Id: cfg_compile_emacs,v 1.5 2001/08/29 16:34:55 mebourne Exp $
+# $Id: cfg_compile_emacs 792 2003-09-22 11:47:18Z martin $
 
 emulate -LR zsh
 
@@ -25,4 +25,4 @@ Arguments:
 				# directory : directory
 EOF
 
-emacs --batch --user=$USER --eval "(install \"$opts[directory]/layout.el\")"
+emacs --batch --user=$USER --eval "(load \"$opts[directory]/package/install.el\")" --eval "(install \"$opts[directory]/layout.el\")"

@@ -3,7 +3,7 @@
 # Setup for SQL base package
 # Written by Martin Ebourne
 #
-# $Id: setup,v 1.19 2002/05/28 15:37:46 mebourne Exp $
+# $Id: setup 792 2003-09-22 11:47:18Z martin $
 
 add_functions_directory package/sql/base/functions
 

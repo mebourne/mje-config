@@ -1,7 +1,7 @@
 ;; Emacs function file
 ;; Copy word point is in to kill ring
 ;; Written by Martin Ebourne
-;; $Id: copy-word-as-kill.el,v 1.1 2001/05/11 17:31:38 mebourne Exp $
+;; $Id: copy-word-as-kill.el 792 2003-09-22 11:47:18Z martin $
 
 ;;;###autoload
 (defun copy-word-as-kill ()

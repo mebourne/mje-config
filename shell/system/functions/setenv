@@ -2,7 +2,7 @@
 # ZSH function file
 # Emulate csh setenv for use of simple csh setup files
 #
-# $Id: setenv,v 1.4 2001/08/29 16:36:01 mebourne Exp $
+# $Id: setenv 792 2003-09-22 11:47:18Z martin $
 
 local -A opts
 parse_opts - opts -- "$argv[@]" <<'EOF' || return 1

@@ -2,6 +2,7 @@
 #
 # Parse C++ header files for typedef & class definitions
 # Written by Martin Ebourne. Started 23/02/01
+# $Id: typeInfoGenerate.pl 792 2003-09-22 11:47:18Z martin $
 
 use strict;
 use IO::File;

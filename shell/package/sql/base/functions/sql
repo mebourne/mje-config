@@ -3,7 +3,7 @@
 # Execute an SQL command
 # Usage: sql <sql-command> ...
 #
-# $Id: sql,v 1.11 2002/08/29 10:26:02 mebourne Exp $
+# $Id: sql 792 2003-09-22 11:47:18Z martin $
 
 eval $_sql_intro
 

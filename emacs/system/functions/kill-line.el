@@ -1,7 +1,7 @@
 ;; Emacs function file
 ;; Kill current line
 ;; Written by Martin Ebourne
-;; $Id: kill-line.el,v 1.1 2001/05/11 17:31:38 mebourne Exp $
+;; $Id: kill-line.el 792 2003-09-22 11:47:18Z martin $
 
 ;;;###autoload
 (defun kill-current-line ()

@@ -4,7 +4,7 @@
 # Written by Martin Ebourne
 # NB. This file should only be included by the SQL base package
 #
-# $Id: setup,v 1.6 2002/06/19 11:04:49 mebourne Exp $
+# $Id: setup 792 2003-09-22 11:47:18Z martin $
 
 # Query for owner may be useful:
 # select owner from all_tables

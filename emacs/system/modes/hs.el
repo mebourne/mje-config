@@ -1,7 +1,7 @@
 ;; Emacs configuration file
 ;; Setup for hs
 ;; Written by Martin Ebourne
-;; $Id: hs.el,v 1.1 2001/05/11 17:31:38 mebourne Exp $
+;; $Id: hs.el 792 2003-09-22 11:47:18Z martin $
 
 ;;; (load-library "hideshow")
 

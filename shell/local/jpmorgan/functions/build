@@ -2,7 +2,7 @@
 # ZSH function file
 # Build the cashsec system
 #
-# $Id: build,v 1.5 2001/08/29 16:34:40 mebourne Exp $
+# $Id: build 792 2003-09-22 11:47:18Z martin $
 
 local -A what
 what=(

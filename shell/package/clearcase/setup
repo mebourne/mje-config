@@ -3,7 +3,7 @@
 # Setup for clearcase package
 # Written by Martin Ebourne
 #
-# $Id: setup,v 1.8 2001/06/29 08:42:09 mebourne Exp $
+# $Id: setup 792 2003-09-22 11:47:18Z martin $
 
 if [[ -n "$CLEARCASE_ROOT" ]]
 then

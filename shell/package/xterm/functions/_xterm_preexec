@@ -3,7 +3,7 @@
 # Hook for preexec function
 # Usage: _xterm_preexec
 #
-# $Id: _xterm_preexec,v 1.1 2001/08/15 16:14:59 mebourne Exp $
+# $Id: _xterm_preexec 792 2003-09-22 11:47:18Z martin $
 
 local _xterm_command="${${argv[1]}[(w)1]}"
 

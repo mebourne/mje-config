@@ -2,6 +2,7 @@
 #
 # Format SQL output to make it easier to read
 # Written by Martin Ebourne. Started 22/05/01
+# $Id: sqlFormat.pl 792 2003-09-22 11:47:18Z martin $
 
 use strict;
 use English;

@@ -3,7 +3,7 @@
 # Set up all the autoloaded functions. This is executed for all shells very early on
 # Written by Martin Ebourne
 #
-# $Id: loadfuncs,v 1.8 2002/08/29 10:26:07 mebourne Exp $
+# $Id: loadfuncs 792 2003-09-22 11:47:18Z martin $
 
 # This file can be included more than once. Only execute it once though
 if ! functions add_functions_directory >/dev/null
@@ -45,7 +45,7 @@ then
       if [[ -n $files ]]
       then
 	autoload -U - $files
-  
+
 	if [[ -n $ZCONFIGDEBUG ]]
 	then
 	  echo "Autoloading functions from $argv[1]:"

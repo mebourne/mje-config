@@ -5,7 +5,7 @@
 # Completion code for sql command
 # Usage: These functions are used by the completion code
 #
-# $Id: _sql,v 1.22 2002/08/29 10:26:00 mebourne Exp $
+# $Id: _sql 792 2003-09-22 11:47:18Z martin $
 
 #_sql_trace=1
 
@@ -22,7 +22,8 @@ _sql_tokenise () {
 
   local -a keywords
   keywords=( by create delete distinct drop exec from group having
-             insert into order select set union update values
+             insert into order select set table truncate union
+	     update values
 	   )
 
   local whitespace="" token="" tokenid="" prefix=""
@@ -286,6 +287,10 @@ _sql_pn_start () {
     update)
       _sql_get_token update
       _sql_pn_update
+      ;;
+    truncate)
+      _sql_get_token truncate
+      _sql_pn_truncate
       ;;
     exec)
       _sql_get_token exec
@@ -573,6 +578,13 @@ _sql_pn_delete_from () {
       _sql_get_token delete.table
       ;;
   esac
+}
+
+_sql_pn_truncate () {
+  if [[ $token == table ]]
+  then
+    _sql_get_token truncate.table
+  fi
 }
 
 _sql_pn_insert () {
@@ -946,8 +958,14 @@ _sql_generate_completions () {
       _sql_generate_column_completion
       ;;
     start)
-      alts=($alts 'sql:SQL reserved words:(select delete insert update exec create drop)')
+      alts=($alts 'sql:SQL reserved words:(select delete insert update truncate exec create drop)')
       alts=($alts 'stored-procs:database stored procedures:_sql_complete_proc_names')
+      ;;
+    truncate)
+      alts=($alts 'sql:SQL reserved words:(table)')
+      ;;
+    truncate.table)
+      alts=($alts 'tables:database tables:_sql_complete_table_names')
       ;;
     update)
       alts=($alts 'tables:database tables:_sql_complete_table_names')

@@ -3,7 +3,7 @@
 # Set sql variables
 # Usage: sqlset <sql-variable>=<value> ...
 #
-# $Id: sqlset,v 1.8 2002/08/29 10:26:04 mebourne Exp $
+# $Id: sqlset 792 2003-09-22 11:47:18Z martin $
 
 eval $_sql_intro
 

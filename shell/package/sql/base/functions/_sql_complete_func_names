@@ -3,7 +3,7 @@
 # Complete on the list of function names
 # For use only by the SQL packages
 #
-# $Id: _sql_complete_func_names,v 1.1 2002/04/11 16:15:27 mebourne Exp $
+# $Id: _sql_complete_func_names 792 2003-09-22 11:47:18Z martin $
 
 _sql_get_func_names
 _wanted db-functions expl 'database functions' compadd -a _sql_funcs

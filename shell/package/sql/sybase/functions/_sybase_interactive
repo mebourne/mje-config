@@ -3,6 +3,6 @@
 # Enter interactive SQL command line
 # For use only by the SQL packages
 #
-# $Id: _sybase_interactive,v 1.1 2001/05/29 16:56:05 mebourne Exp $
+# $Id: _sybase_interactive 792 2003-09-22 11:47:18Z martin $
 
 _sybase_rawsql -w ${COLUMNS:-10000}

@@ -10,7 +10,7 @@
 ;; 18-02-97 - Fix to check in current buffer, SJL
 ;; 10-06-99 - Fixed to work properly with the mouse, MJE
 ;;
-;; $Id: constrain.el,v 1.2 2002/03/26 13:16:04 mebourne Exp $
+;; $Id: constrain.el 792 2003-09-22 11:47:18Z martin $
 
 ;;; Commentary:
 

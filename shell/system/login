@@ -3,7 +3,7 @@
 # Generic system-wide setup for login shells. Primarily to set environment vars just once
 # Written by Martin Ebourne
 #
-# $Id: login,v 1.12 2002/09/02 11:01:57 mebourne Exp $
+# $Id: login 808 2003-10-06 15:20:37Z martin $
 
 # Remove . from PATH since it is the work of the devil
 path=(${path:#.})
@@ -11,8 +11,15 @@ path=(${path:#.})
 # Set up standard paths
 path=($HOME/local/bin/$(uname -m) $HOME/local/bin /usr/local/bin $path)
 ld_library_path=($ld_library_path $HOME/local/lib)
+
+# If there's no MANPATH then try and set it from the manpath command
+if [[ -z $MANPATH ]] && whence manpath >/dev/null
+then
+  MANPATH=$(manpath)
+fi
 manpath=($HOME/local/man /usr/local/man $manpath)
-infopath=($HOME/local/info /usr/local/info $infopath)
+
+infopath=($HOME/local/info /usr/local/info $infopath /usr/info /usr/share/info)
 
 # Set HOSTNAME unless it already is
 export HOSTNAME=${HOSTNAME:-$(/bin/hostname)}
@@ -57,7 +64,8 @@ fi
 
 # no=default, fi=file, di=directory, ln=link, pi=named pipe (FIFO), so=socket
 # bd=block device, cd=char device, ex=executable, mi=missing file, or=orphanned symbolic link
-LS_COLORS='no=00:fi=38;5;11:di=38;5;14:ln=38;5;214'
+LS_COLORS='no=00:fi=38;5;11:di=38;5;14'
+LS_COLORS=$LS_COLORS':ln=38;5;214:or=38;5;0;48;5;214:mi=37;41'
 LS_COLORS=$LS_COLORS':pi=38;5;218:so=38;5;218:bd=38;5;218:cd=38;5;218'
 
 # Executables (green)

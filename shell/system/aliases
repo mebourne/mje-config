@@ -3,7 +3,7 @@
 # Command alias setup
 # Written by Martin Ebourne
 #
-# $Id: aliases,v 1.12 2002/11/12 10:25:59 mebourne Exp $
+# $Id: aliases 807 2003-10-06 15:20:05Z martin $
 
 alias rm='rm -i'
 alias which-command=which
@@ -23,17 +23,17 @@ alias vared="IFS=$'\n' vared"
 [[ $(whence -p less) == /* ]] && alias more=less
 
 # If we've got the GNU ls then enable automatic colour and a few more options, else don't
-if [[ $(ls --version 2>&1) == *Free* ]]
+if [[ $(ls --version 2>&1) == *(GNU|Free)* ]]
 then
   local colour=""
   if (( COLOUR ))
   then
     colour='--color=always'
   fi
-  alias l='command ls -F '$colour' ${fignore/#/--ignore=\*} ${fignore/#/--ignore=.\*}'
-  alias ls='command ls -F '$colour
-  alias ll='command ls -lFbh '$colour' ${fignore/#/--ignore=\*} ${fignore/#/--ignore=.\*}'
-  alias dir='command ls -alFbh '$colour
+  alias l='command ls -Fv '$colour' ${fignore/#/--ignore=\*} ${fignore/#/--ignore=.\*}'
+  alias ls='command ls -Fv '$colour
+  alias ll='command ls -lFvbh '$colour' ${fignore/#/--ignore=\*} ${fignore/#/--ignore=.\*}'
+  alias dir='command ls -alFvbh '$colour
 else
   alias l='command ls -F'
   alias ls='command ls -F'

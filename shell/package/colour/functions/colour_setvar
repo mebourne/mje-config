@@ -3,7 +3,7 @@
 # Set a shell variable to a string including colours
 # Usage: colour_setvar <var-name> [<parameter> ...]
 #
-# $Id: colour_setvar,v 1.1 2001/05/09 16:45:03 mebourne Exp $
+# $Id: colour_setvar 792 2003-09-22 11:47:18Z martin $
 
 _colour_editvar=$argv[1]
 shift argv

@@ -3,7 +3,7 @@
 # Execute an SQL command via Perl DBI
 # For use only by the SQL packages
 #
-# $Id: _sql_execute_dbi,v 1.2 2002/06/17 16:41:58 mebourne Exp $
+# $Id: _sql_execute_dbi 792 2003-09-22 11:47:18Z martin $
 
 if [[ -z $_sql_parameters[user] ]]
 then

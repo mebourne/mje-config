@@ -3,6 +3,6 @@
 # Setup for SQL package
 # Written by Martin Ebourne
 #
-# $Id: setup,v 1.1 2001/02/26 18:37:02 mebourne Exp $
+# $Id: setup 792 2003-09-22 11:47:18Z martin $
 
 package sql/base

@@ -3,7 +3,7 @@
 # Setup for xterm package
 # Written by Martin Ebourne
 #
-# $Id: setup,v 1.1 2001/08/15 16:14:59 mebourne Exp $
+# $Id: setup 792 2003-09-22 11:47:18Z martin $
 
 add_functions_directory package/xterm/functions
 
@@ -23,4 +23,4 @@ xterm_name='xterm'
 xterm_title='${xterm_name:+$xterm_name   }%n@%m   Directory: %d ${CLEARCASE_VIEW:+   View: $CLEARCASE_VIEW}'
 
 # This is the default icon text, updated before and after each command
-xterm_icon='${_xterm_command:+%% }${_xterm_command:-$xterm_name}'
+xterm_icon='${_xterm_command:+%% }${_xterm_command:-$xterm_name $USERNAME[1] %1~}'

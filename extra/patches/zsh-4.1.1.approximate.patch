@@ -1,0 +1,29 @@
+--- Completion/Base/Completer/_approximate.orig	Wed Sep 10 11:53:40 2003
++++ Completion/Base/Completer/_approximate	Wed Sep 10 11:54:39 2003
+@@ -65,7 +65,7 @@
+ 
+     builtin compadd "$_correct_expl[@]" "$@"
+   }
+-  trap 'unfunction compadd' EXIT INT
++  trap 'unfunction compadd 2>/dev/null' EXIT INT
+ fi
+ 
+ _comp_correct=1
+@@ -81,9 +81,15 @@
+   _correct_group="$_correct_expl[(I)-*[JV]]"
+ 
+   if _complete; then
+-    if zstyle -t ":completion:${curcontext}:" insert-unambiguous &&
+-       [[ "${#compstate[unambiguous]}" -ge "${#:-$PREFIX$SUFFIX}" ]]; then
++    local ins
++    zstyle -s ":completion:${curcontext}:" insert-unambiguous ins
++
++    if [[ "$ins" = (true|yes|on|1|always) &&
++          "${#compstate[unambiguous]}" -ge "${#:-$PREFIX$SUFFIX}" ]]; then
+       compstate[pattern_insert]=unambiguous
++    elif [[ "$ins" == always ]]; then
++      [[ "$compstate[insert]" != *menu ]] &&
++	   compstate[pattern_insert]= compstate[insert]=
+     elif _requested original &&
+          { [[ compstate[nmatches] -gt 1 ]] ||
+            zstyle -t ":completion:${curcontext}:" original }; then

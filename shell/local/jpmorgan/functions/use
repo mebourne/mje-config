@@ -1,0 +1,43 @@
+#eval compdef -n _parse_opts use
+# ZSH function file
+# Select an environment to run in
+#
+# $Id: use 792 2003-09-22 11:47:18Z martin $
+
+local basedirprefix="/export1/home/odyssey/"
+
+local -a environments
+environments=($basedirprefix*)
+environments=(${environments#$basedirprefix})
+
+local -A opts
+parse_opts - opts -- "$argv[@]" <<'EOF' || return 1
+Description:
+Select an environment to run in
+
+Usage:
+makecr [options] <environment>
+
+Options:
+  -h, --help			Provide this help
+				# --help | -h * excludes=*
+
+Arguments:
+  <environment>			The environment to select
+				# environment : values=environments
+EOF
+
+sqluse $opts[environment] qm -s
+xterm_name=$opts[environment]
+
+export ODYSSEY=/export1/home/odyssey/$opts[environment]
+
+# Set environment dependent variables
+local varname="" varvalue=""
+while IFS="=" read varname varvalue
+do
+  if [[ $varname == "OSAGENT_PORT" ]]
+  then
+    typeset -Ugx $varname="$varvalue";
+  fi
+done < $ODYSSEY/registry/env.reg

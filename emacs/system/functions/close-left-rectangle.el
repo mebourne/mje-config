@@ -1,7 +1,7 @@
 ;; Emacs function file
 ;; Close rectangle to the left, opposite of close-rectangle
 ;; Written by Martin Ebourne
-;; $Id: close-left-rectangle.el,v 1.1 2001/05/18 13:19:01 mebourne Exp $
+;; $Id: close-left-rectangle.el 792 2003-09-22 11:47:18Z martin $
 
 ;;;###autoload
 (defun close-left-rectangle (start end)

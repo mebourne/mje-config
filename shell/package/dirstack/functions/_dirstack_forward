@@ -3,7 +3,7 @@
 # ZLE widget to cycle forwards through the directory stack
 # Can only be called from ZLE as a widgit
 #
-# $Id: _dirstack_forward,v 1.3 2002/09/20 16:57:33 mebourne Exp $
+# $Id: _dirstack_forward 792 2003-09-22 11:47:18Z martin $
 
 # Check whether we are between words
 if [[ $LBUFFER == *[$IFS] ]]

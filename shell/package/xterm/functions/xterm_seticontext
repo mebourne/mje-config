@@ -3,6 +3,6 @@
 # Update icon name on XTerm
 # Usage: xterm_seticontext <text>
 #
-# $Id: xterm_seticontext,v 1.1 2001/08/15 16:14:59 mebourne Exp $
+# $Id: xterm_seticontext 792 2003-09-22 11:47:18Z martin $
 
 echo -n "\e]1;$argv[1]\007"

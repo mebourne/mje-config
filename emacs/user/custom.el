@@ -1,7 +1,7 @@
 ;; Emacs configuration file
 ;; Custom definitions
 ;; Written by Martin Ebourne
-;; $Id: custom.el,v 1.4 2002/03/26 17:27:34 mebourne Exp $
+;; $Id: custom.el 792 2003-09-22 11:47:18Z martin $
 
 (custom-set-variables
 

@@ -2,7 +2,7 @@
 # ZSH function file
 # Kill all processes of a certain program
 #
-# $Id: cfgarchive,v 1.1 2002/11/04 16:44:19 mebourne Exp $
+# $Id: cfgarchive 792 2003-09-22 11:47:18Z martin $
 
 local -A opts
 parse_opts - opts -- "$argv[@]" <<'EOF' || return 1

@@ -3,7 +3,7 @@
 # Fetch and return the list of columns for the current table
 # For use only by the SQL packages
 #
-# $Id: _oracle_fetchcolumns,v 1.4 2002/05/28 13:28:07 mebourne Exp $
+# $Id: _oracle_fetchcolumns 792 2003-09-22 11:47:18Z martin $
 
 local table="$argv[1]"
 

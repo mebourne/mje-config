@@ -2,7 +2,7 @@
 # This is the zshenv file sourced directly by zsh
 # Written by Martin Ebourne
 #
-# $Id: zshenv,v 1.9 2002/03/19 15:26:40 mebourne Exp $
+# $Id: zshenv 792 2003-09-22 11:47:18Z martin $
 
 # Enable this (or call the shell with it already set) for progress reports during config
 #ZCONFIGDEBUG=1

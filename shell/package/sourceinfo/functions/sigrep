@@ -4,7 +4,7 @@
 # Part of the SourceInfo package
 # Search contents of files from the source info file list
 #
-# $Id: sigrep,v 1.4 2001/08/29 16:34:58 mebourne Exp $
+# $Id: sigrep 792 2003-09-22 11:47:18Z martin $
 
 local -A opts
 local -a grepopts

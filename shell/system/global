@@ -3,7 +3,7 @@
 # Generic system-wide setup for ALL shells. This is executed before anything else
 # Written by Martin Ebourne
 #
-# $Id: global,v 1.12 2002/06/17 16:52:11 mebourne Exp $
+# $Id: global 792 2003-09-22 11:47:18Z martin $
 
 # Make various path like variables keep unique values only. Need to create any that aren't built
 # into the shell. Most of them are also exported

@@ -3,7 +3,7 @@
 # Completion code for testscript command
 # Usage: These functions are used by the completion code
 #
-# $Id: _testscript,v 1.2 2001/06/13 17:35:12 mebourne Exp $
+# $Id: _testscript 792 2003-09-22 11:47:18Z martin $
 
 integer ret=1
 

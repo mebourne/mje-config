@@ -4,11 +4,11 @@
 # done, but immediately before the user specific files
 # Written by Martin Ebourne
 #
-# $Id: interactive,v 1.23 2001/08/17 15:24:59 mebourne Exp $
+# $Id: interactive 792 2003-09-22 11:47:18Z martin $
 
-# Arcordia settings
+# JPMorgan settings
 
-# Include various Arcordia special functions. Need to make them work in zsh
+# Include various JPMorgan special functions. Need to make them work in zsh
 . /opt/bin/0ENV.sh
 add_emulate ksh Load
 add_emulate ksh Unload
@@ -16,8 +16,8 @@ add_emulate ksh prepend
 add_emulate ksh append
 add_emulate ksh variable
 
-# Pull in a couple of useful Arcordia 'packages'
-Load rcs
+# Pull in useful JPMorgan 'packages'
+Load ssh
 
 # Add to default CDPATH
 cdpath=($cdpath /vobs/odyssey/cashsec)
@@ -38,9 +38,9 @@ package sql
 
 # Setup for SourceInfo package
 sourceinfo_sourcecode_dirs=(
-  /vobs/odyssey/ac
+#  /vobs/odyssey/ac
   /vobs/odyssey/busutils
-  /vobs/odyssey/cashsec
+#  /vobs/odyssey/cashsec
   /vobs/odyssey/qm
   /vobs/odyssey/refdata
   /vobs/odyssey/services
@@ -51,16 +51,16 @@ sourceinfo_sourcecode_dirs=(
   ~/config/emacs
 )
 sourceinfo_preferred_dirs=(
-  /vobs/odyssey/cashsec
-  /vobs/odyssey/ac
+#  /vobs/odyssey/cashsec
+#  /vobs/odyssey/ac
+  /vobs/odyssey/qm
+  /vobs/odyssey/busutils
   /vobs/odyssey/refdata
   /vobs/odyssey/services
   /vobs/odyssey/xdg
   /vobs/odyssey/shared
-  /vobs/odyssey/busutils
   /vobs/odyssey/system/rogue7.0.3
   /vobs/odyssey/system
-  /vobs/odyssey/qm
 )
 
 # Setup SQL db environment
@@ -81,9 +81,12 @@ _sql_prompt_update
 prompt_above=${prompt_above/_sql_prompt\}/_sql_prompt\}\${\${_sql_prompt#\$DB_ENV \$DB_COM}:+ \[\$DB_ENV \$DB_COM]}}
 
 # Check quota once per day (takes too long to do each time)
-if [[ $TERM == xterm && ( ! -f ${ZDOTDIR:-$HOME}/.cache.quota \
-                          || -n $(find ${ZDOTDIR:-$HOME}/.cache.quota -ctime +1) ) ]]
-then
-  touch ${ZDOTDIR:-$HOME}/.cache.quota
-  rsh gdd-odybin1 quota -v
-fi
+#if [[ $TERM == xterm && ( ! -f ${ZDOTDIR:-$HOME}/.cache.quota \
+#			   || -n $(find ${ZDOTDIR:-$HOME}/.cache.quota -ctime +1) ) ]]
+#then
+#  touch ${ZDOTDIR:-$HOME}/.cache.quota
+#  rsh gdd-odybin1 quota -v
+#fi
+
+# Setup for environment machines
+alias top8=/apps/top/3.5.0.0/solaris/5.8/bin/top

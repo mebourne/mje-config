@@ -3,7 +3,7 @@
 # Execute the given SQL command
 # For use only by the SQL packages
 #
-# $Id: _sybase_execute,v 1.3 2002/08/29 10:26:06 mebourne Exp $
+# $Id: _sybase_execute 792 2003-09-22 11:47:18Z martin $
 
 {
   local maxrows_v=""

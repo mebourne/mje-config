@@ -1,3 +1,5 @@
+! $Id: mwmrc 792 2003-09-22 11:47:18Z martin $
+
 ! Workspace menu from MB1 on screen
 Menu RootMenu 
 {
@@ -143,5 +145,3 @@ Buttons DefaultButtonBindings
     Meta<Btn2Down>      icon|window             f.move
     Meta<Btn3Down>      window                  f.minimize
 }
-
-

@@ -1,7 +1,7 @@
 ;; Emacs configuration file
 ;; Setup for desktop session saving
 ;; Written by Martin Ebourne
-;; $Id: desktop.el,v 1.3 2002/11/25 15:42:17 mebourne Exp $
+;; $Id: desktop.el 792 2003-09-22 11:47:18Z martin $
 
 ;; Session saver
 (cond (window-system
