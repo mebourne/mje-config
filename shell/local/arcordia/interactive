@@ -4,7 +4,7 @@
 # done, but immediately before the user specific files
 # Written by Martin Ebourne
 #
-# $Id: interactive,v 1.6 2001/02/23 18:05:54 mebourne Exp $
+# $Id: interactive,v 1.7 2001/03/01 15:28:11 mebourne Exp $
 
 # Arcordia settings
 
@@ -20,12 +20,14 @@ cashsec=/vobs/odyssey/cashsec
 # Include useful packages
 package clearcase
 package sourceinfo
+package sql
 
 # Setup for SourceInfo package
 sourceinfo_sourcecode_dirs=(/vobs/odyssey)
 
-# Include Sybase package
-if [[ -z $nodb ]]
+# Setup SQL db environment
+if [[ -r $HOME/.zshdb ]]
 then
-  package oldsql/sybase
+  [[ -n $ZCONFIGDEBUG ]] && echo "Loading config file .zshdb"
+  . $HOME/.zshdb
 fi
