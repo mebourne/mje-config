@@ -1,0 +1,13 @@
+# ZSH function file
+# Part of the colour package
+# Set a shell variable to a string including colours
+# Usage: colour_setvar <var-name> [<parameter> ...]
+#
+# $Id: colour_setvar,v 1.1 2001/05/09 16:45:03 mebourne Exp $
+
+_colour_editvar=$argv[1]
+shift argv
+
+eval $_colour_editvar=""
+
+colour_addvar "$argv[@]"

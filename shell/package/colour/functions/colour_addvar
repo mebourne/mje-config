@@ -1,0 +1,31 @@
+# ZSH function file
+# Part of the colour package
+# Add the given parameters to the previously set shell variable
+# Usage: colour_addvar [<parameter> ...]
+#
+# $Id: colour_addvar,v 1.1 2001/05/09 16:45:03 mebourne Exp $
+
+local value param colour
+local -a codes
+for param in $argv
+do
+  case $param in
+    \{*\})
+      if (( COLOUR ))
+      then
+	codes=()
+	for colour in ${(s:,:)${param#\{}%\}}
+	do
+	  codes[$#codes+1]="\$colours[$colour]"
+	done
+	value="$value%{\$colour_start${(j:;:)codes}\$colour_end%}"
+      fi
+      ;;
+
+    *)
+      value="$value$param"
+      ;;
+  esac
+done
+
+eval $_colour_editvar=\$$_colour_editvar\$value

@@ -1,0 +1,59 @@
+# ZSH configuration file
+# Executed when the colour package is included
+# Setup for colour package
+# Written by Martin Ebourne
+#
+# $Id: setup,v 1.1 2001/05/09 16:45:03 mebourne Exp $
+
+add_functions_directory package/colour/functions
+
+# Set up the global data
+typeset -gA colours
+typeset -g colour_start colour_end
+
+# Only set the colour data if colour is enabled
+if (( COLOUR ))
+then
+  # Colour control code sequence for xterm is ESC [ <values> m
+  colour_start=$'\e'"["
+  colour_end="m"
+
+  # Colour names
+  colours=(
+	black		"38;5;0"
+	red		"38;5;9"
+	green		"38;5;10"
+	yellow		"38;5;11"
+	blue		"38;5;12"
+	magenta		"38;5;13"
+	cyan		"38;5;14"
+	white		"38;5;15"
+	grey		"38;5;243"
+	dark_red	"38;5;172"
+	dark_green	"38;5;34"
+	dark_yellow	"38;5;184"
+	dark_magenta	"38;5;176"
+	dark_cyan	"38;5;80"
+
+	bg_black	"48;5;0"
+	bg_red		"48;5;1"
+	bg_green	"48;5;2"
+	bg_yellow	"48;5;3"
+	bg_blue		"48;5;4"
+	bg_magenta	"48;5;5"
+	bg_cyan		"48;5;6"
+	bg_grey		"48;5;243"
+	bg_white	"48;5;15"
+	bg_dark_red	"48;5;172"
+	bg_dark_green	"48;5;34"
+	bg_dark_yellow	"48;5;184"
+	bg_dark_magenta	"48;5;176"
+	bg_dark_cyan	"48;5;80"
+
+	normal		"00"
+	bold		"01"
+  )
+fi
+
+# Declare work variables
+typeset -g _colour_editvar
