@@ -1,7 +1,7 @@
 ;; Emacs configuration file
 ;; Advised functions
 ;; Written by Martin Ebourne
-;; $Id: advice.el,v 1.1 2001/05/11 17:31:38 mebourne Exp $
+;; $Id: advice.el,v 1.2 2001/05/22 17:12:31 mebourne Exp $
 
 (defadvice switch-to-buffer (before existing-buffers-only activate preactivate)
   "When called interactively switch to existing buffers only, unless 
@@ -81,3 +81,8 @@ called with a prefix argument."
 	    dired-listing-switches)
 	  (read-file-name "Dired in other frame (directory): " nil default-directory t)))))
 
+(defadvice info (before info-any-file activate preactivate)
+  "Allow entering of leaf file names which are searched for
+on the info path."
+  (interactive 
+   (list (read-file-name "Info file name (path search on): "))))
