@@ -3,7 +3,7 @@
 ;; Written by Martin Ebourne
 ;; $Id$
 
-(if ((file-readable-p "/etc/config/emacs/startup"))
+(if (file-readable-p "/etc/config/emacs/startup")
     (load "/etc/config/emacs/startup")
   (load "~/config/emacs/startup"))
 (load custom-file)
