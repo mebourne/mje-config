@@ -9,6 +9,8 @@ use strict;
 
 die "Usage: sqlcompress.pl" if @ARGV>0;
 
+my $colour=1;
+
 # Read the input two lines at a time (but looping once per line), looking for a table header
 my $thisLine=<STDIN>;
 while(defined($thisLine)) {
@@ -119,6 +121,18 @@ sub readData {
 	  $$column{datalength}=length($value);
 	}
 
+	# Check if column datatype has already been decoded. If not have a go
+	if(!defined($$column{type})) {
+	  if(defined($$column{align}) && $$column{align}<0) {
+	    $$column{type}="string";
+	  } elsif($value=~/^[0-9.Ee+-]+$/) {
+	    $$column{type}="number";
+	  } elsif($value=~/[A-Z][a-z]{2} [0-9]{2} [0-9]{4}/
+		  || $value=~/[0-9]{2}:[0-9]{2}/) {
+	    $$column{type}="datetime";
+	  }
+	}
+
 	# Store the value
 	push @$row, $value;
     }
@@ -159,7 +173,22 @@ sub generateFormat {
 
     # Write a '%<num>s' entry as appropriate
     my $column=$$columns[$x];
-    $format.="%" . (defined($$column{align})?$$column{align}:-1)*$$column{length} . "s";
+    my $align=$$column{align};
+    $align=-1 if !defined($align);
+
+    if($colour) {
+      my $type=$$column{type};
+      $type="string" if !defined($type);
+      if($type eq "string") {
+	$format.="\e[38;05;11m";
+      } elsif($type eq "number") {
+	$format.="\e[38;05;214m";
+      } elsif($type eq "datetime") {
+	$format.="\e[38;05;14m";
+      }
+    }
+    $format.="%" . $align*$$column{length} . "s";
+    $format.="\e[00m" if $colour;
   }
 
   $format.="\n";
@@ -193,8 +222,10 @@ sub printHeader {
     $underline.=$value;
   }
 
-  # Output header
+  # Output header in green
+  $colour && print "\e[38;05;10m";
   print "$header\n$underline\n";
+  $colour && print "\e[00m";
 }
 
 # Print the data
