@@ -4,7 +4,7 @@
 # Part of the Config package
 # Compile shell directory
 #
-# $Id: cfg_compile_shell 792 2003-09-22 11:47:18Z martin $
+# $Id$
 
 emulate -LR zsh
 setopt extended_glob
@@ -30,7 +30,7 @@ local base_dir="$opts[directory]"
 
 # Compile all the individual shell files - ie. excluding all in functions directories
 local file=""
-for file in $base_dir/**/^(functions|RCS)/^*.zwc(.) $base_dir/^*.zwc(.)
+for file in $base_dir/**/^(functions|RCS)/^(*.zwc|*~)(.) $base_dir/^(*.zwc|*~)(.)
 do
   # Only compile files if not already compiled or source modified
   if [[ ! -e $file.zwc || $file -nt $file.zwc ]]
