@@ -1,0 +1,101 @@
+#!/bin/sh
+#
+# vlocalmerge - Merge snapped out file into repository changes and lock it
+# Written by Martin Ebourne, Started 06/09/99
+#
+# $Id: vlocalmerge,v 1.1 1999/09/06 13:29:49 martine Exp $
+
+lock=0
+if [ "$1" = "-l" ]
+then
+  lock=1
+  shift
+fi
+
+if [ $# -lt 1 -o $# -gt 2 -o "$1" = "-h" -o "$1" = "--help" ]
+then
+  echo "Usage:           `basename $0` <file> [<orig-version>]"
+  echo "Purpose:         Merge snapped out file into repository changes and lock it"
+  echo "Params:"
+  echo "  -l             Lock file before merging. Command fails if file cannot be"
+  echo "                 locked."
+  echo "  <file>         The file to be merged. It must be in the current directory."
+  echo "  <orig-version> The version number which this file was originally snapped at."
+  echo "                 Will be found from the file if possible and not provided."
+  echo "Example:         `basename $0` file.cxx 1.23"
+  exit 2
+fi
+
+file=$1
+orig_version=$2
+
+if [ ! -f "$file" -o -h "$file" ]
+then
+  echo "Cannot find file $file"
+  exit 2
+fi
+
+if [ -z "$orig_version" ]
+then
+  orig_version=`grep '$\I\d:' $file | sed 's/^[^$]*[$]//' | awk '{print $3}'`
+
+  if [ -z "$orig_version" ]
+  then
+    echo "Error: Cannot determine file version originally snapped"
+    exit 2
+  fi
+fi
+
+rcs_file=`vhist $file | awk '/^RCS file:/ { print $3 }'`
+
+branch=`awk -F= '$1=="link" { print $2 }' .VCS`
+
+head_version=`vcsbranchinfo -dev $branch`
+
+echo "Using RCS file $rcs_file"
+
+if [ $lock = 1 ]
+then
+  lockable=0
+  rcs -q -l$head_version $rcs_file 2>/dev/null \
+    && rcs -q -u$head_version $rcs_file 2>/dev/null \
+    && lockable=1
+
+  if [ $lockable = 0 ]
+  then
+    echo
+    echo "*** FAILED. File already locked by somebody else ***"
+    echo
+    exit 2
+  fi
+
+  echo "Locking $file"
+  mv $file $file.vcsbak
+  vget -s $file
+  mv $file.vcsbak $file
+fi
+
+echo "Preserving original file as $file.vcsbak"
+echo "Merging from version $orig_version to version $head_version"
+
+cp $file $file.vcsbak
+
+rcsmerge -A -r$orig_version -r$head_version $rcs_file
+result=$?
+
+if [ $result = 0 ]
+then
+  echo "Merge ok"
+elif [ $result = 1 ]
+then
+  echo
+  echo "*** CONFLICTS during merge. Please correct ***"
+  echo
+else
+  echo
+  echo "*** FAILED. Restoring original ***"
+  echo
+  mv $file.vcsbak $file
+fi
+
+exit $result
