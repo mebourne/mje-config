@@ -1,0 +1,13 @@
+# ZSH function file
+# Written by Martin Ebourne
+# Part of the Config package
+# Compile emacs directory
+# Usage: cfg_compile_emacs <directory>
+#
+# $Id: cfg_compile_emacs,v 1.1 2001/05/21 09:25:13 mebourne Exp $
+
+emulate -LR zsh
+
+local base_dir="$argv[1]"
+
+#emacs 
