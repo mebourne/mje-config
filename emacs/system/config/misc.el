@@ -1,7 +1,7 @@
 ;; Emacs configuration file
 ;; Miscellaneous stuff
 ;; Written by Martin Ebourne
-;; $Id: misc.el,v 1.3 2001/08/10 15:46:43 mebourne Exp $
+;; $Id: misc.el,v 1.4 2002/03/18 19:39:38 mebourne Exp $
 
 (setq message-log-max 1000)
 
@@ -39,7 +39,7 @@
 (require 'fix-hist)
 
 ;; Well good buffer switching
-(require 'iswitchb)
+(iswitchb-mode t)
 (iswitchb-default-keybindings)
 (setq iswitchb-case nil)
 
@@ -50,7 +50,7 @@
 (require 'generic-x)
 
 ;; Enable auto (de-)compression
-(require 'jka-compr)
+(auto-compression-mode t)
 
 ;; Default all files in the shell configuration directories to be shell script mode
 (if (getenv "ZCONFIGDIR")
