@@ -3,59 +3,10 @@
 # User's own setup for interactive shells. Run after all other setup has been done
 # Written by Martin Ebourne
 #
-# $Id: interactive,v 1.5 2001/03/01 19:44:10 mebourne Exp $
+# $Id: interactive,v 1.6 2001/03/02 18:39:58 mebourne Exp $
 
 # Enable incremental history saving
 package history
 
 # Get the normal XPG4 standards commands rather than the strange sun ones
 override_commands /usr/xpg4/bin /bin /usr/bin /usr/ucb /usr/ccs/bin
-
-# Prompt stuff
-
-typeset -gA pcol
-pcol[user]
-
-setprompt() {
-  local var=$1
-  shift
-
-  local sf=$'%{\e[38;5;' ef=$'m%}'
-  local value
-
-  while (( $#@ > 1 ))
-  do
-    local colour=$1 text=$2
-    shift 2
-    value="$value$sf$colour$ef$text"
-  done
-
-  if (( $#@ ))
-  then
-    local colour=$1
-    value="$value$sf$colour$ef"
-  fi
-
-  eval $var=\$$var\$value
-}
-
-PROMPT=
-setprompt PROMPT 214 '$USERNAME' 15 '@' 10 '%m'
-if (( SHLVL > 2 ))
-then
-  setprompt PROMPT 15 "#$[SHLVL-2]"
-fi
-if [[ -n "$CLEARCASE_TRIM_VIEW" ]]
-then
-  setprompt PROMPT 15 '<' 11 '$CLEARCASE_TRIM_VIEW' 15 '>'
-else
-  setprompt PROMPT 15 ':'
-fi
-setprompt PROMPT 14 '%3~' "15;01" '%# ' "15;00"
-
-RPROMPT=
-setprompt RPROMPT 247 '%*' 15
-
-#preexec() {
-#  echo "\e[38;5;15m"
-#}
