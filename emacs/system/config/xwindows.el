@@ -1,7 +1,7 @@
 ;; Emacs configuration file
 ;; Xwindows specific setup
 ;; Written by Martin Ebourne
-;; $Id: xwindows.el,v 1.1 2001/05/11 17:31:38 mebourne Exp $
+;; $Id: xwindows.el,v 1.2 2002/03/18 20:04:48 mebourne Exp $
 
 ;; Syntax colouring. X only
 (cond (window-system
@@ -20,28 +20,6 @@
 		    (html-mode          . (html-font-lock-keywords-local))
 		    )
 		  font-lock-defaults-alist))))
-
-       
-       ;; Use lazy-lock
-       (add-hook 'compilation-mode-hook
-	  (function (lambda ()
-		      (set (make-local-variable 'font-lock-support-mode) nil)
-		      )))
-       (add-hook 'cvs-mode-hook
-	  (function (lambda ()
-		      (set (make-local-variable 'font-lock-support-mode) nil)
-		      )))
-       (add-hook 'dired-mode-hook
-	  (function (lambda ()
-		      (set (make-local-variable 'font-lock-support-mode) nil)
-		      )))
-
-;; --OR--
-       ;; Use fast-lock
-       ;(setq font-lock-support-mode 'fast-lock-mode)
-       ;(setq fast-lock-cache-directories '(("^/home/" . ".")
-	;				   ("^/mnt/rayleigh/" . ".")))
-       ;(setq fast-lock-minimum-size (* 5 1024))
 
        ;; Sort out kill-emacs to confirm first and C-x C-z not to iconify if in X
        (add-hook 'kill-emacs-query-functions
