@@ -2,15 +2,13 @@
 # Provide options parsing and help output
 # Usage: parse_opts <argv> <results> [<help>]
 #
-# $Id: parse_opts,v 1.15 2001/08/03 17:20:33 mebourne Exp $
+# $Id: parse_opts,v 1.16 2001/08/03 18:10:28 mebourne Exp $
 
 ### Documentation
 
 
 # todo
 # optional params
-# constant hash tags
-# args completion
 
 # This module provides a complete option parsing system, configured entirely
 # from a help string supplied by the user. The help string is free-format text
@@ -72,12 +70,8 @@
 #
 # Where type-name is one of:
 #   switch   - Simple switch. Result will be 1. NB. This is the default if not supplied
-#   noswitch - Reverse simple switch. Result will be 0 (can be used eg. --no-option)
 #   constant - Constant to be assigned. Result will be value given, with any quotes removed
 #   string   - Takes a parameter with no validation
-#   text     - Takes a parameter with no validation
-#   integer  - Takes a parameter, validation for integer with optional sign
-#   test     - Takes a parameter, validation using value with test. eg. test=-f for files
 #
 # value may only be (and must be) present if the type requires it, and will be
 # used as explained in the type description.
@@ -89,20 +83,35 @@
 # default definitions
 _parse_opts_setupdefinitions() {
   _parse_opts_parsehelp '
-#type noswitch      constant=0                   ""                         " "
-#type integer       pattern=([-+]|)<->           "signed integer number"    " "
-#type posinteger    pattern=<->                  "positive integer number"  " "
-#type text          string                       text                       " "
+## These are extensions of the basic built in types
+#type switchoff     constant=0                       ""                         ""
+#type integer       pattern=([-+]|)<->               "signed integer number"    " "
+#type posinteger    pattern=<->                      "positive integer number"  " "
+#type text          string                           text                       " "
 
-#type directory     test=-d                      directory                  _directories
-#type file          test=-f                      file                       _files
+## These are file-like things validated with test
+#type directory     exec="test -d"                   directory                  _directories
+#type file          exec="test -f"                   file                       _files
 
-#type function      values=${(k)functions}       "shell function"           _functions
-#type parameter     values=${(k)parameters}      parameter                  _parameters
+## These are lists from the shell
+#type function      values=${(k)functions}           "shell function"           _functions
+#type option        exec=_parse_opts_validate_option "zsh option"               _options
+#type parameter     values=${(k)parameters}          parameter                  _parameters
 
 # --help
 # --zsh-completion
 '
+}
+
+
+### Helper functions for default user types
+
+# Returns 0 for valid option, 1 for otherwise. Can't use values= due to the
+# '_' and case handling in option names
+_parse_opts_validate_option() {
+  local option="$argv[1]"
+
+  (( $+options[$option] ))
 }
 
 
@@ -283,6 +292,9 @@ _parse_opts_parsehelp() {
           _parse_opts_parsetype || return
           ;;
 
+	\#\#*) # A comment
+	  ;;
+
         *) # This is a configuration error
           echo "Invalid command: '$command'" 1>&2
           return 1
@@ -453,88 +465,73 @@ _parse_opts_generatecompletiontype() {
   # Extract the type without any leading '?'
   local _po_type="${_po_types[$_po_option]#? }"
 
-  if (( $+_po_types_base[$_po_type] ))
-  then
+  # Recursively convert user defined type into base type
+  while (( $+_po_types_base[$_po_type] ))
+  do
 
-    # User defined type. Just take settings supplied
-    _po_description=$_po_types_description[$_po_type]
-    _po_action=$_po_types_action[$_po_type]
-  else
+    # Take any settings supplied from the user defined type which we haven't already got
+    [[ -z $_po_description ]] && _po_description=$_po_types_description[$_po_type]
+    [[ -z $_po_action ]] && _po_action=$_po_types_action[$_po_type]    
 
-    # Decode type as a builtin
-    local _po_param="${_po_type#*=}"
-    case $_po_type in
-      switch|constant=*)
-        # No parameters, leave blank
-        ;;
+    _po_type=$_po_types_base[$_po_type]
+  done
 
-      string)
-        # Takes a parameter with no validation
-        _po_description="string"
-        _po_action="_files"
-        ;;
+  # Decode built in type to set anything not done already
+  local _po_param="${_po_type#*=}"
+  case $_po_type in
+    switch|constant=*)
+      # No parameters, leave blank
+      ;;
 
-      values=*)
-        # Takes a parameter, validated by list of values
-        _po_description="value"
-	local -a _po_values
-	local -A _po_hash
-        _parse_opts_expandvalues $_po_param _po_values _po_hash || return
-	if (( ! $#_po_hash ))
-	then
-	  _po_values=(${(q)_po_values})
-          _po_action="($_po_values)"
-	else
+    string)
+      # Takes a parameter with no validation
+      [[ -z $_po_description ]] && _po_description="string"
+      [[ -z $_po_action ]] && _po_action="_files"
+      ;;
 
-	  _po_hash=("${(@qkv)_po_hash}")
-          _po_action="(("
-	  local _po_key
-	  for _po_key in ${(k)_po_hash}
-	  do
-	    _po_action="$_po_action$_po_key\:$_po_hash[$_po_key] "
-	  done
-	  _po_action="$_po_action))"
+    values=*)
+      # Takes a parameter, validated by list of values
+      [[ -z $_po_description ]] && _po_description="value"
+      if [[ -z $_po_action ]]
+      then
+      	local -a _po_values
+      	local -A _po_hash
+      	_parse_opts_expandvalues $_po_param _po_values _po_hash || return
+      	if (( ! $#_po_hash ))
+      	then
+      	  _po_values=(${(q)_po_values})
+      	  _po_action="($_po_values)"
+      	else
+  
+      	  _po_hash=("${(@qkv)_po_hash}")
+      	  _po_action="(("
+      	  local _po_key
+      	  for _po_key in ${(k)_po_hash}
+      	  do
+      	    _po_action="$_po_action$_po_key\:$_po_hash[$_po_key] "
+      	  done
+      	  _po_action="$_po_action))"
 	fi
-        ;;
+      fi
+      ;;
 
-      pattern=*)
-        # Takes a parameter which is a pattern for validation
-        _po_description="value"
-        _po_action=" "
-	;;
+    pattern=*)
+      # Takes a parameter which is a pattern for validation
+      [[ -z $_po_description ]] && _po_description="value"
+      [[ -z $_po_action ]] && _po_action=" "
+      ;;
 
-      test=*)
-        # Takes a parameter validated by test. Extract the test flag & try to
-        # figure out the completer
-        case $_po_param in
-          -[aefgkrsuwOGN]) # These are types of file
-            _po_description="file"
-            _po_action="_files"
-            ;;
+    exec=*)
+      # Takes a parameter which is a command for validation
+      [[ -z $_po_description ]] && _po_description="value"
+      [[ -z $_po_action ]] && _po_action=" "
+      ;;
 
-          -[bcdhpxLS]) # These should be special types of file but need to be looked into
-            _po_description="file"
-            _po_action="_files"
-            ;;
-
-          -[notz]) # These can't be completed
-            _po_description="value"
-            _po_action=" "
-            ;;
-
-          *) # This is not recognised
-            _po_description="unknown"
-            _po_action=" "
-            ;;
-        esac
-        ;;
-
-      *) # This is a configuration error
-        echo "Invalid option type for option $_po_option: '$_po_type'" 1>&2
-        return 1
-        ;;
-    esac
-  fi
+    *) # This is a configuration error
+      echo "Invalid option type for option $_po_option: '$_po_type'" 1>&2
+      return 1
+      ;;
+  esac
 
   return 0
 }
@@ -773,7 +770,7 @@ _parse_opts_handletype() {
     _po_type=$_po_types_base[$_po_type]
   done
 
-  local _po_param="${_po_type#*=}" _po_value
+  local _po_param="${(Q)_po_type#*=}" _po_value
   integer _po_isvalid=1
   case $_po_type in
     switch)
@@ -783,7 +780,7 @@ _parse_opts_handletype() {
 
     constant=*)
       # Constant to be assigned (after quote removal). eg. constant=value or constant="more values"
-      _po_value=${(Q)_po_param}
+      _po_value=$_po_param
       ;;
 
     string)
@@ -815,10 +812,10 @@ _parse_opts_handletype() {
       fi
       ;;
 
-    test=*)
-      # Takes a parameter, validation using test. eg. test=-f
+    exec=*)
+      # Takes a parameter which is a command for validation
       _parse_opts_getnextvalue || return
-      if (( $_po_validate )) && eval "[[ ! $_po_param \$_po_value ]]"
+      if (( $_po_validate )) && ! eval $_po_param \$_po_value
       then
         _po_isvalid=0
       fi
@@ -864,7 +861,7 @@ _parse_opts_dooptions() {
       --*) # Long argument
 
         # Check to see if the option exists
-        if (( $+_po_aliases[$_po_option] ))
+        if (( $+_po_aliases[${_po_option%%\=*}] ))
         then
 
           # Check to see if value was in option, ie. --name=value
@@ -872,7 +869,7 @@ _parse_opts_dooptions() {
           then
 
             # Extract value in option and pass to type processing
-            _parse_opts_handletype $_po_option 1 ${_po_option#*=} || return
+            _parse_opts_handletype ${_po_option%%\=*} 1 ${_po_option#*=} || return
           else
 
             # Call type handling without a value
