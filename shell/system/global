@@ -3,7 +3,7 @@
 # Generic system-wide setup for ALL shells. This is executed before anything else
 # Written by Martin Ebourne
 #
-# $Id: global,v 1.10 2002/03/19 11:10:35 mebourne Exp $
+# $Id: global,v 1.11 2002/04/23 10:24:42 mebourne Exp $
 
 # Make various path like variables keep unique values only. Need to create any that aren't built
 # into the shell. Most of them are also exported
@@ -64,3 +64,7 @@ fi
 
 # Enable functions early & for everyone
 config_if_present system/loadfuncs
+
+# Set up want/go. Use ZDOTDIR if set, else HOME. This should make the system
+# work over machines
+semaphore_base=${ZDOTDIR:-$HOME}/.tmp.semaphore.
