@@ -140,6 +140,27 @@ if(!exists($opts->{driver}) || !exists($opts->{user})) {
 
 exit;
 
+sub raiseError {
+  my ($dbh, $errh, $function, $sql)=@_;
+
+  print STDERR "\n";
+
+  print STDERR "Database error: ";
+  print STDERR $errh->errstr, "\n";
+
+  print STDERR "In DBI call:    $function\n";
+
+  if(defined($sql)) {
+    print STDERR "Processing SQL: $sql\n";
+  }
+
+  $dbh->rollback;
+  $dbh->disconnect;
+  print STDERR "Changes rolled back.\n";
+
+  exit 1;
+}
+
 sub main {
   # Create this now so we can query it
   my $formatter=new MJE::TableFormatter;
@@ -166,7 +187,8 @@ sub main {
 			   ChopBlanks  => 1,
 			   LongReadLen => $dataLength,
 			   LongTruncOk => 1,
-			   RaiseError  => 1 })
+			   PrintError  => 0,
+			   RaiseError  => 0 })
       || die "Can't connect to $opts->{driver}: $DBI::errstr";
 
   # Iterate over all of the statements
@@ -179,10 +201,11 @@ sub main {
     }
 
     # Prepare the statement
-    my $sth = $dbh->prepare($statement);
+    my $sth = $dbh->prepare($statement)
+	|| &raiseError($dbh,$dbh,"dbh->prepare",$statement);
 
     # Execute the statement
-    $sth->execute;
+    $sth->execute || &raiseError($dbh,$sth,"sth->execute",$statement);
 
     # Output results if a select statement
     if($sth->{NUM_OF_FIELDS}) {
@@ -209,6 +232,10 @@ sub main {
 	$formatter->addRow(@data);
 	$rows++;
       }
+      if(defined($sth->err))
+      {
+	&raiseError($dbh,$sth,"sth->fetchrow_array",$statement);
+      }
 
       # Display the table
       $formatter->display;
@@ -224,9 +251,10 @@ sub main {
     }
 
     # Tidy up
-    $sth->finish;
+    $sth->finish || &raiseError($dbh,$sth,"sth->finish",$statement);
   }
 
-  $dbh->commit;
-  $dbh->disconnect;
+  $dbh->commit || &raiseError($dbh,$dbh,"dbh->commit");
+
+  $dbh->disconnect || &raiseError($dbh,$dbh,"dbh->disconnect");
 }
