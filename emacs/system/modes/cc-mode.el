@@ -1,7 +1,7 @@
 ;; Emacs configuration file
 ;; Setup for cc-mode
 ;; Written by Martin Ebourne
-;; $Id: cc-mode.el,v 1.6 2002/03/21 10:30:36 mebourne Exp $
+;; $Id: cc-mode.el,v 1.7 2002/03/21 13:41:01 mebourne Exp $
 
 ;; C and C++ style
 (eval-after-load "cc-mode"
@@ -44,11 +44,6 @@
 	  (function (lambda ()
 		      (set (make-local-variable 'dabbrev-case-fold-search) nil)
 		      (set (make-local-variable 'dabbrev-case-replace) nil)
-		      ;;(add-hook 'write-contents-hooks 'eliminate-trailing-spaces)
-		      ;;(setq tab-width 4)
-		      (setq comment-column 45)
-		      (setq fill-column 78)
-		      (setq paragraph-start "[ 	]*$")
 		      (hs-setup)
 		      (c-toggle-auto-state t)
 		      (c-toggle-hungry-state t)
@@ -82,14 +77,16 @@
 	       (c-hanging-semi&comma-criteria . nil)
 	       ;;(c-cleanup-list . (empty-defun-braces))
 	       (c-electric-pound-behavior . 'alignleft)
+	       (comment-column . 45)
+	       (fill-column . 78)
 	       ))
 (c-add-style "martin-java"
 	     '("java"
 	       (c-basic-offset . 2)
-	       (c-offsets-alist . ((statement-cont    . c-lineup-math)
-				   (substatement-open . 0)
+	       (c-offsets-alist . ((statement-cont      . c-lineup-math)
+				   (substatement-open   . 0)
 				   (statement-case-open . 0)
-				   (case-label        . +)
+				   (case-label          . +)
 				   ))
 	       (c-hanging-braces-alist . ((defun-open before)
 					  (defun-close before)
@@ -111,6 +108,8 @@
 	       (c-hanging-semi&comma-criteria . nil)
 	       ;;(c-cleanup-list . (empty-defun-braces))
 	       (c-electric-pound-behavior . 'alignleft)
+	       (comment-column . 45)
+	       (fill-column . 78)
 	       ))
 
 ;; Set up our C style
