@@ -3,30 +3,43 @@
 # list - List locked, snapped, and new files in directories
 # Written by Martin Ebourne, Started 20/08/99
 #
-# $Id: list,v 1.2 1999/08/20 12:36:48 martine Exp $
+# $Id: list,v 1.3 1999/08/20 15:32:49 martine Exp $
 
 fileout=$HOME/work/tmp/filesout
 
 rm -f $fileout
 
-for i in . `find . -name '.VCS' -print | \sed -e 's:^./\(.*/\).VCS$:\1:' -e '/VCS/d' | sort`
+for dir in . `find . -name '.VCS' -print | sed -e 's:^./\(.*/\).VCS$:\1:' -e '/VCS/d' | sort`
 do
-  (
-    cd $i
-  
-    if [ "`wout`" != "" ]
-    then
-      wout -l | tee -a $fileout | sed "s:^:L $i:"
-      wsnap   | tee -a $fileout | sed "s:^:S $i:"
-    fi
+  awk '
+BEGIN { FS="=" }
+$1=="lock" { print "L", dir $2 }
+$1=="snap" { print "S", dir $2 }
+' dir=$dir $dir/.VCS
 
-    if [ "$1" = "-n" ]
-    then
-      ( find . -type f \( -name '*.[ch]xx' -o -name '*.inl' -o -name '*.gen' -o -name '*.sqc' \
-			  -o -name '*.hdb' -o -name 'makefile' -o -name '*.incl' \
-		       \) -print -o -name '.' -o -prune 2>/dev/null | sed 's:^\./::'
-	wout
-      ) | sort | uniq -u | sed "s:^:N $i:"
-    fi
-  )
+  if [ "$1" = "-n" ]
+  then
+    (
+      cd $dir
+  
+      files=""
+      for f in *.[ch]xx *.inl *.gen *.sqc *.hdb *.incl makefile
+      do
+        if [ ! -h "$f" -a -f "$f" ]
+        then
+          files="$files$f\n"
+        fi
+      done
+
+      if [ -n "$files" ]
+      then
+        vcfiles=`awk '
+BEGIN { FS="=" }
+$1=="lock" { print $2 }
+$1=="snap" { print $2 }
+' .VCS`
+        echo "$files$vcfiles\n" | sort | uniq -u | sed "s:^:N $dir:"
+      fi
+    )
+  fi
 done
