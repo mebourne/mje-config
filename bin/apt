@@ -1,0 +1,19 @@
+#!/bin/sh
+
+sources_file=/etc/apt/sources.list
+cache_file=/var/cache/apt-new/current.dat
+
+if diff -q $sources_file $sources_file.gold >/dev/null 2>&1
+then
+  :
+else
+  mv $sources_file $sources_file.saved
+  cp $sources_file.gold $sources_file
+  echo | mail -s "WARNING: Apt sources file clobbered on `hostname -s`" root
+fi
+
+/usr/bin/apt-get update -qq
+
+PERLLIB=/etc/config/perl/lib
+export PERLLIB
+/etc/config/perl/programs/apt-new.pl -f $cache_file -q -m root
