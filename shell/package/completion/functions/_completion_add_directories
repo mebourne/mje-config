@@ -1,0 +1,32 @@
+# ZSH function file
+# Part of the completion package
+# Process the given directories for completion directives
+# Usage: _completion_add_directories <directory> ...
+#
+# $Id: _completion_add_directories,v 1.1 2001/03/16 13:02:20 mebourne Exp $
+
+if (( ARGC < 1 ))
+then
+  echo "Usage: _completion_add_directories <directory> ..." 1>&2
+  return 1
+fi
+
+local -a directories files
+directories=($argv[@])
+
+local directory
+for directory in $directories
+do
+  # Get a list of files in the directory, and filter out backups. Care to handle the
+  # no-match case
+  files=($directory/*(N.))
+  files=(${files:t})
+  files=(${files:#*~})
+  files=(${files:#\#*\#})
+
+  if [[ -n $files ]]
+  then
+    # Process these files for completion directives
+    _completion_add_functions $directory "$files[@]"
+  fi
+done

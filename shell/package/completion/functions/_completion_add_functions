@@ -1,0 +1,47 @@
+# ZSH function file
+# Part of the completion package
+# Handle newly added autoload functions to enable any completion directives at the top
+# Usage: _completion_add_functions <directory> <functions> ...
+#
+# $Id: _completion_add_functions,v 1.1 2001/03/16 13:02:20 mebourne Exp $
+
+if (( ARGC < 2 ))
+then
+  echo "Usage: _completion_add_functions_hook <directory> <functions> ..." 1>&2
+  return 1
+fi
+
+local directory=$argv[1];
+local -a files
+files=($argv[2,-1])
+
+# Iterate over the function files
+local file
+for file in $files
+do
+  # Read the top line into an array
+  local -a line
+  read -rA line < $directory/$file
+
+  # Switch based on the first word in the line
+  local tag=$line[1]
+  shift line
+  case $tag in
+    \#compdef) # Compatible with compdef from compinit
+      if [[ $line[1] = -[pPkK](n|) ]]
+      then
+        compdef ${line[1]}na "$file" "${(@)line[2,-1]}"
+      else
+        compdef -na "$file" "$line[@]"
+      fi
+      ;;
+
+    \#autoload) # Compatible with autoload from compinit
+      autoload -U "$line[@]" $file
+      ;;
+
+    \#eval) # Evaluate the given command line. Can be any command at all, so be careful!
+      eval "$line[@]"
+      ;;
+  esac
+done
