@@ -7,24 +7,29 @@
 
 use strict;
 
-my $squash=0;
-my $colour=0;
-
 # Decode command line options
-for my $option (@ARGV) {
-  if($option eq "-s") {
-    $squash=1;
-  } elsif($option eq "-c") {
-    $colour=1;
-  } else {
+
+my $colour=0;
+if(@ARGV && $ARGV[0] eq "-c") {
+  $colour=1;
+  shift @ARGV;
+}
+
+my $style=$ARGV[0];
+
+if(@ARGV!=1 || $style!~/^(simple|squash)$/) {
     print STDERR
-"Syntax: sqlformat.pl [-s] [-c]
+"Syntax: sqlformat.pl [-c] <style>
   -c	Colour output
-  -s	Squash output columns
+  style One of:
+	simple - Simple formatting keeping the default output style
+	squash - As simple but reduces column widths to save on screen space
+	record - Record style output, row by row [UNIMPLEMENTED]
+	emacs  - Emacs style output [UNIMPLEMENTED]
 ";
     exit 1;
-  }
 }
+
 
 # Read the input two lines at a time (but looping once per line), looking for a table header
 my $thisLine=<STDIN>;
@@ -43,7 +48,7 @@ while(defined($thisLine)) {
     &readData(\@columns, \@rows, length($thisLine), \$nextLine);
     
     # Processing
-    if($squash) {
+    if($style eq "squash") {
       &trimLength(\@columns);
     }
     
