@@ -1,37 +1,32 @@
+#eval compdef -n _parse_opts sitree
 # ZSH function file
 # Written by Martin Ebourne
 # Part of the SourceInfo package
 # Display class hierarchy trees
-# Usage: sitree [-d <dir-name>] <type-name>
-#	 -d	Prefer files within directory if duplicates found (partial name ok)
 #
-# $Id: sitree,v 1.4 2001/07/13 17:49:08 mebourne Exp $
+# $Id: sitree,v 1.5 2001/07/31 17:16:57 mebourne Exp $
 
 [[ -z $sourceinfo_typesdb ]] && { echo "sourceinfo_typesdb not set" ; return 1 }
 
-local -a options
+local -a args
+args=($argv[*])
+local -A opts
 
-# Extract the -d <dir-name> options
-zparseopts -D -E d:=options
+local -a dirs
+
+parse_opts args opts - 1 1 <<'EOF' || return 1
+sitree [options] <type-name>
+  -d <dir>, --directory=<dir>	Prefer files within directory if duplicates found
+				(partial name ok, searched in order given)
+				# [dirs] = directory | d = string
+  -h, --help			Provide this help
+				# help | h
+EOF
 
 # If no -d options then add all the default ones instead
-if (( !$#options ))
+if (( !$#dirs ))
 then
-  local dir
-  for dir in $sourceinfo_preferred_dirs
-  do
-    options=($options -d $dir)
-  done
+  dirs=($sourceinfo_preferred_dirs)
 fi
 
-# Give help if error with parameters
-if [[ $ARGC -ne 1 || $argv[1] == -* ]]
-then
-  {
-    echo "Syntax: sitree [-d <dir-name>] <type-name>"
-    echo "  -d    Prefer files within directory if duplicates found (partial name ok)"
-  } 1>&2
-  return 1
-fi
-
-typeInfo.pl -s $options $sourceinfo_typesdb $argv[1]
+typeInfo.pl -s --directory=$^dirs $sourceinfo_typesdb $args[1]
