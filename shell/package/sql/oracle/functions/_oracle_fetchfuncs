@@ -3,9 +3,10 @@
 # Fetch and return the list of functions
 # For use only by the SQL packages
 #
-# $Id: _oracle_fetchfuncs,v 1.1 2002/04/11 16:15:27 mebourne Exp $
+# $Id: _oracle_fetchfuncs,v 1.2 2002/05/24 16:14:03 mebourne Exp $
 
 {
   echo "set pages 0 feed off"
-  echo "select object_name from user_objects where object_type='FUNCTION';"
+  echo "select object_name from ${_sql_parameters[access]:-user}_objects"
+  echo "where object_type='FUNCTION';"
 } | _oracle_rawsql

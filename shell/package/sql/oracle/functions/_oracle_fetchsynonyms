@@ -3,9 +3,10 @@
 # Fetch and return the list of synonyms
 # For use only by the SQL packages
 #
-# $Id: _oracle_fetchsynonyms,v 1.1 2002/04/11 16:15:27 mebourne Exp $
+# $Id: _oracle_fetchsynonyms,v 1.2 2002/05/24 16:14:11 mebourne Exp $
 
 {
+  # Never select from all_objects for this due to the vast amount of results
   echo "set pages 0 feed off"
   echo "select object_name from user_objects where object_type='SYNONYM';"
 } | _oracle_rawsql

@@ -3,7 +3,7 @@
 # Setup for SQL base package
 # Written by Martin Ebourne
 #
-# $Id: setup,v 1.16 2002/04/19 16:44:25 mebourne Exp $
+# $Id: setup,v 1.17 2002/05/24 16:13:11 mebourne Exp $
 
 add_functions_directory package/sql/base/functions
 
@@ -51,7 +51,10 @@ alias select="sql select"
 #	     auto   - Only colour if outputting to tty
 #	     on     - Always colour (if applicable)
 #	     NB. This parameter will only have effect if formatting is enabled
-sqlset count=1 maxrows=0 format=squash colour=off
+# access   - Level of information to access for completion
+#            user   - Only list user tables etc.
+#            all    - Include system tables etc. in lists
+sqlset count=1 maxrows=0 format=squash colour=off access=user
 if (( COLOUR ))
 then
   sqlset colour=auto

@@ -3,11 +3,17 @@
 # Fetch and return the list of tables
 # For use only by the SQL packages
 #
-# $Id: _sybase_fetchtables,v 1.3 2001/07/02 13:55:17 mebourne Exp $
+# $Id: _sybase_fetchtables,v 1.4 2002/05/24 16:14:20 mebourne Exp $
+
+local sys=""
+if [[ $_sql_parameters[access] == all ]]
+then
+  sys=", 'S'"
+fi
 
 {
   echo "set nocount on"
   echo "go"
-  echo "select name from sysobjects where type in ('U', 'V', 'S')"
+  echo "select name from sysobjects where type in ('U', 'V' $sys)"
   echo "go"
 } | _sybase_rawsql | tail +3
