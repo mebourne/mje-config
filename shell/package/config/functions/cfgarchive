@@ -1,0 +1,63 @@
+#eval compdef -n _parse_opts cfgarchive
+# ZSH function file
+# Kill all processes of a certain program
+#
+# $Id: cfgarchive,v 1.1 2002/11/04 16:44:19 mebourne Exp $
+
+local -A opts
+parse_opts - opts -- "$argv[@]" <<'EOF' || return 1
+Description:
+Archive config system into a gzipped tar file
+
+Usage:
+cfgarchive [options] <program-name> ...
+
+Options:
+  -c, --checked-out		Include checked out files
+				# --checked-out | -c
+  -h, --help			Provide this help
+				# --help | -h * excludes=*
+
+Arguments:
+  <output-archive>		Name of archive file to write to
+				# archive : ? file
+EOF
+
+if [[ -f $opts[archive] ]]
+then
+  echo -n "File exists - overwrite? (y/N) "
+  if ! read -q
+  then
+    return 1
+  fi
+fi
+
+local base="${config_dir:h}"
+
+echo "Scanning $config_dir"
+
+# Get list of RCS files
+local -a rcsfiles
+rcsfiles=($config_dir/**/*,v)
+
+local -a checkedoutfiles
+if (( opts[checked-out] ))
+then
+  local file=""
+  for file in $rcsfiles
+  do
+    file=${${file/RCS\\//}%,v}
+    if [[ -f $file ]]
+    then
+      checkedoutfiles=($checkedoutfiles $file)
+    fi
+  done
+fi
+
+local -a symlinkfiles
+symlinkfiles=($config_dir/**/*(@))
+
+local -a files
+files=($rcsfiles $checkedoutfiles $symlinkfiles)
+
+( cd $base; tar cvf - ${files#$base/} ) | gzip - > $opts[archive]
