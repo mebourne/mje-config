@@ -5,7 +5,7 @@
 # Completion code for cleartool command
 # Usage: These functions are used by the completion code
 #
-# $Id: _cleartool,v 1.8 2001/04/04 13:25:53 mebourne Exp $
+# $Id: _cleartool,v 1.9 2001/04/04 14:24:56 mebourne Exp $
 
 _cleartool_decode_pname () {
   case $command in
@@ -196,9 +196,8 @@ _cleartool_add_option () {
 }
 
 _cleartool_process_option () {
-  buffer=${buffer% }
-  #echo "Options >$buffer<"
-  buffer=${buffer/#(#b) #[\[\{<] #(*[^ ]) #[\]\}>]/$match[1]}
+  #echo "Expression to process for command $command >$buffer<"
+  buffer=${buffer/#(#b) #[\[\{<] #(*[^ ]) #[\]\}>] #/$match[1]}
 
   local brackets=${buffer//[^\[\{<]}
   if (( !$#brackets ))
@@ -258,7 +257,7 @@ _cleartool_process_option () {
       done
     done
   else
-#    echo "Unhandled expression for command $command >$buffer<"
+    echo "Unhandled expression for command $command >$buffer<"
   fi
 
   buffer=""
@@ -325,8 +324,11 @@ _cleartool_read_help () {
 }
 
 _cleartool_write_cache() {
+  # Write cache onto .zcompdump file
   local cache=$_comp_dumpfile
 
+  # Doesn't write cache if already present. Note that it may be out of date - if so user will
+  # have to delete it themselves
   if ! grep '\#\#\#START\#\#\# Added by cleartool package' $cache >/dev/null
   then
     {
@@ -341,18 +343,21 @@ _cleartool_write_cache() {
 }
 
 _cleartool () {
+  # If the array isn't setup then we need to calculate it now
   if (( ! $+_cleartool_cmds ))
   then
     _cleartool_read_help
     _cleartool_write_cache
   fi
 
+  # If first argument then commplete sub-command names, else sub-command arguments
   if (( CURRENT == 2 ))
   then
     _cleartool_command_names
   else
     local curcontext="$curcontext"
 
+    # Get the sub-command. Checks aliases and then abbreviated but unique commands
     cmd="$_cleartool_cmds[$words[2]]"
     if (( !$#cmd ))
     then
@@ -364,16 +369,18 @@ _cleartool () {
       fi
     fi
 
+    # Check to see if we identified the sub-command
     if (( $#cmd ))
     then
+      # Set the context to include the sub-command
       curcontext="${curcontext%:*:*}:cleartool-${cmd}:"
+
+      # Call a sub-command function if present, else use the pre-calculated argument list
       if (( $+functions[_cleartool_$cmd] ))
       then
         _cleartool_$cmd
       else
         _arguments ${(Q)${(z)_cleartool_opts[$cmd]}}
-#        _wanted files expl file _files
-#        _message "unknown cleartool command: $words[2]"
       fi
     else
       _message "unknown cleartool command: $words[2]"
@@ -382,31 +389,6 @@ _cleartool () {
 }
 
 # Define completion functions for each cleartool command
-
-#_cleartool_checkin () {
-#  _arguments ${(Q)${(z)_cleartool_opts[checkin]}} \
-#    '*:file:_cleartool_files_checkedout'
-#}
-#
-#_cleartool_checkout () {
-#  _arguments ${(Q)${(z)_cleartool_opts[checkout]}} \
-#    '*:file:_cleartool_files_controlled'
-#}
-#
-#_cleartool_uncheckout () {
-#  _arguments ${(Q)${(z)_cleartool_opts[uncheckout}} \
-#    '*:file:_cleartool_files_checkedout'
-#}
-#
-#_cleartool_annotate () {
-#  _arguments ${(Q)${(z)_cleartool_opts[annotate]}} \
-#    '*:file:_cleartool_files_controlled'
-#}
-#
-#_cleartool_diff () {
-#  _arguments ${(Q)${(z)_cleartool_opts[diff]}} \
-#    '*:file:_cleartool_files_controlled'
-#}
 
 
 # Define completion functions for cleartool global options
