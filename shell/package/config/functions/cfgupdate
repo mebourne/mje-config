@@ -1,14 +1,44 @@
 # ZSH function file
 # Update config directory
-# Usage: configupdate
+# Usage: configupdate [shell|emacs]
 #
-# $Id: cfgupdate,v 1.4 2001/03/23 12:29:45 mebourne Exp $
+# $Id: cfgupdate,v 1.5 2001/05/14 17:25:29 mebourne Exp $
 
-local -a backup_files non_vc_files changed_files unchanged_files
+local base_dir file_desc remove_pattern ignore_pattern
+
+case $argv[1] in
+  shell|) # This is the default
+    base_dir=$ZCONFIGDIR
+    file_desc="ZSH configuration system"
+    remove_pattern='*~|\#*\#'
+    ignore_pattern=''
+    ;;
+
+  emacs)
+    base_dir=${ZCONFIGDIR:h}/emacs
+    file_desc="Emacs configuration system"
+    remove_pattern='*~|\#*\#'
+    ignore_pattern='*.elc|loaddefs.el|startup.el'
+    ;;
+
+  *)
+    echo "Syntax: configupdate [shell|emacs]" 1>&2
+    return 1
+    ;;
+esac
+
+echo "Updating directory $base_dir"
+if [[ ! -d $base_dir ]]
+then
+  echo "Error: No such directory" 1>&2
+  return 1
+fi
+
+local -a remove_files non_vc_files changed_files unchanged_files
 
 # Iterate through the RCS controlled directories in config
 local dir file leaf name
-for dir in $ZCONFIGDIR/**/RCS(/)
+for dir in $base_dir/**/RCS(/)
 do
   dir=${dir:h:h}
 
@@ -16,11 +46,14 @@ do
   for file in $dir/*(.N)
   do
     leaf=${file:t}
-    name=${file#$ZCONFIGDIR/}
+    name=${file#$base_dir/}
 
     case $leaf in
-      *~|\#*\#) # Backup files
-        backup_files=($backup_files $file)
+      $~remove_pattern) # Temporary files to be removed (eg. backups)
+        remove_files=($remove_files $file)
+	;;
+
+      $~ignore_pattern) # Files to be ignored
 	;;
 
       *) # Other files. Catch them if no corresponding RCS file
@@ -38,7 +71,7 @@ do
   do
     leaf=${${file:t}%,v}
     file=$dir/$leaf
-    name=${file#$ZCONFIGDIR/}
+    name=${file#$base_dir/}
 
     if [[ -w $file ]]
     then
@@ -55,10 +88,10 @@ do
       # Not writable. Replace with latest from version history
       if rlog -rdeleted $file >/dev/null 2>&1
       then
-        echo "Deleted  ${file#$ZCONFIGDIR/}"
+        echo "Deleted  ${file#$base_dir/}"
 	rm -f $file
       else
-        echo "Updated  ${file#$ZCONFIGDIR/}"
+        echo "Updated  ${file#$base_dir/}"
     	co -u $file 2>/dev/null
       fi
     fi
@@ -68,14 +101,14 @@ done
 
 # List the various types of files and give optional actions for them
 
-if [[ -n $backup_files ]]
+if [[ -n $remove_files ]]
 then
   echo
-  echo ">>> Delete these backup files?"
-  print -c - ${backup_files#$ZCONFIGDIR/}
+  echo ">>> Delete these temporary/backup files?"
+  print -c - ${remove_files#$base_dir/}
   if read -q
   then
-    rm -f $backup_files
+    rm -f $remove_files
   fi
 fi
 
@@ -83,10 +116,10 @@ if [[ -n $non_vc_files ]]
 then
   echo
   echo ">>> These files are not version controlled. Add them?"
-  print -c - ${non_vc_files#$ZCONFIGDIR/}
+  print -c - ${non_vc_files#$base_dir/}
   if read -q
   then
-    ci -u -t-"ZSH configuration system" $non_vc_files
+    ci -u -t-"$file_desc" $non_vc_files
   fi
 fi
 
@@ -94,7 +127,7 @@ if [[ -n $unchanged_files ]]
 then
   echo
   echo ">>> These files are checked out but unchanged. Revert?"
-  print -c - ${unchanged_files#$ZCONFIGDIR/}
+  print -c - ${unchanged_files#$base_dir/}
   if read -q
   then
     ci -u $unchanged_files
@@ -105,7 +138,7 @@ if [[ -n $changed_files ]]
 then
   echo
   echo ">>> These files are checked out and edited. Check in?"
-  print -c - ${changed_files#$ZCONFIGDIR/}
+  print -c - ${changed_files#$base_dir/}
   if read -q
   then
     for file in $changed_files
