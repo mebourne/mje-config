@@ -5,40 +5,295 @@
 # Completion code for cleartool command
 # Usage: These functions are used by the completion code
 #
-# $Id: _cleartool,v 1.1 2001/02/15 11:56:32 mebourne Exp $
+# $Id: _cleartool,v 1.2 2001/02/21 11:24:27 mebourne Exp $
+
+_cleartool_decode_pname () {
+  case $command in
+    annotate)		result="file:_cleartool_files_controlled";;
+    checkin)		result="file:_cleartool_files_checkedout";;
+    checkout)		result="file:_cleartool_files_controlled";;
+    #chevent)		result="";;
+    #chpool)		result="";;
+    #chtype)		result="";;
+    #cptype)		result="";;
+    diff)		result="file:_cleartool_files_controlled";;
+    #edcs)		result="";;
+    #findmerge)		result="";;
+    ln)			result="file:_cleartool_files_controlled";;
+    #lock)		result="";;
+    #ls)			result="";;
+    lscheckout)		result="file:_cleartool_files_checkedout";;
+    #lsdo)		result="";;
+    #lsvtree)		result="";;
+    merge)		result="file:_cleartool_files_controlled";;
+    #mkattr)		result="";;
+    #mkattype)		result="";;
+    #mkbranch)		result="";;
+    #mkbrtype)		result="";;
+    #mkdir)		result="";;
+    #mkelem)		result="";;
+    #mkeltype)		result="";;
+    #mkhlink)		result="";;
+    #mkhltype)		result="";;
+    #mklabel)		result="";;
+    #mklbtype)		result="";;
+    #mkpool)		result="";;
+    #mktrigger)		result="";;
+    #mktrtype)		result="";;
+    #mkvob)		result="";;
+    move)		result="file:_cleartool_files_controlled";;
+    #protect)		result="";;
+    #relocate)		result="";;
+    rename)		result="file:_cleartool_files_controlled";;
+    reserve)		result="file:_cleartool_files_controlled";;
+    #rmattr)		result="";;
+    #rmbranch)		result="";;
+    #rmdo)		result="";;
+    rmelem)		result="file:_cleartool_files_controlled";;
+    #rmhlink)		result="";;
+    #rmlabel)		result="";;
+    #rmmerge)		result="";;
+    #rmname)		result="";;
+    #rmpool)		result="";;
+    #rmtrigger)		result="";;
+    #rmtype)		result="";;
+    #rmver)		result="";;
+    #setcs)		result="";;
+    uncheckout)		result="file:_cleartool_files_checkedout";;
+    unlock)		result="file:_cleartool_files_checkedout";;
+    unreserve)		result="file:_cleartool_files_checkedout";;
+    *)			result="file:_files";;
+  esac
+  echo $result;
+}
+
+_cleartool_decode_type () {
+  local type=$1
+
+  case $type in
+    \'network-region-pattern\')		result="pattern: ";;
+    \'pattern\')			result="pattern: ";;
+    \'region-tag-pattern\')		result="pattern: ";;
+    \'view-tag-pattern\')		result="pattern: ";;
+    \'vob-tag-pattern\')		result="pattern: ";;
+    activity_selector)			result="";; # let pname catch this later (checkin)
+    attribute-type-selector)		result="type: ";; # types list
+    branch-pname)			result="branch: ";; # branch list
+    branch-type-selector)		result="type: ";; # types list
+    checkout-comment)			result="comment: ";;
+    cnt)				result="number: ";;
+    command)				result="command:_files";; # full command
+    command-invocation)			result="command:_files";; # full command
+    command-name)			result="command:_cleartool_command_names";;
+    comment)				result="comment: ";;
+    contrib-and-result-pname)		result="file:_cleartool_files_controlled";;
+    contrib-pname)			result="file:_files";;
+    date-time)				result="date: ";;
+    default-value)			result="value: ";;
+    dest-pname)				result="file:_files";;
+    dir-identifier)			result="directory:_dirs";;
+    dir-pname)				result="directory:_cleartool_dirs_controlled";;
+    do-leaf-patt)			result="pattern: ";;
+    do-leaf-pattern)			result="pattern: ";;
+    do-pname)				result="file:_files";; # derived obj files
+    dumpfile-dir-pname)			result="directory:_dirs";;
+    elem-type-name)			result="type: ";; # types list
+    elem-type-selector)			result="type: ";; # types list
+    element-pname)			result="file:_files";;
+    element-type-selector)		result="type: ";; # types list
+    format)				result="format: ";;
+    from-text)				result="comment: ";;
+    group-name)				result="group:_groups";;
+    hlink-selector)			result="hyperlink: ";; # hyperlinks list
+    hlink-type-selector)		result="type: ";; # types list
+    hltype-selector)			result="type: ";; # types list
+    hostname)				result="host:_hosts";;
+    hours)				result="number: ";;
+    label-type-selector)		result="type: ";; # types list
+    link-storage-to-dir-pname)		result="directory:_dirs";;
+    log-dir-pname)			result="directory:_dirs";;
+    log-name)				result="log:_cleartool_log_names";;
+    log-pname)				result="file:_files";;
+    login-name)				result="user:_users";;
+    mgr-name)				result="manager:_cleartool_type_managers";;
+    mount-options)			result="option: ";; # embeded in _mount
+    n)					result="number: ";;
+    network-region)			result="region:_cleartool_region_tags";;
+    object-selector)			result="file:_cleartool_files_controlled";;
+    object_selector)			result="file:_cleartool_files_controlled";;
+    old-object-selector)		result="file:_cleartool_files_controlled";;
+    output-pname)			result="file:_files";;
+    pass-through-options)		result="option: ";;
+    pass-through-opts)			result="option: ";;
+    permissions)			result="permission: ";;
+    pname)				result=$(_cleartool_decode_pname);;
+    pname-in-vob)			result="directory:_cleartool_dirs_controlled";;
+    pool-dir-pname)			result="directory:_dirs";;
+    pool-selector)			result="pool:_cleartool_pool_names";;
+    query)				result="query: ";;
+    region-tag)				result="region:_cleartool_region_tags";;
+    registry-password)			result="password: ";;
+    replica-selector)			result="replica:_cleartool_replica_names";;
+    rm-format)				result="format: ";;
+    size)				result="number: ";;
+    snapshot-view-pname)		result="viewstore: ";; # view store dir list
+    source-pname)			result="file:_files";;
+    tag-comment)			result="comment: ";;
+    tag-registry-password)		result="password: ";;
+    tail-pattern)			result="pattern: ";;
+    target-dir-pname)			result="directory:_cleartool_dirs_controlled";;
+    text-mode)				result="mode:_cleartool_text_mode";;
+    to-obj-selector)			result="file:_cleartool_files_controlled";;
+    to-text)				result="comment: ";;
+    topic)				result="topic: ";;
+    topic-args)				result="topic: ";;
+    type-selector)			result="type: ";; # types list
+    uuid)				result="uuid: ";; # uuid list
+    version-selector)			result="version: ";; # version list
+    view-storage-dir-pname)		result="directory: ";; # view store dir list
+    view-storage-pname)			result="directory:_dirs";;
+    view-tag)				result="view:_cleartool_view_tags";;
+    view-uuid)				result="uuid: ";; # viewuuid list
+    view_tag)				result="view:_cleartool_view_tags";;
+    vob-identifier)			result="vob:_cleartool_vob_tags";;
+    vob-selector)			result="vob:_cleartool_vob_tags";;
+    vob-storage-dir-pname)		result="directory: ";; # vob store dir list
+    vob-storage-pname)			result="directory:_dirs";;
+    vob-tag)				result="vob:_cleartool_vob_tags";;
+    vob-uuid)				result="uuid: ";; # vobuuid list
+    *)			echo "Unhandled type for command $command >>>$type<<<" 1>&2;;
+  esac
+  echo $result
+}
+
+_cleartool_add_option () {
+  if [[ $1 != \** || $_cleartool_opts[$command] != *\'\** ]]; then
+    _cleartool_opts[$command]="$_cleartool_opts[$command] '$1'"
+  else
+    #echo "Skipping '$1' from command $command ($_cleartool_opts[$command])" 1>&2
+  fi
+}
+
+_cleartool_process_option () {
+  buffer=${buffer% }
+  #echo "Options >$buffer<"
+  buffer=${buffer/#(#b) #[\[\{<] #(*[^ ]) #[\]\}>]/$match[1]}
+
+  local brackets=${buffer//[^\[\{<]}
+#  if (( !$#brackets && ${(w)#buffer}==1 )); then
+#    case $buffer in
+#      -*)			option=$buffer;;
+#      ...)			option="";;
+#      *)			option=$(_cleartool_decode_type $buffer)
+#				 [[ -n $option ]] && option=":$option";;
+#    esac
+#      if [[ $buffer == -[^\ ]#\ [^-][^\ ]# ]]; then
+#	 option=$(_cleartool_decode_type $buffer[(w)2])
+#	 if [[ -n $option ]]; then
+#	   option="$buffer[(w)1]:$option"
+#	 fi
+#      else
+  if (( !$#brackets )); then
+    local alternative option
+    for alternative in ${(s:|:)buffer}; do
+      alternative=${${alternative## #}%% #}
+      case $alternative in
+	log-name...) # Work round a bug in the output
+		option=$(_cleartool_decode_type log-name)
+		[[ -n $option ]] && _cleartool_add_option "*:$option";;
+        ...) ;; # FIXME: handle this
+        -[^\ ]#)
+		_cleartool_add_option $alternative;;
+        [^\ ]#)
+		option=$(_cleartool_decode_type $alternative)
+		[[ -n $option ]] && _cleartool_add_option ":$option";;
+	-[^\ ]#\ [^-][^\ ]#)
+		option=$(_cleartool_decode_type $alternative[(w)2])
+		[[ -n $option ]] && _cleartool_add_option "$alternative[(w)1]:$option";;
+        [^\ ]#\ ...)
+		option=$(_cleartool_decode_type $alternative[(w)1])
+		[[ -n $option ]] && _cleartool_add_option "*:$option";;
+	*) #echo "Unhandled alternative for command $command >$alternative<";;
+      esac
+    done
+  else
+#echo "Unhandled expression for command $command >$buffer<"
+  fi
+
+  buffer=""
+}
+
+_cleartool_read_help () {
+  typeset -gA _cleartool_cmds _cleartool_opts
+  local word command state=0 buffer level=0
+  for word in $(_call commands cleartool help 2>&1)
+  do
+    if [[ $word == 'Usage:' || $word == "$command" ]]; then
+      if (( $#buffer )); then
+	_cleartool_process_option
+      fi
+
+      if [[ $word == 'Usage:' ]]; then
+	state=1
+	command=""
+      elif [[ $word == "$command" ]]; then
+        state=2
+      fi
+    else
+      case $state in
+	1) command=$word
+	   _cleartool_cmds[$command]=$command
+	   _cleartool_opts[$command]="':commands:_cleartool_command_names'"
+	   buffer=""
+	   level=0
+	   state=2;;
+	3) _cleartool_cmds[$word]=$command
+	   state=2;;
+	2|4)
+	   if [[ $state -eq 2 && $word == '|' ]]; then
+	     state=3
+	   else
+	     state=4
+	
+	     local brackets=${word//[^\[\{<]}
+	
+	     if (( !level && $#brackets && $#buffer )); then
+	       _cleartool_process_option
+	     fi
+	
+             (( level = level + $#brackets ))
+	     buffer="$buffer$word "
+	     brackets=${word//[^\]\}>]}
+             (( level = level - $#brackets ))
+	
+	     if (( !level && $#brackets )); then
+	       _cleartool_process_option
+	     fi
+	   fi
+	   ;;
+      esac
+    fi
+  done
+}
 
 _cleartool () {
   if (( ! $+_cleartool_cmds )); then
-    typeset -ga _cleartool_cmds
-    local word state=0
-    for word in $(_call commands cleartool help 2>&1)
-    do
-      if [[ $state -eq 1 ]]; then
-        _cleartool_cmds=($_cleartool_cmds $word)
-	state=2
-      elif [[ $state -eq 2 && $word == '|' ]]; then
-        state=1
-      elif [[ $word == 'Usage:' ]]; then
-        state=1
-      else
-        state=0
-      fi
-    done
-    _cleartool_cmds=(${(o)_cleartool_cmds})
+    _cleartool_read_help
   fi
 
   if (( CURRENT == 2 )); then
-    _tags commands && compadd "$@" -k _cleartool_cmds
+    _cleartool_command_names
   else
     local curcontext="$curcontext"
 
-    cmd="$_cleartool_cmds[(r)$words[2]]"
+    cmd="$_cleartool_cmds[$words[2]]"
     if (( $#cmd )); then
       curcontext="${curcontext%:*:*}:cleartool-${cmd}:"
       if (( $+functions[_cleartool_$cmd] )); then
         _cleartool_$cmd
       else
-        _wanted files expl file _files
+        _arguments ${(Q)${(z)_cleartool_opts[$cmd]}}
+#        _wanted files expl file _files
 #        _message "unknown cleartool command: $words[2]"
       fi
     else
@@ -49,50 +304,30 @@ _cleartool () {
 
 # Define completion functions for each cleartool command
 
-_cleartool_ci () {
-  _cleartool_checkin "$@"
-}
-
-_cleartool_checkin () {
-  _arguments -s \
-    '*:file:_cleartool_files_checkedout'
-}
-
-_cleartool_co () {
-  _cleartool_checkout "$@"
-}
-
-_cleartool_checkout () {
-  _arguments -s \
-    '*:file:_cleartool_files_controlled'
-}
-
-_cleartool_unco () {
-  _cleartool_uncheckout "$@"
-}
-
-_cleartool_uncheckout () {
-  _arguments -s \
-    '*:file:_cleartool_files_checkedout'
-}
-
-_cleartool_annotate () {
-  _arguments -s \
-    '*:file:_cleartool_files_controlled'
-}
-
-_cleartool_diff () {
-  _arguments -s \
-    '*:file:_cleartool_files_checkedout'
-}
-
-_cleartool_help () {
-  _tags commands && compadd -k _cleartool_cmds
-}
-
-_cleartool_man () {
-  _tags commands && compadd -k _cleartool_cmds
-}
+#_cleartool_checkin () {
+#  _arguments ${(Q)${(z)_cleartool_opts[checkin]}} \
+#    '*:file:_cleartool_files_checkedout'
+#}
+#
+#_cleartool_checkout () {
+#  _arguments ${(Q)${(z)_cleartool_opts[checkout]}} \
+#    '*:file:_cleartool_files_controlled'
+#}
+#
+#_cleartool_uncheckout () {
+#  _arguments ${(Q)${(z)_cleartool_opts[uncheckout}} \
+#    '*:file:_cleartool_files_checkedout'
+#}
+#
+#_cleartool_annotate () {
+#  _arguments ${(Q)${(z)_cleartool_opts[annotate]}} \
+#    '*:file:_cleartool_files_controlled'
+#}
+#
+#_cleartool_diff () {
+#  _arguments ${(Q)${(z)_cleartool_opts[diff]}} \
+#    '*:file:_cleartool_files_controlled'
+#}
 
 
 # Define completion functions for cleartool global options
@@ -103,12 +338,63 @@ _cleartool_man () {
 
 # Define completion functions for files maintained by clearcase
 
+_cleartool_command_names () {
+  _wanted commands expl 'cleartool sub-commands' compadd -a _cleartool_cmds
+}
+
+_cleartool_dirs_controlled () {
+  local name
+  local -a dirs
+  for name in $(_call files cleartool ls -vob_only -short -nxname 2>&1); do
+    [[ -d $name ]] && dirs=($dirs $name)
+  done
+  _wanted directories expl 'version controlled directories' compadd - $dirs
+}
+
 _cleartool_files_checkedout () {
   _wanted files expl 'checked out files' compadd - $(_call files cleartool lsco -short -cview -me 2>&1)
 }
 
 _cleartool_files_controlled () {
   _wanted files expl 'version controlled files' compadd - $(_call files cleartool ls -vob_only -short -nxname 2>&1)
+}
+
+_cleartool_log_names () {
+  local -a lognames
+  local name
+  for name in ${(f)"$(_call logs cleartool getlog -inquire 2>&1)"}; do
+    lognames=($lognames $name[(w)1])
+  done
+  _wanted logs expl 'log names' compadd -a lognames
+}
+
+_cleartool_pool_names () {
+  _wanted pools expl 'pool names' compadd - $(_call pools cleartool lspool -short 2>&1)
+}
+
+_cleartool_region_tags () {
+  _wanted regions expl 'region names' compadd - $(_call regions cleartool lsregion 2>&1)
+}
+
+_cleartool_replica_names () {
+  _wanted replicas expl 'replica names' compadd - $(_call replicas cleartool lsreplica -short 2>&1)
+}
+
+_cleartool_text_modes () {
+  _wanted textmodes expl 'text modes' compadd unix msdos
+}
+
+_cleartool_type_managers () {
+  _wanted managers expl 'type managers' compadd text_file_delta z_text_file_delta whole_copy z_whole_copy binary_delta directory
+}
+
+_cleartool_view_tags () {
+  _clearcase_getviews
+  _wanted views expl 'view names' compadd -a _clearcase_views
+}
+
+_cleartool_vob_tags () {
+  _wanted vobs expl 'vob names' compadd - $(_call vobs cleartool lsvob -short 2>&1)
 }
 
 
