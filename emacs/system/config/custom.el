@@ -1,7 +1,7 @@
 ;; Emacs configuration file
 ;; Customised variables
 ;; Written by Martin Ebourne
-;; $Id: custom.el,v 1.11 2002/03/21 12:01:32 mebourne Exp $
+;; $Id: custom.el,v 1.12 2002/03/21 15:59:56 mebourne Exp $
 
 (setq custom-file (concat install-user-base-dir "/custom.el"))
 
@@ -67,8 +67,7 @@
  '(save-place t)
 
  ;; Buffers sync with disk for interworking with rose and studio
- '(global-auto-revert-mode t)
- '(auto-revert-interval 30)
+ '(auto-revert-interval 5)
 
  ;; Increase history lengths
  '(history-length 100)
