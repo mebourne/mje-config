@@ -1,0 +1,77 @@
+#eval compdef -n _parse_opts blat
+# ZSH function file
+# Kill all processes of a certain program
+#
+# $Id: blat,v 1.1 2002/05/17 17:14:47 mebourne Exp $
+
+local signal="TERM"
+local -a names
+parse_opts -- "$argv[@]" <<'EOF' || return 1
+Description:
+Kill all processes with the given program names
+
+Usage:
+blat [options] <program-name> ...
+
+Options:
+  -h, --help			Provide this help
+				# --help | -h * excludes=*
+  -s <signal>, --signal=<signal>
+				Signal to send (default SIGTERM)
+				# signal = --signal | -s : ? signal
+
+Arguments:
+  <program-name> ...		List of names of programs to kill
+				(excluding paths)
+				# names += [1,*] program-name
+EOF
+
+# Find a sensible ps which supports BSD options
+local ps=/usr/ucb/ps
+if [[ ! -x $ps ]]
+then
+  ps=/bin/ps
+fi
+
+# Capture output of ps for current user
+local -a lines
+lines=(${(f)"$($ps xww)"})
+
+# Work out column of start of command
+integer position=${lines[1][(i)COMMAND]}
+
+# Check for sensible format like we expected
+if [[ $position -eq 0 || $lines[1] != [[:space:]]#PID* ]]
+then
+  echo "blat: Unexpected format of ps output" 1>&2
+  return 1
+fi
+
+# Skip header line
+shift lines
+
+# Search for matching lines and accumulate their PIDs
+local -a pids
+local line=""
+for line in $lines
+do
+  integer pid=$line[(w)1]
+
+  # Take name as first word at command position, strip path
+  local name="${line[position,-1][(w)1]:t}"
+  if (( $#names[(r)$name] ))
+  then
+    pids=($pids $pid)
+  fi
+done
+
+# Check we found something to kill
+if (( ! $#pids ))
+then
+  echo "blat: No matching processes" 1>&2
+  return 1
+fi
+
+# Do it
+echo "Executing: kill -$signal $pids"
+kill -$signal $pids
