@@ -1,0 +1,33 @@
+#compdef emacs
+# ZSH function file
+# Completion for emacs
+#
+# $Id: _emacs,v 1.1 2001/08/09 18:16:17 mebourne Exp $
+
+_arguments -S \
+'--help[Give help on usage]' \
+'--version[List version information]' \
+'*-l[Load a Lisp library with the function "load"]:lisp library:_files' \
+'*--load=[Load a Lisp library with the function "load"]:lisp library:_files' \
+'*-f[Call a Lisp function with no arguments]:list function: ' \
+'*--funcall=[Call a Lisp function with no arguments]:list function: ' \
+'*--eval=[Evaluate a Lisp expression]:lisp expression: ' \
+'*--insert=[Insert the contents of a into the current buffer]:files:_files' \
+'--kill[Exit from Emacs without asking for confirmation]' \
+'(--terminal)-t[Use given device for terminal input and output]:device:_files' \
+'(-t)--terminal=[Use given device for terminal input and output]:device:_files' \
+'(--display)-d[Use the X Window System and use the given display]:display: ' \
+'(-d)--display=[Use the X Window System and use the given display]:display: ' \
+'(--no-windows)-nw[Do not communicate directly with X]' \
+'(-nw)--no-windows[Do not communicate directly with X]' \
+'(-q --batch)-batch[Run Emacs in batch mode]' \
+'(-q -batch)--batch[Run Emacs in batch mode]' \
+'(--no-init-file)-q[Do not load your Emacs init file]' \
+'(-q)--no-init-file[Do not load your Emacs init file]' \
+'--no-site-file[Do not load site init file]' \
+'(--user)-u[Load user'\''s Emacs init file instead of your own]:user:_users' \
+'(-u)--user=[Load user'\''s Emacs init file instead of your own]:user:_users' \
+'--debug-init[Enable the Emacs Lisp debugger for errors in the init file]' \
+'--unibyte[Set up to do almost everything with single-byte buffers]' \
+'--multibyte[Inhibit the effect of unibyte]' \
+'*:file:_files'
