@@ -20,7 +20,7 @@ then
       local typeahead="" char="" response=""
       while read -k -t char
       do
-        typeahead=="$typeahead$char"
+        typeahead="$typeahead$char"
       done
 
       # Query XTerm for value of colour 255. If present should return something like:
