@@ -1,8 +1,9 @@
+#eval compdef -n _functions refn
 # ZSH function file
 # Register new autoload function. Re-registers if already defined
 # Usage: refn <function-name>
 #
-# $Id: refn,v 1.4 2001/02/21 12:08:51 mebourne Exp $
+# $Id: refn,v 1.5 2001/03/16 12:41:53 mebourne Exp $
 
 local fns
 fns=($*)
