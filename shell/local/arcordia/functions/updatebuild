@@ -6,18 +6,20 @@
 #	 lib	Build only libraries
 #	 none	Don't build. Just update configspec
 #
-# $Id: updatebuild,v 1.6 2001/03/20 13:30:25 mebourne Exp $
+# $Id: updatebuild,v 1.7 2001/06/13 09:29:43 mebourne Exp $
 
-local file=${TMPPREFIX:-/tmp/zsh}.configspec.$$
+local file=$HOME/.configspec
 local time=$(date '+%d-%b.%H:%M')
 
-local ok=1
+rm -f $file.2
+mv $file.1 $file.2 2>/dev/null
+mv $file $file.1 2>/dev/null
+
+integer ok=1
 cleartool catcs |
   sed "s/[0-9][0-9]-[A-Z][a-z][a-z].[0-9][0-9]:[0-9][0-9]/$time/g" > $file &&
   cleartool setcs $file &&
   ok=$?
-
-rm -f $file
 
 if (( ok == 0 ))
 then
