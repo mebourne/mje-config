@@ -2,18 +2,18 @@
 # Load a package which is part of the configuration system
 # Usage: package <package-name>
 #
-# $Id: package,v 1.1 2001/02/12 18:13:25 mebourne Exp $
+# $Id: package,v 1.2 2001/03/19 13:58:35 mebourne Exp $
 
 local package=$1
 local setupfile=$ZCONFIGDIR/package/$package/setup
 
-if [[ -z $package_loaded[(r)$package] ]]
+if [[ -z $_package_loaded[(r)$package] ]]
 then
   if [[ -r $setupfile ]]
   then
     [[ -n $ZCONFIGDEBUG ]] && echo "Loading package $package"
     . $setupfile
-    package_loaded=($package_loaded $package)
+    _package_loaded=($_package_loaded $package)
   else
     echo "Package $package does not exist" 1>&2
     return 1
