@@ -1,0 +1,115 @@
+#compdef cleartool
+# ZSH function file
+# Written by Martin Ebourne
+# Part of the clearcase package
+# Completion code for cleartool command
+# Usage: These functions are used by the completion code
+#
+# $Id: _cleartool,v 1.1 2001/02/15 11:56:32 mebourne Exp $
+
+_cleartool () {
+  if (( ! $+_cleartool_cmds )); then
+    typeset -ga _cleartool_cmds
+    local word state=0
+    for word in $(_call commands cleartool help 2>&1)
+    do
+      if [[ $state -eq 1 ]]; then
+        _cleartool_cmds=($_cleartool_cmds $word)
+	state=2
+      elif [[ $state -eq 2 && $word == '|' ]]; then
+        state=1
+      elif [[ $word == 'Usage:' ]]; then
+        state=1
+      else
+        state=0
+      fi
+    done
+    _cleartool_cmds=(${(o)_cleartool_cmds})
+  fi
+
+  if (( CURRENT == 2 )); then
+    _tags commands && compadd "$@" -k _cleartool_cmds
+  else
+    local curcontext="$curcontext"
+
+    cmd="$_cleartool_cmds[(r)$words[2]]"
+    if (( $#cmd )); then
+      curcontext="${curcontext%:*:*}:cleartool-${cmd}:"
+      if (( $+functions[_cleartool_$cmd] )); then
+        _cleartool_$cmd
+      else
+        _wanted files expl file _files
+#        _message "unknown cleartool command: $words[2]"
+      fi
+    else
+      _message "unknown cleartool command: $words[2]"
+    fi
+  fi
+}
+
+# Define completion functions for each cleartool command
+
+_cleartool_ci () {
+  _cleartool_checkin "$@"
+}
+
+_cleartool_checkin () {
+  _arguments -s \
+    '*:file:_cleartool_files_checkedout'
+}
+
+_cleartool_co () {
+  _cleartool_checkout "$@"
+}
+
+_cleartool_checkout () {
+  _arguments -s \
+    '*:file:_cleartool_files_controlled'
+}
+
+_cleartool_unco () {
+  _cleartool_uncheckout "$@"
+}
+
+_cleartool_uncheckout () {
+  _arguments -s \
+    '*:file:_cleartool_files_checkedout'
+}
+
+_cleartool_annotate () {
+  _arguments -s \
+    '*:file:_cleartool_files_controlled'
+}
+
+_cleartool_diff () {
+  _arguments -s \
+    '*:file:_cleartool_files_checkedout'
+}
+
+_cleartool_help () {
+  _tags commands && compadd -k _cleartool_cmds
+}
+
+_cleartool_man () {
+  _tags commands && compadd -k _cleartool_cmds
+}
+
+
+# Define completion functions for cleartool global options
+
+
+# Define completion functions for cleartool common options and arguments
+
+
+# Define completion functions for files maintained by clearcase
+
+_cleartool_files_checkedout () {
+  _wanted files expl 'checked out files' compadd - $(_call files cleartool lsco -short -cview -me 2>&1)
+}
+
+_cleartool_files_controlled () {
+  _wanted files expl 'version controlled files' compadd - $(_call files cleartool ls -vob_only -short -nxname 2>&1)
+}
+
+
+_cleartool "$@"
