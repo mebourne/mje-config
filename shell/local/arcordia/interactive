@@ -4,7 +4,7 @@
 # done, but immediately before the user specific files
 # Written by Martin Ebourne
 #
-# $Id: interactive,v 1.22 2001/08/16 11:10:30 mebourne Exp $
+# $Id: interactive,v 1.23 2001/08/17 15:24:59 mebourne Exp $
 
 # Arcordia settings
 
@@ -19,8 +19,8 @@ add_emulate ksh variable
 # Pull in a couple of useful Arcordia 'packages'
 Load rcs
 
-# Our default CDPATH
-cdpath=(. /vobs/odyssey/cashsec)
+# Add to default CDPATH
+cdpath=($cdpath /vobs/odyssey/cashsec)
 
 # CD vars. Pull in all the vobs available. Add them straight to the hash table
 # to reduce environment variable clutter
