@@ -6,7 +6,7 @@
 #	 lib	Build only libraries
 #	 none	Don't build. Just update configspec
 #
-# $Id: updatebuild,v 1.4 2001/03/16 12:43:47 mebourne Exp $
+# $Id: updatebuild,v 1.5 2001/03/20 09:27:53 mebourne Exp $
 
 local file=${TMPPREFIX:-/tmp/zsh}.configspec.$$
 local time=$(date '+%d-%b.%H:%M')
@@ -42,7 +42,7 @@ then
       ;;
 
     *)
-      echo "Usage: updatebuild [clean] [lib|none]" 1>&2
+      echo "Usage: updatebuild [clean] [all|lib|none]" 1>&2
       return 1
       ;;
   esac
