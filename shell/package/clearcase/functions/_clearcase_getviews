@@ -1,0 +1,12 @@
+# ZSH function file
+# Part of the clearcase package
+# Cache the list of clearcase views
+# Usage: _clearcase_getviews
+#
+# $Id: _clearcase_getviews,v 1.1 2001/02/21 11:24:27 mebourne Exp $
+
+if [[ -z $_clearcase_views ]]
+then
+  typeset -ga _clearcase_views
+  _clearcase_views=($(cleartool lsview -short))
+fi
