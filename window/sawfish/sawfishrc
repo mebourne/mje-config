@@ -8,9 +8,6 @@
 ;; For specific window matching
 (require 'sawfish.wm.ext.match-window)
 
-;; For window snooper on window-ops menu
-(require 'sawfish.wm.ext.window-snooper)
-
 ;; Allow click to focus in addition to point to focus
 (require 'click-focus)
 
@@ -20,7 +17,6 @@
 ;; Add entries to window-ops menu
 (rplacd (nthcdr 2 window-ops-menu)
 	`(("Kill program" kill-client)
-	  ("Snoop" window-snooper)
           ,@(nthcdr 3 window-ops-menu)))
 
 ;; Replace restart on root menu (taken off when running Gnome)
