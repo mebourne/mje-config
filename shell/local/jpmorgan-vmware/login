@@ -1,0 +1,15 @@
+# ZSH configuration file
+# Executed for login shells via zprofile
+# Local site-specific setup for login shells. Run after all system login setup has been
+# done, but immediately before the user specific files
+# Written by Martin Ebourne
+#
+# $Id$
+
+# Home settings
+
+# Java run time
+path=($path /usr/java/j2sdk1.4.2/bin)
+
+# Web proxy
+export http_proxy="http://webproxy.uk.jpmorgan.com:8000"
