@@ -1,149 +1,44 @@
 ;; Emacs configuration file
 ;; Setup for sql-mode
 ;; Written by Martin Ebourne
-;; $Id: sql-mode.el,v 1.1 2001/05/11 17:31:38 mebourne Exp $
+;; $Id: sql-mode.el,v 1.2 2001/05/17 13:35:51 mebourne Exp $
 
-(define-generic-mode 'sql-generic-mode
-   (list "--" '("/*" . "*/"))
-   (list 
-    "and"
-    "AND"
-    "as"
-    "AS"
-    "begin"
-    "BEGIN"
-    "binary"
-    "BINARY"
-    "by"
-    "BY"
-    "char"
-    "CHAR"
-    "close"
-    "CLOSE"
-    "commit"
-    "COMMIT"
-    "convert"
-    "CONVERT"
-    "count"
-    "COUNT"
-    "create"
-    "CREATE"
-    "cursor"
-    "CURSOR"
-    "database"
-    "DATABASE"
-    "deallocate"
-    "DEALLOCATE"
-    "declare"
-    "DECLARE"
-    "delete"
-    "DELETE"
-    "distinct"
-    "DISTINCT"
-    "drop"
-    "DROP"
-    "else"
-    "ELSE"
-    "end"
-    "END"
-    "escape"
-    "ESCAPE"
-    "exec"
-    "EXEC"
-    "execute"
-    "EXECUTE"
-    "exists"
-    "EXISTS"
-    "fetch"
-    "FETCH"
-    "float"
-    "FLOAT"
-    "for"
-    "FOR"
-    "from"
-    "FROM"
-    "go"
-    "GO"
-    "grant"
-    "GRANT"
-    "group"
-    "GROUP"
-    "having"
-    "HAVING"
-    "if"
-    "IF"
-    "in"
-    "IN"
-    "index"
-    "INDEX"
-    "insert"
-    "INSERT"
-    "int"
-    "INT"
-    "integer"
-    "INTEGER"
-    "into"
-    "INTO"
-    "like"
-    "LIKE"
-    "not"
-    "NOT"
-    "null"
-    "NULL"
-    "number"
-    "NUMBER"
-    "on"
-    "ON"
-    "only"
-    "ONLY"
-    "open"
-    "OPEN"
-    "or"
-    "OR"
-    "print"
-    "PRINT"
-    "proc"
-    "PROC"
-    "procedure"
-    "PROCEDURE"
-    "read"
-    "READ"
-    "return"
-    "RETURN"
-    "revoke"
-    "REVOKE"
-    "rollback"
-    "ROLLBACK"
-    "select"
-    "SELECT"
-    "set"
-    "SET"
-    "table"
-    "TABLE"
-    "transaction"
-    "TRANSACTION"
-    "update"
-    "UPDATE"
-    "values"
-    "VALUES"
-    "varchar"
-    "VARCHAR"
-    "view"
-    "VIEW"
-    "where"
-    "WHERE"
-    "while"
-    "WHILE"
-    )
-   '(
-     ("^\\(#.*\\)$" (1 font-lock-constant-face))
-     ("[^A-Za-z0-9_@]\\(@@?[A-Za-z0-9_]+\\)\\>" (1 font-lock-variable-name-face))
-     ("\\<[0-9.][0-9Ee+-.]*\\>" . font-lock-number-face)
-     )
-   (list "\\.sql\\'" "\\.sp\\'")
-   (list (function
-	   (lambda ()
-	     (modify-syntax-entry ?_ "w" font-lock-syntax-table)
-	     ;(setq tab-width 4)
-	     )))
-   "Generic mode for SQL files.")
+(setq auto-mode-alist
+      (append '(("\\.sql\\'" . sql-mode)
+		("\\.sp\\'"  . sql-mode)
+		("\\.idx\\'" . sql-mode)
+		("\\.key\\'" . sql-mode)
+		) auto-mode-alist))
+
+
+(defun sql-highlight-sybase-keywords ()
+  "Highlight Sybase keywords.
+Basically, this just sets `font-lock-keywords' appropriately."
+  (interactive)
+  (setq font-lock-keywords sql-mode-sybase-font-lock-keywords)
+  (font-lock-fontify-buffer))
+
+
+(add-hook 'sql-mode-hook
+	  (function (lambda ()
+		      (setq comment-column 45)
+		      (setq fill-column 78)
+		      (setq paragraph-start "[ 	]*$")
+		      (setq font-lock-defaults '(sql-mode-sybase-font-lock-keywords
+						 nil t ((?_ . "w"))))
+		      )))
+
+
+;(eval-after-load "sql"
+;  '(progn
+;     ; Map _ as a word character
+;     (modify-syntax-entry ?_ "w" sql-mode-syntax-table)
+;     ))
+
+;   '(
+;     ("^\\(#.*\\)$" (1 font-lock-constant-face))
+;     ("[^A-Za-z0-9_@]\\(@@?[A-Za-z0-9_]+\\)\\>" (1 font-lock-variable-name-face))
+;     ("\\<[0-9.][0-9Ee+-.]*\\>" . font-lock-number-face)
+;     )
+;   (list "\\.sql\\'" "\\.sp\\'")
+;	     (modify-syntax-entry ?_ "w" font-lock-syntax-table)
