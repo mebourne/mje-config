@@ -1,7 +1,7 @@
 ;; Emacs configuration file
 ;; Key bindings
 ;; Written by Martin Ebourne
-;; $Id: keys.el,v 1.2 2001/05/18 13:19:05 mebourne Exp $
+;; $Id: keys.el,v 1.3 2001/05/23 14:14:31 mebourne Exp $
 
 ;; Cursor movement
 (global-set-key "\M-\C-z"     'scroll-other-window-down)
@@ -22,8 +22,9 @@
 ;; Applications
 (global-set-key "\C-xve"      'vc-ediff)
 (global-set-key "\C-xv!"      'vc-version-diff)
-(global-set-key "\M-\C-x"     'compile)
 (global-set-key "\C-xvz"      'cvs-update)
+(global-set-key "\M-\C-x"     'compile)
+(global-set-key "\C-x:"       'ielm)
 ;(global-set-key "\M-n"        'gnus)
 
 ;; Buffer operations
