@@ -1,0 +1,99 @@
+#compdef sql
+# ZSH function file
+# Written by Martin Ebourne
+# Part of the SQL base package
+# Completion code for sql command
+# Usage: These functions are used by the completion code
+#
+# $Id: _sql,v 1.1 2001/02/26 18:37:50 mebourne Exp $
+
+_sql () {
+  local -A tables
+  local currentstate=0
+
+  local word table state=900 index=1
+  for word in $words
+  do
+
+    word=${${word#\(}%\)}
+    case $word in
+      delete)	state=111;;
+      insert)	state=112;;
+      update)	state=113;;
+      into)	state=122;;
+      table)	state=124;;
+      view)	state=125;;
+      order)	state=191;;
+      group)	state=192;;
+      select)	state=200;;
+      where)	state=300;;
+      having)	state=300;;
+      by)	state=400;;
+      from)	case $state in
+		  111) state=121;;
+		  *)   state=102;;
+		esac;;
+      ,)	(( state == 103 )) && state=102;;
+      *)	local comma=0
+		if [[ $word == *, ]]
+		then
+		  comma=1
+		  word=${word%,}
+		fi
+
+		case $state in
+		  102)	if (( comma ))
+			then
+			  tables[$word]=$word
+			else
+			  table=$word
+			  state=103
+			fi;;
+		  103)	tables[$word]=$table
+			table=""
+			state=102;;
+		  11?)	tables[$word]=$word
+			(( state = state + 20 ));;
+		  12?)	tables[$word]=$word
+			(( state = state + 10 ));;
+		  1*)	state=0;;
+		esac
+		;;
+    esac
+
+    if (( state != 103 && $#table ))
+    then
+      tables[$table]=$table;
+      table=""
+    fi
+
+    (( index = index + 1 ))
+    if (( index == CURRENT ))
+    then
+      currentstate=$state
+    fi
+
+  done
+
+  #echo "tables=${(kv)tables}"
+  #echo "state=$currentstate"
+
+  case $currentstate in
+    900)	_wanted sql expl 'SQL reserved words' compadd select delete insert update create drop;;
+    102)	_sql_complete_table_names;;
+    103)	return 1;;
+    111)	_wanted sql expl 'SQL reserved words' compadd from
+		_sql_complete_table_names;;
+    112)	_wanted sql expl 'SQL reserved words' compadd into
+		_sql_complete_table_names;;
+    113|12?)	_sql_complete_table_names;;
+    131)	_wanted sql expl 'SQL reserved words' compadd where;;
+    132)	_wanted sql expl 'SQL reserved words' compadd values;;
+    133)	_wanted sql expl 'SQL reserved words' compadd set;;
+    191)	_wanted sql expl 'SQL reserved words' compadd by;;
+    192)	_wanted sql expl 'SQL reserved words' compadd by;;
+    2*|3*|4*)	_sql_complete_column_names $tables;;
+  esac
+}
+
+_sql "$@"

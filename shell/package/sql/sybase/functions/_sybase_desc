@@ -1,0 +1,8 @@
+# ZSH function file
+# Part of the SQL Sybase package
+# Describe the given table
+# For use only by the SQL packages
+#
+# $Id: _sybase_desc,v 1.1 2001/02/26 18:38:53 mebourne Exp $
+
+_sybase_sql sp_help $1

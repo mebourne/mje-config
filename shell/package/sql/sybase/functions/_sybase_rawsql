@@ -1,0 +1,14 @@
+# ZSH function file
+# Part of the SQL Sybase package
+# Execute a raw SQL command
+# For use only by the SQL packages
+#
+# $Id: _sybase_rawsql,v 1.1 2001/02/26 18:38:53 mebourne Exp $
+
+if [[ -z $_sql_parameters[server] || -z $_sql_parameters[user] || -z $_sql_parameters[password] ]]
+then
+  echo "Error: SQL server/user/password variables not set" 1>&2
+  return 1
+fi
+
+isql -S$_sql_parameters[server] -U$_sql_parameters[user] -P$_sql_parameters[password] $*

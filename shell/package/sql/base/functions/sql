@@ -1,0 +1,8 @@
+# ZSH function file
+# Part of the SQL base package
+# Execute an SQL command
+# Usage: sql <sql-command> ...
+#
+# $Id: sql,v 1.1 2001/02/26 18:37:50 mebourne Exp $
+
+_sql_call sql "$@"

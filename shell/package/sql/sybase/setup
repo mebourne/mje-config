@@ -1,0 +1,15 @@
+# ZSH configuration file
+# Executed when the SQL Sybase package is included
+# Setup for SQL Sybase package
+# Written by Martin Ebourne
+# NB. This file should only be included by the SQL base package
+#
+# $Id: setup,v 1.1 2001/02/26 18:38:37 mebourne Exp $
+
+add_functions_directory package/sql/sybase/functions
+
+_sql_functions[sybase:desc]=_sybase_desc
+_sql_functions[sybase:fetch_columns]=_sybase_fetchcolumns
+_sql_functions[sybase:fetch_tables]=_sybase_fetchtables
+_sql_functions[sybase:init]=true
+_sql_functions[sybase:sql]=_sybase_sql

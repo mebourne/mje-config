@@ -1,0 +1,9 @@
+# ZSH function file
+# Part of the SQL base package
+# Complete on the list of table names
+# For use only by the SQL packages
+#
+# $Id: _sql_complete_table_names,v 1.1 2001/02/26 18:37:50 mebourne Exp $
+
+_sql_get_table_names
+_wanted tables expl 'database tables' compadd -a _sql_tables

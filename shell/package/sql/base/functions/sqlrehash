@@ -1,0 +1,8 @@
+# ZSH function file
+# Part of the SQL base package
+# Delete all cached information to force it to be refetched on next use
+# Usage: sqlrehash
+#
+# $Id: sqlrehash,v 1.1 2001/02/26 18:37:50 mebourne Exp $
+
+unset _sql_tables ${(M)$(set +):#_sql_columns*}

@@ -1,0 +1,20 @@
+# ZSH configuration file
+# Executed when the SQL base package is included
+# Setup for SQL base package
+# Written by Martin Ebourne
+#
+# $Id: setup,v 1.1 2001/02/26 18:37:16 mebourne Exp $
+
+add_functions_directory package/sql/base/functions
+
+alias sql="nocorrect noglob sql"
+alias desc="nocorrect noglob desc"
+
+alias ssf="sql select * from"
+alias scsf="sql select count(*) \'Rows\' from"
+alias select="sql select"
+
+typeset -gA _sql_parameters _sql_functions
+
+compdef -a _sql sql
+compdef -a _desc desc

@@ -1,0 +1,24 @@
+# ZSH function file
+# Part of the SQL base package
+# Call an implementation function
+# For use only by the SQL packages
+#
+# $Id: _sql_call,v 1.1 2001/02/26 18:37:50 mebourne Exp $
+
+local command=$1
+shift
+
+if [[ -z $_sql_parameters[vendor] ]]
+then
+  echo "Error: SQL system not initialised" 1>&2
+  return 1
+fi
+
+local fn=$_sql_functions[$_sql_parameters[vendor]:$command]
+if [[ -z $fn ]]
+then
+  echo "Internal error: Cannot call $_sql_parameters[vendor]:$command" 1>&2
+  return 1
+fi
+
+$fn "$@"

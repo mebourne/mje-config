@@ -1,0 +1,17 @@
+#compdef desc
+# ZSH function file
+# Written by Martin Ebourne
+# Part of the SQL base package
+# Completion code for desc command
+# Usage: These functions are used by the completion code
+#
+# $Id: _desc,v 1.1 2001/02/26 18:37:50 mebourne Exp $
+
+_desc () {
+  if (( CURRENT == 2 ))
+  then
+    _sql_complete_table_names
+  fi
+}
+
+_desc "$@"

@@ -1,0 +1,14 @@
+# ZSH function file
+# Part of the SQL base package
+# Describe the given table
+# Usage: desc <table-name>
+#
+# $Id: desc,v 1.1 2001/02/26 18:37:50 mebourne Exp $
+
+if [[ -z $1 ]]
+then
+  echo "Syntax: desc <table-name>" 1>&2
+  return 1
+fi
+
+_sql_call desc $1

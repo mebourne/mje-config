@@ -1,0 +1,15 @@
+# ZSH function file
+# Part of the SQL base package
+# Retrieve the list of column names for a given table. The names are return in an array
+# called _sql_columns_<table-name>. Caching is handled automatically
+# For use only by the SQL packages
+#
+# $Id: _sql_get_column_names,v 1.1 2001/02/26 18:37:50 mebourne Exp $
+
+local table=$1
+
+if [[ -z ${(P)$(echo _sql_columns_$table)} ]]
+then
+  typeset -gaU _sql_columns_$table
+  eval _sql_columns_$table=\(\$\(_sql_call fetch_columns ${table:-%}\)\)
+fi
