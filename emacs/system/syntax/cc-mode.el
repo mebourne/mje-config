@@ -1,7 +1,7 @@
 ;; Emacs configuration file
 ;; Syntax colouring regular expressions for cc-mode
 ;; Written by Martin Ebourne
-;; $Id: cc-mode.el,v 1.1 2001/05/11 17:31:38 mebourne Exp $
+;; $Id: cc-mode.el,v 1.2 2002/04/24 13:45:47 mebourne Exp $
 
 ;; C/C++/Java
 (defvar c-font-lock-keywords-local nil)
@@ -29,7 +29,7 @@
 			     "mutable" "namespace" "new" "not" "not_eq"
 			     "operator" "or" "or_eq" "private" "protected"
 			     "public" "register" "reinterpret_cast" "return"
-			     "short" "signed" "sizeof" "static" "struct"
+			     "short" "signed" "sizeof" "static" "static_cast" "struct"
 			     "switch" "template" "this" "throw" "true" "try"
 			     "typedef" "typeid" "typename" "union" "unsigned"
 			     "using" "virtual" "void" "volatile" "wchar_t"
