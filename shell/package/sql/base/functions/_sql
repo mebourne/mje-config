@@ -5,7 +5,7 @@
 # Completion code for sql command
 # Usage: These functions are used by the completion code
 #
-# $Id: _sql,v 1.6 2001/06/08 15:11:28 mebourne Exp $
+# $Id: _sql,v 1.7 2001/08/13 21:20:45 mebourne Exp $
 
 _sql () {
   local -A tables
@@ -86,38 +86,55 @@ _sql () {
   #echo "tables=${(kv)tables}"
   #echo "state=$currentstate"
 
-  local ret=1
+  local -a alternatives
+  alts=()
   case $currentstate in
-    900)	_wanted sql expl 'SQL reserved words' compadd select delete insert update create drop && ret=0
-		_sql_complete_proc_names && ret=0;;
-    102)	_sql_complete_table_names && ret=0;;
+    900)	alts=($alts 'sql:SQL reserved words:(select delete insert update create drop)')
+		alts=($alts 'tables:database tables:_sql_complete_proc_names');;
+    102)	alts=($alts 'tables:database stored procedures:_sql_complete_table_names');;
     103)	;;
-    111)	_wanted sql expl 'SQL reserved words' compadd from && ret=0
-		_sql_complete_table_names && ret=0;;
-    112)	_wanted sql expl 'SQL reserved words' compadd into && ret=0
-		_sql_complete_table_names && ret=0;;
-    113|12?)	_sql_complete_table_names && ret=0;;
-    131)	_wanted sql expl 'SQL reserved words' compadd where && ret=0;;
-    132)	_wanted sql expl 'SQL reserved words' compadd values && ret=0;;
-    133)	_wanted sql expl 'SQL reserved words' compadd set && ret=0;;
-    191)	_wanted sql expl 'SQL reserved words' compadd by && ret=0;;
-    192)	_wanted sql expl 'SQL reserved words' compadd by && ret=0;;
+    111)	alts=($alts 'sql:SQL reserved words:(from)')
+		alts=($alts 'tables:database tables:_sql_complete_table_names');;
+    112)	alts=($alts 'sql:SQL reserved words:(into)')
+		alts=($alts 'tables:database tables:_sql_complete_table_names');;
+    113|12?)	alts=($alts 'tables:database tables:_sql_complete_table_names');;
+    131)	alts=($alts 'sql:SQL reserved words:(where)');;
+    132)	alts=($alts 'sql:SQL reserved words:(values)');;
+    133)	alts=($alts 'sql:SQL reserved words:(set)');;
+    191)	alts=($alts 'sql:SQL reserved words:(by)');;
+    192)	alts=($alts 'sql:SQL reserved words:(by)');;
     2*|3*|4*|5*)
+		local suffix=""
+		if [[ $currentstate == 2* ]]
+		then
+		  suffix="-S ', ' -r ', \t\n\-'"
+		fi
+
 		if [[ $PREFIX == *.* ]]
 		then
 		  local tablealias="${PREFIX%%.*}"
 		  if (( $+tables[$tablealias] ))
 		  then
-		    _sql_complete_column_names -p $tablealias $tables[$tablealias] && ret=0
+		    local table="$tables[$tablealias]"
+		    alts=($alts "columns-$table:database columns for $table:_sql_complete_column_names -p '$tablealias.' $suffix $table")
 		  fi
-		else
-		  _wanted table-alias expl 'table aliases' compadd -S. ${(k)tables} && ret=0
-		  _sql_complete_column_names $tables && ret=0
+		 else
+		   alts=($alts "table-aliases:table aliases:compadd -S. ${(k)tables}")
+		   if (( $#tables ))
+		   then
+		     local table=""
+		     for table in $tables
+		     do
+		       alts=($alts "columns-$tables:database columns for $table:_sql_complete_column_names $suffix $table")
+		     done
+		   else
+		     alts=($alts "all-columns:all database columns:_sql_complete_column_names $suffix -")
+		   fi
 	        fi
 		;;
   esac
 
-  return $ret
+  _alternative $alts
 }
 
 _sql "$@"

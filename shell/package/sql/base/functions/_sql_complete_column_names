@@ -3,38 +3,17 @@
 # Complete on the column names from the given list of tables
 # For use only by the SQL packages
 #
-# $Id: _sql_complete_column_names,v 1.4 2001/08/13 19:25:24 mebourne Exp $
+# $Id: _sql_complete_column_names,v 1.5 2001/08/13 21:20:35 mebourne Exp $
 
-local prefix=""
-if [[ $argv[1] == -p* ]]
+local table="$argv[-1]"
+
+if [[ $table != - ]]
 then
-  prefix="$argv[1]"
-  shift
-fi
-
-local suffix="" remove=""
-if [[ $argv[1] == -S* ]]
-then
-  suffix="$argv[1]"
-  shift
-
-  remove="-r, \t\n\-"
-fi
-
-local -aU tables
-tables=($argv[*])
-
-if (( $#tables ))
-then
-  local table
-  for table in $tables
-  do
-    _sql_get_column_names $table
-    _wanted columns-$table expl "database columns for $table" \
-      compadd $prefix $suffix $remove -a _sql_columns_$table
-  done
+  _sql_get_column_names $table
+  _wanted columns-$table expl "database columns for $table" \
+    compadd "${(@)argv[1,-2]}" -a _sql_columns_$table
 else
   _sql_get_column_names
   _wanted all-columns expl 'all database columns' \
-    compadd $prefix $suffix $remove -a _sql_columns_
+    compadd "${(@)argv[1,-2]}" -a _sql_columns_
 fi
