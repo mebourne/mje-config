@@ -1,3 +1,9 @@
+# Perl package MJE::XmlHash
+# Style package for use with XML::Parser.
+# Decodes XML file into a hash/array structure as appropriate, optionally
+# using a kay attribute from the XML.
+# Written by Martin Ebourne, 06/08/2001
+
 package MJE::XmlHash;
 
 use UNIVERSAL qw(isa);
