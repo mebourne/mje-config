@@ -4,7 +4,7 @@
 # Update the SourceInfo databases
 # Usage: siupdate
 #
-# $Id: siupdate,v 1.6 2001/04/11 11:14:30 mebourne Exp $
+# $Id: siupdate,v 1.7 2001/05/23 12:16:45 mebourne Exp $
 
 if [[ -z $sourceinfo_sourcecode_dirs ]]
 then
@@ -16,12 +16,14 @@ fi
 local dir
 for dir in $sourceinfo_sourcecode_dirs
 do
-  find $dir -type f \! \( -name '*.[ao]' -o -name '*.so' -o -name '*[mM]akefile' \
-			  -o -name sol2.d -o -name '.*' -o -name '*~' -o -name '*#' \
+  find $dir -type f \! \( -name '.*' -o -name '*~' -o -name '*#' \
+			  -o -name '*.[ado]' -o -name '*.so' \
+			  -o -name '*.elc' -o -name '*.zwc' \
+			  -o -name '*[mM]akefile' -o -name '*.mk' \
 			  -o -name core \
 		       \) \
 		    -print \
-	    -o -name lost+found -prune
+	    -o \( -name lost+found -o -name RCS -o -name CVS -o -name sol2.d \) -prune
 done |
   gzip - > $sourceinfo_filesdb
 
