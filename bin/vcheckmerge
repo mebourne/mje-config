@@ -2,14 +2,19 @@
 # vcheckmerge - List outstanding merges for given file
 # Written by Martin Ebourne
 #
-# $Id: vcheckmerge,v 1.1 2000/02/04 17:43:15 martine Exp $
+# $Id: vcheckmerge,v 1.2 2000/02/04 17:51:35 martine Exp $
 
 my $file=$ARGV[0];
 
-my $rcsdump=`vhist $file`;
-
-my $release=`vcsbranchinfo -default_merge \`wlink\` | sed 's/_dev\$//'`;
+my $release;
+if(@ARGV==2) {
+  $release=$ARGV[1];
+} else {
+  $release=`vcsbranchinfo -default_merge \`wlink\` | sed 's/_dev\$//'`;
+}
 chomp($release);
+
+my $rcsdump=`vhist $file`;
 
 my $branchver;
 my $devminorver;
