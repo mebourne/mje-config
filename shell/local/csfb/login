@@ -4,7 +4,7 @@
 # done, but immediately before the user specific files
 # Written by Martin Ebourne
 #
-# $Id: login,v 1.1 2002/03/18 16:54:49 mebourne Exp $
+# $Id: login,v 1.2 2002/03/19 11:39:52 mebourne Exp $
 
 # CSFB settings
 
@@ -25,6 +25,15 @@ manpath=($manpath $FOD/develop/man)
 export LM_LICENSE_FILE=/sw/faoSUNWspro/license_dir/licenses_combined
 path=($path /sw/SUNWspro-5.0/bin)
 manpath=($manpath /sw/SUNWspro-5.0/man)
+
+# Oracle 8
+export ORACLE_VERSION=8.1.6
+export ORACLE_HOME=/app/oracle/product/client/${ORACLE_VERSION}
+export ORACLE_SID=SUNSYS
+export ORAWEB_HOME=/export/home/oracle/ows/3.0
+export TNS_ADMIN=$ORACLE_HOME
+path=($path ${ORAWEB_HOME}/bin ${ORACLE_HOME}/bin)
+ld_library_path=($ld_library_path ${ORACLE_HOME}/lib)
 
 # Other comands
 path=($path /usr/ccs/bin)
