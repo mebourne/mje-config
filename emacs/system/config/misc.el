@@ -1,7 +1,7 @@
 ;; Emacs configuration file
 ;; Miscellaneous stuff
 ;; Written by Martin Ebourne
-;; $Id: misc.el,v 1.9 2002/03/26 14:02:02 mebourne Exp $
+;; $Id: misc.el,v 1.10 2002/03/26 17:11:48 mebourne Exp $
 
 (setq message-log-max 1000)
 
@@ -12,15 +12,19 @@
 (load "filecache")
 
 ;; Load semantic
-(setq semantic-load-turn-everything-on t)
 (load "semantic-load")
+(global-semantic-auto-parse-mode t)
+(global-semanticdb-minor-mode t)
+(add-hook 'semantic-init-hooks
+	  (lambda ()
+	    (imenu-add-to-menubar "Tokens")))
 
 ;; Display european characters
 (standard-display-european t)
 
 ;; Get the time & column number on the info bar. Disable mail flag though
 ;(display-time)
-(column-number-mode 1)
+(column-number-mode t)
 
 ;; Enable BBC-B style cursor copying
 (setq vcursor-key-bindings t)
