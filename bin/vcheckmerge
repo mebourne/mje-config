@@ -1,0 +1,45 @@
+#!/opt/gnu/bin/perl -w
+# vcheckmerge - List outstanding merges for given file
+# Written by Martin Ebourne
+#
+# $Id: vcheckmerge,v 1.1 2000/02/04 17:43:15 martine Exp $
+
+my $file=$ARGV[0];
+
+my $rcsdump=`vhist $file`;
+
+my $release=`vcsbranchinfo -default_merge \`wlink\` | sed 's/_dev\$//'`;
+chomp($release);
+
+my $branchver;
+my $devminorver;
+if($rcsdump=~/${release}_dev: ([0-9.]*\.)([0-9]*)$/m) {
+  $branchver=$1;
+  $devminorver=$2;
+} else {
+  die "Failed 1";
+}
+
+my $mergedminorver;
+if($rcsdump=~/${release}_merged: [0-9.]*\.([0-9]*)$/m) {
+  $mergedminorver=$1;
+} else {
+  die "Failed 2";
+}
+
+
+#print "$branchver $devminorver $mergedminorver\n";
+
+if($devminorver eq $mergedminorver) {
+  print "$file:	$release	No merged needed\n";
+} else {
+  my $numversions=$devminorver-$mergedminorver;
+  print "$file: $release	$numversions new versions\n";
+  foreach my $i ($mergedminorver+1 .. $devminorver) {
+    if($rcsdump=~/revision $branchver$i.*?author: (.*?);/s) {
+      print "		$branchver$i: $1\n";
+    } else {
+      die "Failed 3";
+    }
+  }
+}

@@ -1,0 +1,16 @@
+#!/bin/sh
+# dozsh - Execute zsh from another shell environment
+# Written by Martin Ebourne
+#
+# $Id: dozsh,v 1.1 2000/02/04 17:42:22 martine Exp $
+
+ZDOTDIR=/usr/users/martine
+export ZDOTDIR
+
+PATH=$ZDOTDIR/bin/`uname -m`:$ZDOTDIR/bin:$PATH
+export PATH
+
+NOOSF2ALIAS=T
+export NOOSF2ALIAS
+
+exec zsh -l
