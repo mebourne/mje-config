@@ -3,7 +3,7 @@
 # Setup for clearcase package
 # Written by Martin Ebourne
 #
-# $Id: setup,v 1.6 2001/05/23 18:28:25 mebourne Exp $
+# $Id: setup,v 1.7 2001/05/23 18:41:06 mebourne Exp $
 
 if [[ -n "$CLEARCASE_ROOT" ]]
 then
@@ -12,10 +12,10 @@ fi
 
 add_functions_directory package/clearcase/functions
 
-# If ZDOTDIR not set default to storing clearcase cache in completion cache
+# If ZDOTDIR=HOME, default to storing clearcase cache in completion cache
 # file to reduce clutter. Else make a seperate file for it
 typeset -g clearcase_dumpfile="$_comp_dumpfile"
-if [[ -n $ZDOTDIR ]]
+if [[ ${ZDOTDIR:-$HOME} != $HOME ]]
 then
   clearcase_dumpfile=$ZDOTDIR/.cleartool
 fi
