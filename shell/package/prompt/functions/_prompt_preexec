@@ -3,7 +3,7 @@
 # Hook for preexec function
 # Usage: _prompt_precmd
 #
-# $Id: _prompt_preexec,v 1.14 2001/08/17 16:47:55 mebourne Exp $
+# $Id: _prompt_preexec,v 1.15 2001/08/21 13:40:48 mebourne Exp $
 
 local command="$1"
 
@@ -39,9 +39,17 @@ echo -nE - "$command"
 echo -n - "$colour_start$colours[normal]$colour_end"
 
 # Then the padding to right justify the right prompt. Only use last logical row of
-# command for this calculation
-echo -n - "${(l:COLUMNS * lastrows - $#lastrow
-              - ${#${(%%)${prompt_right//[%]\{[^%]#%\}/}}}:::::)}"
+# command for this calculation. Handle case where prompt needs to be shifted onto
+# the next line
+integer gap=$(( COLUMNS * lastrows - $#lastrow - ${#${(%%)${prompt_right//[%]\{[^%]#%\}/}}} ))
+if (( gap > 0 ))
+then
+  echo -n - "${(l:gap:::::)}"
+else
+  echotc ce
+  echo
+  echo -n - "${(l:COLUMNS - ${#${(%%)${prompt_right//[%]\{[^%]#%\}/}}}:::::)}"  
+fi
 
 # Then the right prompt
 print -nP - $prompt_right
