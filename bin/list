@@ -1,0 +1,30 @@
+#!/bin/sh
+#
+# list - List locked, snapped, and new files in directories
+# Written by Martin Ebourne, Started 20/08/99
+
+fileout=$HOME/work/tmp/filesout
+
+rm -f $fileout
+
+for i in . `find . -name '.VCS' -print | \sed -e 's:^./\(.*/\).VCS$:\1:' -e '/VCS/d' | sort`
+do
+  (
+    cd $i
+  
+    if [ "`wout`" != "" ]
+    then
+      wout -l | tee -a $fileout | sed "s:^:L $i:"
+      wsnap   | tee -a $fileout | sed "s:^:S $i:"
+    fi
+
+    if [ "$1" = "-n" ]
+    then
+      ( find . -type f \( -name '*.[ch]xx' -o -name '*.inl' -o -name '*.gen' -o -name '*.sqc' \
+			  -o -name '*.hdb' -o -name 'makefile' -o -name '*.incl' \
+		       \) -print -o -name '.' -o -prune 2>/dev/null | sed 's:^\./::'
+	wout
+      ) | sort | uniq -u | sed "s:^:N $i:"
+    fi
+  )
+done
