@@ -3,12 +3,16 @@
 # Set up all the autoloaded functions. This is executed for all shells very early on
 # Written by Martin Ebourne
 #
-# $Id: loadfuncs,v 1.4 2001/02/13 12:19:50 mebourne Exp $
+# $Id: loadfuncs,v 1.5 2001/03/16 12:46:17 mebourne Exp $
 
 # This file can be included more than once. Only execute it once though
-if functions add_functions_directory >/dev/null
+if ! functions add_functions_directory >/dev/null
 then
-else
+
+  # Empty hook called after each functions directory has been added
+  # Usage: _add_functions_hook <directory> <functions> ...
+  _add_functions_hook() {
+  }
 
   # Add given directory to start of zsh function path if not already present.
   # Also register all files in the given directory for autoloading, whether
@@ -27,10 +31,8 @@ else
 
       # Get a list of files in the directory, and filter out backups. Care to handle the
       # no-match case
-      setopt local_options
-      setopt null_glob
       local files
-      files=($newdir/*(.))
+      files=($newdir/*(N.))
       files=(${files:t})
       files=(${files:#*~})
       files=(${files:#\#*\#})
@@ -45,6 +47,8 @@ else
 	  echo "Autoloading functions from $1:"
 	  print -c - $files
 	fi
+
+	_add_functions_hook $newdir "$files[@]"
       fi
     fi
   }
@@ -52,5 +56,4 @@ else
   add_functions_directory system/functions
   add_functions_directory local/functions
   add_functions_directory user/functions
-
 fi
