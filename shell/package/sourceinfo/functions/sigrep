@@ -4,7 +4,7 @@
 # Search contents of files from the source info file list
 # Usage: sigrep <grep-options> <filename-regexp>
 #
-# $Id: sigrep,v 1.1 2001/05/23 13:21:36 mebourne Exp $
+# $Id: sigrep,v 1.2 2001/05/23 13:31:42 mebourne Exp $
 
 [[ -z $sourceinfo_filesdb ]] && { echo "sourceinfo_filesdb not set" 2>&1 ; return 1 }
 
@@ -16,8 +16,7 @@ fi
 
 # Get the list of files, one per line
 # Escape any dangerous characters
-# Use xargs 16 lines at a time to grep for results. Ensure >1 file to grep
-# so it lists filename
+# Use xargs to grep for results. Ensure >1 file to grep so it lists filename
 sifile "$argv[-1]" |
   sed 's/\([ "'\'']\)/\\\1/g' |
-  xargs -l16 grep -n "${(@)argv[1,-2]}" /dev/null
+  xargs grep -n "${(@)argv[1,-2]}" /dev/null
