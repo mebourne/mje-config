@@ -1,7 +1,7 @@
 ;; Emacs configuration file
 ;; Customised variables
 ;; Written by Martin Ebourne
-;; $Id: custom.el,v 1.5 2001/05/22 17:12:45 mebourne Exp $
+;; $Id: custom.el,v 1.6 2002/03/18 19:39:07 mebourne Exp $
 
 (setq custom-file (concat install-user-base-dir "/custom.el"))
 
@@ -35,6 +35,15 @@
 
  ;; Mouse yanks at point, not where mouse is
  '(mouse-yank-at-point t)
+
+ ;; Cursor is stretched to size of underlying character (eg. tab)
+ '(x-stretch-cursor t)
+
+ ;; Mark lines past buffer in margin
+ '(indicate-empty-lines t)
+
+ ;; Display image files as pictures
+ '(auto-image-file-mode t)
 
  ;; Give buffers sensible unique filenames
  '(uniquify-buffer-name-style (quote reverse))
