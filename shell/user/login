@@ -3,7 +3,7 @@
 # User's own setup for login shells. Run after all other login setup has been done
 # Written by Martin Ebourne
 #
-# $Id: login,v 1.4 2002/03/18 16:54:57 mebourne Exp $
+# $Id: login,v 1.5 2002/04/25 09:27:05 mebourne Exp $
 
 export EDITOR=emacsclient
 export VISUAL=emacsclient
@@ -15,13 +15,3 @@ export NAME="Martin Ebourne"
 #  echo "Remapping AltGraph as control key"
 #  xmodmap -e "add control = SunAltGraph"
 #fi
-
-
-# Set up library paths
-ld_library_path=($ld_library_path $HOME/local/lib)
-
-# Perl paths
-#local local_perl=$HOME/local/share/perl/lib/5.00503
-#perllib=($local_perl
-#         $local_perl/sun4-solaris-thread
-#	 $perllib)
