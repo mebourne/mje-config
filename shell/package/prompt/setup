@@ -3,12 +3,12 @@
 # Setup for prompt package
 # Written by Martin Ebourne
 #
-# $Id: setup,v 1.13 2001/08/17 16:45:33 mebourne Exp $
+# $Id: setup,v 1.14 2001/10/01 10:30:15 mebourne Exp $
 
 add_functions_directory package/prompt/functions
 
 # Declare work variables
-typeset -g _prompt_pwd _prompt_justify _prompt_wrapmode=0
+typeset -g _prompt_pwd _prompt_justify _prompt_wrapmode=0 _prompt_retcode=0
 
 # Cache terminal handling of line wrapping
 if [[ $termcap[am] != yes || $termcap[xn] == yes ]]
@@ -19,6 +19,14 @@ fi
 # Register our hooks
 add_to_hook precmd _prompt_precmd
 add_to_hook preexec '_prompt_preexec "$argv[1]"'
+
+# Set _prompt_retcode as the first thing in precmd - else it's value is lost
+if [[ $functions[precmd] != *_prompt_retcode* ]]
+then
+  functions[precmd]="_prompt_retcode=\$?
+$functions[precmd]
+"
+fi
 
 # Remap ZLE clear-screen widget (Ctrl-L) to a modified version
 zle -N clear-screen _prompt_clear_screen
@@ -35,7 +43,7 @@ if (( SHLVL > 2 ))
 then
   colour_addvar {grey} '  #$[SHLVL-2]'
 fi
-#colour_addvar {dark_red} '%(?..  [%?${signals[$?-127]:+ $signals[$?-127]}])'
+colour_addvar {dark_red} '${${_prompt_retcode:#0}:+  [$_prompt_retcode${signals[$_prompt_retcode-127]:+ $signals[$_prompt_retcode-127]}]}'
 colour_addvar {dark_magenta} '${_sql_prompt:+  $_sql_prompt}'
 colour_addvar {dark_yellow} '${CLEARCASE_VIEW:+  $CLEARCASE_VIEW}'
 colour_addvar {dark_cyan} '  $_prompt_pwd'
