@@ -3,7 +3,7 @@
 # Generic system-wide setup for interactive use
 # Written by Martin Ebourne
 #
-# $Id: interactive,v 1.9 2001/03/16 12:45:42 mebourne Exp $
+# $Id: interactive,v 1.10 2001/04/19 11:05:49 mebourne Exp $
 
 # Initial config files
 config_if_present system/loadfuncs
@@ -35,6 +35,7 @@ REPORTTIME=60
 HISTSIZE=3000
 SAVEHIST=2000
 HISTFILE=~/.zsh_history
+backup_history
 
 # Check for being in a window (xterm etc). Frilly bits
 if [ "$TERM" = "xterm" -o "$TERM" = "xterm-color" -o "$TERM" = "rxvt"  -o "$TERM" = "vs100" ]
