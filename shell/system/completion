@@ -3,13 +3,43 @@
 # New-style command completion setup
 # Written by Martin Ebourne
 #
-# $Id: completion,v 1.1 2001/02/12 18:13:23 mebourne Exp $
+# $Id: completion,v 1.2 2001/02/21 11:25:45 mebourne Exp $
 
-# The following lines were added by compinstall
+# Load the completion module
 autoload -U compinit
 compinit -u
 
-zstyle ':completion:*' completer _expand _complete _correct
+
+# These are global settings
+
+# The default sequence to try for completion
+zstyle ':completion:*' completer _expand _complete _ignored _approximate _prefix
+
+# Make completion case insensitive
 zstyle ':completion:*' matcher-list '' 'm:{a-zA-Z}={A-Za-z}'
-zstyle :compinstall filename '/home/odyssey1/mebourne/config/shell/system/completion'
-# End of lines added by compinstall
+
+
+# These are modifications to specific completers
+
+# Set expand to do file wildcards and variable substitutions
+zstyle ':completion:*:expand:*' glob 1
+zstyle ':completion:*:expand:*' substitute 1
+
+# Force expansion to insert the expected expansion rather than menu-complete
+# on a load of other possibilities
+zstyle ':completion:*:expand:*' tag-order all-expansions expansions original
+
+# Prevent listing of original along with corrections
+zstyle ':completion:*:correct:*' tag-order corrections original
+
+# In the case of using prefix to obtain a completion then add a space in to
+# separate the real bit from the discarded stuff
+zstyle ':completion:*:prefix:*' add-space true
+
+
+# These are modifications to particular commands
+
+# When completing for 'cd' try local directories before attempting to use cdpath
+zstyle ':completion:*:complete:cd:*' tag-order '! path-directories'
+# Same for commands. Doesn't work
+zstyle ':completion:*:complete:-command-:*' tag-order '! path-directories'
