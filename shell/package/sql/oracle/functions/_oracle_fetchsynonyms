@@ -1,0 +1,11 @@
+# ZSH function file
+# Part of the SQL Oracle package
+# Fetch and return the list of synonyms
+# For use only by the SQL packages
+#
+# $Id: _oracle_fetchsynonyms,v 1.1 2002/04/11 16:15:27 mebourne Exp $
+
+{
+  echo "set pages 0 feed off"
+  echo "select object_name from user_objects where object_type='SYNONYM';"
+} | _oracle_rawsql
