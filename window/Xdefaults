@@ -1,7 +1,7 @@
 ! .Xdefaults - X resources configuration
 ! Written by Martin Ebourne
 !
-! $Id: Xdefaults,v 1.11 2001/03/14 18:31:25 mebourne Exp $
+! $Id: Xdefaults,v 1.12 2002/03/26 09:18:48 mebourne Exp $
 
 
 !!! XTerm configuration
@@ -40,7 +40,7 @@ XTerm*VT100.Translations:	#override\n\
 !!! Emacs configuration
 
 ! Sizes
-!Emacs*font:			7x13
+Emacs*font:			7x13
 Emacs*geometry:			101x50
 
 ! Colours
