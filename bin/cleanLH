@@ -3,7 +3,7 @@
 # cleanLH - Remove unwanted files from LH development directory
 # Written by Martin Ebourne, Started 20/08/99
 #
-# $Id: cleanLH,v 1.4 1999/09/06 14:43:24 martine Exp $
+# $Id: cleanLH,v 1.5 1999/10/12 16:57:50 martine Exp $
 
 cd $LH_HOME
 
@@ -15,7 +15,7 @@ find . -type d \( -name 'sunos' -o -name 'osf1' -o -name 'Templates.DB' \) \
 find . -type f \( -name '*~' -o -name '*.bak' -o -name '*.module' \
 		  -o -name 'Dependency.state' -o -name '.gen*.typemap' \
 		  -o -name '.gen*.join' -o -name '*.log' -o -name '*.out' -o -name 'blah' \
-		  -o -name '.nfs*' \
+		  -o -name 'core' -o -name '*.tmp' -o -name '.nfs*' \
 	       \) -print \
     | xargs rm -f
 
@@ -35,6 +35,7 @@ then
   read key
   if [ "$key" = "y" -o "$key" = "Y" ]
   then
+    echo "Deleting .vcsbak files..."
     xargs rm -f < $tmpfile
   fi
 fi
