@@ -3,7 +3,7 @@
 # Hook for preexec function
 # Usage: _prompt_precmd
 #
-# $Id: _prompt_preexec,v 1.9 2001/03/19 14:29:25 mebourne Exp $
+# $Id: _prompt_preexec,v 1.10 2001/03/19 18:21:28 mebourne Exp $
 
 local command="$1"
 
@@ -11,7 +11,7 @@ local command="$1"
 # Note that the combined line is split into logical rows according to any
 # incorporated newlines, and these are summed up individually
 local lastrow lastrows=0 rows=0
-for lastrow in ${(f)${(%%)${PROMPT//[%]\{[^%]#%\}/}}}${(f)command}
+for lastrow in "${(f)${(%%)${PROMPT//[%]\{[^%]#%\}/}}}${(f)command}"
 do
   (( lastrows = 1 + $#lastrow / COLUMNS ))
   (( rows += lastrows ))
