@@ -3,7 +3,7 @@
 # cleanLH - Remove unwanted files from LH development directory
 # Written by Martin Ebourne, Started 20/08/99
 #
-# $Id: cleanLH,v 1.1 1999/08/20 12:35:29 martine Exp $
+# $Id: cleanLH,v 1.2 1999/09/02 09:45:02 martine Exp $
 
 cd $HOME/LH
 
@@ -11,7 +11,7 @@ echo "Deleting all temporary files..."
 echo
 
 find . -type f \( -name '*~' -o -name '*.bak' -o -name '*.module' -o -name '*.o' \
-		  -o -name '*.[rso]' -o -name 'Dependency.state' -o -name '.gen*.typemap' \
+		  -o -name '*.[rs]o' -o -name 'Dependency.state' -o -name '.gen*.typemap' \
 		  -o -name '.gen*.join' -o -name '*.log' -o -name '*.out' -o -name 'blah' \
 		  -o -name '.nfs*' \
 	       \) -print \
