@@ -3,6 +3,6 @@
 # Describe the given table
 # For use only by the SQL packages
 #
-# $Id: _sybase_desc,v 1.1 2001/02/26 18:38:53 mebourne Exp $
+# $Id: _sybase_desc,v 1.2 2001/05/29 16:57:05 mebourne Exp $
 
-_sybase_sql sp_help $1
+sql sp_help "$argv[1]"
