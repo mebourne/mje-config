@@ -3,7 +3,7 @@
 # Hook for preexec function
 # Usage: _prompt_precmd
 #
-# $Id: _prompt_preexec,v 1.10 2001/03/19 18:21:28 mebourne Exp $
+# $Id: _prompt_preexec,v 1.11 2001/03/30 09:52:43 mebourne Exp $
 
 local command="$1"
 
@@ -26,7 +26,7 @@ done
 # Modify command to put a clear to end of line before each newline incorporated.
 # This is in case there were any secondary prompts midway, helps remove the
 # clutter, though not guaranteed to be perfect
-command=${command//$'\n'/$(echotc ce)$'\n'}
+command=${command//$'\n'/$_prompt_clearline$'\n'}
 
 
 ## Redraw the command line
@@ -49,7 +49,7 @@ echo -n - "$_prompt_gap[$[ $#lastrow
 echo -n - "${(%%)prompt_right}"
 
 # May need a newline depending on terminal
-if [[ $(echotc am 2>/dev/null) != yes || $(echotc xn 2>/dev/null) == yes ]]
+if (( _prompt_wrapmode ))
 then
   echo
 fi
