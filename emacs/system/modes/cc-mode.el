@@ -1,37 +1,39 @@
 ;; Emacs configuration file
 ;; Setup for cc-mode
 ;; Written by Martin Ebourne
-;; $Id: cc-mode.el,v 1.7 2002/03/21 13:41:01 mebourne Exp $
+;; $Id: cc-mode.el,v 1.8 2002/03/26 09:44:50 mebourne Exp $
 
 ;; C and C++ style
-(eval-after-load "cc-mode"
-  '(progn
-     ;; Map _ as a word character to make faster font lock regexps work correctly. Not needed for
-     ;; slow font lock regexps
-     (modify-syntax-entry ?_ "w" c-mode-syntax-table)
-     (modify-syntax-entry ?_ "w" c++-mode-syntax-table)
-     (modify-syntax-entry ?_ "w" java-mode-syntax-table)
+;(eval-after-load "cc-mode"
+;  '(progn
+;     ;; Improvements to java decoding for use with speedbar
+;     (setq cc-imenu-java-generic-expression
+;	   (`
+;	    ((nil
+;	      (,
+;	       (concat
+;		"^\\([ \t]\\)*"
+;		"\\([A-Za-z0-9_-]+[ \t]+\\)?" ; type specs; there can be
+;		"\\([A-Za-z0-9_-]+[ \t]+\\)?" ; more than 3 tokens, right?
+;		"\\([A-Za-z0-9_-]+[ \t]*[[]?[]]?\\)"
+;		"\\([ \t]\\)"
+;		"\\([A-Za-z0-9_-]+"	; the string we want to get
+;		"[ \t]*("
+;		"[][a-zA-Z,_1-9\n \t]*"	; arguments
+;		")\\)[ \t]*"
+;					;       "[^;(]"
+;		"\\(;\\|[,a-zA-Z_1-9\n \t]*{\\)"
+;		)) 6))))
+;     ))
 
-     ;; Improvements to java decoding for use with speedbar
-     (setq cc-imenu-java-generic-expression-DISABLE-TEMPORARILY
-	   (`
-	    ((nil
-	      (,
-	       (concat
-		"^\\([ \t]\\)*"
-		"\\([A-Za-z0-9_-]+[ \t]+\\)?" ; type specs; there can be
-		"\\([A-Za-z0-9_-]+[ \t]+\\)?" ; more than 3 tokens, right?
-		"\\([A-Za-z0-9_-]+[ \t]*[[]?[]]?\\)"
-		"\\([ \t]\\)"
-		"\\([A-Za-z0-9_-]+"	; the string we want to get
-		"[ \t]*("
-		"[][a-zA-Z,_1-9\n \t]*"	; arguments
-		")\\)[ \t]*"
-					;       "[^;(]"
-		"\\(;\\|[,a-zA-Z_1-9\n \t]*{\\)"
-		)) 6))))
-     ))
-
+;; Map _ as a word character to make faster font lock regexps work correctly. Not needed for
+;; slow font lock regexps
+(add-hook 'c-initialization-hook
+	  (function (lambda ()
+		      (modify-syntax-entry ?_ "w" c-mode-syntax-table)
+		      (modify-syntax-entry ?_ "w" c++-mode-syntax-table)
+		      (modify-syntax-entry ?_ "w" java-mode-syntax-table)
+		      )))
 
 ;; C & C++
 (setq auto-mode-alist
