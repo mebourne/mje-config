@@ -2,7 +2,7 @@
 # Provide options parsing and help output
 # Usage: parse_opts <argv> <results> [<help>]
 #
-# $Id: parse_opts,v 1.11 2001/08/02 15:58:08 mebourne Exp $
+# $Id: parse_opts,v 1.12 2001/08/02 16:35:01 mebourne Exp $
 
 ### Documentation
 
@@ -343,6 +343,7 @@ _parse_opts_generatecompletion() {
 
     # Try to determine a description/completer from the type of this option
     local type="$_po_types[$option]" description="" action=""
+    local param="${type#*=}"
     case $type in
       switch|noswitch|constant=*)
         # No parameters, leave blank
@@ -360,11 +361,30 @@ _parse_opts_generatecompletion() {
 	action=" "
         ;;
 
+      values=*)
+        # Takes a parameter, validated by list of values
+	description="value"
+	case $param in
+	  \(*\)) # Literal list
+	    action=$param
+	    ;;
+
+	  *) # External variable name (array or space separated)
+	    action="(${(P)param})"
+	    ;;
+	esac
+	;;
+
+      function)
+        # Takes a parameter which is a function name
+	description="function"
+	action="_functions"
+	;;
+
       test=*)
         # Takes a parameter validated by test. Extract the test flag & try to
         # figure out the completer
-        local test=${type#*=}
-	case $test in
+	case $param in
 	  -[aefgkrsuwOGN]) # These are types of file
 	    description="file"
 	    action="_files"
@@ -586,6 +606,7 @@ _parse_opts_handletype() {
   local _po_name="$argv[1]" _po_hasgivenvalue="$argv[2]" _po_givenvalue="$argv[3]"
 
   local _po_type="$_po_types[$_po_name]" _po_value
+  local _po_param="${_po_type#*=}"
   case $_po_type in
     switch)
       # Simple switch. Mark its presence
@@ -599,7 +620,7 @@ _parse_opts_handletype() {
 
     constant=*)
       # Constant to be assigned (after quote removal). eg. constant=value or constant="more values"
-      _po_value=${(Q)_po_type#*=}
+      _po_value=${(Q)_po_param}
       ;;
 
     string)
@@ -617,10 +638,41 @@ _parse_opts_handletype() {
       fi
       ;;
 
+    values=*)
+      # Takes a parameter, validated by list of values from external array
+      _parse_opts_getnextvalue || return
+      local -a _po_values
+      case $_po_param in
+	\(*\)) # Literal list
+	  _po_values=(${(z)${${_po_param#\(}%\)}})
+	  ;;
+
+	*) # External variable name (array or space separated)
+	  _po_values=("${(@P)_po_param}")
+	  ;;
+      esac
+
+      if (( ! $_po_values[(I)$_po_value] ))
+      then
+        echo "Invalid value for option $_po_name: '$_po_value'" 1>&2
+	return 1
+      fi
+      ;;
+
+    function)
+      # Takes a parameter which is a function name
+      _parse_opts_getnextvalue || return
+      if (( ! $+functions[$_po_value] ))
+      then
+        echo "Invalid value for option $_po_name: '$_po_value'" 1>&2
+	return 1
+      fi
+      ;;
+
     test=*)
       # Takes a parameter, validation using test. eg. test=-f
       _parse_opts_getnextvalue || return
-      if eval "[[ ! ${_po_type#*=} \$_po_value ]]"
+      if eval "[[ ! $_po_param \$_po_value ]]"
       then
         echo "Invalid value for option $_po_name: '$_po_value'" 1>&2
 	return 1
