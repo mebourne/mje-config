@@ -2,47 +2,54 @@
 #
 # Format SQL output to make it easier to read
 # Written by Martin Ebourne. Started 22/05/01
-#
-# Usage: sqlformat.pl [-s] [-c]
 
 use strict;
 use English;
+use MJE::ParseOpts;
 
 # Note if we are outputting to a tty or a file
 my $tty=-t STDOUT;
 
+use vars qw(%styles);
+%styles=(
+  simple  => "Simple formatting keeping the default output style",
+  squash  => "As simple but reduces column widths to save on screen space",
+  bcp     => "BCP compatible output, tab separated columns with no header",
+  record  => "Record style output, row by row",
+  emacs   => "Output directly to Emacs in forms mode"
+);
+
+my $opts=new MJE::ParseOpts (<<EOF) || exit 1;
+Description:
+Format SQL output to make it easier to read.
+
+Usage:
+sqlformat.pl [options] <style>
+
+Options:
+  -c, --colour			Colour output (ignored for bcp and emacs)
+				# --colour | -c
+  -h, --help			Provide this help
+				# --help | -h
+
+Arguments:
+  <style>			The style of formatting to perform. One of:
+				simple   Simple formatting keeping the default output style
+				squash   As simple but reduces column widths to save on screen space
+				bcp      BCP compatible output, tab separated columns with no header
+				record   Record style output, row by row
+				emacs    Output directly to Emacs in forms mode
+	   			# style : values=%styles
+EOF
+
 my $inputLineNum=0;
 my $maxFieldNameLen=0;
-my $colour=0;
 
 &main();
 
 exit;
 
 sub main {
-  # Decode command line options
-
-  if(@ARGV && $ARGV[0] eq "-c") {
-    $colour=1;
-    shift @ARGV;
-  }
-
-  my $style=$ARGV[0];
-
-  if(@ARGV!=1 || $style!~/^(simple|squash|bcp|record|emacs)$/) {
-    print STDERR
-	"Syntax: sqlformat.pl [-c] <style>
-  -c	Colour output (ignored for bcp and emacs)
-  style One of:
-	simple - Simple formatting keeping the default output style
-	squash - As simple but reduces column widths to save on screen space
-        bcp    - BCP compatible output, tab separated columns with no header
-	record - Record style output, row by row
-	emacs  - Output directly to Emacs in forms mode
-";
-    exit 1;
-  }
-
   my $tempFileBase="/tmp/sqlformat.$PID.";
   my $tempFileCount=1;
 
@@ -63,47 +70,47 @@ sub main {
       &readData(\@columns, \@rows, length($thisLine), \$nextLine);
       
       # Processing
-      if($style eq "squash") {
+      if($opts->{style} eq "squash") {
 	&trimLength(\@columns);
       }
       
       # Write the output
-      if($style eq "simple" || $style eq "squash") {
+      if($opts->{style} eq "simple" || $opts->{style} eq "squash") {
 	&simple_printHeader(\@columns);
 	if(@rows) {
 	  my $format=&simple_generateFormat(\@columns);
 	  &simple_printData($format,\@rows);
 	}
-      } elsif ($style eq "bcp") {
+      } elsif ($opts->{style} eq "bcp") {
 	if(@rows) {
 	  my $format=&bcp_generateFormat(\@columns);
 	  &bcp_printData($format,\@rows);
 	}
-      } elsif ($style eq "record") {
+      } elsif ($opts->{style} eq "record") {
 	if(@rows) {
 	  my $format=&record_generateFormat(\@columns);
 	  &record_printData($format,\@rows);
 	}
-      } elsif ($style eq "emacs") {
+      } elsif ($opts->{style} eq "emacs") {
 	&emacs_writeControl(\@columns,$tempFileBase . $tempFileCount);
 	&emacs_writeData(\@rows,$tempFileBase . $tempFileCount);
 	$tempFileCount++;
       }
 
       # Ensure a newline is present. Helps make desc output easier to read
-      if($nextLine ne "\n" && $style ne "emacs") {
+      if($nextLine ne "\n" && $opts->{style} ne "emacs") {
 	print "\n";
       }
     } else {
       # Not a table header, so just print the line
-      if($style ne "bcp" && $style ne "emacs") {
+      if($opts->{style} ne "bcp" && $opts->{style} ne "emacs") {
 	print "$thisLine";
       }
     }
     $thisLine=$nextLine;
   }
 
-  if($style eq "emacs") {
+  if($opts->{style} eq "emacs") {
     my ($formFiles, $allFiles);
     for(my $i=1;$i<$tempFileCount;$i++) {
       $formFiles.=" $tempFileBase$i.form";
@@ -258,7 +265,7 @@ sub simple_generateFormat {
   my $x;
   for($x=0;$x<@$columns;$x++) {
     if($x) {
-      if($colour) {
+      if($opts->{colour}) {
 	$format.="\e[38;5;4m\xb7";
       } else {
 	$format.=" ";
@@ -270,7 +277,7 @@ sub simple_generateFormat {
     my $align=$$column{align};
     $align=-1 if !defined($align);
 
-    if($colour) {
+    if($opts->{colour}) {
       my $type=$$column{type};
       $type="string" if !defined($type);
       if($type eq "string") {
@@ -283,7 +290,7 @@ sub simple_generateFormat {
     }
     $format.="%" . $align*$$column{length} . "s";
   }
-  $format.="\e[38;5;15m" if $colour;
+  $format.="\e[38;5;15m" if $opts->{colour};
 
   return $format;
 }
@@ -315,9 +322,9 @@ sub simple_printHeader {
   }
 
   # Output header in green
-  $colour && print "\e[38;5;10m";
+  $opts->{colour} && print "\e[38;5;10m";
   print "$header\n$underline\n";
-  $colour && print "\e[38;5;15m";
+  $opts->{colour} && print "\e[38;5;15m";
 }
 
 # Print the data
@@ -327,7 +334,7 @@ sub simple_printData {
   # Print each row with the precalculated format
   my $background=0;
   for my $row (@$rows) {
-    if($colour) {
+    if($opts->{colour}) {
       if($background) {
 	print "\e[48;5;233m";
       }
@@ -335,7 +342,7 @@ sub simple_printData {
     }
     printf $format, @$row;
 
-    print "\e[48;5;0m" if $colour;
+    print "\e[48;5;0m" if $opts->{colour};
     print "\n";
   }
 }
@@ -378,11 +385,11 @@ sub record_generateFormat {
   for($x=0;$x<@$columns;$x++) {
     # Write a '%<num>s' entry as appropriate
     my $column=$$columns[$x];
-    $format.="\e[38;5;10m" if $colour;
+    $format.="\e[38;5;10m" if $opts->{colour};
     $format.=sprintf("%-*s",$maxFieldNameLen,$$column{name});
-    $format.="\e[38;5;15m" if $colour;
+    $format.="\e[38;5;15m" if $opts->{colour};
     $format.=": ";
-    if($colour) {
+    if($opts->{colour}) {
       my $type=$$column{type};
       $type="string" if !defined($type);
       if($type eq "string") {
@@ -395,7 +402,7 @@ sub record_generateFormat {
       $format.="\e[48;5;233m";
     }
     $format.="%-" . $$column{datalength} . "s";
-    $format.="\e[00m" if $colour;
+    $format.="\e[00m" if $opts->{colour};
     $format.="\n";
   }
 
