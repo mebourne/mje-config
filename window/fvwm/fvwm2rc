@@ -28,15 +28,15 @@ Style * Color black/gray70
 
 # Modify title to be graded
 TitleStyle LeftJustified
-TitleStyle ActiveUp HGradient 100 #e0e090 #c0c0a0
-TitleStyle Inactive HGradient 100 gray90 gray70
+TitleStyle ActiveUp HGradient 32 #e0e090 #c0c0a0
+TitleStyle Inactive HGradient 32 gray90 gray70
 
 # Set style for menus
 MenuStyle * Foreground black, Background white, Greyed gray50
 MenuStyle * ActiveFore white, HilightBack black, Hilight3DThickness -2
 MenuStyle * Font 7x13bold, TrianglesSolid
 MenuStyle * PopupImmediately, PopdownImmediately, PopupOffset 0 100
-MenuStyle * MenuFace HGradient 100 white gray80
+MenuStyle * MenuFace HGradient 32 white gray80
 
 # Set fonts to use on title bar and icon label
 Style * Font            7x13bold
