@@ -4,19 +4,21 @@
 #	 -s Re-schedule job with 'at'
 # Example: tidyaccount -s "3:00 tomorrow"
 #
-# $Id: tidyaccount,v 1.4 2001/03/16 12:42:46 mebourne Exp $
+# $Id: tidyaccount,v 1.5 2001/03/22 10:04:38 mebourne Exp $
 
-local this=$ZCONFIGDIR/system/functions/$0
-
-local schedtime=$SCHEDTIME
-if [[ $1 == -s ]]
+local this
+if [[ $0 == /* ]]
 then
-  schedtime=$2
+  this=$0
+else
+  this=$ZCONFIGDIR/system/functions/${0:t}
 fi
 
-# First keep the history store file in trim
-cp $HOME/.zsh_history.in $HOME/.zsh_history.store
-chmod 600 $HOME/.zsh_history.store
+local schedtime=$SCHEDTIME
+if [[ $argv[1] == -s ]]
+then
+  schedtime=$argv[2]
+fi
 
 # Delete any core/backup/etc files not accessed in the last week
 find $HOME -type f \( -name core -o -name '*~' -o -name '#*#' \) -atime +7 -print |
@@ -30,5 +32,5 @@ find $HOME -depth \( -type f -name '.saves-*' -mtime +3 -print \) \
 # Re-schedule job if requested
 if [[ -n $schedtime ]]
 then
-  SCHEDTIME=$schedtime at -f $this $schedtime 2>/dev/null
+  SCHEDTIME=$schedtime at -f source $this 2>/dev/null
 fi
