@@ -1,7 +1,7 @@
 # Perl package MJE::TableFormatter
 # Sophisticated table formatting and display
 # Written by Martin Ebourne, 27/05/2002
-# $Id: TableFormatter.pm 792 2003-09-22 11:47:18Z martin $
+# $Id$
 #
 # Usage:
 #
@@ -28,8 +28,10 @@ use Data::Dumper;
 #   printhtml    - True to convert strings to HTML text
 #   squash     	 - True to squash column widths to minimum for title/data
 #   compress     - True to compress column widths to minimum for data (truncate title)
-#   separator  	 - Separator character/string used between columns
+#   colsep  	 - Separator character/string used between columns
+#   linesep  	 - Separator character/string used between lines
 #   colour     	 - True if colour allowed
+#   background   - True to draw rows in alternating background colour (only if colour on)
 #   controlFn  	 - Control function
 #   headerFn   	 - Function to print header line & underline
 #   formatFn   	 - Function to generate data line format
@@ -56,8 +58,10 @@ my %styles=(
     printhtml    => 0,
     squash       => 0,
     compress     => 0,
-    separator    => " ",
+    colsep       => " ",
+    linesep      => "\n",
     colour       => 1,
+    background   => 1,
     controlFn    => \&default_control,
     headerFn     => \&default_printHeader,
     formatFn     => \&default_generateFormat,
@@ -93,7 +97,7 @@ my %styles=(
     underline    => 0,
     align        => 0,
     truncate     => 0,
-    separator    => "\t",
+    colsep       => "\t",
     rowcount     => 0,
   },
   csv => {
@@ -102,7 +106,7 @@ my %styles=(
     printspace   => 1,
     escapeRegexp => "\"",
     quoteRegexp  => "[ \t,\"\']",
-    separator    => ",",
+    colsep       => ",",
   },
   bcp => {
     extend       => "tsv",
@@ -125,7 +129,7 @@ my %styles=(
     description  => "Record style output with multiple rows to a record line",
     truncate     => 1,
     printable    => 1,
-    separator    => "  ",
+    colsep       => "  ",
     controlFn    => \&rows_control,
   },
   xml => {
@@ -164,6 +168,15 @@ my %styles=(
     exitFn       => \&emacs_exit,
     newline      => 0,
     rowcount     => 0,
+  },
+  concat => {
+    extend       => "default",
+    description  => "Concatenated text output on one line (unless contains nl)",
+    truncate     => 0,
+    printable    => 0,
+    background   => 0,
+    colsep       => "",
+    linesep      => "",
   },
 );
 
@@ -275,10 +288,18 @@ sub getStyleInfo {
   return $self->{style}->{$attribute};
 }
 
+sub reset {
+  my ($self)=@_;
+
+  $self->{_columns}=[];
+  $self->{_rows}=[];
+  $self->{_maxFieldNameLen}=0;
+}
+
 sub addColumn {
   my ($self, $name, $length, $type)=@_;
 
-  if($length<length($name)) {
+  if(!defined($length) || $length<length($name)) {
     $length=length($name);
   }
 
@@ -428,13 +449,13 @@ sub default_generateFormat {
       if($self->{_colours}->{reset} ne "") {
 	$format.=$self->{_colours}->{blue};
 
-	if($self->{style}->{separator} eq " ") {
+	if($self->{style}->{colsep} eq " ") {
 	  $format.="\xb7";
 	} else {
-	  $format.=$self->{style}->{separator};
+	  $format.=$self->{style}->{colsep};
 	}
       } else {
-	$format.=$self->{style}->{separator};
+	$format.=$self->{style}->{colsep};
       }
     }
 
@@ -476,8 +497,8 @@ sub default_printHeader {
     my $value=sprintf("%*s", $self->{style}->{align} ? -$$column{length} : 0, $$column{name});
 
     if($x) {
-      $header.=$self->{style}->{separator};
-      $underline.=$self->{style}->{separator};
+      $header.=$self->{style}->{colsep};
+      $underline.=$self->{style}->{colsep};
     }
 
     # Add to header line and convert to '---' before adding to underline line
@@ -501,7 +522,7 @@ sub default_printData {
   # Print each row with the precalculated format
   my $background=0;
   for my $row (@$rows) {
-    if($background) {
+    if($self->{style}->{background} && $background) {
       print $self->{_colours}->{bg_grey};
     }
     $background=!$background;
@@ -513,7 +534,7 @@ sub default_printData {
     }
     printf $format, @$row;
 
-    print $self->{_colours}->{bg_black}, "\n";
+    print $self->{_colours}->{bg_black}, $self->{style}->{linesep};
   }
 }
 
@@ -561,10 +582,10 @@ sub rows_control {
     }
   }
 
-  my $separator=$self->{style}->{separator};
+  my $colsep=$self->{style}->{colsep};
 
-  my $rowsPerLine=int(($self->{screenWidth}-$self->{_maxFieldNameLen}-2+length($separator))
-		      /($rowWidth+length($separator)));
+  my $rowsPerLine=int(($self->{screenWidth}-$self->{_maxFieldNameLen}-2+length($colsep))
+		      /($rowWidth+length($colsep)));
   $rowsPerLine=1 if $rowsPerLine<1;
 
   my $nl=0;
@@ -585,7 +606,7 @@ sub rows_control {
       for(my $rowNum=$rowBlock;$rowNum<$rowBlock+$rowsPerLine && $rowNum<@$rows;$rowNum++) {
 	$format="";
 	if($rowNum!=$rowBlock) {
-	  $format.=$separator;
+	  $format.=$colsep;
 	}
 	$format.=$self->{_colours}->{$types{$$column{type}}->{colour}};
 	$format.=$self->{_colours}->{bg_grey} . "%-*s" . $self->{_colours}->{reset};
@@ -601,8 +622,11 @@ sub rows_control {
 sub xml_generateFormat {
   my ($self, $columns)=@_;
 
+  # EOL separator
+  my $linesep=$self->{style}->{linesep};
+
   # Process each column
-  my $format=$self->{_colours}->{blue} . " <ROW>\n";
+  my $format=$self->{_colours}->{blue} . " <ROW>$linesep";
 
   my $x;
   for($x=0;$x<@$columns;$x++) {
@@ -613,10 +637,10 @@ sub xml_generateFormat {
     # Write a '%<num>s' entry as appropriate
     $format.=$self->{_colours}->{$types{$$column{type}}->{colour}} . "%s";
 
-    $format.=$self->{_colours}->{green} . "</" . $$column{name} . ">\n";
+    $format.=$self->{_colours}->{green} . "</" . $$column{name} . ">$linesep";
   }
 
-  $format.=$self->{_colours}->{blue} . " </ROW>\n" . $self->{_colours}->{white};
+  $format.=$self->{_colours}->{blue} . " </ROW>$linesep" . $self->{_colours}->{white};
 
   return $format;
 }
@@ -626,7 +650,7 @@ sub xml_printHeader {
   my ($self, $columns)=@_;
 
   print $self->{_colours}->{blue};
-  print "<?xml version=\"1.0\"?>\n";
+  print "<?xml version=\"1.0\"?>$self->{style}->{linesep}";
   print $self->{_colours}->{white};
 }
 
@@ -635,7 +659,7 @@ sub xml_printData {
   my ($self, $format, $rows)=@_;
 
   print $self->{_colours}->{blue};
-  print "<TABLE>\n";
+  print "<TABLE>$self->{style}->{linesep}";
   print $self->{_colours}->{white};
 
   # Print each row with the precalculated format
@@ -644,7 +668,7 @@ sub xml_printData {
   }
 
   print $self->{_colours}->{blue};
-  print "</TABLE>\n";
+  print "</TABLE>$self->{style}->{linesep}";
   print $self->{_colours}->{white};
 }
 
