@@ -3,7 +3,7 @@
 # Shell option settings
 # Written by Martin Ebourne
 #
-# $Id: options,v 1.4 2001/03/16 15:52:43 mebourne Exp $
+# $Id: options,v 1.5 2001/05/18 15:40:33 mebourne Exp $
 
 setopt append_history
 setopt auto_cd
@@ -25,7 +25,6 @@ setopt ksh_option_print
 setopt list_packed
 setopt long_list_jobs
 setopt mail_warning
-setopt mark_dirs
 setopt numeric_glob_sort
 setopt path_dirs
 setopt print_exit_value
