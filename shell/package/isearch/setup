@@ -1,0 +1,20 @@
+# ZSH configuration file
+# Executed when the isearch package is included
+# Setup for isearch package
+# Written by Martin Ebourne
+#
+# $Id: setup,v 1.1 2001/10/12 16:21:03 mebourne Exp $
+
+add_functions_directory package/isearch/functions
+
+typeset -g _isearch_searching
+
+# Create ZLE widgets
+zle -N isearch-up _isearch_up
+zle -N isearch-down _isearch_down
+
+# Map shell up/down keys
+bindkey "^[[A" isearch-up
+bindkey "^[[B" isearch-down
+bindkey "^[OA" isearch-up
+bindkey "^[OB" isearch-down
