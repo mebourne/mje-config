@@ -5,7 +5,7 @@ compdef sql
 # Completion code for sql command
 # Usage: These functions are used by the completion code
 #
-# $Id: _sql,v 1.19 2002/04/26 14:10:56 mebourne Exp $
+# $Id: _sql,v 1.20 2002/04/26 14:36:33 mebourne Exp $
 
 #_sql_trace=1
 
@@ -187,6 +187,7 @@ _sql_nest () {
   (( nestedindex = $#nestedlist + 1 ))
   (( nested++ ))
   parenlevel=0
+  tables=()
 }
 
 # Remove a nesting level
@@ -821,7 +822,17 @@ _sql_generate_completions () {
     return 1
   fi
 
+  # Build up the list of tables including inherited. Then reset all state back
+  # to our level
   eval $nestedlist[statenestindices[cursorindex]]
+  typeset -A alltables
+  while (( parentindex ))
+  do
+    eval $nestedlist[parentindex]
+    alltables=(${(kv)tables} ${(kv)alltables})
+  done
+  eval $nestedlist[statenestindices[cursorindex]]
+  tables=(${(kv)alltables} ${(kv)tables})
 
   case $states[cursorindex] in
     *.(having|where).column.for.*)
