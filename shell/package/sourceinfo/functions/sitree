@@ -4,7 +4,7 @@
 # Part of the SourceInfo package
 # Display class hierarchy trees
 #
-# $Id: sitree,v 1.5 2001/07/31 17:16:57 mebourne Exp $
+# $Id: sitree,v 1.6 2001/08/01 19:36:59 mebourne Exp $
 
 [[ -z $sourceinfo_typesdb ]] && { echo "sourceinfo_typesdb not set" ; return 1 }
 
@@ -14,13 +14,23 @@ local -A opts
 
 local -a dirs
 
-parse_opts args opts - 1 1 <<'EOF' || return 1
+parse_opts args opts <<'EOF' || return 1
+Description:
+Display a type and its inheritence hierarchy using the sourceinfo database.
+
+Usage:
 sitree [options] <type-name>
+
+Options:
   -d <dir>, --directory=<dir>	Prefer files within directory if duplicates found
 				(partial name ok, searched in order given)
 				# [dirs] = directory | d = string
   -h, --help			Provide this help
 				# help | h
+
+Arguments:
+  <type-name>			The type to retrieve the information for
+				# type = [1] = string
 EOF
 
 # If no -d options then add all the default ones instead
@@ -29,4 +39,4 @@ then
   dirs=($sourceinfo_preferred_dirs)
 fi
 
-typeInfo.pl -s --directory=$^dirs $sourceinfo_typesdb $args[1]
+typeInfo.pl -s --directory=$^dirs $sourceinfo_typesdb $opts[type]

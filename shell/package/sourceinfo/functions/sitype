@@ -4,7 +4,7 @@
 # Part of the SourceInfo package
 # Display type information
 #
-# $Id: sitype,v 1.5 2001/07/31 17:17:01 mebourne Exp $
+# $Id: sitype,v 1.6 2001/08/01 19:37:02 mebourne Exp $
 
 [[ -z $sourceinfo_typesdb ]] && { echo "sourceinfo_typesdb not set" ; return 1 }
 
@@ -14,8 +14,13 @@ local -A opts
 
 local -a dirs
 
-parse_opts args opts - 1 1 <<'EOF' || return 1
+parse_opts args opts <<'EOF' || return 1
+Display a type information using the sourceinfo database.
+
+Usage:
 sitype [options] <type-name>
+
+Options:
   -d <dir>, --directory=<dir>	Prefer files within directory if duplicates found
 				(partial name ok, searched in order given)
 				# [dirs] = directory | d = string
@@ -23,6 +28,10 @@ sitype [options] <type-name>
 				# help | h
   -r, --recurse			Display full type information recursively
 				# recurse | r = constant=-r
+
+Arguments:
+  <type-name>			The type to retrieve the information for
+				# type = [1] = string
 EOF
 
 # If no -d options then add all the default ones instead
@@ -31,4 +40,4 @@ then
   dirs=($sourceinfo_preferred_dirs)
 fi
 
-typeInfo.pl --directory=$^dirs $opts[recurse] $sourceinfo_typesdb $argv[1]
+typeInfo.pl --directory=$^dirs $opts[recurse] $sourceinfo_typesdb $opts[type]

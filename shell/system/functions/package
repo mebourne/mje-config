@@ -2,13 +2,20 @@
 # ZSH function file
 # Load a package which is part of the configuration system
 #
-# $Id: package,v 1.7 2001/07/31 17:17:20 mebourne Exp $
+# $Id: package,v 1.8 2001/08/01 19:37:14 mebourne Exp $
 
 local -a args
 args=($argv[*])
 local -A opts
-parse_opts args opts - 0 1 <<'EOF' || return 1
+local package
+parse_opts args opts <<'EOF' || return 1
+Description:
+Load a package which is part of the ZSH configuration system
+
+Usage:
 package [options] [<package-name>]
+
+Options:
   -e, --examine			Just return 0 if package already loaded, 1 otherwise
 				# examine | e
   -h, --help			Provide this help
@@ -17,12 +24,15 @@ package [options] [<package-name>]
 				# ignore | ignore-duplicates | i
   -L, --long-list		Display long list of loaded packages (in order executed)
 				# longlist = long-list | L
+
+Arguments:
+  [<package-name>]		Optional name of package to load. If not provided then
+				list currently loaded packages instead
+				# [package] = [0,1] = string
 EOF
 
-if (( $#args ))
+if [[ -n $package ]]
 then
-  local package="$args[1]"
-
   if (( opts[examine] ))
   then
     # Return true if package loaded

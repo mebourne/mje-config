@@ -2,7 +2,7 @@
 # ZSH function file
 # Tidy account up generally
 #
-# $Id: tidyaccount,v 1.9 2001/07/31 17:17:39 mebourne Exp $
+# $Id: tidyaccount,v 1.10 2001/08/01 19:37:42 mebourne Exp $
 
 local this
 if [[ $0 == /* ]]
@@ -18,8 +18,14 @@ local -A opts
 
 opts[scheduleat]=$SCHEDTIME
 
-parse_opts args opts - 0 0 <<'EOF' || return 1
+parse_opts args opts <<'EOF' || return 1
+Description:
+Tidy account up generally
+
+Usage:
 tidyaccount [options]
+
+Options:
   -h, --help			Provide this help
 				# help | h
   -s <time>, --schedule-at=<time>

@@ -4,29 +4,43 @@
 # shells unchanged, and later can edit the function to force zsh to emulate the correct shell.
 # NB. emulate is always passed -L for local changes
 #
-# $Id: add_emulate,v 1.5 2001/07/31 17:17:03 mebourne Exp $
+# $Id: add_emulate,v 1.6 2001/08/01 19:37:05 mebourne Exp $
 
 local -a args
 args=($argv[*])
 local -A opts
-parse_opts args opts - 2 <<'EOF' || return 1
+
+local -a funcnames
+
+parse_opts args opts <<'EOF' || return 1
+Description:
+Add 'emulate' command to start of function. This allows the use of scripts to
+load functions for other shells unchanged, and later add_emulate can be used
+in order to edit the function to force zsh to emulate the correct shell. NB.
+'emulate' is always passed -L for local changes
+
+Usage:
 add_emulate [options] <shell> <function-name> ...
+
+Options:
   -h, --help			Provide this help
 				# help | h
   -R, --full-reset		As for builtin emulate -R (reset more options to defaults)
 				# fullreset = full-reset | R = constant=-R
-EOF
 
-local shell=$args[1]
-local -a funcnames
-funcnames=($args[2,-1])
+Arguments:
+  <shell>			The shell to be emulated (as for builtin emulate)
+				# shell = [1] = string
+  <function-name> ...		List of functions to be edited
+				# [funcnames] = [1,*] = string
+EOF
 
 local funcname
 for funcname in $funcnames
 do
   if [[ -n $functions[$funcname] ]]
   then
-    functions[$funcname]="emulate -L $opts[fullreset] $shell
+    functions[$funcname]="emulate -L $opts[fullreset] $opts[shell]
 $functions[$funcname]
 "
   fi
