@@ -3,7 +3,7 @@
 # Generic system-wide setup for interactive use
 # Written by Martin Ebourne
 #
-# $Id: interactive,v 1.21 2001/08/17 15:25:38 mebourne Exp $
+# $Id: interactive,v 1.22 2002/04/23 10:25:07 mebourne Exp $
 
 # Initial config files
 config_if_present system/options
@@ -44,17 +44,6 @@ then
   HISTFILE=$ZDOTDIR/.history
 fi
 backup_history
-
-# Set up want/go. Use ZDOTDIR if not home. This should be in the user's home
-# account, and make the system work over machines. Otherwise use /tmp in order
-# to reduce clutter. Note that then it is very unlikely to work across
-# machines
-if [[ -n $ZDOTDIR && $ZDOTDIR != $HOME ]]
-then
-  semaphore_base=$ZDOTDIR/.tmp.semaphore.
-else
-  semaphore_base=${TMPPREFIX:-/tmp/zsh}.semaphore.
-fi
 
 # Update XTerm title bar with useful info after each command
 if (( XTERM ))
