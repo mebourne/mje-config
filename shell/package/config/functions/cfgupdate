@@ -1,36 +1,47 @@
 # ZSH function file
+# Written by Martin Ebourne
+# Part of the Config package
 # Update config directory
-# Usage: configupdate [shell|emacs]
+# Usage: cfgupdate <directory>
 #
-# $Id: cfgupdate,v 1.7 2001/05/17 08:21:53 mebourne Exp $
+# $Id: cfgupdate,v 1.8 2001/05/18 15:45:38 mebourne Exp $
 
-local base_dir file_desc remove_pattern ignore_pattern remove_derived
+local base_dir file_desc remove_pattern ignore_pattern remove_derived compile_command
+
+# If path given then use it, else use default base dir
+if [[ $argv[1] == */* ]]
+then
+  base_dir=$argv[1]
+else
+  base_dir=$config_dir/$argv[1]
+fi
 
 case $argv[1] in
-  shell|) # This is the default
-    base_dir=$ZCONFIGDIR
+  *shell) # This is the default
     file_desc="ZSH configuration system"
     remove_pattern='*~|\#*\#'
-    ignore_pattern=''
-    remove_compiled=''
+    ignore_pattern='*.zwc'
+    remove_compiled='$file.zwc'
+    compile_command='cfg_compile_shell $base_dir'
     ;;
 
-  emacs)
-    base_dir=${ZCONFIGDIR:h}/emacs
+  *emacs)
     file_desc="Emacs configuration system"
     remove_pattern='*~|\#*\#'
     ignore_pattern='*.elc|loaddefs.el|startup.el'
     # Remove corresponding elc files
     remove_derived='${file}c'
+    compile_command='cfg_compile_emacs $base_dir'
     ;;
 
   *)
-    echo "Syntax: configupdate [shell|emacs]" 1>&2
+    echo "Syntax: cfgupdate <directory>" 1>&2
+    echo "<directory> must be shell or emacs (with optional path)" 1>&2
     return 1
     ;;
 esac
 
-echo "Updating directory $base_dir"
+echo "Updating directory $base_dir..."
 if [[ ! -d $base_dir ]]
 then
   echo "Error: No such directory" 1>&2
@@ -156,4 +167,12 @@ then
       ci -u $file
     done
   fi
+fi
+
+# Execute a compile command if supplied
+if [[ -n $compile_command ]]
+then
+  echo
+  echo "Compiling..."
+  eval $compile_command
 fi
