@@ -1,0 +1,18 @@
+dbxenv suppress_startup_message 4.0
+ignore sigio
+set -o emacs
+set +o ignoreeof
+alias l=list
+alias wh=where
+alias s=step
+alias si=stepi
+alias n=next
+alias ni=nexti
+alias c=cont
+alias dealcap="run dealcap $IQ_DBLOGON $IQ_RTRFACILITY"
+alias poskeep="run poskeep $IQ_DBLOGON $IQ_RTRFACILITY"
+alias lhserver="run lhserver $IQ_DBLOGON $IQ_RTRFACILITY"
+bind ^I=complete-list
+bind ^[P=up-history
+bind ^[N=down-history
+language c++
