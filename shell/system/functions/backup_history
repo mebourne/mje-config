@@ -1,7 +1,8 @@
+#eval compdef -n _parse_opts backup_history
 # ZSH function file
 # Backup the shell command history file in case anything unpleasant happens to it
 #
-# $Id: backup_history,v 1.4 2001/08/10 16:11:40 mebourne Exp $
+# $Id: backup_history,v 1.5 2001/08/10 16:18:20 mebourne Exp $
 
 parse_opts -- "$argv[@]" <<'EOF' || return 1
 Description:
