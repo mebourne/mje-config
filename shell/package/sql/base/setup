@@ -3,22 +3,17 @@
 # Setup for SQL base package
 # Written by Martin Ebourne
 #
-# $Id: setup,v 1.6 2001/05/29 16:56:50 mebourne Exp $
+# $Id: setup,v 1.7 2001/05/31 11:47:21 mebourne Exp $
 
 add_functions_directory package/sql/base/functions
 
 typeset -gA _sql_parameters _sql_functions
 
-# This is an ignored command, just used as a hint to the SQL widget functions
-alias quoted=""
-
-# Quoted must come first
-alias sql="quoted nocorrect noglob sql"
-alias desc="quoted nocorrect noglob desc"
-
-alias ssf="sql select * from"
-alias scsf="sql select count(*) \'Rows\' from"
-alias select="sql select"
+# This header is to be eval'd at the start of each entry function for
+# consistent setup
+typeset -g _sql_intro='
+emulate -L zsh
+'
 
 # Bind special keys for SQL quoting
 zle -N sql_quote _sql_quote
@@ -26,11 +21,25 @@ zle -N sql_quote_line _sql_quote_line
 bindkey "\'" sql_quote
 bindkey "^Xq" sql_quote_line
 
+# This is an ignored command, just used as a hint to the SQL widget functions
+alias quoted=""
+
+# These are user commands. Quoted must come first where applicable
+alias sql="quoted nocorrect noglob sql"
+alias desc="quoted nocorrect noglob desc"
+alias ssf="sql select * from"
+alias scsf="sql select count(*) \'Rows\' from"
+alias select="sql select"
+
 # Options defaults
 # count    - Print count of number of rows returned (or affected)
-# maxrows  - Maximum number of rows to return
-# format   - Enable SQL formatting. Does nothing by itself, but controls the following:
-#   colour - Colour displayed data based on context (default based on $COLOUR)
-#   squash - Squash columns in displayed data so that no space is wasted
-sqlset count=1 format=1 squash=1
-sqlunset maxrows colour
+# maxrows  - Maximum number of rows to return. 0 for no maximum
+# format   - Select output type for SQL formatting. Values are:
+#	     none   - Formatting completely disabled
+#	     simple - Simple formatting keeping the default output style
+#            squash - As simple but reduces column widths to save on screen space
+#	     record - Record style output, row by row [UNIMPLEMENTED]
+#	     emacs  - Emacs style output [UNIMPLEMENTED]
+# colour   - Colour displayed data based on context (default based on $COLOUR).
+#	     NB. This parameter will only have effect if formatting is enabled
+sqlset count=1 maxrows=0 format=squash colour="${COLOUR:-0}"
