@@ -3,15 +3,20 @@
 # cpemacs - Copy emacs files into site-lisp directory and recompile them
 # Written by Martin Ebourne, Started 24/08/99
 #
-# $Id: cpemacs,v 1.2 2000/01/27 18:15:57 martine Exp $
+# $Id: cpemacs,v 1.3 2000/02/03 17:28:18 martine Exp $
 
 cd /usr/users/martine/config/emacs
 
+filelist=""
 for i in *.el
 do
-  echo Installing /opt/emacs/share/emacs/site-lisp/$i
-  cp -fp $i /opt/emacs/share/emacs/site-lisp/$i
-  chmod 444 /opt/emacs/share/emacs/site-lisp/$i
+  destfile=/opt/emacs/share/emacs/site-lisp/$i
+  echo "Installing $destfile"
+  cp -fp $i $destfile
+  chmod 444 $destfile
+  filelist="$filelist \"$destfile\""
 done
 
-emacs --batch --eval '(byte-recompile-directory "/opt/emacs/share/emacs/site-lisp/")'
+echo "Running Emacs to byte compile files..."
+
+emacs --batch --eval "(mapcar 'byte-compile-file (list $filelist))"
