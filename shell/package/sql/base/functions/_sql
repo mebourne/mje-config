@@ -5,7 +5,7 @@
 # Completion code for sql command
 # Usage: These functions are used by the completion code
 #
-# $Id: _sql,v 1.4 2001/03/22 14:56:42 mebourne Exp $
+# $Id: _sql,v 1.5 2001/03/23 12:00:02 mebourne Exp $
 
 _sql () {
   local -A tables
@@ -86,24 +86,27 @@ _sql () {
   #echo "tables=${(kv)tables}"
   #echo "state=$currentstate"
 
+  local ret=1
   case $currentstate in
-    900)	_wanted sql expl 'SQL reserved words' compadd select delete insert update create drop
-		_sql_complete_proc_names;;
-    102)	_sql_complete_table_names;;
-    103)	return 1;;
-    111)	_wanted sql expl 'SQL reserved words' compadd from
-		_sql_complete_table_names;;
-    112)	_wanted sql expl 'SQL reserved words' compadd into
-		_sql_complete_table_names;;
-    113|12?)	_sql_complete_table_names;;
-    131)	_wanted sql expl 'SQL reserved words' compadd where;;
-    132)	_wanted sql expl 'SQL reserved words' compadd values;;
-    133)	_wanted sql expl 'SQL reserved words' compadd set;;
-    191)	_wanted sql expl 'SQL reserved words' compadd by;;
-    192)	_wanted sql expl 'SQL reserved words' compadd by;;
+    900)	_wanted sql expl 'SQL reserved words' compadd select delete insert update create drop && ret=0
+		_sql_complete_proc_names && ret=0;;
+    102)	_sql_complete_table_names && ret=0;;
+    103)	;;
+    111)	_wanted sql expl 'SQL reserved words' compadd from && ret=0
+		_sql_complete_table_names && ret=0;;
+    112)	_wanted sql expl 'SQL reserved words' compadd into && ret=0
+		_sql_complete_table_names && ret=0;;
+    113|12?)	_sql_complete_table_names && ret=0;;
+    131)	_wanted sql expl 'SQL reserved words' compadd where && ret=0;;
+    132)	_wanted sql expl 'SQL reserved words' compadd values && ret=0;;
+    133)	_wanted sql expl 'SQL reserved words' compadd set && ret=0;;
+    191)	_wanted sql expl 'SQL reserved words' compadd by && ret=0;;
+    192)	_wanted sql expl 'SQL reserved words' compadd by && ret=0;;
     2*|3*|4*|5*)
-		_sql_complete_column_names $tables;;
+		_sql_complete_column_names $tables && ret=0;;
   esac
+
+  return $ret
 }
 
 _sql "$@"
