@@ -3,6 +3,6 @@
 # Delete all cached information to force it to be refetched on next use
 # Usage: sqlrehash
 #
-# $Id: sqlrehash,v 1.1 2001/02/26 18:37:50 mebourne Exp $
+# $Id: sqlrehash,v 1.2 2001/04/26 10:32:22 mebourne Exp $
 
-unset _sql_tables ${(M)$(set +):#_sql_columns*}
+unset _sql_tables _sql_types _sql_procs ${(M)$(set +):#_sql_columns*}
