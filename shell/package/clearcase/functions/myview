@@ -3,7 +3,7 @@
 # Part of the clearcase package
 # Set view to that matching username
 #
-# $Id: myview,v 1.7 2002/09/09 11:01:39 mebourne Exp $
+# $Id: myview,v 1.8 2002/10/14 11:27:42 mebourne Exp $
 
 _clearcase_getviews
 
@@ -31,8 +31,12 @@ Arguments:
 EOF
 
 local -aU views
-views=(${(M)_clearcase_views:#*${opts[username]:-$USER}*$opts[tag]*}
-       ${(M)_clearcase_views:#*$opts[tag]*${opts[username]:-$USER}*})
+views=(${(M)_clearcase_views:#$opts[tag]})
+if (( !$#views ))
+then
+  views=(${(M)_clearcase_views:#*${opts[username]:-$USER}*$opts[tag]*}
+         ${(M)_clearcase_views:#*$opts[tag]*${opts[username]:-$USER}*})
+fi
 
 if (( $#views != 1 ))
 then
