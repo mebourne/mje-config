@@ -3,7 +3,7 @@
 # Generic system-wide setup for login shells. Primarily to set environment vars just once
 # Written by Martin Ebourne
 #
-# $Id: login,v 1.5 2001/03/16 15:10:38 mebourne Exp $
+# $Id: login,v 1.6 2001/03/16 15:34:33 mebourne Exp $
 
 # Ensure functions are loaded early
 config_if_present system/loadfuncs
@@ -27,6 +27,7 @@ if [[ $(which less) == /* ]]
 then
   export LESSOPEN="|lesspipe.sh %s"
   export LESS="-M -e -i -R -PM?f%f:<stdin>. ?n?m(file %i of %m) ..?ltlines %lt-%lb?L/%L. : byte %bB?s/%s. .?e(END) ?x- Next\: %x.:?pB%pB\%..%t$"
+  export LESSEDIT="%E --no-wait ?lm+%lm. %f"
   export PAGER="less -s  -PM'<man page> ?ltlines %lt-%lb?L/%L. : byte %bB?s/%s. .?e(END):?pB%pB\%..%t'"
 fi
 
