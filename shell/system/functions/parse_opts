@@ -2,7 +2,7 @@
 # Provide options parsing and help output
 # (C) 2001 Martin Ebourne
 #
-# $Id: parse_opts,v 1.21 2001/08/17 11:01:24 mebourne Exp $
+# $Id: parse_opts,v 1.22 2001/08/17 12:49:50 mebourne Exp $
 
 
 ### Documentation
@@ -144,24 +144,30 @@
 # The currently recognised types of specification line are introduced as
 # follows:
 #
-# `#'      - These are option/argument lines. There are minor differences between
-#            option and argument lines, but they are otherwise the same
+# `#'      - These are option/argument lines. There are minor differences
+#            between option and argument lines, but they are otherwise the
+#            same
 # `#type'  - These are type definition lines
 # `##'     - As already mentioned, this is a comment line
+
+
+## Option/argument definition lines
 #
-#
-# Option/argument lines
-# --------------- -----
-#
-# The option/argument description lines have four parts, of which only one is mandatory.
+# The option/argument description lines have four parts, of which only one is
+# mandatory.
 #
 #   `# ' [ <tag-part> ( ` = ' | ` += ' ) ] <option-part>
 #   [ ` : ' <type-part> ] [ ` * ' <settings-part> ]
 #
 # Or as an abbreviated form:
 #
-#    # tag-part = option-part : type-part * settings-part
-#    # tag-part += option-part : type-part * settings-part
+#   # tag-part = option-part : type-part * settings-part
+#   # tag-part += option-part : type-part * settings-part
+#
+# eg.
+#   # --help | -h
+#   # --delimiter | -d : text
+#   # columns += [1,*] column-number : integer
 #
 # The <option-part> is the only mandatory section, and the other sections are
 # only present if their corresponding separator is present. Briefly,
@@ -243,6 +249,8 @@
 # but it will be used when reporting any errors. For this reason it is
 # recommended that it matches the argument name as specified in the help. Note
 # that aliases for arguments are not allowed (there would be no point).
+#
+# <option-name> may consist of `-', `_', and alphanumeric characters only.
 #
 # <frequency> is of the form:
 #   <count>
@@ -400,6 +408,67 @@
 # (2) This is generated automatically, but it may on rare occasions be useful
 #     to override it manually with a different value
 
+
+## Type definition lines
+#
+#   `#type ' <type-name> ` ' <base-part> [ [ ` ' <description> ] ` ' <action> ]
+#   [ ` * ' <settings-part> ]
+#
+# eg.
+#   #type integer   pattern=([-+]|)<->      "signed integer number"  " "
+#   #type function  values=${(k)functions}  "shell function"         _functions
+#
+# <type-name> is the identifier for this type to be assigned to. This is what
+# appears as <type-name> in option/argument type sections, or as a base type
+# to another user defined type.
+#
+# <type-name> may consist of `-', `_', and alphanumeric characters only.
+#
+# <base-part> is of the form:
+#   <base-type-name> [ `=' <value> ]
+#
+# <base-type-name> and <value> are handled exactly the same as for the type
+# section in the option/argument description. The base type is what this user
+# defined type is an alias for. It may be either a built in type, or another
+# user defined type (in which case <value> must not be supplied).
+#
+# <description> is the description that the option value or argument will get
+# when supplied to the completion code, and is used in exactly the same way as
+# the description provided to the _arguments completion function.
+#
+# <action> is the action that the option value or argument will have when
+# supplied to the completion code, and is used in exactly the same way as the
+# action provided to the _arguments completion function.
+#
+# Both <description> and <action> are optional, and if not supplied or if
+# empty then the respective field from the base type will be used,
+# recursively. In order to override the value in a base type with nothing, a
+# single space should be used.
+#
+# <settings-part> is identical to that of options/arguments, except for the
+# valid identifiers, which are:
+#
+# NOTE: These identifiers subject to change for now
+#
+# base                 - (1) This is as for the base-part described above
+# complete.description - (1) This is as for the description described above
+# complete.action      - (1) This is as for the action described above
+# complete.restrict    - This controls the way the `words' array is handled by
+# 			 _arguments when it calls the action. See the
+#                        completion documentation for details. It may have any
+#                        of the following values:
+#                        none   - Default. Used as is, corresponds to `*:'
+#                        normal - Modified to only include the arguments on
+#                                 the command line, corresponds to `*::'
+#                        match  - Modified to only include the matched
+#                                 arguments, corresponds to `*:::'
+#                        NB. When using a type with restrict set other than to
+#                        `none', the frequency of the argument should be of
+#                        the form [*] or [<n>,*]
+#                        NOTE: Currently not valid on options
+#
+# (1) This should not normally be set, since it just duplicates information
+#     already provided
 
 
 ## Example:
@@ -698,6 +767,13 @@ _parse_opts_parsetype() {
 
   local type="$paraminfo[1]" basetype="$paraminfo[2]"
   local description="${(Q)paraminfo[3]}" action="${(Q)paraminfo[4]}"
+
+  # Check for invalid characters in type name
+  if [[ $type != [-_[:alnum:]]## ]]
+  then
+    echo "Invalid name for type: '$type'" 1>&2
+    return 1
+  fi
 
   # Store the main data for this type
   _po_types[$type.base]=$basetype
