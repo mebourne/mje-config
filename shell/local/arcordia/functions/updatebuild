@@ -1,12 +1,13 @@
 # ZSH function file
 # Update configspec to current time & rebuild the cashsec system
-# Usage: updatebuild [-c] [-n]
-#	 -c	Build from clean
-#	 -n	Don't build. Just update configspec
+# Usage: updatebuild [clean] [all|lib|none]
+#	 clean	Build from clean
+#	 all	Build libraries and exectables
+#	 lib	Build only libraries
+#	 none	Don't build. Just update configspec
 #
-# $Id: updatebuild,v 1.2 2001/02/21 12:06:38 mebourne Exp $
+# $Id: updatebuild,v 1.3 2001/03/15 12:01:23 mebourne Exp $
 
-local param=$1
 local file=${TMPPREFIX:-/tmp/zsh}.configspec.$$
 local time=$(date '+%d-%b.%H:%M')
 
@@ -19,11 +20,27 @@ if (( $? == 0 ))
 then
   echo "Updated config spec to $time"
 
-  case $param in
-    -c)	build clean && build;;
-    -n)	;;
-    "")	build;;
-    *)	echo "Invalid option $param" 1>&2
-        return 1;;
+  if [[ $argv[1] == clean ]]
+  then
+    shift
+    build clean || return 1
+  fi
+
+  case $argv[1] in
+    all)
+      build
+      ;;
+
+    lib)
+      build lib
+      ;;
+
+    none)
+      ;;
+
+    *)
+      echo "Usage: updatebuild [clean] [lib|none]" 1>&2
+      return 1
+      ;;
   esac
 fi
