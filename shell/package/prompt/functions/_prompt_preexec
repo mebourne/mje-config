@@ -3,7 +3,7 @@
 # Hook for preexec function
 # Usage: _prompt_precmd
 #
-# $Id: _prompt_preexec 792 2003-09-22 11:47:18Z martin $
+# $Id$
 
 local command="$1"
 
@@ -49,7 +49,7 @@ then
 else
   echotc ce
   echo
-  echo -n - "${(l:COLUMNS - ${#${(%%)${prompt_right//[%]\{[^%]#%\}/}}}:)}"  
+  echo -n - "${(l:COLUMNS - ${#${(%%)${prompt_right//[%]\{[^%]#%\}/}}}:)}"
 fi
 
 # Then the right prompt
