@@ -2,10 +2,12 @@
 # ZSH function file
 # Release component in SCM
 #
-# $Id: release_component,v 1.1 2002/05/10 11:11:52 mebourne Exp $
+# $Id: release_component,v 1.2 2002/05/17 16:09:10 mebourne Exp $
+
+local vob="/vobs/bpta"
 
 local -a components architectures
-components=(/vobs/bpta/^lost+found(:t))
+components=($vob/^lost+found(:t))
 architectures=(/vobs/release/^lost+found(:t))
 
 local -A opts
@@ -29,32 +31,121 @@ Arguments:
 				# arch : values=architectures
 EOF
 
+# Check version number is in the right format
 if [[ $opts[version] != [0-9][0-9].[0-9][0-9].[0-9][0-9] ]]
 then
   echo "Invalid format for version. Must be of the form 00.01.02" 1>&2
   return 1
 fi
 
-echo "Releasing compenent $opts[component] on $opts[arch] as version $opts[version]"
+echo "Releasing component $opts[component] on $opts[arch] as version $opts[version]"
 
-echo
-echo "Enter release comment followed by newline:"
-local comment=""
-read comment
+
+## Check for any outstanding checkouts
+
+# Get list of current checkouts
+local -a reserved
+reserved=($(cleartool lscheckout -cvi -short -recurse $vob/$opts[component]))
+
+# Confirm with user
+if (( $#reserved ))
+then
+  echo
+  echo "WARNING: The following files are checked out in this view:"
+  print -l - ${reserved/#$vob\\//  }
+  echo "Continue? (y/n)"
+  if ! read -q
+  then
+    echo "Aborted."
+    return 0
+  fi
+fi
+
+
+## Check version number against component makefile
+
+local new_major=${opts[version][1,2]} new_minor=${opts[version][4,5]}
+local new_patch=${opts[version][7,8]}
+
+# Load the component makefile in
+local makefile=$vob/$opts[component]/Admin/$opts[component]_sa.mak
+zmodload -i zsh/mapfile
+local text="$mapfile[$makefile]"
+
+# Extract previous version number
+: ${(M)text:#(#b)*$opts[component]_VERSION_MAJOR=([0-9]##)*}
+local old_major=$match[1]
+: ${(M)text:#(#b)*$opts[component]_VERSION_MINOR=([0-9]##)*}
+local old_minor=$match[1]
+: ${(M)text:#(#b)*$opts[component]_VERSION_PATCH=([0-9]##)*}
+local old_patch=$match[1]
+
+# Check version number given isn't older than current one
+integer error=0
+if (( new_major < old_major ))
+then
+  error=1
+elif (( new_major == old_major ))
+then
+  if (( new_minor < old_minor ))
+  then
+    error=1
+  elif (( new_minor == old_minor && new_patch < old_patch ))
+  then
+    error=1
+  fi
+fi
+
+if (( error ))
+then
+  echo
+  echo "Cannot release a version older than the previous release" 1>&2
+  echo "Old version: $old_major.$old_minor.$old_patch"
+  return 1
+fi
+
+
+## Update the component makefile to the current version
+
+# Edit the makefile text
+text=${text/$opts[component]_VERSION_MAJOR=$old_major/$opts[component]_VERSION_MAJOR=$new_major}
+text=${text/$opts[component]_VERSION_MINOR=$old_minor/$opts[component]_VERSION_MINOR=$new_minor}
+text=${text/$opts[component]_VERSION_PATCH=$old_patch/$opts[component]_VERSION_PATCH=$new_patch}
+
+# Write the updated makefile out if it has changed
+if [[ $mapfile[$makefile] != $text ]]
+then
+  echo
+  echo "Updating component makefile $makefile..."
+
+  cleartool checkout -nc $makefile || return
+
+  mapfile[$makefile]=$text
+  if [[ $mapfile[$makefile] != $text ]]
+  then
+    echo "Failed to write to $makefile" 1>&2
+    return 1
+  fi
+
+  cleartool checkin -c "Updated to version $opts[version]." $makefile || return
+fi
+
+
+## Perform the release
 
 local label="$opts[component]_$opts[version]"
 
 echo
 echo "Creating label..."
-create_label -t release -c \"${comment}\" $opts[component] $opts[version] || return
+create_label -t release -c \"Released version $opts[version] of $opts[component]\" $opts[component] $opts[version] || return
 
 echo
 echo "Attaching label..."
-cleartool mklabel $label /vobs/bpta || return
-cleartool mklabel -r $label /vobs/bpta/$opts[component] || return
+cleartool mklabel -version /main/LATEST $label $vob || return
+cleartool mklabel -version /main/LATEST -r $label $vob/$opts[component] || return
 
 echo
 echo "Running abe..."
-abe.pl -vob /vobs/bpta -c $opts[component] -l $label -a $opts[arch] || return
+abe.pl -vob $vob -c $opts[component] -l $label -a $opts[arch] || return
 
 echo "Finished"
