@@ -3,7 +3,7 @@
 # Generic system-wide setup for interactive use
 # Written by Martin Ebourne
 #
-# $Id: interactive,v 1.5 2001/03/02 18:39:14 mebourne Exp $
+# $Id: interactive,v 1.6 2001/03/06 12:16:52 mebourne Exp $
 
 # Initial config files
 config_if_present system/loadfuncs
@@ -21,7 +21,7 @@ READNULLCMD=less
 WORDCHARS='*?_-.[]~#'
 
 # Ignore these filename extensions in completion
-fignore=(.o \~ %)
+fignore=(\~ % \# .o .d .elc .zwc)
 
 # Automatically report time for commands taking longer than a minute
 REPORTTIME=60
