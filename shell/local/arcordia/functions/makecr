@@ -1,0 +1,121 @@
+# ZSH function file
+# Make a new CR directory & contents
+# Usage: makecr <component> <cr-number>
+#
+# $Id: makecr,v 1.1 2001/07/06 15:49:44 mebourne Exp $
+
+local component="$argv[1]" crnumber="$argv[2]" crowner="$argv[3]"
+
+if [[ -z $crowner ]]
+then
+  crowner="MJE"
+fi
+
+local crname="CR${crnumber}_$crowner"
+
+local basedir="/vobs/odyssey/$component/support/CR"
+
+if [[ $component == fs ]]
+then
+  basedir="/vobs/odyssey/ac/farrst/datafixes/CR"
+fi
+
+if [[ ! -d $basedir ]]
+then
+  echo "ERROR: Invalid component $component" 1>&2
+  return 1
+fi
+
+if [[ $crnumber != [0-9]## ]]
+then
+  echo "ERROR: Invalid CR number $crnumber" 1>&2
+  return 1
+fi
+
+if [[ $crowner != [A-Z][A-Z][A-Z] ]]
+then
+  echo "ERROR: Invalid CR owner $crowner" 1>&2
+  return 1
+fi
+
+local crdir="$basedir/$crname"
+
+if [[ -d $basedir/$crdir ]]
+then
+  echo "ERROR: CR directory $crdir already exists" 1>&2
+  return 1
+fi
+
+echo "Checking out $basedir..."
+cleartool checkout -nc $basedir
+
+echo "Create directory $crdir..."
+cleartool mkelem -c "$crname definition" -eltype directory $crdir
+
+echo "Create file $crdir/checkin..."
+cat <<EOF > $crdir/checkin
+cleartool ci -nc install installList $crname.sql release finalise checkin .
+EOF
+
+echo "Create file $crdir/finalise..."
+cat <<EOF > $crdir/finalise
+mkrelease -t -v$crname
+./checkin
+EOF
+
+echo "Create file $crdir/install..."
+cat <<EOF > $crdir/install
+#!/usr/local/bin/perl
+
+require "./installsubs.pl";
+require "sybperl.pl";
+
+\$thisCR         = "$crname";
+
+infInstallInit();
+
+infPrintLog("Applying \${thisCR}");
+infDbCompile(\$DB_ENV,\$DB_COM,"sybase/CR/\${thisCR}.sql");
+infPrintLog("Done");
+
+infInstallComplete();
+EOF
+
+echo "Create file $crdir/installList..."
+cat <<EOF > $crdir/installList
+component       $component
+
+srcDir $crdir
+install install
+
+srcDir $crdir
+targetDir       sybase/CR
+ 
+file            $crname.sql        444
+
+
+# End of file
+EOF
+
+echo "Create file $crdir/release..."
+cat <<EOF > $crdir/release
+mkrelease -c -v$crname
+EOF
+
+echo "Create file $crdir/$crname.sql..."
+cat <<EOF > $crdir/$crname.sql
+BEGIN TRAN
+
+COMMIT TRAN
+EOF
+
+echo "Add execute permissions to $crdir/*..."
+chmod +x $crdir/*
+
+echo "Adding $crdir/* to clearcase..."
+cleartool mkelem -nc $crdir/*
+
+echo "Checking in $basedir..."
+cleartool checkin -nc $basedir
+
+echo "Completed ok"
