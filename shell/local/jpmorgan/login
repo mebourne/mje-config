@@ -12,23 +12,23 @@ unset EMACSLOADPATH
 
 umask 022
 
-if [[ -d /3rdparty/fsf/gcc/3.3.3 ]]
-then
-  export ACE_ROOT=/vobs/odyssey/system/ace5.4.1
-  export TAO_ROOT=$ACE_ROOT/TAO
-
-  path=(
-    $TAO_ROOT/TAO_IDL
-    $TAO_ROOT/utils/nslist
-    $TAO_ROOT/utils/catior
-    $TAO_ROOT/orbsvcs/Naming_Service
-    $TAO_ROOT/orbsvcs/LoadBalancer
-    $path
-  )
-
-  ld_library_path=(
-    $ACE_ROOT/ace
-    $ld_library_path
-    /vobs/odyssey/system/vbroker3.3/lib
-  )
-fi
+#if [[ -d /3rdparty/fsf/gcc/3.3.3 ]]
+#then
+#  export ACE_ROOT=/vobs/odyssey/system/ace5.4.1
+#  export TAO_ROOT=$ACE_ROOT/TAO
+#
+#  path=(
+#    $TAO_ROOT/TAO_IDL
+#    $TAO_ROOT/utils/nslist
+#    $TAO_ROOT/utils/catior
+#    $TAO_ROOT/orbsvcs/Naming_Service
+#    $TAO_ROOT/orbsvcs/LoadBalancer
+#    $path
+#  )
+#
+#  ld_library_path=(
+#    $ACE_ROOT/ace
+#    $ld_library_path
+#    /vobs/odyssey/system/vbroker3.3/lib
+#  )
+#fi

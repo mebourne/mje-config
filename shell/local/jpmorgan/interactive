@@ -12,23 +12,10 @@
 . /opt/bin/0ENV.sh
 add_emulate ksh Load Unload prepend append variable
 
-# Pull in useful JPMorgan 'packages'
-Load ssh
-
-if [[ -d /3rdparty/fsf/gcc/3.3.3 ]]
-then
-  Load gcc
-  Load binutils
-  Load make
-  Load flex
-  Load bison
-  Load m4
-fi
-
 # CD vars. Pull in all the vobs available. Add them straight to the hash table
 # to reduce environment variable clutter
 local dir
-for dir in /vobs/odyssey/* /home/odyssey/nahmed/Cronjob/prodquery
+for dir in /vobs/odyssey/*
 do
   dir=${dir%/}
   hash -d ${dir:t}=$dir
@@ -84,12 +71,12 @@ _sql_prompt_update
 prompt_above=${prompt_above/_sql_prompt\}/_sql_prompt\}\${\${_sql_prompt#\$DB_ENV \$DB_COM}:+ \[\$DB_ENV \$DB_COM]}}
 
 # Check quota once per day (takes too long to do each time)
-#if [[ $TERM == xterm && ( ! -f ${ZDOTDIR:-$HOME}/.cache.quota \
-#			   || -n $(find ${ZDOTDIR:-$HOME}/.cache.quota -ctime +1) ) ]]
-#then
-#  touch ${ZDOTDIR:-$HOME}/.cache.quota
-#  rsh gdd-odybin1 quota -v
-#fi
+if [[ $TERM == xterm && ( ! -f ${ZDOTDIR:-$HOME}/.cache.quota \
+			  || -n $(find ${ZDOTDIR:-$HOME}/.cache.quota -ctime +1) ) ]]
+then
+  touch ${ZDOTDIR:-$HOME}/.cache.quota
+  quota -v
+fi
 
 # Setup for environment machines
 alias top8=/apps/top/3.5.0.0/solaris/5.8/bin/top

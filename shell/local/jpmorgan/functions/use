@@ -2,13 +2,14 @@
 # ZSH function file
 # Select an environment to run in
 #
-# $Id: use 792 2003-09-22 11:47:18Z martin $
+# $Id$
 
-local basedirprefix="/export1/home/odyssey/"
+local basedirprefix1="/export1/home/odyssey/"
+local basedirprefix2="/export1/home/sts/"
 
 local -a environments
-environments=($basedirprefix*)
-environments=(${environments#$basedirprefix})
+environments=($basedirprefix1* $basedirprefix2*)
+environments=(${${environments#$basedirprefix1}#$basedirprefix2})
 
 local -A opts
 parse_opts - opts -- "$argv[@]" <<'EOF' || return 1
@@ -30,7 +31,12 @@ EOF
 sqluse $opts[environment] qm -s
 xterm_name=$opts[environment]
 
-export ODYSSEY=/export1/home/odyssey/$opts[environment]
+if [[ -d $basedirprefix1$opts[environment] ]]
+then
+  export ODYSSEY=$basedirprefix1$opts[environment]
+else
+  export ODYSSEY=$basedirprefix2$opts[environment]
+fi
 
 # Set environment dependent variables
 local varname="" varvalue=""
