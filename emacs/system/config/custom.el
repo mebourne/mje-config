@@ -1,7 +1,7 @@
 ;; Emacs configuration file
 ;; Customised variables
 ;; Written by Martin Ebourne
-;; $Id: custom.el,v 1.7 2002/03/18 20:04:24 mebourne Exp $
+;; $Id: custom.el,v 1.8 2002/03/19 19:18:11 mebourne Exp $
 
 (setq custom-file (concat install-user-base-dir "/custom.el"))
 
@@ -183,5 +183,5 @@
 				  (((class color) (background dark)) (:foreground "light pink"))))
  '(font-lock-rose-comment-face ((((class color) (background light)) (:foreground "gray"))
 				 (((class color) (background dark)) (:foreground "dark green"))))
- '(trailing-whitespace ((t (:background "grey40")))))
+ '(trailing-whitespace ((t (:background "grey20")))))
 ; orchid, indian red, dark khaki
