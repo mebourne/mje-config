@@ -4,7 +4,7 @@
 # Update the SourceInfo databases
 # Usage: siupdate
 #
-# $Id: siupdate,v 1.8 2001/05/23 12:21:14 mebourne Exp $
+# $Id: siupdate,v 1.9 2001/05/23 12:22:36 mebourne Exp $
 
 if [[ -z $sourceinfo_sourcecode_dirs ]]
 then
@@ -12,10 +12,10 @@ then
   return 1
 fi
 
-local new=".new.$$"
+local dir new=".new.$$"
 
 # Create the files database
-local dir
+echo "Creating $sourceinfo_filesdb..."
 for dir in $sourceinfo_sourcecode_dirs
 do
   find $dir -type f \! \( -name '.*' -o -name '*~' -o -name '*#' \
@@ -31,6 +31,7 @@ done |
   mv -f $sourceinfo_filesdb$new $sourceinfo_filesdb
 
 # Create the types database
+echo "Creating $sourceinfo_typesdb..."
 for dir in $sourceinfo_sourcecode_dirs
 do
   find $dir -type f \( -name '*.hpp' -o -name '*.h' \) -print \
