@@ -2,7 +2,7 @@
 # Update config directory
 # Usage: configupdate [shell|emacs]
 #
-# $Id: cfgupdate,v 1.5 2001/05/14 17:25:29 mebourne Exp $
+# $Id: cfgupdate,v 1.6 2001/05/15 09:26:08 mebourne Exp $
 
 local base_dir file_desc remove_pattern ignore_pattern
 
@@ -85,14 +85,19 @@ do
 	changed_files=($changed_files $file)
       fi
     else
-      # Not writable. Replace with latest from version history
+      # Not writable. Ensure up to date with latest from version history
       if rlog -rdeleted $file >/dev/null 2>&1
       then
         echo "Deleted  ${file#$base_dir/}"
 	rm -f $file
       else
-        echo "Updated  ${file#$base_dir/}"
-    	co -u $file 2>/dev/null
+	if rcsdiff -q $file >/dev/null
+	then
+	  echo "Current  ${file#$base_dir/}"
+	else
+	  echo "Updated  ${file#$base_dir/}"
+	  co -u $file 2>/dev/null
+	fi
       fi
     fi
   done
