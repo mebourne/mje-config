@@ -1,30 +1,7 @@
 ;; Emacs configuration file
 ;; Setup for cc-mode
 ;; Written by Martin Ebourne
-;; $Id: cc-mode.el,v 1.8 2002/03/26 09:44:50 mebourne Exp $
-
-;; C and C++ style
-;(eval-after-load "cc-mode"
-;  '(progn
-;     ;; Improvements to java decoding for use with speedbar
-;     (setq cc-imenu-java-generic-expression
-;	   (`
-;	    ((nil
-;	      (,
-;	       (concat
-;		"^\\([ \t]\\)*"
-;		"\\([A-Za-z0-9_-]+[ \t]+\\)?" ; type specs; there can be
-;		"\\([A-Za-z0-9_-]+[ \t]+\\)?" ; more than 3 tokens, right?
-;		"\\([A-Za-z0-9_-]+[ \t]*[[]?[]]?\\)"
-;		"\\([ \t]\\)"
-;		"\\([A-Za-z0-9_-]+"	; the string we want to get
-;		"[ \t]*("
-;		"[][a-zA-Z,_1-9\n \t]*"	; arguments
-;		")\\)[ \t]*"
-;					;       "[^;(]"
-;		"\\(;\\|[,a-zA-Z_1-9\n \t]*{\\)"
-;		)) 6))))
-;     ))
+;; $Id: cc-mode.el,v 1.9 2002/03/26 14:03:29 mebourne Exp $
 
 ;; Map _ as a word character to make faster font lock regexps work correctly. Not needed for
 ;; slow font lock regexps
