@@ -4,7 +4,7 @@
 # Update config directory
 # Usage: cfgupdate <directory>
 #
-# $Id: cfgupdate,v 1.10 2001/05/21 09:25:16 mebourne Exp $
+# $Id: cfgupdate,v 1.11 2001/05/22 16:56:08 mebourne Exp $
 
 emulate -LR zsh
 
@@ -24,7 +24,7 @@ case $argv[1] in
     remove_pattern='*~|\#*\#'
     ignore_pattern='*.zwc'
     remove_compiled='$file.zwc'
-    #compile_command='cfg_compile_shell $base_dir'
+    compile_command='cfg_compile_shell $base_dir'
     ;;
 
   *emacs)
