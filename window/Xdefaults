@@ -1,7 +1,7 @@
 ! .Xdefaults - X resources configuration
 ! Written by Martin Ebourne
 !
-! $Id: Xdefaults,v 1.8 2001/03/06 18:20:43 mebourne Exp $
+! $Id: Xdefaults,v 1.9 2001/03/06 18:48:14 mebourne Exp $
 
 
 !!! XTerm configuration
@@ -14,8 +14,12 @@
 XTerm*background:		black
 XTerm*cursorColor:		green
 XTerm*foreground:		white
+XTerm*highlightColor:		white
 
 ! Options
+XTerm*cursorBlink:		true
+XTerm*cursorOffTime:		500
+XTerm*cursorOnTime:		1500
 XTerm*eightBitInput:		false
 XTerm*fullCursor:		true
 XTerm*reverseWrap:		true
