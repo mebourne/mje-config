@@ -3,7 +3,7 @@
 # Setup for prompt package
 # Written by Martin Ebourne
 #
-# $Id: setup,v 1.16 2001/10/11 12:51:03 mebourne Exp $
+# $Id: setup,v 1.17 2002/04/19 14:06:49 mebourne Exp $
 
 add_functions_directory package/prompt/functions
 
@@ -41,7 +41,7 @@ colour_setvar prompt_above
 colour_addvar [dark_red] '%$COLUMNS>>%n' [grey] '@' [dark_green] '%m'
 if (( SHLVL > 2 ))
 then
-  colour_addvar [grey] '  #$[SHLVL-2]'
+  colour_addvar [grey] '  #$[SHLVL-1]'
 fi
 colour_addvar [dark_red] '${${_prompt_retcode:#0}:+  [$_prompt_retcode${signals[$_prompt_retcode-127]:+ $signals[$_prompt_retcode-127]}]}'
 colour_addvar [dark_red] '${jobstates:+  ${(AA)_prompt_jobs::=}${${(e)${(@j:, :)${(@)jobstates%%:*}/(#b)(?*)/_prompt_jobs[$match[1]]++}/(#b)(?*)/\$(($match[1]))}:#*}${(@kv)_prompt_jobs:/(#b)(???)[a-z]*/$match[1]}}'
