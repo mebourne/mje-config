@@ -21,9 +21,9 @@ require Exporter;
 %EXPORT_TAGS = ( all => \@EXPORT_OK );
 
 use strict;
+use Date::Manip;
 use HTML::Entities;
 use MJE::Util;
-
 
 ### These turn things into useful strings
 
@@ -153,7 +153,7 @@ sub formatTableHtml() {
 # Sort a 2d array by the given field
 # array      - reference of source data array (not changed)
 # field      - number of the field to sort by (starting from 0)
-# type       - 'number' or 'string' relating to the data in the given sort field
+# type       - 'number', 'string', or 'date' relating to the data in the given sort field
 # reverse    - if non-zero sorts in reverse order (optional)
 # skipHeader - number of rows at the top to exclude from the sort (optional)
 sub sortByField() {
@@ -179,6 +179,8 @@ sub sortByField() {
     push @result, sort { ($a->[$field] <=> $b->[$field])*$reverse } @$array[$skipHeader..$#$array];
   } elsif($type eq "string") {
     push @result, sort { ($a->[$field] cmp $b->[$field])*$reverse } @$array[$skipHeader..$#$array];
+  } elsif($type eq "date") {
+    push @result, sort { &Date_Cmp($a->[$field],$b->[$field])*$reverse } @$array[$skipHeader..$#$array];
   } else {
     die "Invalid type '$type'";
   }
