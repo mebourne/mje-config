@@ -19,9 +19,9 @@ BEGIN {
 my %types=(DBI::SQL_CHAR		, "string",
 	   DBI::SQL_LONGVARCHAR		, "string",
 	   DBI::SQL_VARCHAR		, "string",
-	   DBI::SQL_WCHAR		, "string",
-	   DBI::SQL_WLONGVARCHAR	, "string",
-	   DBI::SQL_WVARCHAR		, "string",
+#	   DBI::SQL_WCHAR		, "string",
+#	   DBI::SQL_WLONGVARCHAR	, "string",
+#	   DBI::SQL_WVARCHAR		, "string",
 	   -9112                        , "string",  # Oracle CLOB
 
 	   DBI::SQL_BIGINT		, "number",
@@ -39,7 +39,7 @@ my %types=(DBI::SQL_CHAR		, "string",
 	   DBI::SQL_TIMESTAMP		, "datetime",
 
 	   DBI::SQL_BINARY		, "binary",
-	   DBI::SQL_BIT			, "binary",
+#	   DBI::SQL_BIT			, "binary",
 	   DBI::SQL_LONGVARBINARY	, "binary",
 	   DBI::SQL_VARBINARY		, "binary",
 	   -9113                        , "binary",  # Oracle BLOB
