@@ -3,11 +3,11 @@
 # Fetch and return the list of types
 # For use only by the SQL packages
 #
-# $Id: _sybase_fetchtypes,v 1.1 2001/03/23 12:30:25 mebourne Exp $
+# $Id: _sybase_fetchtypes,v 1.2 2001/07/02 13:55:19 mebourne Exp $
 
 {
   echo "set nocount on"
   echo "go"
-  echo "select name from systypes where uid=user_id()"
+  echo "select name from systypes"
   echo "go"
 } | _sybase_rawsql | tail +3
