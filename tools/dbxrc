@@ -1,7 +1,39 @@
 dbxenv suppress_startup_message 4.0
-#ignore sigio
+
+# This pages the help, preferably with less, otherwise anything we can find
+page() {
+  typeset _cmd="$1"
+  shift
+
+  typeset _pager="$(whence less)"
+  if [ -x "$_pager" ]
+  then
+    builtin $_cmd "$@" |
+      $_pager -PM"<dbx $_cmd${*:+ }$*> ?ltlines %lt-%lb?L/%L. : byte %bB?s/%s. .?e(END):?pB%pB\%..%t"
+  else
+    _pager="$(whence ${PAGER:--})"
+    [ -x "$_pager" ] || _pager="$(whence more)"
+    [ -x "$_pager" ] || _pager="/bin/cat"
+    builtin $_cmd "$@" |
+      $_pager
+  fi
+}
+kalias help="page help"
+kalias commands="page commands"
+
+# Set Emacs line editing, and exit on CTRL-D
 set -o emacs
 set +o ignoreeof
+
+# Bind tab for complete, and cursor keys for history. Can't do the normal cursor keys since
+# only allows 2 character bindings
+bind ^I=complete-list
+bind ^[P=up-history
+bind ^[N=down-history
+#bind ^[[P=up-history
+#bind ^[[N=down-history
+
+# Short command aliases
 alias l=list
 alias wh=where
 alias s=step
@@ -9,7 +41,11 @@ alias si=stepi
 alias n=next
 alias ni=nexti
 alias c=cont
-bind ^I=complete-list
-bind ^[P=up-history
-bind ^[N=down-history
+alias e=examine
+
+# Some possible settings
+#ignore sigio
 #language c++
+
+# Catch exceptions
+stop throw
