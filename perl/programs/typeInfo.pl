@@ -1,60 +1,64 @@
 #!/usr/local/bin/perl -w
 #
-# Parse type definition file generated from parseCpp.pl
+# Display a type information using the sourceinfo database.
 # Written by Martin Ebourne. Started 23/02/01
-#
-# Usage: typeInfo.pl [-r] [-s] [-d <dir-name>] <definition-file> <type-name>
 
 use strict;
 use IO::File;
+use MJE::ParseOpts;
 
-# These are the settings controlled by parameters
-my $recurse=0;
-my $short=0;
-my $all=0;
-my @preferredDirs;
+use vars qw/@preferredDirs/;
 
-# Handle the option parameters
-my $got=1;
-while(@ARGV>2 && $got) {
-  if($ARGV[0] eq "-r") {
-    $recurse=1;
-    shift @ARGV;
-  } elsif($ARGV[0] eq "-s") {
-    $short=1;
-    shift @ARGV;
-  } elsif($ARGV[0] eq "-a") {
-    $all=1;
-    shift @ARGV;
-  } elsif($ARGV[0] eq "-d") {
-    shift @ARGV;
-    my $dir=shift @ARGV;
-    if($dir!~/^\//) {
-      $dir="/" . $dir;
-    }
-    if($dir!~/\/$/) {
-      $dir=$dir . "/";
-    }
-    $preferredDirs[@preferredDirs]=$dir;
-  } else {
-    $got=0;
+my $help=q(
+Description:
+Display type information using the sourceinfo database.
+
+Usage:
+sitype [options] <type-name>
+
+Options:
+  -a, --all			List all available types (for debugging)
+	   			# --all | -a
+  -d <dir>, --directory=<dir>	Prefer files within directory if duplicates found
+				(partial name ok, searched in order given)
+				# @preferredDirs += [*] --directory | -d : ? directory
+  -h, --help			Provide this help
+				# --help | -h
+  -r, --recurse			Display full type information recursively
+				# --recurse | -r : constant=-r
+  -s, --short			Return short tree-like view of hierarchy
+	   			# --short | -s
+
+Arguments:
+  <definitions-file>		The file containing the type definitions
+	   			# definitions : file
+  <type-name>			The type to retrieve the information for
+				# type : text
+);
+
+my $opts=new MJE::ParseOpts ($help) || exit 1;
+
+@preferredDirs=map {
+  if(!/^\//) {
+    $_="/".$_;
   }
-}
-
-# Check the syntax
-die "Usage: typeInfo.pl [-r] [-s] [-d <dir-name>] <definition-file> <type-name>" if @ARGV!=2;
+  if(!/\/$/) {
+    $_.="/";
+  }
+} @preferredDirs;
 
 # Handle the mandatory parameters
-my ($defsFileName,$typeName)=@ARGV;
+my $defsFileName=$opts->{definitions};
+my $typeName=$opts->{type};
 
 # Load in the definitions file
 my @defs;
 &loadFile($defsFileName,\@defs);
 
-if(!$all) {
+if(!$opts->{all}) {
   # User did not request -a option to list all types
 
-  if($short) {
+  if($opts->{short}) {
     # User requested short (hierarchical) display
 
     print "Base classes:\n";
@@ -65,7 +69,7 @@ if(!$all) {
   } else {
     # User requested standard display
 
-    if(!&printTypeInfo(\@defs,[],$typeName,$recurse,"")) {
+    if(!&printTypeInfo(\@defs,[],$typeName,$opts->{recurse},"")) {
       print "No definition for $typeName found\n";
     }
   }
@@ -74,7 +78,7 @@ if(!$all) {
 
   for my $def (@defs) {
     my ($fileName,$recordType,$type,@params)=split(/\#/,$def);
-    &printTypeInfo(\@defs,[],$type,$recurse,"");
+    &printTypeInfo(\@defs,[],$type,$opts->{recurse},"");
   }
 }
 
