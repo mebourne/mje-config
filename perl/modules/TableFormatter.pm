@@ -175,20 +175,20 @@ my %colours=(
 my %types=(
   string => {
     align     => -1,
-    colour    => $colours{yellow},
+    colour    => "yellow",
     displayFn => \&displayString,
   },
   number => {
     align     => 1,
-    colour    => $colours{orange},
+    colour    => "orange",
   },
   datetime => {
     align     => -1,
-    colour    => $colours{cyan},
+    colour    => "cyan",
   },
   binary => {
     align     => -1,
-    colour    => $colours{orange},
+    colour    => "orange",
     displayFn => \&displayBinary,
   },
 );
@@ -203,16 +203,18 @@ sub new {
 
   # Internal vars
   $self->{_debug}=0;
+  $self->{_colours}={};
   $self->{_columns}=[];
   $self->{_rows}=[];
   $self->{_maxFieldNameLen}=0;
+  $self->{style}=undef;
 
   # These for Emacs style
   $self->{_tempFileBase}="/tmp/sqlformat.$::PID.";
   $self->{_tempFileCount}=1;
 
   # User settable
-  $self->{colour}=1;
+  $self->{colour}=0;
   $self->{screenWidth}=undef;
   $self->{maxColumnWidth}=undef;
 
@@ -332,6 +334,16 @@ sub addRow {
 sub display {
   my ($self)=@_;
 
+  # Set the colours to be either as configured or all empty (to disable colour)
+  if($self->{colour} && $self->{style}->{colour}) {
+    $self->{_colours}=\%colours;
+  } else {
+    $self->{_colours}={};
+    for my $colour (keys(%colours)) {
+      $self->{_colours}->{$colour}="";
+    }
+  }
+
   # Processing
   if($self->{style}->{squash}) {
     $self->trimLength($self->{_columns});
@@ -403,8 +415,8 @@ sub default_generateFormat {
   my $x;
   for($x=0;$x<@$columns;$x++) {
     if($x) {
-      if($self->{colour}) {
-	$format.=$colours{blue};
+      if($self->{_colours}->{reset} ne "") {
+	$format.=$self->{_colours}->{blue};
 
 	if($self->{style}->{separator} eq " ") {
 	  $format.="\xb7";
@@ -419,9 +431,7 @@ sub default_generateFormat {
     # Write a '%<num>s' entry as appropriate
     my $column=$$columns[$x];
 
-    if($self->{colour}) {
-      $format.=$types{$$column{type}}->{colour};
-    }
+    $format.=$self->{_colours}->{$types{$$column{type}}->{colour}};
 
     if($$column{needsquote}) {
       $format.="\"";
@@ -435,7 +445,7 @@ sub default_generateFormat {
       $format.="\"";
     }
   }
-  $format.=$colours{white} if $self->{colour};
+  $format.=$self->{_colours}->{white};
 
   return $format;
 }
@@ -467,12 +477,11 @@ sub default_printHeader {
   }
 
   # Output header in green
-  $self->{colour} && print $colours{green};
-  print "$header\n";
+  print $self->{_colours}->{green}, "$header\n";
   if($self->{style}->{underline}) {
     print "$underline\n";
   }
-  $self->{colour} && print $colours{white};
+  print $self->{_colours}->{white};
 }
 
 # Print the data
@@ -482,12 +491,10 @@ sub default_printData {
   # Print each row with the precalculated format
   my $background=0;
   for my $row (@$rows) {
-    if($self->{colour}) {
-      if($background) {
-	print $colours{bg_grey};
-      }
-      $background=!$background;
+    if($background) {
+      print $self->{_colours}->{bg_grey};
     }
+    $background=!$background;
 
     if(defined($self->{style}->{escapeRegexp})) {
       my @newRow=@$row;
@@ -496,8 +503,7 @@ sub default_printData {
     }
     printf $format, @$row;
 
-    print $colours{bg_black} if $self->{colour};
-    print "\n";
+    print $self->{_colours}->{bg_black}, "\n";
   }
 }
 
@@ -511,17 +517,11 @@ sub record_generateFormat {
   for($x=0;$x<@$columns;$x++) {
     # Write a '%<num>s' entry as appropriate
     my $column=$$columns[$x];
-    $format.=$colours{green} if $self->{colour};
-    $format.=sprintf("%-*s",$self->{_maxFieldNameLen},$$column{name});
-    $format.=$colours{white} if $self->{colour};
-    $format.=": ";
-    if($self->{colour}) {
-      $format.=$types{$$column{type}}->{colour};
-      $format.=$colours{bg_grey};
-    }
-    $format.="%-" . $$column{datalength} . "s";
-    $format.=$colours{reset} if $self->{colour};
-    $format.="\n";
+    $format.=$self->{_colours}->{green} . sprintf("%-*s",$self->{_maxFieldNameLen},$$column{name});
+    $format.=$self->{_colours}->{white} . ": ";
+    $format.=$self->{_colours}->{$types{$$column{type}}->{colour}};
+    $format.=$self->{_colours}->{bg_grey} . "%-" . $$column{datalength} . "s";
+    $format.=$self->{_colours}->{reset} . "\n";
   }
 
   return $format;
@@ -568,11 +568,7 @@ sub rows_control {
     for(my $colNum=0;$colNum<@$columns;$colNum++) {
       my $column=$$columns[$colNum];
 
-      my $format="";
-      $format.=$colours{green} if $self->{colour};
-      $format.="%-*s";
-      $format.=$colours{white} if $self->{colour};
-      $format.=": ";
+      my $format=$self->{_colours}->{green} . "%-*s" . $self->{_colours}->{white} . ": ";
       printf "$format", $self->{_maxFieldNameLen}, $$column{name};
 
       # Process this column for each row in this block
@@ -581,12 +577,8 @@ sub rows_control {
 	if($rowNum!=$rowBlock) {
 	  $format.=$separator;
 	}
-	if($self->{colour}) {
-	  $format.=$types{$$column{type}}->{colour};
-	  $format.=$colours{bg_grey};
-	}
-	$format.="%-*s";
-	$format.=$colours{reset} if $self->{colour};
+	$format.=$self->{_colours}->{$types{$$column{type}}->{colour}};
+	$format.=$self->{_colours}->{bg_grey} . "%-*s" . $self->{_colours}->{reset};
 	$format.=" " x ($rowWidth - $column->{datalength});
 	printf "$format", $column->{datalength}, $rows->[$rowNum]->[$colNum];
       }
@@ -600,30 +592,21 @@ sub xml_generateFormat {
   my ($self, $columns)=@_;
 
   # Process each column
-  my $format;
-  $format.=$colours{blue} if $self->{colour};
-  $format.=" <ROW>\n";
+  my $format=$self->{_colours}->{blue} . " <ROW>\n";
 
   my $x;
   for($x=0;$x<@$columns;$x++) {
     my $column=$$columns[$x];
 
-    $format.=$colours{green} if $self->{colour};
-    $format.="  <" . $$column{name} . ">";
+    $format.=$self->{_colours}->{green} . "  <" . $$column{name} . ">";
 
     # Write a '%<num>s' entry as appropriate
-    if($self->{colour}) {
-      $format.=$types{$$column{type}}->{colour};
-    }
-    $format.="%s";
+    $format.=$self->{_colours}->{$types{$$column{type}}->{colour}} . "%s";
 
-    $format.=$colours{green} if $self->{colour};
-    $format.="</" . $$column{name} . ">\n";
+    $format.=$self->{_colours}->{green} . "</" . $$column{name} . ">\n";
   }
 
-  $format.=$colours{blue} if $self->{colour};
-  $format.=" </ROW>\n";
-  $format.=$colours{white} if $self->{colour};
+  $format.=$self->{_colours}->{blue} . " </ROW>\n" . $self->{_colours}->{white};
 
   return $format;
 }
@@ -632,35 +615,34 @@ sub xml_generateFormat {
 sub xml_printHeader {
   my ($self, $columns)=@_;
 
-  print $colours{blue} if $self->{colour};
+  print $self->{_colours}->{blue};
   print "<?xml version=\"1.0\"?>\n";
-  print $colours{white} if $self->{colour};
+  print $self->{_colours}->{white};
 }
 
 # Print the data
 sub xml_printData {
   my ($self, $format, $rows)=@_;
 
-  print $colours{blue} if $self->{colour};
+  print $self->{_colours}->{blue};
   print "<TABLE>\n";
-  print $colours{white} if $self->{colour};
+  print $self->{_colours}->{white};
 
   # Print each row with the precalculated format
   for my $row (@$rows) {
     printf $format, @$row;
   }
 
-  print $colours{blue} if $self->{colour};
+  print $self->{_colours}->{blue};
   print "</TABLE>\n";
-  print $colours{white} if $self->{colour};
+  print $self->{_colours}->{white};
 }
 
 # Print the header
 sub html_printHeader {
   my ($self, $columns)=@_;
 
-  print $colours{blue} if $self->{colour};
-  print "<TABLE border=1>\n";
+  print $self->{_colours}->{blue}, "<TABLE border=1>\n";
   print " <TR align=\"left\">\n";
 
   # Process each column
@@ -668,14 +650,8 @@ sub html_printHeader {
   for($x=0;$x<@$columns;$x++) {
     my $column=$$columns[$x];
 
-    print "  <TH>";
-
-    # Write a '%<num>s' entry as appropriate
-    print $colours{green} if $self->{colour};
-    print $$column{name};
-
-    print $colours{blue} if $self->{colour};
-    print "</TH>\n";
+    print "  <TH>", $self->{_colours}->{green}, $$column{name};
+    print $self->{_colours}->{blue}, "</TH>\n";
   }
 
   print " </TR>\n";
@@ -686,15 +662,12 @@ sub html_generateFormat {
   my ($self, $columns)=@_;
 
   # Process each column
-  my $format;
-  $format.=$colours{blue} if $self->{colour};
-  $format.=" <TR>\n";
+  my $format=$self->{_colours}->{blue} . " <TR>\n";
 
   my $x;
   for($x=0;$x<@$columns;$x++) {
     my $column=$$columns[$x];
 
-    $format.=$colours{green} if $self->{colour};
     $format.="  <TD";
     if($types{$$column{type}}->{align}==1) {
       $format.=" align=\"right\"";
@@ -702,18 +675,12 @@ sub html_generateFormat {
     $format.=">";
 
     # Write a '%<num>s' entry as appropriate
-    if($self->{colour}) {
-      $format.=$types{$$column{type}}->{colour};
-    }
-    $format.="%s";
+    $format.=$self->{_colours}->{$types{$$column{type}}->{colour}} . "%s";
 
-    $format.=$colours{green} if $self->{colour};
-    $format.="</TD>\n";
+    $format.=$self->{_colours}->{blue} . "</TD>\n";
   }
 
-  $format.=$colours{blue} if $self->{colour};
-  $format.=" </TR>\n";
-  $format.=$colours{white} if $self->{colour};
+  $format.=" </TR>\n" . $self->{_colours}->{white};
 
   return $format;
 }
@@ -727,9 +694,7 @@ sub html_printData {
     printf $format, @$row;
   }
 
-  print $colours{blue} if $self->{colour};
-  print "</TABLE>\n";
-  print $colours{white} if $self->{colour};
+  print $self->{_colours}->{blue}, "</TABLE>\n", $self->{_colours}->{white};
 }
 
 # Control function for emacs style
