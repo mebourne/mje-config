@@ -5,7 +5,7 @@
 # Completion code for sql command
 # Usage: These functions are used by the completion code
 #
-# $Id: _sql,v 1.8 2001/08/22 15:00:41 mebourne Exp $
+# $Id: _sql,v 1.9 2002/04/11 17:40:20 mebourne Exp $
 
 _sql () {
   local -A tables
@@ -105,7 +105,7 @@ _sql () {
     192)	alts=($alts 'sql:SQL reserved words:(by)');;
     2*|3*|4*|5*)
 		local suffix=""
-		if [[ $currentstate == 2* ]]
+		if [[ $currentstate == 2* || $currentstate == 4* ]]
 		then
 		  # Temporary bodge to work around bugs in all-matches
 		  # expansion when -r includes space
