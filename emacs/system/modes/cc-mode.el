@@ -1,7 +1,7 @@
 ;; Emacs configuration file
 ;; Setup for cc-mode
 ;; Written by Martin Ebourne
-;; $Id: cc-mode.el,v 1.1 2001/05/11 17:31:38 mebourne Exp $
+;; $Id: cc-mode.el,v 1.2 2001/05/16 14:23:03 mebourne Exp $
 
 ;; C and C++ style
 (eval-after-load "cc-mode"
@@ -40,17 +40,9 @@
 
 ;; C & C++
 (setq auto-mode-alist
-      (append '(("\\.htm[^.]*$" . html-mode)
-		("\\.C[^.]*$"   . c++-mode)
-		("\\.cpp[^.]*$" . c++-mode)
-		("\\.cc[^.]*$"  . c++-mode)
-		("\\.cxx[^.]*$" . c++-mode)
-		("\\.sq[cC][^.]*$" . c++-mode)
-		("\\.c[^.]*$"   . c-mode)
-		("\\.h[^.]*$"   . c++-mode)
-		("\\.inl[^.]*$"   . c++-mode)
-		("\\.hxx[^.]*$" . c++-mode)
-		("\\.tbl[^.]*$" . c++-mode)
+      (append '(("\\.sq[cC]\\'" . c++-mode)
+		("\\.inl\\'"   . c++-mode)
+		("\\.ipp\\'"   . c++-mode)
 		) auto-mode-alist))
 
 (add-hook 'c-mode-common-hook
