@@ -4,7 +4,7 @@
 ;; All rights reserved
 ;; 07-02-97 - First version
 ;;
-;; $Id: fix-hist.el 792 2003-09-22 11:47:18Z martin $
+;; $Id$
 
 ;;; Commentary:
 
@@ -38,7 +38,8 @@
   (if (zerop minibuffer-history-position)
       (progn
 	(setq minibuffer-history-position 1)
-	(setq minibuffer-temporary-entry (buffer-string))
+	(setq minibuffer-temporary-entry (buffer-substring-no-properties (minibuffer-prompt-end)
+									 (point-max)))
 	(set minibuffer-history-variable (cons minibuffer-temporary-entry
 					       (symbol-value minibuffer-history-variable)))
 	))
