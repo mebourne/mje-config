@@ -1,0 +1,35 @@
+# ZSH function file
+# Written by Martin Ebourne
+# Part of the Config package
+# Compile shell directory
+# Usage: cfg_compile_shell <directory>
+#
+# $Id: cfg_compile_shell,v 1.1 2001/05/18 15:45:34 mebourne Exp $
+
+emulate -L zsh
+
+local base_dir
+
+# If path given then use it, else use default base dir
+if [[ $argv[1] == */* ]]
+then
+  base_dir=$argv[1]
+else
+  base_dir=$config_dir/$argv[1]
+fi
+
+# Compile all the individual shell files - ie. excluding all in functions directories
+local file
+for file in **/^(functions|RCS)/*(.)
+do
+  echo "Compiling file $file"
+  zcompile $file
+done
+
+# Compile all the functions directories such that they have one file each
+local dir
+for dir in **/functions(/)
+do
+  echo "Compiling directory $dir"
+  zcompile $dir $dir/^*.*(.)
+done

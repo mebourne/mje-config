@@ -1,0 +1,11 @@
+# ZSH configuration file
+# Executed when the Config package is included
+# Setup for Config package
+# Written by Martin Ebourne
+#
+# $Id: setup,v 1.1 2001/05/18 15:45:34 mebourne Exp $
+
+add_functions_directory package/config/functions
+
+# Default base directory for config files
+typeset -g config_dir=${ZCONFIGDIR:h}
