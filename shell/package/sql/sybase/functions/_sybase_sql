@@ -3,26 +3,30 @@
 # Execute the given SQL command
 # For use only by the SQL packages
 #
-# $Id: _sybase_sql,v 1.5 2001/04/19 14:48:21 mebourne Exp $
+# $Id: _sybase_sql,v 1.6 2001/05/22 16:56:57 mebourne Exp $
 
 if [[ -n $1 ]]
 then
+  local docompress
+  if (( $+compress && compress
+        || !$+compress && $+_sql_parameters[compress] && _sql_parameters[compress]))
+  then
+    docompress='| sqlcompress.pl'
+  fi
+
   {
-    if [[ -n $rows ]]
+    if (( $+maxrows ))
     then
-      echo "set rowcount $rows"
+      echo "set rowcount $maxrows"
       echo "go"
-    elif [[ -n $_sql_parameters[maxrows] ]]
+    elif (( $+_sql_parameters[maxrows] ))
     then
       echo "set rowcount $_sql_parameters[maxrows]"
       echo "go"
     fi
 
-    if [[ -n $nocount ]]
-    then
-      echo "set nocount on"
-      echo "go"
-    elif [[ -n $_sql_parameters[nocount] ]]
+    if (( $+count && !count
+          || !$+count && $+_sql_parameters[count] && !_sql_parameters[count] ))
     then
       echo "set nocount on"
       echo "go"
@@ -30,7 +34,7 @@ then
 
     echo - "$*"
     echo "go"
-  } | _sybase_rawsql -w 10000
+  } | eval _sybase_rawsql -w 10000 $docompress
 else
   _sybase_rawsql -w ${COLUMNS:-10000}
 fi
