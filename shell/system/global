@@ -3,18 +3,18 @@
 # Generic system-wide setup for ALL shells. This is executed before anything else
 # Written by Martin Ebourne
 #
-# $Id: global,v 1.6 2001/07/23 12:39:02 mebourne Exp $
+# $Id: global,v 1.7 2001/08/01 10:27:58 mebourne Exp $
 
 # Make various path like variables keep unique values only. Need to create any that aren't built
 # into the shell. Most of them are also exported
 typeset -Ugx  CDPATH
 typeset -Ugx  FIGNORE
-typeset -U    FPATH
+typeset -Ug   FPATH
 typeset -UgxT LD_LIBRARY_PATH="$LD_LIBRARY_PATH" ld_library_path
 typeset -UgxT INFOPATH="$INFOPATH" infopath
 typeset -Ugx  MAILPATH
 typeset -Ugx  MANPATH
-typeset -U    MODULE_PATH
+typeset -Ug   MODULE_PATH
 typeset -Ugx  PATH
 typeset -UgxT PERLLIB="$PERLLIB" perllib
 typeset -Ugx  WATCH
@@ -57,7 +57,5 @@ then
   [[ -n $ZCONFIGDEBUG ]] && echo "ZDOTDIR set to $ZDOTDIR"
 fi
 
-# Enable functions early & for everyone. Ha! Should be here but zsh later goes and
-# resets the stupid path. Doh! Have to do it at the start of login AND interactive
-# instead
-#config_if_present system/loadfuncs
+# Enable functions early & for everyone
+config_if_present system/loadfuncs
