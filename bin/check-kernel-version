@@ -1,0 +1,19 @@
+#!/bin/zsh
+
+setopt numericglobsort
+
+local kprefix="/boot/vmlinuz-"
+
+typeset -a kvers
+kversions=($kprefix*(On))
+local kcurrent="$(uname -r)" klatest="${kversions[1]#$kprefix}"
+
+if [[ $kcurrent != $klatest ]]
+then
+  mail -s "WARNING: Old kernel version in use" root <<EOF
+WARNING: Old kernel version in use
+
+Currently running kernel version: $kcurrent
+Latest installed kernel version:  $klatest
+EOF
+fi
