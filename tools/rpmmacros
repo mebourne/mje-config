@@ -102,6 +102,7 @@ Provides: %{_kpkgname}-%{_kname}-%{_kversion}-%{_target_cpu} = %{evr}\
 Provides: kernel-module-%{_kpkgname}\
 %{?_kflavour:Provides: %{_kname}-module-%{_kpkgname}}\
 
+%_kernelcompiler_rhfc3 /usr/bin/gcc
 %_kernelcompiler_rhfc2 /usr/bin/gcc
 %_kernelcompiler_rhfc1 /usr/bin/gcc32
 %_kernelcompiler_rh9 /usr/bin/gcc
