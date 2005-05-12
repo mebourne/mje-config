@@ -1,0 +1,18 @@
+#!/bin/zsh
+
+local conffile="/etc/smartd.conf"
+
+local testtype=short
+if [[ $(date '+%w') == 0 ]]
+then
+  testtype=long
+fi
+
+while read line
+do
+  local device="${${(z)line}[1]}"
+  if [[ $device == /dev/* ]]
+  then
+    smartctl -t $testtype $device > /dev/null
+  fi
+done < $conffile
