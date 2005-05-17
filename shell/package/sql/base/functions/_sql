@@ -5,7 +5,7 @@
 # Completion code for sql command
 # Usage: These functions are used by the completion code
 #
-# $Id: _sql 792 2003-09-22 11:47:18Z martin $
+# $Id$
 
 #_sql_trace=1
 
@@ -16,7 +16,7 @@
 # Input variables:
 #   inputline, inputindex
 # Output variables:
-#   tokens, tokenids, cursorindex
+#   tokens, tokenids, cursorindex, cursorprefix, cursorsuffix
 _sql_tokenise () {
   integer charindex=1
 
@@ -103,12 +103,18 @@ _sql_tokenise () {
     (( tokenindex++ ))
 
     (( newindex = charindex + $#whitespace + $#token ))
-    if (( !cursorindex )) && [[ $inputindex -lt $newindex ||
-	                        $inputindex -eq $newindex && $tokenid == (key|)word ]]
+    if (( !cursorindex )) &&
+       [[ $inputindex -lt $newindex ||
+	  $inputindex -eq $newindex && $tokenid == ((key|)word|period) ]]
     then
       (( cursorindex = tokenindex ))
       cursorprefix=$prefix
       setsuffix=1
+
+      if [[ $tokenid == period ]]
+      then
+        cursorprefix="$cursorprefix."
+      fi
 
       if [[ $inputindex -eq $charindex && $tokenid != (key|)word ]]
       then
