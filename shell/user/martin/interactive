@@ -3,7 +3,7 @@
 # User's own setup for interactive shells. Run after all other setup has been done
 # Written by Martin Ebourne
 #
-# $Id: interactive 792 2003-09-22 11:47:18Z martin $
+# $Id$
 
 # Get the normal XPG4 standards commands rather than the strange sun ones
 if [[ -d /usr/xpg4/bin ]]

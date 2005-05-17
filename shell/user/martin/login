@@ -3,7 +3,7 @@
 # User's own setup for login shells. Run after all other login setup has been done
 # Written by Martin Ebourne
 #
-# $Id: login 792 2003-09-22 11:47:18Z martin $
+# $Id$
 
 export EDITOR=emacsclient
 export VISUAL=emacsclient

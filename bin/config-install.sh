@@ -6,14 +6,15 @@ ask() {
   echo "$1? (y/N)"
   read answer
   answer=`echo "$answer" | tr -s '[:upper:]' '[:lower:]' | tr -cd 'yn'`
-  [ "x$answer" = "xy" ]
+  /bin/test "x$answer" = "xy"
 }
 
 backup() {
   file="$1"
   suffix=".save"
-
-  if [ -e "$file" ]
+  if /bin/test -e "$file" ||
+     /bin/test -h "$file" 2>/dev/null ||
+     /bin/test -L "$file" 2>/dev/null
   then
     echo "WARNING: Renaming old $file file to $file$suffix"
     rm -rf "$file$suffix"
@@ -43,7 +44,24 @@ then
   ln -s "$configdir/shell/zshrc"    .zsh/.zshrc
   ln -s "$configdir/shell/zshenv"   .zsh/.zshenv
 
-  if ask "Create private ZSH user directory"
+  if ask "Install your existing ZSH user directory"
+  then
+    echo "Available user directories:"
+    ( cd "$configdir/shell/user"; echo * )
+    userdir=""
+    while /bin/test "x$userdir" = "x"
+    do
+      echo "Enter user directory name:"
+      read userdir
+      if /bin/test ! -d "$configdir/shell/user/$userdir"
+      then
+        echo "Invalid directory"
+	userdir=""
+      fi
+    done
+    echo "Creating .zsh_user"
+    ln -s "$configdir/shell/user/$userdir" .zsh_user
+  elif ask "Create private ZSH user directory"
   then
     echo "Creating .zsh_user"
     mkdir .zsh_user
@@ -76,7 +94,7 @@ then
     cat <<EOF > .emacs.el
 ;; Emacs configuration file
 ;; .emacs.el, main user startup file
- 
+
 (load "$configdir/emacs/startup")
 (setq custom-file "~/.custom.el")
 (load custom-file)
@@ -132,7 +150,7 @@ fi
 
 if ask "Install Gnome files"
 then
-  if [ ! -d .themes ]
+  if /bin/test ! -d .themes
   then
     echo "Creating .themes"
     mkdir .themes

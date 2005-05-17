@@ -2,7 +2,7 @@
 # Give grep -n (line numbers) if grepping files
 # Usage: grep [<options>]
 #
-# $Id: grep 792 2003-09-22 11:47:18Z martin $
+# $Id$
 
 # Parse the parameters to find if (i) there are any filenames, (ii) -n has already been given
 integer gotn=0 given=0 skip=0 first=1
