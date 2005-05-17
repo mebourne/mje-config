@@ -6,15 +6,15 @@ ask() {
   echo "$1? (y/N)"
   read answer
   answer=`echo "$answer" | tr -s '[:upper:]' '[:lower:]' | tr -cd 'yn'`
-  /bin/test "x$answer" = "xy"
+  /usr/bin/test "x$answer" = "xy"
 }
 
 backup() {
   file="$1"
   suffix=".save"
-  if /bin/test -e "$file" ||
-     /bin/test -h "$file" 2>/dev/null ||
-     /bin/test -L "$file" 2>/dev/null
+  if /usr/bin/test -e "$file" ||
+     /usr/bin/test -h "$file" 2>/dev/null ||
+     /usr/bin/test -L "$file" 2>/dev/null
   then
     echo "WARNING: Renaming old $file file to $file$suffix"
     rm -rf "$file$suffix"
@@ -49,11 +49,11 @@ then
     echo "Available user directories:"
     ( cd "$configdir/shell/user"; echo * )
     userdir=""
-    while /bin/test "x$userdir" = "x"
+    while /usr/bin/test "x$userdir" = "x"
     do
       echo "Enter user directory name:"
       read userdir
-      if /bin/test ! -d "$configdir/shell/user/$userdir"
+      if /usr/bin/test ! -d "$configdir/shell/user/$userdir"
       then
         echo "Invalid directory"
 	userdir=""
@@ -150,7 +150,7 @@ fi
 
 if ask "Install Gnome files"
 then
-  if /bin/test ! -d .themes
+  if /usr/bin/test ! -d .themes
   then
     echo "Creating .themes"
     mkdir .themes
