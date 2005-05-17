@@ -15,6 +15,13 @@ then
   fi
 fi
 
+# Really fancy multi-line coloured prompt. Will work in non-colour xterm, but too
+# obtrusive in that case, so not enabled
+if (( COLOUR ))
+then
+  package prompt
+fi
+
 # Version control etc. for config system
 package config
 
