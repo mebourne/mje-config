@@ -32,6 +32,10 @@ fignore=(\~ % \# .o .elc .zwc)
 # Basic CDPATH. Need . on it because it is export to ksh etc.
 cdpath=(. $HOME)
 
+# Combine PERL5LIB into PERLLIB
+perllib=($perllib ${(s/:/)PERL5LIB})
+unset PERL5LIB
+
 # Automatically report time for commands taking longer than a minute
 REPORTTIME=60
 
