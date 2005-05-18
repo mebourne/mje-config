@@ -3,7 +3,7 @@
 # Set up all the autoloaded functions. This is executed for all shells very early on
 # Written by Martin Ebourne
 #
-# $Id: loadfuncs 792 2003-09-22 11:47:18Z martin $
+# $Id$
 
 # This file can be included more than once. Only execute it once though
 if ! functions add_functions_directory >/dev/null
@@ -20,9 +20,16 @@ then
   # Note that directory given is relative to $ZCONFIGDIR
   add_functions_directory() {
     local newdir="$argv[1]"
+
     if [[ $newdir != /* ]]
     then
-      newdir="$ZCONFIGDIR/$newdir"
+      # Need to look in the right directory depending on whether user config or otherwise
+      if [[ $newdir == user/* ]]
+      then
+        newdir=$ZUSERCONFIGDIR/${newdir#user/}
+      else
+        newdir=$ZCONFIGDIR/$newdir
+      fi
     fi
 
     if [[ -d $newdir ]]
