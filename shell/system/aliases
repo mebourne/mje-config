@@ -3,7 +3,7 @@
 # Command alias setup
 # Written by Martin Ebourne
 #
-# $Id: aliases 807 2003-10-06 15:20:05Z martin $
+# $Id$
 
 alias rm='rm -i'
 alias which-command=which
@@ -30,12 +30,14 @@ then
   then
     colour='--color=always'
   fi
-  alias l='command ls -Fv '$colour' ${fignore/#/--ignore=\*} ${fignore/#/--ignore=.\*}'
-  alias ls='command ls -Fv '$colour
+  alias l='command ls -Fvb '$colour' ${fignore/#/--ignore=\*} ${fignore/#/--ignore=.\*}'
+  alias la='command ls -aFvb '$colour
+  alias ls='command ls -Fvb '$colour
   alias ll='command ls -lFvbh '$colour' ${fignore/#/--ignore=\*} ${fignore/#/--ignore=.\*}'
   alias dir='command ls -alFvbh '$colour
 else
   alias l='command ls -F'
+  alias la='command ls -aF'
   alias ls='command ls -F'
   alias ll='command ls -lFb'
   alias dir='command ls -alFb'
