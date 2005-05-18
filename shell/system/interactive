@@ -48,6 +48,13 @@ backup_history
 # Update XTerm title bar with useful info after each command
 package xterm
 
+# Really fancy multi-line coloured prompt. Will work in non-colour xterm, but too
+# obtrusive in that case, so not enabled
+if (( COLOUR ))
+then
+  package prompt
+fi
+
 # Final config files
 config_if_present system/aliases
 config_if_present system/keys
