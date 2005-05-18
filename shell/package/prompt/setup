@@ -3,12 +3,12 @@
 # Setup for prompt package
 # Written by Martin Ebourne
 #
-# $Id: setup 792 2003-09-22 11:47:18Z martin $
+# $Id$
 
 add_functions_directory package/prompt/functions
 
 # Declare work variables
-typeset -g _prompt_pwd _prompt_justify _prompt_wrapmode=0 _prompt_retcode=0
+typeset -g _prompt_pwd="" _prompt_justify="" _prompt_wrapmode=0 _prompt_retcode=0
 
 # Cache terminal handling of line wrapping
 if [[ $termcap[am] != yes || $termcap[xn] == yes ]]
@@ -20,7 +20,7 @@ fi
 add_to_hook precmd _prompt_precmd
 add_to_hook preexec '_prompt_preexec "$argv[1]"'
 
-# Set _prompt_retcode as the first thing in precmd - else it's value is lost
+# Set _prompt_retcode as the first thing in precmd - else its value is lost
 if [[ $functions[precmd] != *_prompt_retcode* ]]
 then
   functions[precmd]="_prompt_retcode=\$?
@@ -34,7 +34,7 @@ zle -N clear-screen _prompt_clear_screen
 
 ## Now we configure the default prompts
 
-typeset -g prompt_above prompt_right prompt_eol
+typeset -g prompt_above="" prompt_right="" prompt_eol=""
 
 # Configure the above line prompt
 colour_setvar prompt_above
