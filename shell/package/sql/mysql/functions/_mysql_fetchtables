@@ -1,0 +1,7 @@
+# ZSH function file
+# Part of the SQL MySQL package
+# Fetch and return the list of tables
+# For use only by the SQL packages
+#
+
+_mysql_rawsql "show tables"

@@ -1,0 +1,12 @@
+# ZSH function file
+# Part of the SQL MySQL package
+# Fetch and return the list of columns for the current table
+# For use only by the SQL packages
+#
+
+local table="$argv[1]"
+
+if [[ $table != '%' ]]
+then
+  _mysql_rawsql "show columns from $table" | cut -f 1
+fi

@@ -1,0 +1,9 @@
+# ZSH function file
+# Part of the SQL MySQL package
+# Execute the given SQL command
+# For use only by the SQL packages
+#
+
+{
+  echo - "$argv[*] ;"
+} | _mysql_interactive

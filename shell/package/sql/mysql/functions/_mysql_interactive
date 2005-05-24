@@ -1,0 +1,12 @@
+# ZSH function file
+# Part of the SQL MySQL package
+# Enter interactive SQL command line
+# For use only by the SQL packages
+#
+
+mysql -A ${_sql_parameters[user]:+-u$_sql_parameters[user]} \
+      ${_sql_parameters[password]:+-p$_sql_parameters[password]} \
+      ${_sql_parameters[host]:+-h$_sql_parameters[host]} \
+      ${_sql_parameters[port]:+-P$_sql_parameters[port]} \
+      ${_sql_parameters[database]:+-D$_sql_parameters[database]} \
+      "$argv[@]"

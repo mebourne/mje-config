@@ -1,0 +1,18 @@
+# ZSH configuration file
+# Executed when the SQL mysql package is included
+# Setup for SQL MySQL package
+# Written by Martin Ebourne
+# NB. This file should only be included by the SQL base package
+#
+
+add_functions_directory package/sql/mysql/functions
+
+#_sql_functions[mysql:bcp]=_mysql_bcp
+_sql_functions[mysql:desc]=_mysql_desc
+_sql_functions[mysql:fetch_columns]=_mysql_fetchcolumns
+_sql_functions[mysql:fetch_tables]=_mysql_fetchtables
+_sql_functions[mysql:init]=true
+_sql_functions[mysql:interactive]=_mysql_interactive
+_sql_functions[mysql:execute_dbi]=_sql_execute_dbi
+_sql_functions[mysql:execute_native]=_mysql_execute
+_sql_functions[mysql:dbi_params]=_mysql_dbiparams

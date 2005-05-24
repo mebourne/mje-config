@@ -1,0 +1,8 @@
+# ZSH function file
+# Part of the SQL MySQL package
+# Describe the given table
+# For use only by the SQL packages
+#
+# $Id$
+
+interface=native sql describe "$argv[1]"

@@ -1,0 +1,14 @@
+# ZSH function file
+# Part of the SQL MySQL package
+# Generate parameters for DBI
+# For use only by the SQL packages
+#
+
+# Override default driver name
+driver=mysql
+
+connect=(
+  ${_sql_parameters[host]:+host=$_sql_parameters[host]}
+  ${_sql_parameters[port]:+port=$_sql_parameters[port]}
+  ${_sql_parameters[database]:+dbname=$_sql_parameters[database]}
+)
