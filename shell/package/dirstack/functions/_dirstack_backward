@@ -3,36 +3,49 @@
 # ZLE widget to cycle backwards through the directory stack
 # Can only be called from ZLE as a widgit
 #
-# $Id: _dirstack_backward 792 2003-09-22 11:47:18Z martin $
+# $Id$
+
+# Split the command line using proper shell parsing so that we can work with
+# escaped spaces correctly
+typeset -a fields
+fields=(${(z)LBUFFER})
 
 # Check whether we are between words
-if [[ $LBUFFER == *[$IFS] ]]
+if [[ $LBUFFER == *[$IFS] && $LBUFFER != *$fields[-1] ]]
 then
   # If so then insert top of stack
-  LBUFFER=$LBUFFER$(print -D - $dirstack[1])
+  LBUFFER=$LBUFFER$(print -D - ${(q)${(q)dirstack[1]}})
   _dirstack_original=""
 else
   # Otherwise we are in a word, so get the start of it
-  local dir="$LBUFFER[(w)-1]"
+  local dir="$fields[-1]"
+
+  # Work around zsh adding space onto end of line which finished with '\'
+  if [[ $LBUFFER != *[$IFS] && $dir == *[$IFS] ]]
+  then
+    dir=$dir[1,-2]
+  fi
 
   # Expand ~ etc
   local expanded=""
-  expanded=$~dir
+  expanded=${(Q)~dir}
 
   # Get current index into stack
   integer index=$dirstack[(i)$expanded]
 
+  # Replace word with new value
+  LBUFFER=$LBUFFER[1,-($#dir+1)]
   if (( index > $#dirstack ))
   then
-    # Didn't match in stack, so replace word with top entry
-    LBUFFER[(w)-1]=$(print -D - $dirstack[1])
+    # Didn't match in stack, so replace with top entry
+    LBUFFER=$LBUFFER$(print -D - ${(q)${(q)dirstack[1]}})
     _dirstack_original=$dir
   elif (( index < $#dirstack ))
   then
     # Did match, so replace with next entry
-    LBUFFER[(w)-1]=$(print -D - $dirstack[$index+1])
+    LBUFFER=$LBUFFER$(print -D - ${(q)${(q)dirstack[$index+1]}})
   else
-    # End of stack, so replace original text
-    LBUFFER[(w)-1]=$_dirstack_original
+    # End of stack, so restore original text
+    LBUFFER=$LBUFFER$_dirstack_original
   fi
 fi
