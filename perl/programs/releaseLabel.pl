@@ -74,7 +74,7 @@ while(<>) {
     # Decode
     #   qm/src/workflowmanagement/etc/workflowmanagement.cfg@@/main/17
     # into file, branch & version
-    my ($file, $branch, $version) = /^(.*)\@\@(.*)\/([^\/]*)$/;
+    my ($file, $branch, $version) = /^\s*(.*)\@\@(.*)\/([^\/]*?)\s*$/;
 
     # Ignore any non-matching lines
     if(defined($file)) {
