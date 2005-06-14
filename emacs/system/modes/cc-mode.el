@@ -1,7 +1,7 @@
 ;; Emacs configuration file
 ;; Setup for cc-mode
 ;; Written by Martin Ebourne
-;; $Id: cc-mode.el 806 2003-09-25 16:53:47Z martin $
+;; $Id$
 
 ;; Map _ as a word character to make faster font lock regexps work correctly. Not needed for
 ;; slow font lock regexps
@@ -123,6 +123,11 @@
 	       (fill-column . 78)
 	       (indent-tabs-mode . nil)
 	       (tab-width . 4)
+	       ))
+(c-add-style "boxbackup"
+	     '("martin"
+	       (tab-width . 2)
+	       (indent-tabs-mode . t)
 	       ))
 
 ;; Set up our C style
