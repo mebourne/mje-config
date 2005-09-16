@@ -3,7 +3,7 @@
 # Set sql variables
 # Usage: sqlset <sql-variable>=<value> ...
 #
-# $Id: sqlset 792 2003-09-22 11:47:18Z martin $
+# $Id$
 
 eval $_sql_intro
 
@@ -35,7 +35,7 @@ then
     then
       fn=$_sql_functions[$vendor:init]
     else
-      echo "Invalid database vendor 'vendor'" 1>&2
+      echo "Invalid database vendor '$vendor'" 1>&2
       unset $_sql_parameters[vendor]
       return 1
     fi
