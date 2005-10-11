@@ -15,6 +15,3 @@ export NAME="Martin Ebourne"
 #  echo "Remapping AltGraph as control key"
 #  xmodmap -e "add control = SunAltGraph"
 #fi
-
-export WINDOW_MANAGER=/usr/bin/sawfish
-
