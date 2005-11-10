@@ -39,7 +39,7 @@
 
 ;; Set font
 (custom-set-typed-variable (quote default-font)
-			   (quote ("Xft" . "NewsGoth Dm BT:size=9.5"))
+			   (quote ("Xft" . "NewsGoth Dm BT:size=8"))
 			   (quote font))
 
 ;; Decorate transients
