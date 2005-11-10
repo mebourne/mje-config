@@ -27,7 +27,7 @@ fi
 WORDCHARS='*?_-.[]~#'
 
 # Ignore these filename extensions in completion
-fignore=(\~ % \# .o .elc .zwc)
+fignore=(\~ % \# .o .elc .la .lo .zwc)
 
 # Basic CDPATH. Need . on it because it is export to ksh etc.
 cdpath=(. $HOME)
