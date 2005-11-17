@@ -1,4 +1,4 @@
-%_topdir /home/martin/rpm
+%_topdir /srv/rpm
 
 %vendor Martin Ebourne <martin@zepler.org>
 %distribution %{distname} %{distversion}
