@@ -126,7 +126,8 @@
 	       ))
 (c-add-style "boxbackup"
 	     '("martin"
-	       (tab-width . 2)
+	       (c-basic-offset . 4)
+	       (tab-width . 4)
 	       (indent-tabs-mode . t)
 	       ))
 
