@@ -29,8 +29,8 @@ WORDCHARS='*?_-.[]~#'
 # Ignore these filename extensions in completion
 fignore=(\~ % \# .o .elc .la .lo .zwc)
 
-# Basic CDPATH. Need . on it because it is export to ksh etc.
-cdpath=(. $HOME)
+# Basic CDPATH. Need . on it because it is exported to ksh etc.
+cdpath=(.)
 
 # Combine PERL5LIB into PERLLIB
 perllib=($perllib ${(s/:/)PERL5LIB})
