@@ -1,0 +1,5 @@
+#!/bin/sh
+
+/usr/bin/pg_dumpall -o -Upostgres > /srv/pgsql/backups/all.dat
+
+/usr/bin/vacuumdb -q --all --analyze -Upostgres

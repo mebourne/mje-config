@@ -1,0 +1,26 @@
+#!/bin/zsh
+
+base=/srv/media/video
+ignore=$base/tmp
+
+needs_markup() {
+  local file="$1"
+  local result=""
+  result=$(mysql --batch --skip-column-names --user=mythtv --password=mythtv --database=mythconverg \
+           --execute="select distinct 1 from filemarkup where filename = '${(q)file}'")
+  (( ! result ))
+}
+
+for file in $base/**/*.{vob,mpg,avi}(N)
+do
+  if [[ $file != ${ignore}* ]]
+  then
+    if needs_markup $file
+    then
+      echo "Building seektable for: $file"
+      mythcommflag --quiet --video $file >/dev/null
+      echo
+      echo
+    fi
+  fi
+done
