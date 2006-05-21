@@ -13,6 +13,6 @@ do
   local device="${${(z)line}[1]}"
   if [[ $device == /dev/* ]]
   then
-    smartctl -t $testtype $device > /dev/null
+    smartctl -d ata -t $testtype $device > /dev/null
   fi
 done < $conffile
