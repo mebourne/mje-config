@@ -4,12 +4,18 @@
 #
 # $Id$
 
-local basedirprefix1="/export1/home/odyssey/"
-local basedirprefix2="/export1/home/sts/"
+local -a basedirs
+basedirs=(/export1/home/odyssey /export1/home/sts /jupiter/*_runtime)
 
-local -a environments
-environments=($basedirprefix1* $basedirprefix2*)
-environments=(${${environments#$basedirprefix1}#$basedirprefix2})
+local -A environments
+local basedir="" envdir=""
+for basedir in $basedirs
+do
+  for envdir in $basedir/*(N)
+  do
+    environments[${envdir:t}]=$envdir
+  done
+done
 
 local -A opts
 parse_opts - opts -- "$argv[@]" <<'EOF' || return 1
@@ -25,25 +31,10 @@ Options:
 
 Arguments:
   <environment>			The environment to select
-				# environment : values=environments
+				# environment : values=${(k)environments}
 EOF
 
 sqluse $opts[environment] qm -s
 xterm_name=$opts[environment]
 
-if [[ -d $basedirprefix1$opts[environment] ]]
-then
-  export ODYSSEY=$basedirprefix1$opts[environment]
-else
-  export ODYSSEY=$basedirprefix2$opts[environment]
-fi
-
-# Set environment dependent variables
-local varname="" varvalue=""
-while IFS="=" read varname varvalue
-do
-  if [[ $varname == "OSAGENT_PORT" ]]
-  then
-    typeset -Ugx $varname="$varvalue";
-  fi
-done < $ODYSSEY/registry/env.reg
+export ODYSSEY=$environments[$opts[environment]]
