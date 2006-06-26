@@ -31,6 +31,8 @@ Options:
 				# --help | -h
   -l, --label			Label given versions
 				# --label | -l
+  -m, --monochrome		Do not use colour output
+				# --monochrome | -m
 
 Arguments:
   <label>			Clearcase label for release
@@ -55,6 +57,12 @@ my %colours=(
   lightcyan     => "\e[38;5;14m",
   white         => "\e[38;5;15m",
 );
+
+if($opts->{monochrome}) {
+  for my $key (keys(%colours)) {
+    $colours{$key} = "";
+  }
+}
 
 my %filedata;
 my %logEntries;
