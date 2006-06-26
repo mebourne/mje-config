@@ -9,7 +9,7 @@
 # JPMorgan settings
 
 # Include various JPMorgan special functions. Need to make them work in zsh
-. /opt/bin/0ENV.sh
+. $DAM_ROOT/bin/0ENV.sh
 add_emulate ksh Load Unload prepend append variable
 
 # CD vars. Pull in all the vobs available. Add them straight to the hash table
@@ -83,3 +83,5 @@ alias top8=/apps/top/3.5.0.0/solaris/5.8/bin/top
 
 # Command line access to mcp
 alias mcpcmd='inf/release/solaris/bin/mcpadmin qm/build/socket/system/mcpCmd'
+
+alias ody='cd $ODYSSEY'

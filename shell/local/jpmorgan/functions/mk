@@ -5,9 +5,9 @@
 #
 # $Id$
 
-if [[ -n $(whence g++ 2>/dev/null) ]]
+if [[ $PKGGCCHOME == */4.1.0 ]]
 then
-  clearmake -f /vobs/odyssey/shared/config/makemakefile_gcc &&
+  clearmake -f /vobs/odyssey/shared/config/makemakefile_gcc4 &&
     PATH=$PATH:. clearmake "$@"
 else
   clearmake -f /vobs/odyssey/shared/config/makemakefile &&
