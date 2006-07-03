@@ -5,7 +5,7 @@
 # $Id$
 
 local -a basedirs
-basedirs=(/export1/home/odyssey /export1/home/sts /jupiter/*_runtime)
+basedirs=(/export1/home/odyssey /export1/home/sts /jupiter/*_runtime(N))
 
 local -A environments
 local basedir="" envdir=""
