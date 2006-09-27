@@ -153,28 +153,30 @@ if($opts->{log}) {
 if($opts->{diff}) {
   print "\nDifferences:\n\n";
   for my $file (sort(keys(%filedata))) {
-    my $data = $filedata{$file};
-    my %tempData = %$data;
-    $tempData{chosen}--;
-    my $command = "diff -uw \"" . fullName(\%tempData) . "\" \"" . fullName($data) . "\"";
-    my @text = qx{$command};
-    for(my $i = 0; $i<@text; $i++) {
-      $_=$text[$i];
-      if(/^[-+][-+]/) {
-        my ($start, $middle, $end) = /^(\S*\s*)(\S*)(.*)$/;
-        $_=$start . $colours{bold} . $middle . $colours{reset} . $end . "\n";
-      } elsif(/^-/) {
-        $_=$colours{lightmagenta} . $_ . $colours{reset};
-      } elsif(/^\+/) {
-        $_=$colours{lightcyan} . $_ . $colours{reset};
-      } elsif(/^\@/) {
-        $_=$colours{darkblue} . $_ . $colours{reset};
-      } else {
-        $_=$colours{grey} . $_ . $colours{reset};
+    if(-f $file) {
+      my $data = $filedata{$file};
+      my %tempData = %$data;
+      $tempData{chosen}--;
+      my $command = "diff -uw \"" . fullName(\%tempData) . "\" \"" . fullName($data) . "\"";
+      my @text = qx{$command};
+      for(my $i = 0; $i<@text; $i++) {
+        $_=$text[$i];
+        if(/^[-+][-+]/) {
+          my ($start, $middle, $end) = /^(\S*\s*)(\S*)(.*)$/;
+          $_=$start . $colours{bold} . $middle . $colours{reset} . $end . "\n";
+        } elsif(/^-/) {
+          $_=$colours{lightmagenta} . $_ . $colours{reset};
+        } elsif(/^\+/) {
+          $_=$colours{lightcyan} . $_ . $colours{reset};
+        } elsif(/^\@/) {
+          $_=$colours{darkblue} . $_ . $colours{reset};
+        } else {
+          $_=$colours{grey} . $_ . $colours{reset};
+        }
+        $text[$i]=$_;
       }
-      $text[$i]=$_;
+      print @text;
     }
-    print @text;
   }
 }
 
