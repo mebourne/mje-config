@@ -1,0 +1,94 @@
+#!/bin/sh
+
+# Run the MCP command client
+mcp_command() {
+  $ODYSSEY/inf/release/solaris/bin/mcpadmin $ODYSSEY/qm/build/socket/system/mcpCmd "$*"
+}
+
+# List all processes for a component
+listall() {
+  if [ x$1 = xnocron ]
+  then
+    mcp_command list |
+      grep -v CRONDAEMON |
+      perl -n -e '($nc, $p)=/^(\S*)\s+(\S+)/;' \
+              -e '$c=$nc if $nc ne "";' \
+	      -e 'print "$p\n" if $c eq "'$component'"'
+  else
+    mcp_command list |
+      perl -n -e '($nc, $p)=/^(\S*)\s+(\S+)/;' \
+              -e '$c=$nc if $nc ne "";' \
+	      -e 'print "$p\n" if $c eq "'$component'"'
+  fi
+}
+
+# Filter list for processes we don't want to touch
+filterall() {
+  egrep -v '^INF_cellogger|INF_osagent$'
+}
+
+# Start all processes for a component
+startall() {
+  for process in `listall nocron | filterall`
+  do
+    mcp_command start $process
+  done
+}
+
+# Start one of each type of process for a component
+startone() {
+  for process in `listall nocron | filterall | grep -v -- '-[1-9][0-9]*'`
+  do
+    mcp_command start $process
+  done
+}
+
+# Stop all processes for a component
+stopall() {
+  for process in `listall | filterall`
+  do
+    mcp_command stop $process
+  done
+}
+
+
+## main starts here
+
+# Command line arguments
+environment=$1
+component=$2
+command=$3
+
+# Get machine & directory details from env env for this environment
+eval `cat <<EOF | db_rawamisql env envro -y BCP | awk '{print "MACHINE=" $1 "\nODYSSEY=" $2}'
+select me.machinename, me.odysseydir
+from   MACHINEENVIRONMENT me, MACHINEENVCOMPONENTUSE mecu
+where  me.machinename = mecu.machinename
+and    me.environment = mecu.environment
+and    mecu.component = 'qm'
+and    mecu.installtype = 1
+and    me.environment = '$environment'
+go
+EOF
+`
+
+# If we are not already in the right machine then rsh into it and run us again
+host=`hostname`
+hostf=`nslookup $host | awk '$1 == "Name:" {print $2}'`
+if [ $hostf != $MACHINE ]
+then
+  if [ $hostf != `nslookup $MACHINE | awk '$1 == "Name:" {print $2}'` ]
+  then
+    echo "Logging into $MACHINE"
+    exec ssh $MACHINE $0 "$@"
+  fi
+fi
+
+# Execute requested command
+case $command in
+  listall) listall;;
+  start) start;;
+  startall) startall;;
+  startone) startone;;
+  stopall) stopall;;
+esac
