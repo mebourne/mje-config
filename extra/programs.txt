@@ -114,7 +114,7 @@ Notes:		 Requires eieio
 
 ** Colour xterm
 Name:		 xterm (colour)
-Version:	 165
+Version:	 221
 Home page:	 http://dickey.his.com/xterm/xterm.html
 Package name:	 xterm.tar.gz
 Source location: http://invisible-island.net/xterm/
@@ -123,7 +123,6 @@ Build:
 ./configure --prefix=$HOME/local --bindir=$HOME/local/bin/$(uname -m) --enable-256-color --enable-wide-chars
 gmake
 gmake install
-( cd $HOME/local/bin; mv resize uxterm xterm $(uname -m) )
 Notes:		 CSFB: Use CC=cc ./configure ...
 
 ** Fvwm
