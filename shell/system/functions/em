@@ -2,7 +2,7 @@
 # ZSH function file
 # Send files to emacs for editing
 #
-# $Id: em 792 2003-09-22 11:47:18Z martin $
+# $Id$
 
 local -A opts
 local -a files
@@ -22,16 +22,21 @@ Arguments:
 				# files += [1,*] file : file
 EOF
 
-#  # Loop through files individually rather than sending as one block - that way
-#  # they all end up at the top of the buffer stack in Emacs, not all except one
-#  # being on the bottom
-#  local file
-#  for file in $files
-#  do
-#    emacsclient --no-wait $file
-#  done
+# Loop through files individually rather than sending as one block - that way
+# they all end up at the top of the buffer stack in Emacs, not all except one
+# being on the bottom
+local file
+for file in $files
+do
+  if [[ $file != /* ]]
+  then
+    file="$PWD/$file"
+  fi
+
+  emacsclient --no-wait $file
+done
 
 # For now pass all in one go. Two problems with above, (i) it buggers up
 # with clearcase files, (ii) it may be responsible for 'too many client'
 # errors
-emacsclient --no-wait $files
+#emacsclient --no-wait $files
