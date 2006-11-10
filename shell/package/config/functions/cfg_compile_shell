@@ -30,7 +30,7 @@ local base_dir="$opts[directory]"
 
 # Compile all the individual shell files - ie. excluding all in functions directories
 local file=""
-for file in $base_dir/**/^(functions|RCS)/^(*.zwc|*~)(.) $base_dir/^(*.zwc|*~)(.)
+for file in $base_dir/**/^(functions|RCS)/^(*.zwc|*~)(.N) $base_dir/^(*.zwc|*~)(.N)
 do
   # Only compile files if not already compiled or source modified
   if [[ ! -e $file.zwc || $file -nt $file.zwc ]]
@@ -43,14 +43,14 @@ done
 # Compile all the functions directories such that they have one file each
 local dir=""
 local -a files
-for dir in $base_dir/**/functions(/)
+for dir in $base_dir/**/functions(/N)
 do
   local zwcfile="$dir.zwc"
 
   # Get list of files to be compiled into this directory file. Skip anything
   # with a . in the name because that isn't expected to be a function file
   # (though it technically could be). Probably *.bak or .orig, .diff etc
-  files=($dir/^*.*(.))
+  files=($dir/^*.*(.N))
 
   if (( $#files ))
   then
