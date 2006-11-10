@@ -3,8 +3,9 @@
 # Hook for preexec function
 # Usage: _xterm_preexec
 #
-# $Id: _xterm_preexec 792 2003-09-22 11:47:18Z martin $
+# $Id$
 
 local _xterm_command="${${argv[1]}[(w)1]}"
 
+xterm_settitletext ${(%%)xterm_title}
 xterm_seticontext ${(%%)xterm_icon}
