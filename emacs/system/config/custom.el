@@ -57,7 +57,9 @@
  '(calendar-time-display-form '(24-hours ":" minutes))
 
  ;; Desktop saving
+ ; desktop-basefilename is pre 22.1 only
  '(desktop-basefilename (concat ".emacs.desktop." (user-real-login-name)))
+ '(desktop-base-file-name (concat ".emacs.desktop." (user-real-login-name)))
  '(desktop-missing-file-warning nil)
  '(desktop-buffers-not-to-save "\\(^nn\\.a[0-9]+\\|\\.log$\\|(ftp)\\|^tags\\|^TAGS\\|^pcl-cvs\\.[A-Za-z0-9]+$\\|^\\.newsrc-dribble$\\)")
 
