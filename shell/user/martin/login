@@ -8,6 +8,10 @@
 export EDITOR=emacsclient
 export VISUAL=emacsclient
 export FCEDIT=emacsclient
+
+# This is in case emacs isn't running
+export ALTERNATE_EDITOR=gedit
+
 export NAME="Martin Ebourne"
 
 #if [ `who am i | grep -c '( *)'` = 1 -o `who am i | grep -c '(.*)'` = 0 ]
