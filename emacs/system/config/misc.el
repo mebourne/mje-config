@@ -8,10 +8,6 @@
 ;; Load clearcase integration
 (load "clearcase")
 
-;; Load Subversion integrations
-(add-to-list 'vc-handled-backends 'SVN)
-(require 'psvn)
-
 ;; Load filecache
 (load "filecache")
 
@@ -26,7 +22,7 @@
 ;	    (imenu-add-to-menubar "Tokens")))
 
 ;; Display european characters
-(standard-display-european t)
+(set-language-environment "Latin-1")
 
 ;; Get the time & column number on the info bar. Disable mail flag though
 ;(display-time)
