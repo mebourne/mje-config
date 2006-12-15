@@ -39,6 +39,7 @@ XTerm*saveLines:		10000
 XTerm*scrollBar:		true
 XTerm*scrollKey:		true
 XTerm*scrollTtyOutput:		false
+XTerm*sunFunctionKeys:		false
 XTerm*titleBar:			false
 XTerm*ttyModes:			erase ^h
 XTerm*visualBell:		true
@@ -50,7 +51,6 @@ XTerm*VT100.Translations:	#override\n\
 				Shift <Key> Insert: insert-selection(CLIPBOARD, PRIMARY)\n\
 				<Btn1Up>: select-end(CLIPBOARD, PRIMARY)\n\
 				<Btn2Up>: insert-selection(PRIMARY)
-
 
 !!! Emacs configuration
 
