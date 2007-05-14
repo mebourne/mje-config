@@ -3,7 +3,7 @@
 !
 ! $Id$
 
-*background:        LightSkyBlue
+*background:        #e8e8e8
 *shapeStyle:        Rectangle
 *beNiceToColormap:  False
 
