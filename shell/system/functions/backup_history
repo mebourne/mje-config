@@ -2,7 +2,7 @@
 # ZSH function file
 # Backup the shell command history file in case anything unpleasant happens to it
 #
-# $Id: backup_history 792 2003-09-22 11:47:18Z martin $
+# $Id$
 
 parse_opts -- "$argv[@]" <<'EOF' || return 1
 Description:
@@ -41,7 +41,7 @@ then
         mv $backup $backup.$$ 2>/dev/null
         if cp $file $backup
 	then
-	  rm -f $backup.$$
+	  command rm -f $backup.$$
 	else
           echo "ERROR: Failed to backup history file" 1>&2
 	  echo "(Original backup preserved as $backup.$$)"
