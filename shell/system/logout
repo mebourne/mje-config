@@ -1,0 +1,12 @@
+# ZSH configuration file
+# Executed for login shells via zlogout
+# Generic system-wide setup for login shells. Run on exit from a login shell
+# after the user specific files and before the system logout file
+# Written by Martin Ebourne
+#
+# $Id$
+
+# Morgan Stanley settings
+
+# Don't run /etc/zlogout if it clears the screen
+grep -w clear /etc/zlogout >/dev/null 2>&1 && unsetopt global_rcs
