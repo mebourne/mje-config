@@ -1,10 +1,11 @@
-#!/usr/bin/perl -w
+#!/usr/bin/env perl
 #
 # Convert Psion VCF files for Evolution
 # Written by Martin Ebourne. Started 02/07/03
-# $Id: evolutionVcf.pl 792 2003-09-22 11:47:18Z martin $
+# $Id$
 
 use strict;
+use warnings;
 
 my $line;
 while(defined($line=<>)) {

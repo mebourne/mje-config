@@ -1,10 +1,12 @@
-#!/usr/local/bin/perl -w
+#!/usr/bin/env perl
 #
 # Parse C++ header files for typedef & class definitions
 # Written by Martin Ebourne. Started 23/02/01
 # $Id$
 
 use strict;
+use warnings;
+
 use IO::File;
 use MJE::ParseOpts;
 

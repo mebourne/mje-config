@@ -1,9 +1,11 @@
-#!/usr/local/bin/perl -w
+#!/usr/bin/env perl
 #
 # Format SQL output to make it easier to read
 # Written by Martin Ebourne. Started 22/05/01
 
 use strict;
+use warnings;
+
 use Data::Dumper;
 use English;
 use Env;

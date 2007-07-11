@@ -22,6 +22,8 @@ require Exporter;
 %EXPORT_TAGS = ( all => \@EXPORT_OK );
 
 use strict;
+use warnings;
+
 use File::stat;
 
 

@@ -1,7 +1,7 @@
 # Perl package MJE::ParseOpts
 # Sophisticated and easy to use command line argument parsing
 # Written by Martin Ebourne, 06/08/2001
-# $Id: ParseOpts.pm 792 2003-09-22 11:47:18Z martin $
+# $Id$
 #
 # Usage:
 #
@@ -14,8 +14,7 @@
 package MJE::ParseOpts;
 
 use strict;
-
-use Data::Dumper;
+use warnings;
 
 
 # Create a new MJE::Config object
@@ -57,12 +56,12 @@ sub processArray {
 
   # Useful for debugging
   if($self->{_debug}) {
-    print Dumper($self), "\n";
+    require Data::Dumper;
+
+    print Data::Dumper::Dumper($self), "\n";
   }
 
   if($self->doOptions) {
-
-#print Dumper($self), "\n";
 
     if($self->{help}) {
       print $self->{_helptext};

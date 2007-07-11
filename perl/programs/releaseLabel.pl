@@ -1,10 +1,12 @@
-#!/usr/local/bin/perl -w
+#!/usr/bin/env perl
 #
 # Perform various release labelling tasks
 # Written by Martin Ebourne
 # $Id$
 
 use strict;
+use warnings;
+
 use Data::Dumper;
 use English;
 use Env;

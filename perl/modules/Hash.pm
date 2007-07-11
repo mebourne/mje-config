@@ -3,12 +3,15 @@
 # Decodes XML file into a hash/array structure as appropriate, optionally
 # using a kay attribute from the XML.
 # Written by Martin Ebourne, 06/08/2001
-# $Id: Hash.pm 792 2003-09-22 11:47:18Z martin $
+# $Id$
 
 package MJE::XmlHash;
 
 use UNIVERSAL qw(isa);
 use vars qw($KeyAttribute);
+
+use strict;
+use warnings;
 
 $KeyAttribute = undef;
 

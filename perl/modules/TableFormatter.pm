@@ -13,6 +13,7 @@
 package MJE::TableFormatter;
 
 use strict;
+use warnings;
 
 use Data::Dumper;
 
