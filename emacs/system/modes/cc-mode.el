@@ -34,6 +34,7 @@
 	     '((c-basic-offset . 2)
 	       (c-offsets-alist . ((access-label      . -1)
 				   (case-label        . +)
+				   (inline-open       . 0)
 				   (statement-cont    . c-lineup-math)
 				   (substatement-open . 0)
 				   ))
