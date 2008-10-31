@@ -46,7 +46,7 @@
 
  ;; Give buffers sensible unique filenames
  '(uniquify-buffer-name-style (quote reverse))
- '(uniquify-after-kill-buffer-p nil)
+ '(uniquify-after-kill-buffer-p t)
  '(uniquify-separator "|")
 
  ;; Stop hide-show hiding the initial comment block
