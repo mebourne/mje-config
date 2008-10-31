@@ -9,11 +9,12 @@
 (load custom-file)
 
 ;; Enable useful commands which are disabled by default
-(put 'eval-expression 'disabled nil)
-(put 'set-goal-column 'disabled nil)
-(put 'narrow-to-region 'disabled nil)
-(put 'narrow-to-page 'disabled nil)
 (put 'downcase-region 'disabled nil)
+(put 'eval-expression 'disabled nil)
+(put 'narrow-to-page 'disabled nil)
+(put 'narrow-to-region 'disabled nil)
+(put 'scroll-left 'disabled nil)
+(put 'set-goal-column 'disabled nil)
 (put 'upcase-region 'disabled nil)
 
 ;; Disable the useless toolbar

@@ -34,6 +34,10 @@
 (global-set-key "\C-x\C-q"    'toggle-read-only)
 (global-set-key [67108897]    'kill-this-buffer)      ; C-!
 (global-set-key "\C-x\C-r"    'find-file-root)
+(global-set-key [C-home]      'previous-buffer)
+(global-set-key [C-end]       'next-buffer)
+(global-set-key [M-up]        '(lambda () (interactive) (other-window -1)))
+(global-set-key [M-down]      'other-window)
 
 ;; Rectangle operations
 (global-set-key "\C-xrw"      'copy-rectangle)
