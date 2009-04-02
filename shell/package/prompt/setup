@@ -38,7 +38,7 @@ typeset -g prompt_above="" prompt_right="" prompt_eol=""
 
 # Configure the above line prompt
 colour_setvar prompt_above
-colour_addvar [dark_red] '%$COLUMNS>>%n' [grey] '@' [dark_green] '%m'
+colour_addvar [dark_red] '%$COLUMNS>>%n' [grey] '@' [dark_green] '%m${ZHOSTALIAS:+,}${ZHOSTALIAS}'
 if (( SHLVL > 1 ))
 then
   colour_addvar [grey] '  #$[SHLVL-1]'
