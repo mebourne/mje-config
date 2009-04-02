@@ -173,6 +173,7 @@ my %styles=(
   concat => {
     extend       => "default",
     description  => "Concatenated text output on one line (unless contains nl)",
+    align        => 0,
     truncate     => 0,
     printable    => 0,
     background   => 0,
