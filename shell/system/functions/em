@@ -19,22 +19,27 @@ Options:
 
 Arguments:
   <file> ...			List of files to edit
-				# files += [1,*] file : file
+				# files += [*] file : file
 EOF
 
-# Loop through files individually rather than sending as one block - that way
-# they all end up at the top of the buffer stack in Emacs, not all except one
-# being on the bottom
-local file
-for file in $files
-do
-  if [[ $file != /* ]]
-  then
-    file="$PWD/$file"
-  fi
+if [[ -z $files ]]
+then
+  emacsclient --create-frame --alternate-editor '' --no-wait
+else
+  # Loop through files individually rather than sending as one block - that way
+  # they all end up at the top of the buffer stack in Emacs, not all except one
+  # being on the bottom
+  local file
+  for file in $files
+  do
+    if [[ $file != /* ]]
+    then
+      file="$PWD/$file"
+    fi
 
-  emacsclient --no-wait $file
-done
+    emacsclient --alternate-editor='' --no-wait $file
+  done
+fi
 
 # For now pass all in one go. Two problems with above, (i) it buggers up
 # with clearcase files, (ii) it may be responsible for 'too many client'

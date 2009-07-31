@@ -22,6 +22,8 @@ alias vared="IFS=$'\n' vared"
 # Only alias more to less if less is present on the system
 [[ $(whence -p less) == /* ]] && alias more=less
 
+alias eh="emacsclient --alternate-editor='' --tty"
+
 # If we've got the GNU ls then enable automatic colour and a few more options, else don't
 if [[ $(ls --version 2>&1) == *(GNU|Free)* ]]
 then
