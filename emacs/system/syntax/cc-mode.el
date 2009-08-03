@@ -206,3 +206,12 @@
 	 (cons (concat "\\([0-9][0-9A-Fa-fXxUuLlEe]*\\)") '(1 font-lock-number-face))
 	 ))
   )
+
+;; Setup font-lock mode
+(add-hook 'c-mode-common-hook
+	  (function
+	   (lambda ()
+	     (let ((keywords (c-mode-symbol "font-lock-keywords-local")))
+	       (if (not (eq nil keywords))
+		   (setcar font-lock-defaults keywords))))
+	   ))

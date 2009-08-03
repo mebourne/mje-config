@@ -17,6 +17,9 @@
  ;; Stop Emacs auto extending the file when you press down at eof
  '(next-line-add-newlines nil)
 
+ ;; Revert to traditional move by logical lines behaviour
+ '(line-move-visual nil)
+
  ;; Stop completing onto object files
  '(completion-ignored-extensions (append completion-ignored-extensions
 					 (list ".d" ".zwc")))
@@ -122,13 +125,6 @@
 
  ;; Dynamic abbreviation
  '(dabbrev-abbrev-skip-leading-regexp "[$@%&]")
-
- ;; Strokes settings
- '(strokes-modeline-string "")
- '(strokes-minimum-match-score 1000)
- '(strokes-grid-resolution 11)
- '(strokes-use-strokes-buffer nil)
- '(strokes-file (concat install-user-base-dir "/strokes.el"))
 
  ;; Speedbar. Wider. Sorted.
  '(speedbar-frame-parameters '((minibuffer . nil)

@@ -38,6 +38,14 @@
 (global-set-key [C-end]       'next-buffer)
 (global-set-key [M-up]        '(lambda () (interactive) (other-window -1)))
 (global-set-key [M-down]      'other-window)
+(global-set-key "\C-xc"       '(lambda () (interactive)
+				 (switch-to-buffer-other-window "*scratch*")))
+(global-set-key [up]          '(lambda () (interactive)
+				 (let ((line-move-visual t))
+				   (previous-line))))
+(global-set-key [down]          '(lambda () (interactive)
+				   (let ((line-move-visual t))
+				     (next-line))))
 
 ;; Rectangle operations
 (global-set-key "\C-xrw"      'copy-rectangle)
