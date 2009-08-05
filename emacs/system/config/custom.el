@@ -47,6 +47,9 @@
  ;; Display trailing white space
  '(show-trailing-whitespace t)
 
+ ;; Prefer windows to be split vertically
+ '(split-width-threshold nil)
+
  ;; Give buffers sensible unique filenames
  '(uniquify-buffer-name-style (quote reverse))
  '(uniquify-after-kill-buffer-p t)
