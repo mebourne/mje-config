@@ -7,10 +7,6 @@
 use strict;
 use warnings;
 
-use MSDW::Version
-    'DBD-Sybase' => '1.07-oc12.5.1',
-    'DBI'  => '1.52';
-
 use Data::Dumper;
 use DBI ();
 use English;
