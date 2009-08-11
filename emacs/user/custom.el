@@ -5,6 +5,9 @@
 
 (custom-set-variables
 
+ ;; Disable the useless toolbar
+ '(tool-bar-mode nil)
+
  ;; No message in scratch buffer
  '(initial-scratch-message nil)
 

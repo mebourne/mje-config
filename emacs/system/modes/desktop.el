@@ -42,4 +42,12 @@
 		      (desktop-truncate kill-ring-yank-pointer 10)
 		      )))
 
-(desktop-save-mode (and window-system (not secondary)))
+(defun autosave-desktop ()
+  (if (file-exists-p (desktop-full-file-name))
+      (desktop-save-in-desktop-dir)))
+
+;; Can be switched off with (cancel-timer autosave-desktop-timer)
+(add-hook 'after-init-hook
+	  (lambda ()
+	    (setq autosave-desktop-timer
+		  (run-with-timer 3600 3600 'autosave-desktop))))
