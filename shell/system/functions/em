@@ -22,15 +22,9 @@ Arguments:
 				# files += [*] file : file
 EOF
 
-local serverfile
-if [[ -n $EMACS_SERVER_FILE && -f $EMACS_SERVER_FILE ]]
-then
-  serverfile="--server-file=$EMACS_SERVER_FILE"
-fi
-
 if [[ -z $files ]]
 then
-  emacsclient --create-frame --alternate-editor '' --no-wait $serverfile
+  emacsclient --create-frame --alternate-editor '' --no-wait
 else
   # Loop through files individually rather than sending as one block - that way
   # they all end up at the top of the buffer stack in Emacs, not all except one
@@ -43,7 +37,7 @@ else
       file="$PWD/$file"
     fi
 
-    emacsclient --alternate-editor='' --no-wait $serverfile $file
+    emacsclient --alternate-editor='' --no-wait $file
   done
 fi
 
