@@ -1,7 +1,7 @@
 ;; Emacs configuration file
 ;; Advised functions
 ;; Written by Martin Ebourne
-;; $Id: advice.el 792 2003-09-22 11:47:18Z martin $
+;; $Id$
 
 (defadvice switch-to-buffer (before existing-buffers-only activate preactivate)
   "When called interactively switch to existing buffers only, unless 
@@ -87,3 +87,7 @@ on the info path."
   (interactive 
    (list (if current-prefix-arg
 	     (read-file-name "Info file name (path search on): ")))))
+
+(defadvice iswitchb-kill-buffer (after iswitchb-kill-buffer-update activate preactivate)
+  "Update buffer list after kill buffer."
+   (iswitchb-make-buflist iswitchb-default))
