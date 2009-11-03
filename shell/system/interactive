@@ -1,4 +1,3 @@
-
 # ZSH configuration file
 # Executed for interactive shells via zshrc
 # Generic system-wide setup for interactive use
@@ -38,8 +37,8 @@ unset PERL5LIB
 REPORTTIME=60
 
 # Set up history saving
-HISTSIZE=10000
-SAVEHIST=8000
+HISTSIZE=3000
+SAVEHIST=2000
 HISTFILE=${ZDOTDIR:-$HOME}/.zsh_history
 if [[ ${ZDOTDIR:-$HOME} != $HOME ]]
 then
