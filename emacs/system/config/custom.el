@@ -68,6 +68,7 @@
  '(desktop-buffers-not-to-save "\\(^nn\\.a[0-9]+\\|\\.log$\\|(ftp)\\|^tags\\|^TAGS\\|^pcl-cvs\\.[A-Za-z0-9]+$\\|^\\.newsrc-dribble$\\)")
  '(desktop-load-locked-desktop t)
  '(desktop-restore-eager 2)
+ '(desktop-lazy-idle-delay 2)
  '(desktop-save 'if-exists)
  '(desktop-save-mode t)
 
