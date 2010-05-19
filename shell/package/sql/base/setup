@@ -63,8 +63,10 @@ alias select="sql select"
 #              native - Use database's native command line login tool
 #              dbi    - Use Perl script with DBI module
 # autocommit - Enable auto commit for DBI. Otherwise there's a single transaction
+# kerberos   - Use kerberos login instead of user/password. Only supported for
+#              sybase currently
 sqlset count=1 maxrows=0 format=squash colour=off truncate=80 access=user \
-       interface=dbi autocommit=0
+       interface=dbi autocommit=0 kerberos=0
 if (( COLOUR ))
 then
   sqlset colour=auto

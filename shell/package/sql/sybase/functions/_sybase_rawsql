@@ -3,16 +3,29 @@
 # Execute a raw SQL command
 # For use only by the SQL packages
 #
-# $Id: _sybase_rawsql 792 2003-09-22 11:47:18Z martin $
+# $Id$
 
-if [[ -z $_sql_parameters[server] || -z $_sql_parameters[user] || -z $_sql_parameters[password] ]]
+if [[ -z $_sql_parameters[server] ]]
 then
-  echo "Error: SQL server/user/password variables not set" 1>&2
+  echo "Error: SQL server variable not set" 1>&2
   return 1
 fi
 
-isql -S$_sql_parameters[server] \
-     -U$_sql_parameters[user] \
-     -P$_sql_parameters[password] \
-     ${_sql_parameters[database]:+-D$_sql_parameters[database]} \
-     "$argv[@]"
+if (( ${_sql_parameters[kerberos]:-0} ))
+then
+  kisql -S$_sql_parameters[server] -K \
+        ${_sql_parameters[database]:+-D$_sql_parameters[database]} \
+        "$argv[@]"
+else
+  if [[ -z $_sql_parameters[user] || -z $_sql_parameters[password] ]]
+  then
+    echo "Error: SQL user/password variables not set" 1>&2
+    return 1
+  fi
+
+  isql -S$_sql_parameters[server] \
+       -U$_sql_parameters[user] \
+       -P$_sql_parameters[password] \
+       ${_sql_parameters[database]:+-D$_sql_parameters[database]} \
+       "$argv[@]"
+fi

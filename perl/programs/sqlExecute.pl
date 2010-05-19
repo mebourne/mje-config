@@ -68,6 +68,8 @@ Options:
 				# --driver | -D : values=@drivers
   -h, --help			Provide this help
 				# --help | -h
+  --kerberos=<server>		Use Kerberos login instead of username/password
+				# --kerberos : string
   -P <password>, --password=<password>
 				The password to log on with
 				# --password | -P : string
@@ -108,8 +110,19 @@ if(exists($opts->{"width-auto"}) && $opts->{"width-auto"} && !$tty) {
   $screenWidth=undef;
 }
 
-if(!exists($opts->{driver}) || !exists($opts->{user})) {
-  die "Must specify database driver and user";
+if(!exists($opts->{driver}) || !(exists($opts->{user}) || exists($opts->{kerberos}))) {
+  die "Must specify database driver and user or kerberos";
+}
+
+my $kerberos = "";
+if(exists($opts->{kerberos}))
+{
+  eval '
+    use sybGetPrinc qw(sybGetPrinc);
+    $kerberos = ";kerberos=" . sybGetPrinc($opts->{kerberos});
+  ' or die $@;
+  $opts->{user} = "";
+  $opts->{password} = "";
 }
 
 require "DBD/$opts->{driver}.pm";
@@ -267,7 +280,7 @@ sub main {
   # Connect to the database
   my $dbh = DBI->connect("dbi:$opts->{driver}:" . (exists($opts->{connect})
                                                    ? $opts->{connect}
-                                                   : ""),
+                                                   : "") . $kerberos,
                          $opts->{user},
                          $opts->{password},
                          { AutoCommit  => exists($opts->{"auto-commit"}),
