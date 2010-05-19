@@ -13,7 +13,7 @@
 ! Sizes
 XTerm*font:			6x13
 !XTerm*font:			7x14
-!XTerm*geometry:		101x50
+XTerm*geometry:			96x32
 
 ! TrueType
 !XTerm*faceName:		andale:size=8:charwidth=6
@@ -28,7 +28,7 @@ XTerm*highlightColor:		blue
 XTerm*backarrowKey:		true
 XTerm*boldMode:			true
 XTerm*colorBDMode:		false
-XTerm*cursorBlink:		true
+XTerm*cursorBlink:		false
 XTerm*cursorOffTime:		500
 XTerm*cursorOnTime:		1500
 XTerm*eightBitInput:		false

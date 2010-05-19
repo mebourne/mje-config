@@ -34,7 +34,7 @@
 
 ;; My really wonderful cursor flashing - the biz!
 (blink-cursor-mode 0)
-(blink-enable)
+;(blink-enable)
 
 ;; My just as wonderful cursor constraining - top!
 (constrain-enable)
