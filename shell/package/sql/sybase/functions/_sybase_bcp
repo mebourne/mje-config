@@ -3,12 +3,11 @@
 # Execute a block copy command
 # For use only by the SQL packages
 #
-# $Id: _sybase_bcp 792 2003-09-22 11:47:18Z martin $
+# $Id$
 
-
-if [[ -z $_sql_parameters[server] || -z $_sql_parameters[user] || -z $_sql_parameters[password] ]]
+if [[ -z $_sql_parameters[server] ]]
 then
-  echo "Error: SQL server/user/password variables not set" 1>&2
+  echo "Error: SQL server variable not set" 1>&2
   return 1
 fi
 
@@ -20,9 +19,23 @@ then
   table="$_sql_parameters[database]..$argv[1]"
 fi
 
-bcp $table $inout $file \
-    -S$_sql_parameters[server] \
-    -U$_sql_parameters[user] \
-    -P$_sql_parameters[password] \
-    -c \
-    "${(@)argv[4,-1]}"
+if (( ${_sql_parameters[kerberos]:-0} ))
+then
+  kbcp $table $inout $file \
+       -S$_sql_parameters[server] \
+       -c \
+       "${(@)argv[4,-1]}"
+else
+  if [[ -z $_sql_parameters[user] || -z $_sql_parameters[password] ]]
+  then
+    echo "Error: SQL user/password variables not set" 1>&2
+    return 1
+  fi
+
+  bcp $table $inout $file \
+      -S$_sql_parameters[server] \
+      -U$_sql_parameters[user] \
+      -P$_sql_parameters[password] \
+      -c \
+      "${(@)argv[4,-1]}"
+fi
