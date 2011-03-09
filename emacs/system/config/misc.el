@@ -6,7 +6,7 @@
 (setq message-log-max 1000)
 
 ;; Load clearcase integration
-(load "clearcase")
+;(load "clearcase")
 
 ;; Load filecache
 (load "filecache")
@@ -29,8 +29,8 @@
 (column-number-mode t)
 
 ;; Enable BBC-B style cursor copying
-(setq vcursor-key-bindings t)
-(require 'vcursor)
+;(setq vcursor-key-bindings t)
+;(require 'vcursor)
 
 ;; My really wonderful cursor flashing - the biz!
 (blink-cursor-mode 0)
