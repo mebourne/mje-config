@@ -24,6 +24,12 @@ alias vared="IFS=$'\n' vared"
 
 alias eh="emacsclient --alternate-editor='' --tty"
 
+if (( COLOUR )) && [[ $(grep --help) == *color* ]]
+then
+  alias grep='grep --color=auto'
+fi
+alias grepc='grep --color=always'
+
 # If we've got the GNU ls then enable automatic colour and a few more options, else don't
 if [[ $(ls --version 2>&1) == *(GNU|Free)* ]]
 then
