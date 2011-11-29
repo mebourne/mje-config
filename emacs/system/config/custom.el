@@ -100,11 +100,11 @@
  '(dired-omit-files-p t)
 
  ;; Settings for clearcase version control
- '(clearcase-diff-on-checkin t)
- '(clearcase-make-backup-files t)
- '(clearcase-suppress-checkout-comments t)
- '(clearcase-use-normal-diff t)
- '(clearcase-normal-diff-switches "-uw")
+ ;'(clearcase-diff-on-checkin t)
+ ;'(clearcase-make-backup-files t)
+ ;'(clearcase-suppress-checkout-comments t)
+ ;'(clearcase-use-normal-diff t)
+ ;'(clearcase-normal-diff-switches "-uw")
 
  ;; Ange-ftp default to anonymous ftp and binary xfer
  '(ange-ftp-default-user "ftp")
