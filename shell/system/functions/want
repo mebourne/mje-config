@@ -15,6 +15,8 @@ want [options] <semaphore>
 Options:
   -h, --help			Provide this help
 				# --help | -h * excludes=*
+  -k, --keep			Do not delete semaphore
+				# --keep | -k
   -m, --missing			Succeed only when the semaphore is missing
 				# --missing | -m
   -t, --test			Test only - sets return code instead of
@@ -56,7 +58,10 @@ else
   done
 
   # Tidy up
-  rm -f $file
+  if (( !opts[keep] ))
+  then
+    rm -f $file
+  fi
 
   print -P "Received ${missing}semaphore '$opts[semaphore]' at %D{%a %f %b %Y %H:%M:%S}"
 fi
