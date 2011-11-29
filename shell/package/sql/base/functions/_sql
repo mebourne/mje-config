@@ -5,7 +5,6 @@
 # Completion code for sql command
 # Usage: These functions are used by the completion code
 #
-# $Id$
 
 #_sql_trace=1
 

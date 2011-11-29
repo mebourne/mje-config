@@ -3,7 +3,6 @@
 # Cache the list of clearcase views
 # Usage: _clearcase_getviews
 #
-# $Id: _clearcase_getviews 792 2003-09-22 11:47:18Z martin $
 
 if [[ -z $_clearcase_views ]]
 then

@@ -3,7 +3,6 @@
 # Execute the given SQL command
 # For use only by the SQL packages
 #
-# $Id: _oracle_execute 792 2003-09-22 11:47:18Z martin $
 
 {
   # Handle count & maxrows options here

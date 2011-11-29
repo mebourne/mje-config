@@ -3,7 +3,6 @@
 # Describe the given table
 # Usage: desc <table-name>
 #
-# $Id: desc 792 2003-09-22 11:47:18Z martin $
 
 eval $_sql_intro
 

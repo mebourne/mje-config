@@ -2,7 +2,6 @@
 # ZSH function file
 # Load a package which is part of the configuration system
 #
-# $Id: package 792 2003-09-22 11:47:18Z martin $
 
 local basedir="$ZCONFIGDIR/package"
 

@@ -1,7 +1,6 @@
 ;; Emacs function file
 ;; Build the current Visual Studio source tree
 ;; Written by Martin Ebourne
-;; $Id: studio-build.el 792 2003-09-22 11:47:18Z martin $
 
 ;;;###autoload
 (defun studio-build (&optional arg)

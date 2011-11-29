@@ -1,7 +1,6 @@
 ;; Emacs function file
 ;; Modified delete-indentation (M-^) to prevent it inserting an annoying space
 ;; Written by Martin Ebourne
-;; $Id: delete-indentation.el 792 2003-09-22 11:47:18Z martin $
 
 ;;;###autoload
 (defun delete-indentation (&optional arg)

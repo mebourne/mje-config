@@ -2,7 +2,6 @@
 # ZSH function file
 # Return the exit status of the previous command. Also report status to stdout
 #
-# $Id: ok 792 2003-09-22 11:47:18Z martin $
 
 integer ok=$?
 

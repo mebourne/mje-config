@@ -1,7 +1,6 @@
 ;; Emacs configuration file
 ;; Gnus setup file
 ;; Written by Martin Ebourne
-;; $Id: gnus.el 792 2003-09-22 11:47:18Z martin $
 
 (setq gnus-select-method
       '(nnml "private"))

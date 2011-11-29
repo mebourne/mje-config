@@ -3,7 +3,6 @@
 # Append a component to a : separated path variable if not already present.
 # Any duplicates in the path will be removed
 #
-# $Id: append 792 2003-09-22 11:47:18Z martin $
 
 local -A opts
 parse_opts - opts -- "$argv[@]" <<'EOF' || return 1

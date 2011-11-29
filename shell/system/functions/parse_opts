@@ -2,7 +2,6 @@
 # Provide options parsing and help output
 # (C) 2001 Martin Ebourne
 #
-# $Id: parse_opts 792 2003-09-22 11:47:18Z martin $
 
 
 ### Documentation

@@ -3,7 +3,6 @@
 # Generic system-wide setup for interactive use
 # Written by Martin Ebourne
 #
-# $Id$
 
 # Initial config files
 config_if_present system/options

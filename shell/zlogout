@@ -2,7 +2,6 @@
 # This is the zlogout file sourced directly by zsh
 # Written by Martin Ebourne
 #
-# $Id: zlogout 792 2003-09-22 11:47:18Z martin $
 
 ZFILE=zlogout
 [[ -n $ZCONFIGDEBUG ]] && echo "Executing config file $ZFILE"

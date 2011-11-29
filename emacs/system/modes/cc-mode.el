@@ -1,7 +1,6 @@
 ;; Emacs configuration file
 ;; Setup for cc-mode
 ;; Written by Martin Ebourne
-;; $Id$
 
 ;; Map _ as a word character to make faster font lock regexps work correctly. Not needed for
 ;; slow font lock regexps

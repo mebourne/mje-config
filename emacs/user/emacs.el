@@ -1,7 +1,6 @@
 ;; Emacs configuration file
 ;; .emacs.el, main user startup file
 ;; Written by Martin Ebourne
-;; $Id$
 
 (if (file-readable-p "/etc/config/emacs/startup.el")
     (load "/etc/config/emacs/startup")

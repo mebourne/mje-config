@@ -3,6 +3,5 @@
 # Describe the given table
 # For use only by the SQL packages
 #
-# $Id: _oracle_desc 792 2003-09-22 11:47:18Z martin $
 
 interface=native sql describe "$argv[1]"

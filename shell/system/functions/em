@@ -2,7 +2,6 @@
 # ZSH function file
 # Send files to emacs for editing
 #
-# $Id$
 
 local -A opts
 local -a files

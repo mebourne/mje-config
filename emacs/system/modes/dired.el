@@ -1,7 +1,6 @@
 ;; Emacs configuration file
 ;; Setup for dired
 ;; Written by Martin Ebourne
-;; $Id: dired.el 792 2003-09-22 11:47:18Z martin $
 
 (defun dired-insert-subdir-or-find-file ()
   "Insert a subdir or find file depending on whether we

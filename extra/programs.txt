@@ -1,5 +1,4 @@
 -*- Outline -*-
-$Id$
 
 
 Installed programs

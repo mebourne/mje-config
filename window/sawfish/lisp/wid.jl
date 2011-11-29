@@ -1,6 +1,5 @@
 
 ;; wid.jl -- simple window identifiers
-;; $Id$
 
 ;; Copyright (C) 2001 Nikita Danilov <NikitaDanilov.Yahoo.COM>
 

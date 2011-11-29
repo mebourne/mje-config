@@ -3,7 +3,6 @@
 # Delete all cached information to force it to be refetched on next use
 # Usage: sqlrehash
 #
-# $Id: sqlrehash 792 2003-09-22 11:47:18Z martin $
 
 eval $_sql_intro
 

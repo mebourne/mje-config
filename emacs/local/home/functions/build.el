@@ -1,7 +1,6 @@
 ;; Emacs function file
 ;; Build an STS source tree
 ;; Written by Martin Ebourne
-;; $Id: sts-build.el 725 2004-03-04 22:10:48Z martin $
 
 (require 'compile)
 

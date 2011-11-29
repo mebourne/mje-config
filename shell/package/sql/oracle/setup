@@ -4,7 +4,6 @@
 # Written by Martin Ebourne
 # NB. This file should only be included by the SQL base package
 #
-# $Id$
 
 # Query for owner may be useful:
 # select owner from all_tables

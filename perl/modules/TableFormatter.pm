@@ -1,7 +1,6 @@
 # Perl package MJE::TableFormatter
 # Sophisticated table formatting and display
 # Written by Martin Ebourne, 27/05/2002
-# $Id$
 #
 # Usage:
 #

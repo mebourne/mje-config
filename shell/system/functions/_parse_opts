@@ -4,7 +4,6 @@
 #
 # See documentation with parse_opts for details on usage.
 #
-# $Id: _parse_opts 792 2003-09-22 11:47:18Z martin $
 
 _parse_opts() {
   local command="$words[1]"

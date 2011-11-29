@@ -1,7 +1,6 @@
 ;; Emacs configuration file
 ;; Extra font lock faces
 ;; Written by Martin Ebourne
-;; $Id: faces.el 792 2003-09-22 11:47:18Z martin $
 
 (defvar font-lock-number-face	'font-lock-number-face
   "Face name to use for numbers.")

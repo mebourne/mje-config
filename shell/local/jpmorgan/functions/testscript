@@ -2,7 +2,6 @@
 # Pre-filter to testscript to ensure the APPNAME env is set up correctly
 # Usage: testscript <options>
 #
-# $Id: testscript 792 2003-09-22 11:47:18Z martin $
 
 # Handle special environments where component is eg. deu4
 local prefix

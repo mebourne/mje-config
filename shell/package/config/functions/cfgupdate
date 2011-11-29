@@ -4,7 +4,6 @@
 # Part of the Config package
 # Update config directory
 #
-# $Id: cfgupdate 792 2003-09-22 11:47:18Z martin $
 
 emulate -LR zsh
 

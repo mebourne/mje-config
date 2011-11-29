@@ -4,7 +4,6 @@
 # get XPG4 commands when running on a Sun box. Typically changing the path
 # would break scripts
 #
-# $Id: override_commands 792 2003-09-22 11:47:18Z martin $
 
 local good=""
 local -a bad

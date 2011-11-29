@@ -3,7 +3,6 @@
 # Execute a raw SQL command
 # For use only by the SQL packages
 #
-# $Id: _oracle_rawsql 792 2003-09-22 11:47:18Z martin $
 
 local interface_v=""
 _sql_getparam interface_v interface native

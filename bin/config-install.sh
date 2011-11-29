@@ -1,6 +1,5 @@
 #!/bin/sh
 # Install config into home account
-# $Id$
 
 ask() {
   echo "$1? (y/N)"

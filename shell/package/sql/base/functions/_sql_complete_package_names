@@ -3,7 +3,6 @@
 # Complete on the list of package names
 # For use only by the SQL packages
 #
-# $Id: _sql_complete_package_names 792 2003-09-22 11:47:18Z martin $
 
 _sql_get_package_names
 _wanted packages expl 'database packages' compadd -a _sql_packages

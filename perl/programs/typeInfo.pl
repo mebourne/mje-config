@@ -2,7 +2,6 @@
 #
 # Display a type information using the sourceinfo database.
 # Written by Martin Ebourne. Started 23/02/01
-# $Id$
 
 use strict;
 use warnings;

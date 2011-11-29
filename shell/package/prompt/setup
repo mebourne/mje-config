@@ -3,7 +3,6 @@
 # Setup for prompt package
 # Written by Martin Ebourne
 #
-# $Id$
 
 add_functions_directory package/prompt/functions
 

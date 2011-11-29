@@ -1,7 +1,6 @@
 ;; Emacs configuration file
 ;; Xwindows specific setup
 ;; Written by Martin Ebourne
-;; $Id$
 
 (cond (window-system
 

@@ -3,7 +3,6 @@
 # Unset sql variables
 # Usage: sqlunset <sql-variable> ...
 #
-# $Id: sqlunset 792 2003-09-22 11:47:18Z martin $
 
 eval $_sql_intro
 

@@ -3,7 +3,6 @@
 # Execute an SQL command via Perl DBI
 # For use only by the SQL packages
 #
-# $Id$
 
 local kerberos=""
 if (( ${_sql_parameters[kerberos]:-0} ))

@@ -3,7 +3,6 @@
 # Generic system-wide setup for login shells. Primarily to set environment vars just once
 # Written by Martin Ebourne
 #
-# $Id: login 808 2003-10-06 15:20:37Z martin $
 
 # Remove . from PATH since it is the work of the devil
 path=(${path:#.})

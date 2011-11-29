@@ -2,7 +2,6 @@
 # Update the SQL package settings from JPMorgan environment/component
 # Usage: sqluse [<environment> <component>]
 #
-# $Id$
 
 local env=$argv[1] com=$argv[2] db=$argv[3]
 

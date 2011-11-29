@@ -3,7 +3,6 @@
 ;; Copyright (C) 1997 Martin Ebourne
 ;; All rights reserved
 ;;
-;; $Id$
 
 ;;; Commentary:
 

@@ -1,7 +1,6 @@
 ;; Emacs configuration file
 ;; Setup for desktop session saving
 ;; Written by Martin Ebourne
-;; $Id$
 
 (require 'desktop)
 

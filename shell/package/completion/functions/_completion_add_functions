@@ -3,7 +3,6 @@
 # Handle newly added autoload functions to enable any completion directives at the top
 # Usage: _completion_add_functions <directory> <functions> ...
 #
-# $Id: _completion_add_functions 792 2003-09-22 11:47:18Z martin $
 
 if (( ARGC < 2 ))
 then

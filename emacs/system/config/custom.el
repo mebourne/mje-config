@@ -1,7 +1,6 @@
 ;; Emacs configuration file
 ;; Customised variables
 ;; Written by Martin Ebourne
-;; $Id$
 
 (setq custom-file (concat install-user-base-dir "/custom.el"))
 

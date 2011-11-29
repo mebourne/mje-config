@@ -4,7 +4,6 @@
 # Part of the Config package
 # Compile shell directory
 #
-# $Id$
 
 emulate -LR zsh
 setopt extended_glob

@@ -3,7 +3,6 @@
 # Make part of the cashsec system
 # Usage: make [<options>]
 #
-# $Id$
 
 if [[ $PKGGCCHOME == */4.1.0 ]]
 then

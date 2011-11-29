@@ -3,7 +3,6 @@
 # Setup for colour package
 # Written by Martin Ebourne
 #
-# $Id$
 
 add_functions_directory package/colour/functions
 

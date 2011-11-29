@@ -3,7 +3,6 @@
 # Execute a block copy command
 # For use only by the SQL packages
 #
-# $Id$
 
 if [[ -z $_sql_parameters[user] ]]
 then

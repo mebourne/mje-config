@@ -1,7 +1,6 @@
 ;; Emacs function file
 ;; Swap case of a character
 ;; Written by Martin Ebourne
-;; $Id: swap-case.el 792 2003-09-22 11:47:18Z martin $
 
 ;;;###autoload
 (defun swap-case (&optional arg)

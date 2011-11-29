@@ -8,7 +8,6 @@
 ;; Version: 1.0
 ;; Keywords: outlines
 ;; location: http://www.anc.ed.ac.uk/~stephen
-;; RCS: $Id: fm.el,v 1.1 2001/05/17 13:35:17 mebourne Exp $
  
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by

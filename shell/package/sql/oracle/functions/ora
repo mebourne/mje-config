@@ -3,7 +3,6 @@
 # Set up connection to Oracle database
 # Usage: ora <connection-info>
 #
-# $Id: ora 792 2003-09-22 11:47:18Z martin $
 
 local user="$argv[1]"
 

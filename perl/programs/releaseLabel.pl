@@ -2,7 +2,6 @@
 #
 # Perform various release labelling tasks
 # Written by Martin Ebourne
-# $Id$
 
 use strict;
 use warnings;

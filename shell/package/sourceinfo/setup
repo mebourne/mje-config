@@ -3,7 +3,6 @@
 # Setup for SourceInfo package
 # Written by Martin Ebourne
 #
-# $Id: setup 792 2003-09-22 11:47:18Z martin $
 
 add_functions_directory package/sourceinfo/functions
 

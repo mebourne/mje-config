@@ -2,7 +2,6 @@
 # Make single '-' on a line do 'cd -' for consistency with auto_cd
 # However, be careful not to lose the normal functionality of '-'
 #
-# $Id: - 792 2003-09-22 11:47:18Z martin $
 
 if [[ -z $1 ]]
 then

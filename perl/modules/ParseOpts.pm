@@ -1,7 +1,6 @@
 # Perl package MJE::ParseOpts
 # Sophisticated and easy to use command line argument parsing
 # Written by Martin Ebourne, 06/08/2001
-# $Id$
 #
 # Usage:
 #

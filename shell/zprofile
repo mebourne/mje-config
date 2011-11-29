@@ -2,7 +2,6 @@
 # This is the zprofile file sourced directly by zsh
 # Written by Martin Ebourne
 #
-# $Id: zprofile 792 2003-09-22 11:47:18Z martin $
 
 ZFILE=zprofile
 [[ -n $ZCONFIGDEBUG ]] && echo "Executing config file $ZFILE"

@@ -3,7 +3,6 @@
 # Fetch and return the list of synonyms
 # For use only by the SQL packages
 #
-# $Id: _oracle_fetchsynonyms 792 2003-09-22 11:47:18Z martin $
 
 # Never select from all_objects for this due to the vast amount of results
 _oracle_rawsql "select object_name from user_objects where object_type='SYNONYM'"

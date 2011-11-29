@@ -1,7 +1,6 @@
 #!/bin/zsh
 # Fancy input pipe script for use with less
 # Written by Martin Ebourne, 05/04/2001
-# $Id$
 #
 # To enable:
 #   export LESSOPEN="|lesspipe.sh %s"

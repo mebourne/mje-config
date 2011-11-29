@@ -1,7 +1,6 @@
 ! .Xdefaults - X resources configuration
 ! Written by Martin Ebourne
 !
-! $Id$
 
 *background:        LightSkyBlue
 *shapeStyle:        Rectangle

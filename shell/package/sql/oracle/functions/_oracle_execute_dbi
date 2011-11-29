@@ -3,7 +3,6 @@
 # Execute an SQL command via Perl DBI
 # For use only by the SQL packages
 #
-# $Id: _oracle_execute_dbi 792 2003-09-22 11:47:18Z martin $
 
 _sql_execute_dbi "${(@)argv[1,-2]}" \
                  "(alter session set nls_date_format='YYYY/MM/DD HH24:MI:SS')" \

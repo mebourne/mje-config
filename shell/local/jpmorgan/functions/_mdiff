@@ -3,7 +3,6 @@
 # Completion code for mdiff command
 # Usage: These functions are used by the completion code
 #
-# $Id: _mdiff 792 2003-09-22 11:47:18Z martin $
 
 integer ret=1
 

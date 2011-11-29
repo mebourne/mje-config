@@ -3,7 +3,6 @@
 # Trace execution of Zsh function
 # Usage: ztrace <command> ...
 #
-# $Id: ztrace 792 2003-09-22 11:47:18Z martin $
 
 local -a command
 parse_opts -- "$argv[@]" <<'EOF' || return 1

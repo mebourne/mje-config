@@ -2,7 +2,6 @@
 # ZSH function file
 # Filter stdin for just the given columns
 #
-# $Id: cols 792 2003-09-22 11:47:18Z martin $
 
 emulate -L zsh
 setopt extended_glob

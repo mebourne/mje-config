@@ -1,7 +1,6 @@
 ;; Emacs configuration file
 ;; Miscellaneous stuff
 ;; Written by Martin Ebourne
-;; $Id$
 
 (setq message-log-max 1000)
 

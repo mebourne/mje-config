@@ -3,7 +3,6 @@
 # ZLE widget to search forwards through command history, or move cursor down a line
 # Can only be called from ZLE as a widgit
 #
-# $Id: _isearch_down 792 2003-09-22 11:47:18Z martin $
 
 # REALLASTWIDGET is set by _completion_menu_or_down before it starts calling
 # other widgets and breaking the value of LASTWIDGET

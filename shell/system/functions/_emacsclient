@@ -2,7 +2,6 @@
 # ZSH function file
 # Completion for emacsclient
 #
-# $Id: _emacsclient 792 2003-09-22 11:47:18Z martin $
 
 _arguments -S \
 '--help[Give help on usage]' \

@@ -1,7 +1,6 @@
 ;; Emacs configuration file
 ;; Setup for mail-mode/message-mode
 ;; Written by Martin Ebourne
-;; $Id: mail-mode.el 792 2003-09-22 11:47:18Z martin $
 
 ;; Mail mode
 (setq auto-mode-alist

@@ -3,7 +3,6 @@
 # ZLE widget to escape quotes while being entered in an SQL command
 # For use only as a widget with ZLE
 #
-# $Id: _sql_self_insert_quoted 792 2003-09-22 11:47:18Z martin $
 
 # Don't quote if already quoted
 if [[ $CURSOR -ne 0 && $BUFFER[CURSOR] != \\ ]]

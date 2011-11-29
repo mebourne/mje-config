@@ -2,7 +2,6 @@
 # ZSH function file
 # Backup the shell command history file in case anything unpleasant happens to it
 #
-# $Id$
 
 parse_opts -- "$argv[@]" <<'EOF' || return 1
 Description:

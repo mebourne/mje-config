@@ -4,7 +4,6 @@
 ;; Copyright (C) 1994 Per Abrahamsen
 
 ;; Author: Per Abrahamsen <abraham@dina.kvl.dk>
-;; Version: $Id: all.el,v 5.2 1997/03/04 10:29:42 abraham Exp $
 ;; Keywords: matching
 
 ;; LCD Archive Entry:

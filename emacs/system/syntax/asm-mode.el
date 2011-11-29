@@ -1,7 +1,6 @@
 ;; Emacs configuration file
 ;; Syntax colouring regular expressions for asm-mode
 ;; Written by Martin Ebourne
-;; $Id: asm-mode.el 792 2003-09-22 11:47:18Z martin $
 
 (eval-after-load
  "asm-mode"

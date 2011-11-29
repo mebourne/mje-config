@@ -1,6 +1,5 @@
 #!/bin/sh
 # Set account up for and run Zsh
-# $Id: execzsh 792 2003-09-22 11:47:18Z martin $
 
 cd $HOME
 

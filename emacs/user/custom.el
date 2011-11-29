@@ -1,7 +1,6 @@
 ;; Emacs configuration file
 ;; Custom definitions
 ;; Written by Martin Ebourne
-;; $Id$
 
 (custom-set-variables
 

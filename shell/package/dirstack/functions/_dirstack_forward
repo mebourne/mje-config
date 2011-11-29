@@ -3,7 +3,6 @@
 # ZLE widget to cycle forwards through the directory stack
 # Can only be called from ZLE as a widgit
 #
-# $Id$
 
 # Split the command line using proper shell parsing so that we can work with
 # escaped spaces correctly

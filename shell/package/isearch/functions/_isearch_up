@@ -3,7 +3,6 @@
 # ZLE widget to search back through command history, or move cursor up a line
 # Can only be called from ZLE as a widgit
 #
-# $Id: _isearch_up 792 2003-09-22 11:47:18Z martin $
 
 if [[ $LBUFFER == *$'\n'* ]]; then
   _isearch_searching=''

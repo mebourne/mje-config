@@ -3,7 +3,6 @@
 ;; Taken from sources on www.emacswiki.org, originally written by Bjorn
 ;; Lindstrom, since modified
 ;;
-;; $Id:$
 
 ;;; Commentary:
 

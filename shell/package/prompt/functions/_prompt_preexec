@@ -3,7 +3,6 @@
 # Hook for preexec function
 # Usage: _prompt_precmd
 #
-# $Id$
 
 local command="$1"
 

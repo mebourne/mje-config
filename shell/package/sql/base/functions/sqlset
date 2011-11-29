@@ -3,7 +3,6 @@
 # Set sql variables
 # Usage: sqlset <sql-variable>=<value> ...
 #
-# $Id$
 
 eval $_sql_intro
 

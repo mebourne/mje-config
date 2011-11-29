@@ -3,7 +3,6 @@
 # Add command to function if not already present. Makes a function
 # usable as a hook a al emacs
 #
-# $Id: add_to_hook 792 2003-09-22 11:47:18Z martin $
 
 local -A opts
 local -a command

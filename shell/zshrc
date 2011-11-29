@@ -2,7 +2,6 @@
 # This is the zshrc file sourced directly by zsh
 # Written by Martin Ebourne
 #
-# $Id: zshrc 792 2003-09-22 11:47:18Z martin $
 
 ZFILE=zshrc
 [[ -n $ZCONFIGDEBUG ]] && echo "Executing config file $ZFILE"

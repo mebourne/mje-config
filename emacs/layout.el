@@ -1,7 +1,6 @@
 ;; Emacs configuration file
 ;; Setup for this config install
 ;; Written by Martin Ebourne
-;; $Id: layout.el 792 2003-09-22 11:47:18Z martin $
 
 (setq install-startup-name "startup.el")
 (setq install-loadfile-name "loaddefs.el")

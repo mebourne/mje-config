@@ -3,7 +3,6 @@
 # Hook for precmd function to handle prompt formatting and displaying
 # Usage: _prompt_precmd
 #
-# $Id$
 
 _prompt_precmd_trimpwd() {
 # Generate the current directory, losing bits off the front until it fits

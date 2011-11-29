@@ -4,7 +4,6 @@
 ;; All rights reserved
 ;; 07-02-97 - First version
 ;;
-;; $Id$
 
 ;;; Commentary:
 

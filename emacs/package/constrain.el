@@ -10,7 +10,6 @@
 ;; 18-02-97 - Fix to check in current buffer, SJL
 ;; 10-06-99 - Fixed to work properly with the mouse, MJE
 ;;
-;; $Id$
 
 ;;; Commentary:
 

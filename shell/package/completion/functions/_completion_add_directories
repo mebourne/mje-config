@@ -3,7 +3,6 @@
 # Process the given directories for completion directives
 # Usage: _completion_add_directories <directory> ...
 #
-# $Id: _completion_add_directories 792 2003-09-22 11:47:18Z martin $
 
 if (( ARGC < 1 ))
 then

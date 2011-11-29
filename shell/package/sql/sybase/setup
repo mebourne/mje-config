@@ -4,7 +4,6 @@
 # Written by Martin Ebourne
 # NB. This file should only be included by the SQL base package
 #
-# $Id$
 
 add_functions_directory package/sql/sybase/functions
 

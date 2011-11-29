@@ -2,7 +2,6 @@
 #
 # Report changes in installed and available packages using APT
 # Written by Martin Ebourne. Started 03/06/04
-# $Id$
 
 use strict;
 use Data::Dumper;

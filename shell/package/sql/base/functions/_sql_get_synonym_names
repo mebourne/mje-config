@@ -4,7 +4,6 @@
 # Caching is handled automatically
 # For use only by the SQL packages
 #
-# $Id: _sql_get_synonym_names 792 2003-09-22 11:47:18Z martin $
 
 if [[ -z $_sql_synonyms ]]
 then

@@ -3,7 +3,6 @@
 # Call an implementation function
 # For use only by the SQL packages
 #
-# $Id: _sql_call 792 2003-09-22 11:47:18Z martin $
 
 local quiet=0 test=0
 case $argv[1] in

@@ -4,7 +4,6 @@
 # it will still be prepended, but the already present component will be
 # removed. Any other duplicates in the path will be also removed
 #
-# $Id: prepend 792 2003-09-22 11:47:18Z martin $
 
 local -A opts
 parse_opts - opts -- "$argv[@]" <<'EOF' || return 1

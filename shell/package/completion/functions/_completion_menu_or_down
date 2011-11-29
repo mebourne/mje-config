@@ -3,7 +3,6 @@
 # ZLE widget to menu complete, or move cursor down a line
 # Can only be called from ZLE as a widgit
 #
-# $Id: _completion_menu_or_down 792 2003-09-22 11:47:18Z martin $
 
 # This is needed by the isearch package so it knows what the last key was
 local REALLASTWIDGET="$LASTWIDGET"

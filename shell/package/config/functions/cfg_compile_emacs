@@ -4,7 +4,6 @@
 # Part of the Config package
 # Compile emacs directory
 #
-# $Id: cfg_compile_emacs 792 2003-09-22 11:47:18Z martin $
 
 emulate -LR zsh
 

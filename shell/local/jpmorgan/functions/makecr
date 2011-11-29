@@ -2,7 +2,6 @@
 # ZSH function file
 # Make a new CR directory & contents
 #
-# $Id$
 
 local basedirprefix="/vobs/odyssey/" basedirsuffix="/support/CR"
 

@@ -2,7 +2,6 @@
 # ZSH function file
 # Register new autoload function. Re-registers if already defined
 #
-# $Id: refn 792 2003-09-22 11:47:18Z martin $
 
 local -a fns
 parse_opts -- "$argv[@]" <<'EOF' || return 1

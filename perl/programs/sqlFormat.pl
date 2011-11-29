@@ -2,7 +2,6 @@
 #
 # Format SQL output to make it easier to read
 # Written by Martin Ebourne. Started 22/05/01
-# $Id$
 
 use strict;
 use warnings;

@@ -1,7 +1,6 @@
 ;; Emacs configuration file
 ;; Setup for cc-mode
 ;; Written by Martin Ebourne
-;; $Id: cc-mode.el 806 2003-09-25 16:53:47Z martin $
 
 ;; Add our styles
 (c-add-style "jpmorgan"

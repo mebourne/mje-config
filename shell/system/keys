@@ -3,7 +3,6 @@
 # Key bindings setup for the line editor
 # Written by Martin Ebourne
 #
-# $Id: keys 792 2003-09-22 11:47:18Z martin $
 
 bindkey -e
 bindkey "^[[A" history-beginning-search-backward

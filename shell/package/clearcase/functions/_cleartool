@@ -5,7 +5,6 @@
 # Completion code for cleartool command
 # Usage: These functions are used by the completion code
 #
-# $Id: _cleartool 792 2003-09-22 11:47:18Z martin $
 
 _cleartool_decode_pname () {
   case $command in

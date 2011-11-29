@@ -3,7 +3,6 @@
 # makeTags - Make emacs tags file for LH development directory
 # Written by Martin Ebourne, Started ??/03/99
 #
-# $Id: makeTags 792 2003-09-22 11:47:18Z martin $
 
 cd $HOME/LH
 

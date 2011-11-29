@@ -3,7 +3,6 @@
 # Fetch and return the list of packages
 # For use only by the SQL packages
 #
-# $Id: _oracle_fetchpackages 792 2003-09-22 11:47:18Z martin $
 
 _oracle_rawsql "select object_name from ${_sql_parameters[access]:-user}_objects" \
                "where object_type='PACKAGE'"

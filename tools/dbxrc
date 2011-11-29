@@ -1,7 +1,6 @@
 # DBX configuration file
 # Written by Martin Ebourne
 #
-# $Id: dbxrc 792 2003-09-22 11:47:18Z martin $
 
 dbxenv suppress_startup_message 6.2
 

@@ -2,7 +2,6 @@
 #
 # Convert Psion VCF files for Evolution
 # Written by Martin Ebourne. Started 02/07/03
-# $Id$
 
 use strict;
 use warnings;

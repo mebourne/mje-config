@@ -4,7 +4,6 @@
 # Part of the SourceInfo package
 # Display type information
 #
-# $Id: sitype 792 2003-09-22 11:47:18Z martin $
 
 local -A opts
 local -a dirs

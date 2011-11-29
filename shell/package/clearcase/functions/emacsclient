@@ -3,7 +3,6 @@
 # Front end to handle Clearcase path for emacsclient
 # Usage: emacsclient <params> ...
 #
-# $Id: emacsclient 792 2003-09-22 11:47:18Z martin $
 
 local -a params
 local param=""

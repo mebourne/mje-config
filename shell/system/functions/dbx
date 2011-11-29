@@ -2,7 +2,6 @@
 # Wrapper for dbx to enter VT52 terminal mode. Makes cursor keys work with appropriate settings
 # Usage: dbx <arguments>
 #
-# $Id: dbx 792 2003-09-22 11:47:18Z martin $
 
 # Don't try anything fancy unless in an xterm
 if [[ $TERM == *xterm* ]]

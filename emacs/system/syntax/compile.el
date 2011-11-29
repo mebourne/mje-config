@@ -1,7 +1,6 @@
 ;; Emacs configuration file
 ;; Syntax colouring regular expressions for compile
 ;; Written by Martin Ebourne
-;; $Id: compile.el 792 2003-09-22 11:47:18Z martin $
 
 ;; Compilation
 (eval-after-load

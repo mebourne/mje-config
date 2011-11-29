@@ -2,7 +2,6 @@
 # ZSH function file
 # Select an environment to run in
 #
-# $Id$
 
 local -a basedirs
 basedirs=(/export1/home/odyssey /export1/home/sts /jupiter/*_runtime(N))

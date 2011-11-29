@@ -1,7 +1,6 @@
 # Perl package MJE::Db
 # Provide general utility functions
 # Written by Martin Ebourne, 06/08/2001
-# $Id$
 #
 # Usage:
 #

@@ -4,7 +4,6 @@
 # Part of the SourceInfo package
 # Update the SourceInfo databases
 #
-# $Id: siupdate 792 2003-09-22 11:47:18Z martin $
 
 parse_opts -- "$argv[@]" <<'EOF' || return 1
 Description:

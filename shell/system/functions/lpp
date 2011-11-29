@@ -3,7 +3,6 @@
 # Print text files after converting to postscript
 # Usage: lpp [<file> ...]
 #
-# $Id$
 
 if [[ $(a2ps --version 2>/dev/null) == *GNU* ]]
 then

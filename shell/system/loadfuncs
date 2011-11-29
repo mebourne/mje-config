@@ -3,7 +3,6 @@
 # Set up all the autoloaded functions. This is executed for all shells very early on
 # Written by Martin Ebourne
 #
-# $Id$
 
 # This file can be included more than once. Only execute it once though
 if ! functions add_functions_directory >/dev/null
