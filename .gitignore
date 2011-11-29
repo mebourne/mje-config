@@ -1,0 +1,9 @@
+*~
+\#*#
+.#*
+*.zwc
+*.elc
+emacs/local/current
+shell/local/current
+emacs/startup.el
+loaddefs.el
