@@ -1,0 +1,24 @@
+#!/bin/zsh
+
+for maildir in /home/*/Maildir(N)
+do
+  if [[ -d $maildir/INBOX/cur && -d $maildir/Spam.NotSpam/cur ]]
+  then
+    cd $maildir/Spam.NotSpam/cur
+    for ham in *(.N)
+    do
+      su amavis -c "sa-learn --ham" < $ham &&
+        mv $ham ../../INBOX/cur
+    done
+  fi
+
+  if [[ -d $maildir/Spam.RealSpam/cur ]]
+  then
+    cd $maildir/Spam.RealSpam/cur
+    for spam in *(.N)
+    do
+      su amavis -c "sa-learn --spam" < $spam &&
+        rm -f $spam
+    done
+  fi
+done
