@@ -169,4 +169,11 @@ then
   ln -s "$configdir/tools/rpmmacros" .rpmmacros
 fi
 
+if ask "Install GDB files"
+then
+  backup .gdbinit
+  echo "Creating .gdbinit"
+  ln -s "$configdir/tools/gdbinit" .gdbinit
+fi
+
 echo "Install completed"
