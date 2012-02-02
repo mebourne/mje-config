@@ -176,4 +176,11 @@ then
   ln -s "$configdir/tools/gdbinit" .gdbinit
 fi
 
+if ask "Install Git files"
+then
+  backup .gitconfig
+  echo "Creating .gitconfig"
+  ln -s "$configdir/tools/gitconfig" .gitconfig
+fi
+
 echo "Install completed"
