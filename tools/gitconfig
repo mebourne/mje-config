@@ -21,6 +21,8 @@
 	logd = log -w --color-words --patch-with-stat
 	cont = rebase --continue
 	abort = rebase --abort
+	undo = !git status --porcelain | grep -q -v \"^??\" && git stash save && git stash drop
+	log-all = !git log --graph --decorate --pretty=oneline --abbrev-commit --all $(git fsck --no-reflogs | grep commit | cut -d\" \" -f3)
 [diff]
 	mnemonicprefix = true
 [log]
