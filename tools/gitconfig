@@ -9,16 +9,16 @@
 	st = status -sb
 	co = checkout
 	ci = commit
-	sh = show --color-words --patch-with-stat
-	d = diff --color-words
-	ds = diff --staged --color-words
+	sh = show -w --color-words --patch-with-stat
+	d = diff -w --color-words
+	ds = diff --staged -w --color-words
 	lognew = log --stat ORIG_HEAD..
 	diffnew = log --color-words --patch-with-stat ORIG_HEAD..
 	l = log --oneline
 	logb = log --stat --right-only master...
 	diffb = log --color-words --patch-with-stat master...
 	br = branch
-	logd = log --color-words --patch-with-stat
+	logd = log -w --color-words --patch-with-stat
 	cont = rebase --continue
 	abort = rebase --abort
 [diff]
