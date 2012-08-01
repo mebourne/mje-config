@@ -55,6 +55,15 @@
 (global-set-key "\C-z"        'repeat)
 (setq repeat-on-final-keystroke "z")
 
+;; Version control
+(eval-after-load 'vc
+  (define-key vc-prefix-map "i" '(lambda ()
+				   (interactive)
+				   (if (not (eq 'Git (vc-backend buffer-file-name)))
+				       (vc-register)
+				     (vc-git-register (list buffer-file-name))
+				     (message "Staged changes.")))))
+
 ;; Minibuffer keys
 (define-key minibuffer-local-must-match-map [M-tab]
   'file-cache-minibuffer-complete-on-filename)
