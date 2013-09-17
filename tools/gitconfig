@@ -26,6 +26,7 @@
 	lh = "!GIT_PAGER='head -n 20; cat >/dev/null' git log --graph --pretty='tformat:%C(yellow)%h %C(cyan)%aN%C(green)%d %C(reset)%s' --color=always -n 20"
 	fix = commit --amend -C HEAD
 	ch = cherry-pick
+	sed = !git grep -ilz . ${GIT_PREFIX}. | xargs -0 sed -i -e
 [diff]
 	mnemonicprefix = true
 [log]
