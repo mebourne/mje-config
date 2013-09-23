@@ -68,7 +68,6 @@
  '(desktop-load-locked-desktop t)
  '(desktop-restore-eager 2)
  '(desktop-lazy-idle-delay 2)
- '(desktop-save 'if-exists)
  '(desktop-save-mode t)
 
  ;; Save places in files for when reloading them

@@ -46,7 +46,6 @@
 
 ;; Well good buffer switching
 (iswitchb-mode t)
-(iswitchb-default-keybindings)
 (setq iswitchb-case nil)
 
 ;; Save places in files for when reloading them
