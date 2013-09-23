@@ -4,6 +4,10 @@
 
 (custom-set-variables
 
+ ;; For window managers with focus follows mouse
+ '(focus-follows-mouse t)
+ '(mouse-autoselect-window t)
+
  ;; Disable the useless toolbar
  '(tool-bar-mode nil)
 
