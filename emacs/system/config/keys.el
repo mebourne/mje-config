@@ -27,6 +27,7 @@
 (global-set-key "\M-\C-x"     'compile)
 (global-set-key "\C-x:"       'ielm)
 ;(global-set-key "\M-n"        'gnus)
+(global-set-key "\M-#"        'calc)
 
 ;; Buffer operations
 (global-set-key "\M-o"        'eval-current-buffer)
