@@ -20,6 +20,7 @@ have a subdir or a file."
 (add-hook 'dired-mode-hook
 	  (function (lambda ()
 		      (local-set-key "\C-m" 'dired-insert-subdir-or-find-file)
+		      (dired-omit-mode)
 		      )))
 (setq dired-move-to-filename-regexp
 	" \\(\

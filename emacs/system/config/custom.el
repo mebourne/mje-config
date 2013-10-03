@@ -96,7 +96,6 @@
  ;; Dired mode
  '(dired-guess-shell-gnutar "tar")
  '(dired-omit-files "^#\\|^\\.\\|^\\(CVS\\|TAGS\\)$")
- '(dired-omit-files-p t)
 
  ;; Settings for clearcase version control
  ;'(clearcase-diff-on-checkin t)
