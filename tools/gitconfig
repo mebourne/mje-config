@@ -23,7 +23,7 @@
 	abort = rebase --abort
 	undo = !git status --porcelain | grep -q -v \"^??\" && git stash save && git stash drop
 	log-all = !git log --graph --decorate --pretty=oneline --abbrev-commit --all $(git fsck --no-reflogs | grep commit | cut -d\" \" -f3)
-	lh = "!GIT_PAGER='head -n 20; cat >/dev/null' git log --graph --pretty='tformat:%C(yellow)%h %C(cyan)%aN%C(green)%d %C(reset)%s' --color=always -n 20"
+	lh = "!GIT_PAGER='head -n 20; cat >/dev/null' git log --graph --pretty='tformat:%C(yellow)%h %C(cyan)%aN%C(green)%d %C(reset)%s' --color=always -n 20 --simplify-by-decoration --sparse"
 	fix = commit --amend -C HEAD
 	ch = cherry-pick
 	sed = !git grep -ilz . ${GIT_PREFIX}. | xargs -0 sed -i -e
