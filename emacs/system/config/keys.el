@@ -14,6 +14,7 @@
 (global-set-key "\M-s"        'swap-case)
 (global-set-key [C-backspace] 'kill-current-line)
 (global-set-key "\M-p"        'call-last-kbd-macro)
+(global-set-key "\M-["        'toggle-paren)
 
 ;; Searching
 (global-set-key "\C-x%"       'query-replace-regexp)
