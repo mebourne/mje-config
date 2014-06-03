@@ -12,4 +12,4 @@ local table="$argv[1]"
   echo "select c.name from syscolumns c, sysobjects t"
   echo "where c.id=t.id and t.name like '$table'"
   echo "go"
-} | _sybase_rawsql | tail +3
+} | _sybase_rawsql | tail -n +3

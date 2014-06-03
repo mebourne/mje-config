@@ -11,4 +11,4 @@
   echo "union"
   echo "select name from sybsystemprocs..sysobjects where type in ('P') and name like 'sp[_][^_]%'"
   echo "go"
-} | _sybase_rawsql | tail +3
+} | _sybase_rawsql | tail -n +3

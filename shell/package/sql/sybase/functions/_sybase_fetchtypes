@@ -9,4 +9,4 @@
   echo "go"
   echo "select name from systypes"
   echo "go"
-} | _sybase_rawsql | tail +3
+} | _sybase_rawsql | tail -n +3

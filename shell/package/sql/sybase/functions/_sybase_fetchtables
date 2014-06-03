@@ -15,4 +15,4 @@ fi
   echo "go"
   echo "select name from sysobjects where type in ('U', 'V' $sys)"
   echo "go"
-} | _sybase_rawsql | tail +3
+} | _sybase_rawsql | tail -n +3
