@@ -6,30 +6,30 @@
 [core]
 	preloadindex = true
 [alias]
-	st = status -sb
-	co = checkout
-	ci = commit
-	sh = show -w --color-words --patch-with-stat
-	d = diff -w --color-words
-	ds = diff --staged -w --color-words
-	lognew = log --stat ORIG_HEAD..
-	diffnew = log --color-words --patch-with-stat ORIG_HEAD..
-	l = log --graph --pretty='tformat:%C(yellow)%h %C(cyan)%aN%C(green)%d %C(reset)%s'
-	logb = log --stat --right-only master...
-	diffb = log --color-words --patch-with-stat master...
-	br = branch
-	logd = log -w --color-words --patch-with-stat
-	cont = rebase --continue
 	abort = rebase --abort
-	undo = !git status --porcelain | grep -q -v \"^??\" && git stash save && git stash drop
-	log-all = !git log --graph --decorate --pretty=oneline --abbrev-commit --all $(git fsck --no-reflogs | grep commit | cut -d\" \" -f3)
-	lh = "!GIT_PAGER='head -n 15; cat >/dev/null' git log --graph --pretty='tformat:%C(yellow)%h %C(cyan)%aN%C(green)%d %C(reset)%s' --color=always -n 15 --simplify-by-decoration --sparse"
-	fix = commit --amend -C HEAD
+	br = branch
 	ch = cherry-pick
-	fixall = !git status --porcelain --untracked=no | awk '/^[ADM]/ {print $2} /^R/ {print $2, $4}' | xargs -r -I file /bin/ksh -c 'git commit --fixup $(git log -n 1 --perl-regexp --grep '\\''^.(?!(ixup|quash))'\\'' --pretty=format:%H -- $(echo file | cut -f 1)) file'
+	ci = commit
+	co = checkout
+	cont = rebase --continue
+	d = diff -w --color-words
+	diffb = log --color-words --patch-with-stat master...
+	diffnew = log --color-words --patch-with-stat ORIG_HEAD..
+	ds = diff --staged -w --color-words
 	fa = fetch --all -p
 	fap = !git remote | xargs -P15 -n1 git fetch -p
+	fix = commit --amend -C HEAD
+	fixall = !git status --porcelain --untracked=no | awk '/^[ADM]/ {print $2} /^R/ {print $2, $4}' | xargs -r -I file /bin/ksh -c 'git commit --fixup $(git log -n 1 --perl-regexp --grep '\\''^.(?!(ixup|quash))'\\'' --pretty=format:%H -- $(echo file | cut -f 1)) file'
+	l = log --graph --pretty='tformat:%C(yellow)%h %C(cyan)%aN%C(green)%d %C(reset)%s'
+	lh = "!GIT_PAGER='head -n 15; cat >/dev/null' git log --graph --pretty='tformat:%C(yellow)%h %C(cyan)%aN%C(green)%d %C(reset)%s' --color=always -n 15 --simplify-by-decoration --sparse"
+	log-all = !git log --graph --decorate --pretty=oneline --abbrev-commit --all $(git fsck --no-reflogs | grep commit | cut -d\" \" -f3)
+	logb = log --stat --right-only master...
+	logd = log -w --color-words --patch-with-stat
+	lognew = log --stat ORIG_HEAD..
 	sed = !git grep -ilz . ${GIT_PREFIX}. | xargs -0 sed -i
+	sh = show -w --color-words --patch-with-stat
+	st = status -sb
+	undo = !git status --porcelain | grep -q -v \"^??\" && git stash save && git stash drop
 [diff]
 	mnemonicprefix = true
 [log]
