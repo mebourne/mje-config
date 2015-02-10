@@ -29,6 +29,7 @@
 	sed = !git grep -ilz . ${GIT_PREFIX}. | xargs -0 sed -i
 	sh = show -w --color-words --patch-with-stat
 	st = status -sb
+	top = !git ls-tree -r -z --name-only HEAD -- ${GIT_PREFIX} | xargs -0 -n1 git blame --line-porcelain HEAD |grep '^author ' | sort | uniq -c | sort -nr
 	undo = !git status --porcelain | grep -q -v \"^??\" && git stash save && git stash drop
 [diff]
 	mnemonicprefix = true
