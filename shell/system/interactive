@@ -7,6 +7,8 @@
 # Initial config files
 config_if_present system/options
 
+autoload -U zargs zcalc zed zmv
+
 # Always include this package. If colour is disabled it will take note
 package colour
 
