@@ -26,6 +26,7 @@
 		      (hs-setup)
 		      (c-toggle-auto-state t)
 		      (c-toggle-hungry-state t)
+		      (c-toggle-electric-state -1)
 		      )))
 
 ;; Add our styles
