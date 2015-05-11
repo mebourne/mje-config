@@ -49,3 +49,6 @@ else
   alias ll='command ls -lFb'
   alias dir='command ls -alFb'
 fi
+
+# Handy ps aliases
+alias psrt="ps o user,pid,tid,thcount,cls,rtprio,psr,sgi_p,stat,pcpu,pmem,tname,start_time,time,wchan:20,cmd"
