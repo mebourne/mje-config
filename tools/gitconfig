@@ -9,11 +9,13 @@
 	abort = rebase --abort
 	br = branch
 	ch = cherry-pick
+	check-whitespace = !git diff-tree --check $(git hash-object -t tree /dev/null) HEAD
 	ci = commit
 	co = checkout
 	cont = rebase --continue
 	d = diff -w --color-words
 	diffb = log --color-words --patch-with-stat master...
+	diffcommit = "!diff_commits() { opts=(); while [[ -n $3 ]]; do opts+=("$1"); shift; done; git show --no-color $1 > /tmp/patch-$1 && git show --no-color $2 > /tmp/patch-$2 && interdiff "${opts[@]}" /tmp/patch-$1 /tmp/patch-$2; }; diff_commits"
 	diffnew = log --color-words --patch-with-stat ORIG_HEAD..
 	ds = diff --staged -w --color-words
 	fa = fetch --all -p
@@ -26,6 +28,7 @@
 	logb = log --stat --right-only master...
 	logd = log -w --color-words --patch-with-stat
 	lognew = log --stat ORIG_HEAD..
+	perl = !git grep -ilz . ${GIT_PREFIX}. | xargs -n 1 -0 perl -i
 	sed = !git grep -ilz . ${GIT_PREFIX}. | xargs -0 sed -i
 	sh = show -w --color-words --patch-with-stat
 	st = status -sb
@@ -37,6 +40,8 @@
 	decorate = short
 [merge]
 	conflictstyle = diff3
+[pager]
+	diffcommit = true
 [push]
 	default = upstream
 [rerere]
