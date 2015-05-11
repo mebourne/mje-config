@@ -76,7 +76,7 @@ LS_COLORS=$LS_COLORS':*.Z=38;5;15:*.z=38;5;15:*.gz=38;5;15:*.zip=38;5;15'
 LS_COLORS=$LS_COLORS':*.rpm=38;5;15:*.deb=38;5;15'
 
 # Object files (blue)
-LS_COLORS=$LS_COLORS':*.a=38;5;12:*.o=38;5;12:*.d=38;5;12:*.elc=38;5;12:*.zwc=38;5;12'
+LS_COLORS=$LS_COLORS':*.a=38;5;12:*.o=38;5;12:*.d=38;5;12:*.elc=38;5;12:*.pyc=38;5;12:*.zwc=38;5;12'
 
 # Core files (bold red)
 LS_COLORS=$LS_COLORS':*core=01;38;5;9'

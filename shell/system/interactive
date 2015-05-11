@@ -28,7 +28,7 @@ fi
 WORDCHARS='*?_-.[]~#'
 
 # Ignore these filename extensions in completion
-fignore=(. .. \~ % \# .o .elc .la .lo .zwc)
+fignore=(. .. \~ % \# .o .elc .la .lo .pyc .zwc)
 
 # Combine PERL5LIB into PERLLIB
 perllib=($perllib ${(s/:/)PERL5LIB})
