@@ -15,6 +15,11 @@
 (global-set-key [C-backspace] 'kill-current-line)
 (global-set-key "\M-p"        'call-last-kbd-macro)
 (global-set-key "\M-["        'toggle-paren)
+(global-set-key "\C-ca"       'align-regexp)
+(global-set-key "\C-cA"       'align-columns)
+(global-set-key "\C-ce"       'eliminate-trailing-spaces)
+(global-set-key "\C-cs"       'sort-lines)
+(global-set-key "\C-cy"       'yank-with-replace)
 
 ;; Searching
 (global-set-key "\C-x%"       'query-replace-regexp)
@@ -39,14 +44,17 @@
 (global-set-key [C-end]       'next-buffer)
 (global-set-key [M-up]        '(lambda () (interactive) (other-window -1)))
 (global-set-key [M-down]      'other-window)
+(global-set-key "\C-x4s"      'transpose-windows)
 (global-set-key "\C-xc"       '(lambda () (interactive)
 				 (switch-to-buffer-other-window "*scratch*")))
 (global-set-key [up]          '(lambda () (interactive)
 				 (let ((line-move-visual t))
 				   (previous-line))))
-(global-set-key [down]          '(lambda () (interactive)
-				   (let ((line-move-visual t))
-				     (next-line))))
+(global-set-key [down]        '(lambda () (interactive)
+                                 (let ((line-move-visual t))
+                                   (next-line))))
+(global-set-key "\C-cr"       'rename-file-and-buffer)
+(global-set-key "\C-ct"       'toggle-truncate-lines)
 
 ;; Rectangle operations
 (global-set-key "\C-xrw"      'copy-rectangle)
@@ -60,11 +68,13 @@
 ;; Version control
 (eval-after-load 'vc
   (define-key vc-prefix-map "i" '(lambda ()
+                                   ;; Fix \Cxvi to work for git - ie. stage changes
 				   (interactive)
 				   (if (not (eq 'Git (vc-backend buffer-file-name)))
 				       (vc-register)
 				     (vc-git-register (list buffer-file-name))
 				     (message "Staged changes.")))))
+
 
 ;; Minibuffer keys
 (define-key minibuffer-local-must-match-map [M-tab]
