@@ -23,7 +23,7 @@
 	  (function (lambda ()
 		      (set (make-local-variable 'dabbrev-case-fold-search) nil)
 		      (set (make-local-variable 'dabbrev-case-replace) nil)
-		      (hs-setup)
+		      (hs-minor-mode 1)
 		      (c-toggle-auto-state t)
 		      (c-toggle-hungry-state t)
 		      (c-toggle-electric-state -1)
