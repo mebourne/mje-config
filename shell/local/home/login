@@ -9,3 +9,5 @@
 
 # Java run time
 path=($path /usr/java/j2sdk1.4.2/bin)
+
+export GTK_OVERLAY_SCROLLING=0
