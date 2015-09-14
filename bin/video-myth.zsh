@@ -7,7 +7,7 @@ umask 002
 
 typeset -a videos
 
-for video in $mountsDir/**/*(.N)
+for video in $mountsDir/**/*.{avi,iso,mkv,mp4,mpg,vob,webm}(.N)
 do
   relsrc=${video#$mountsDir/}
   dst=$videoDir/${relsrc#*/}
@@ -17,6 +17,6 @@ do
   ln -s $video $dst
 done
 
-rm -f $videoDir/**/*(N@^-./)
+rm -f $videoDir/**/^n*(N@^-./)
 mkdir $videoDir/$$
 rmdir $videoDir/**/*(/^F)
