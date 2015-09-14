@@ -18,6 +18,7 @@
 (global-set-key "\C-ca"       'align-regexp)
 (global-set-key "\C-cA"       'align-columns)
 (global-set-key "\C-ce"       'eliminate-trailing-spaces)
+(global-set-key "\C-co"       'ff-find-other-file)
 (global-set-key "\C-cs"       'sort-lines)
 (global-set-key "\C-cy"       'yank-with-replace)
 
