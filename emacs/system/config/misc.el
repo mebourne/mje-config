@@ -54,6 +54,9 @@
 ;; Enable lots of little file editing modes
 (require 'generic-x)
 
+;; Spaces not tabs
+(setq-default indent-tabs-mode nil)
+
 ;; Enable auto (de-)compression
 (auto-compression-mode t)
 
