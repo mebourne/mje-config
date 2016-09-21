@@ -2,6 +2,14 @@
 ;; .emacs.el, main user startup file
 ;; Written by Martin Ebourne
 
+(setq load-prefer-newer t)
+
+;; Added by Package.el.  This must come before configurations of
+;; installed packages.  Don't delete this line.  If you don't want it,
+;; just comment it out by adding a semicolon to the start of the line.
+;; You may delete these explanatory comments.
+(package-initialize)
+
 (if (file-readable-p "/etc/config/emacs/startup.el")
     (load "/etc/config/emacs/startup")
   (load "~/config/emacs/startup"))
@@ -18,17 +26,3 @@
 
 ;; Keep cursor on middle line
 (setq constrain-percentage 50)
-
-;(setq gud-dbx-directories
-;      (list
-;       "/home/mebourne/dloads/xml/xerces-c-src1_7_0/src/xercesc"
-;       "/home/mebourne/dloads/xml/xerces-c-src1_7_0/src/xercesc/com"
-;       "/home/mebourne/dloads/xml/xerces-c-src1_7_0/src/xercesc/dom"
-;       "/home/mebourne/dloads/xml/xerces-c-src1_7_0/src/xercesc/framework"
-;       "/home/mebourne/dloads/xml/xerces-c-src1_7_0/src/xercesc/idom"
-;       "/home/mebourne/dloads/xml/xerces-c-src1_7_0/src/xercesc/internal"
-;       "/home/mebourne/dloads/xml/xerces-c-src1_7_0/src/xercesc/parsers"
-;       "/home/mebourne/dloads/xml/xerces-c-src1_7_0/src/xercesc/sax"
-;       "/home/mebourne/dloads/xml/xerces-c-src1_7_0/src/xercesc/sax2"
-;       "/home/mebourne/dloads/xml/xerces-c-src1_7_0/src/xercesc/util"
-;       ))
