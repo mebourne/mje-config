@@ -19,6 +19,9 @@
  ;; Revert to traditional move by logical lines behaviour
  '(line-move-visual nil)
 
+ ;; Still show line numbers even with long lines
+ '(line-number-display-limit-width 10000)
+
  ;; Stop completing onto object files
  '(completion-ignored-extensions (append completion-ignored-extensions
 					 (list ".d" ".zwc")))
