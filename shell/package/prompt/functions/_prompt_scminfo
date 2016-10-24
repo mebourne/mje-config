@@ -1,0 +1,23 @@
+# ZSH function file
+# Part of the prompt package
+# Return current SCM branch/info for use in prompt
+# Usage: _prompt_scminfo
+#
+
+_prompt_scminfo() {
+  if git rev-parse --is-inside-work-tree >/dev/null 2>/dev/null
+  then
+    local rev=$(git symbolic-ref --short HEAD 2>/dev/null)
+    if [[ -z $rev ]]
+    then
+      rev=$(git name-rev --no-undefined --always --name-only HEAD 2>/dev/null)
+      rev="(${rev#remotes/})"
+    fi
+    echo "  $rev"
+  elif [[ -n $CLEARCASE_VIEW ]]
+  then
+    echo "  $CLEARCASE_VIEW"
+  fi
+}
+
+_prompt_scminfo "$@"

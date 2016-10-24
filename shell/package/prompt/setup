@@ -45,8 +45,7 @@ fi
 colour_addvar [dark_red] '${${_prompt_retcode:#0}:+  [$_prompt_retcode${signals[$_prompt_retcode-127]:+ $signals[$_prompt_retcode-127]}]}'
 colour_addvar [dark_red] '${jobstates:+  ${(AA)_prompt_jobs::=}${${(e)${(@j:, :)${(@)jobstates%%:*}/(#b)(?*)/_prompt_jobs[$match[1]]++}/(#b)(?*)/\$(($match[1]))}:#*}${(@kv)_prompt_jobs:/(#b)(???)[a-z]*/$match[1]}}'
 colour_addvar [dark_magenta] '${_sql_prompt:+  $_sql_prompt}'
-colour_addvar [dark_yellow] '${CLEARCASE_VIEW:+  $CLEARCASE_VIEW}'
-colour_addvar '${$(git rev-parse --is-inside-work-tree 2>/dev/null):+  ${${$(git symbolic-ref HEAD 2>/dev/null)#refs/heads/}:-<detached>}}'
+colour_addvar [dark_yellow] '$(_prompt_scminfo)'
 colour_addvar [dark_cyan] '  $_prompt_pwd'
 colour_addvar '$_prompt_justify'
 colour_addvar [grey] '  %D{%a %f %b %Y %H:%M:%S}' [white]
