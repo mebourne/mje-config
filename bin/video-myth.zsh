@@ -7,7 +7,7 @@ umask 002
 
 typeset -a videos
 
-for video in $mountsDir/**/*.{avi,iso,mkv,mp4,mpg,vob,webm}(.N)
+for video in $mountsDir/video*/{Childrens,Films,Music,Ours,TV}/**/*.{avi,iso,mkv,mp4,mpg,vob,webm}(.N)
 do
   relsrc=${video#$mountsDir/}
   dst=$videoDir/${relsrc#*/}
