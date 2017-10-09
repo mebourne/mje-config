@@ -7,7 +7,7 @@ do
     cd $maildir/Spam.NotSpam/cur
     for ham in *(.N)
     do
-      su amavis -c "sa-learn --ham" < $ham &&
+      su amavis -c "cd /; sa-learn --ham" < $ham &&
         mv $ham ../../INBOX/cur
     done
   fi
@@ -17,7 +17,27 @@ do
     cd $maildir/Spam.RealSpam/cur
     for spam in *(.N)
     do
-      su amavis -c "sa-learn --spam" < $spam &&
+      su amavis -c "cd /; sa-learn --spam" < $spam &&
+        rm -f $spam
+    done
+  fi
+
+  if [[ -d $maildir/INBOX/cur && -d $maildir/Mark.NotSpam/cur ]]
+  then
+    cd $maildir/Mark.NotSpam/cur
+    for ham in *(.N)
+    do
+      su amavis -c "cd /; sa-learn --ham" < $ham &&
+        mv $ham ../../INBOX/cur
+    done
+  fi
+
+  if [[ -d $maildir/Mark.RealSpam/cur ]]
+  then
+    cd $maildir/Mark.RealSpam/cur
+    for spam in *(.N)
+    do
+      su amavis -c "cd /; sa-learn --spam" < $spam &&
         rm -f $spam
     done
   fi
