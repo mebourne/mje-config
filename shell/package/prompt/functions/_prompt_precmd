@@ -47,12 +47,15 @@ echo -n "${(l:COLUMNS - ${#${(%%)${prompt_eol//[%]\{[^%]#%\}/}}}:)}"
 echotc cr
 
 # Display the prompt
-print -nP - $prompt_above
-
-# May need a newline depending on terminal. Cache value to save on forks
-if (( _prompt_wrapmode ))
+if [[ -n $prompt_above ]]
 then
-  echo
+  print -nP - $prompt_above
+
+  # May need a newline depending on terminal. Cache value to save on forks
+  if (( _prompt_wrapmode ))
+  then
+    echo
+  fi
 fi
 }
 
