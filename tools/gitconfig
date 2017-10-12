@@ -12,6 +12,7 @@
 	check-whitespace = !git diff-tree --check $(git hash-object -t tree /dev/null) HEAD
 	ci = commit
 	co = checkout
+        conflicts = "!file=x; while [[ -n $file ]]; do file=$(git status --porcelain | awk '/^[A-Z][A-Z]/ {print $2; exit}'); [[ -n \"$file\" ]] && ${GITEDITOR:-${VISUAL:-${EDITOR:-ed}}} \"$file\"; done; echo All conflicts resolved"
 	cont = rebase --continue
 	d = diff -w --color-words
 	diffb = log --color-words --patch-with-stat master...
