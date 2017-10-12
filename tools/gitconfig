@@ -22,7 +22,7 @@
 	fa = fetch --all -p
 	fap = !git remote | xargs -P15 -n1 git fetch -p
 	fix = commit --amend -C HEAD
-	fixall = !git status --porcelain --untracked=no | awk '/^[ADM]/ {print $2} /^R/ {print $2, $4}' | xargs -r -I file /bin/ksh -c 'git commit --fixup $(git log -n 1 --perl-regexp --grep '\\''^.(?!(ixup|quash))'\\'' --pretty=format:%H -- $(echo file | cut -f 1)) file'
+	fixall = !git status --porcelain --untracked=no | awk '/^[ADM]/ {print $2} /^R/ {print $2, $4}' | xargs -r -I file /bin/ksh -c 'git commit --fixup $(git log --pretty=oneline -- $(echo file | cut -f 1) | grep -vi -e fixup -e squash | head -n 1 | cut -f 1 -d \" \") file'
 	l = log --graph --pretty='tformat:%C(yellow)%h %C(cyan)%aN%C(green)%d %C(reset)%s'
 	lh = "!GIT_PAGER='head -n 15; cat >/dev/null' git log --graph --pretty='tformat:%C(yellow)%h %C(cyan)%aN%C(green)%d %C(reset)%s' --color=always -n 15 --simplify-by-decoration --sparse"
 	log-all = !git log --graph --decorate --pretty=oneline --abbrev-commit --all $(git fsck --no-reflogs | grep commit | cut -d\" \" -f3)
