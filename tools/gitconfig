@@ -27,12 +27,12 @@
 	lh = "!GIT_PAGER='head -n 15; cat >/dev/null' git log --graph --pretty='tformat:%C(yellow)%h %C(cyan)%aN%C(green)%d %C(reset)%s' --color=always -n 15 --simplify-by-decoration --sparse"
 	log-all = !git log --graph --decorate --pretty=oneline --abbrev-commit --all $(git fsck --no-reflogs | grep commit | cut -d\" \" -f3)
 	logb = log --stat --right-only master...
-	logd = log -w --color-words --patch-with-stat
+	logd = log -w --color-words --patch-with-stat -M -C
 	lognew = log --stat ORIG_HEAD..
 	perl = !git grep -ilz . ${GIT_PREFIX}. | xargs -n 1 -0 perl -i
 	rim = rebase -i master
 	sed = !git grep -ilz . ${GIT_PREFIX}. | xargs -0 sed -i
-	sh = show -w --color-words --patch-with-stat
+	sh = show -w --color-words --patch-with-stat -M -C
 	st = status -sb
 	top = !git ls-tree -r -z --name-only HEAD -- ${GIT_PREFIX} | xargs -0 -n1 git blame --line-porcelain HEAD |grep '^author ' | sort | uniq -c | sort -nr
 	undo = !git status --porcelain | grep -q -v \"^??\" && git stash save && git stash drop
