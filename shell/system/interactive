@@ -12,10 +12,6 @@ autoload -U zargs zcalc zed zmv
 # Always include this package. If colour is disabled it will take note
 package colour
 
-# Prompts. These will be overridden if the prompt package is included
-PROMPT='$USERNAME@%m:%3c%# '
-RPROMPT='%T'
-
 # Pager to use for stand-alone redirections - ie. < file
 if [[ $(whence -p less) == /* ]]
 then
@@ -50,11 +46,20 @@ backup_history
 # Update XTerm title bar with useful info after each command
 package xterm
 
-# Really fancy multi-line coloured prompt. Will work in non-colour xterm, but too
-# obtrusive in that case, so not enabled
-if (( COLOUR ))
+if [[ -n $ZCONFIG_DEMO ]]
 then
+  # No blank prompts so terminal output can be reused
+  PROMPT='%# '
+  unset RPROMPT
+elif (( COLOUR ))
+then
+  # Really fancy multi-line coloured prompt. Will work in non-colour xterm, but too
+  # obtrusive in that case, so not enabled
   package prompt
+else
+  # Simple prompts
+  PROMPT='$USERNAME@%m:%3c%# '
+  RPROMPT='%T'
 fi
 
 # Final config files

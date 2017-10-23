@@ -50,5 +50,8 @@ else
   alias dir='command ls -alFb'
 fi
 
+# Disable fancy prompts so terminal output can be reused
+alias demo="ZCONFIG_DEMO=1 zsh"
+
 # Handy ps aliases
 alias psrt="ps o user,pid,tid,thcount,cls,rtprio,psr,sgi_p,stat,pcpu,pmem,tname,start_time,time,wchan:20,cmd"
